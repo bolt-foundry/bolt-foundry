@@ -1,0 +1,93 @@
+name: Publish bff-eval Dev Version
+
+# DISABLED - NPM publishing workflows have been disabled
+# on:
+#   push:
+#     branches:
+#       - main
+#     paths:
+#       - "packages/bff-eval/**"
+#   workflow_dispatch:
+
+# Workflow is disabled - uncomment the 'on:' section above to re-enable
+on:
+  workflow_dispatch:
+    if: false
+
+jobs:
+  build-and-publish:
+    name: Build and Publish bff-eval Dev Version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+        with: { determinate: true }
+
+      - name: Setup Nix caching
+        uses: DeterminateSystems/flakehub-cache-action@main
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org/"
+
+      # Set Deno cache directory
+      - name: Set Deno cache directory
+        run: echo "DENO_DIR=${RUNNER_TEMP}/deno-cache" >> "$GITHUB_ENV"
+
+      # Cache node_modules
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        id: dependency-cache
+        with:
+          path: |
+            node_modules
+            packages/bff-eval/node_modules
+            ~/.npm
+          key: ${{ runner.os }}-bff-eval-deps-${{ hashFiles('packages/bff-eval/package-lock.json', 'packages/bff-eval/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-bff-eval-deps-
+
+      # Build bolt-foundry package first (which bff-eval depends on)
+      - name: Build bolt-foundry package
+        run: |
+          nix develop --impure --command bff build --include-bolt-foundry --skip-barrels --skip-routes --skip-content --skip-config-keys --skip-gql-types --skip-isograph
+
+      - name: Install dependencies
+        working-directory: packages/bff-eval
+        run: npm ci
+
+      - name: Generate short git hash
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Update version to dev
+        working-directory: packages/bff-eval
+        run: |
+          # Get current version from package.json
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          # Create dev version with git hash
+          DEV_VERSION="${CURRENT_VERSION}-dev.${{ steps.vars.outputs.sha_short }}"
+          # Update package.json with dev version
+          npm version $DEV_VERSION --no-git-tag-version
+          echo "Updated package.json version to $DEV_VERSION"
+
+      - name: Build package
+        working-directory: packages/bff-eval
+        run: npm run build
+
+      - name: Make bin executable
+        working-directory: packages/bff-eval
+        run: chmod +x dist/bin/bff-eval.js
+
+      - name: Publish to npm
+        working-directory: packages/bff-eval
+        run: npm publish --access public --tag dev
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

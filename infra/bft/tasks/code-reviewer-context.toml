@@ -1,0 +1,25 @@
+# Context definitions for code reviewer deck
+
+[contexts.codeToReview]
+type = "string"
+assistantQuestion = "What code would you like me to review?"
+description = "The TypeScript/Deno code to review"
+example = """
+function add(a: number, b: number) {
+  return a + b;
+}
+"""
+
+[contexts.filePath]
+type = "string"
+assistantQuestion = "What is the file path of this code?"
+description = "The file path helps understand the code's context and purpose"
+default = "unknown.ts"
+example = "src/utils/math.ts"
+
+[contexts.reviewFocus]
+type = "string"
+assistantQuestion = "What specific aspects should I focus on in this review?"
+description = "Optional: Specific areas to emphasize (e.g., 'security', 'performance', 'testing')"
+default = "general"
+example = "Focus on error handling and type safety"

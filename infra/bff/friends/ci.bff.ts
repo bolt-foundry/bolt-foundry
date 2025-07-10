@@ -2,11 +2,11 @@
 
 // FILE: infra/bff/friends/ci.bff.ts
 
-import { register } from "infra/bff/bff.ts";
-import { runShellCommandWithOutput } from "infra/bff/shellBase.ts";
-import { getLogger } from "packages/logger/logger.ts";
-import { loggerGithub } from "infra/bff/githubLogger.ts";
-import { refreshAllSecrets } from "packages/get-configuration-var/get-configuration-var.ts";
+import { register } from "@bfmono/infra/bff/bff.ts";
+import { runShellCommandWithOutput } from "@bfmono/infra/bff/shellBase.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import { loggerGithub } from "@bfmono/infra/bff/githubLogger.ts";
+import { refreshAllSecrets } from "@bfmono/packages/get-configuration-var/get-configuration-var.ts";
 
 const logger = getLogger(import.meta);
 
@@ -263,13 +263,10 @@ function parseDenoFmtOutput(fullOutput: string) {
 
 async function runBuildStep(
   useGithub: boolean,
-  args: string[],
+  _args: Array<string>,
 ): Promise<number> {
   logger.info("Running bff build");
-  // Include bolt-foundry in CI builds if the flag is passed
-  const buildArgs = args.includes("--include-bolt-foundry")
-    ? ["bff", "build", "--include-bolt-foundry"]
-    : ["bff", "build"];
+  const buildArgs = ["bff", "build"];
 
   const { code } = await runShellCommandWithOutput(
     buildArgs,
@@ -303,20 +300,21 @@ async function runTestStep(_useGithub: boolean): Promise<number> {
   return code;
 }
 
-async function runE2ETestStep(useGithub: boolean): Promise<number> {
+async function runE2ETestStep(_useGithub: boolean): Promise<number> {
   logger.info("Running E2E tests...");
 
-  // We'll use the BFF e2e command that's already implemented
+  // Use the newer BFT e2e command that supports dual server setup
   const e2eArgs = [
-    "bff",
+    "bft",
     "e2e",
+    "--build",
   ];
 
   const { code } = await runShellCommandWithOutput(
     e2eArgs,
     {},
     true,
-    useGithub,
+    false, // Always show e2e output for debugging
   );
   return code;
 }
@@ -358,7 +356,7 @@ async function runInstallStep(_useGithub: boolean): Promise<number> {
 // MAIN CI pipeline
 // ----------------------------------------------------------------------------
 
-async function ciCommand(options: string[]) {
+async function ciCommand(options: Array<string>) {
   await refreshAllSecrets();
   logger.info("Running CI checks...");
   const useGithub = options.includes("-g");
@@ -412,4 +410,6 @@ register(
   "ci",
   "Run CI checks (lint, test, build, format). E.g. `bff ci -g` for GH annotations.",
   ciCommand,
+  [],
+  true, // AI-safe
 );

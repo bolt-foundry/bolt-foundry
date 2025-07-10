@@ -12,11 +12,11 @@ import {
   type ComponentWithHeader,
   isographAppRoutes,
   type RouteGuts,
-} from "apps/boltFoundry/routes.ts";
+} from "@bfmono/apps/boltFoundry/routes.ts";
 import { createPortal } from "react-dom";
-import { BfDsFullPageSpinner } from "apps/bfDs/components/BfDsSpinner.tsx";
+import { CfDsFullPageSpinner } from "@bfmono/apps/cfDs/components/CfDsSpinner.tsx";
 
-import { getLogger } from "packages/logger/logger.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 const logger = getLogger(import.meta);
 
 import { usePostHog } from "posthog-js/react";
@@ -363,7 +363,7 @@ export function RouterProvider(
         createPortal(<NextHeader />, portalElement)}
       {children}
       {isPending && (
-        <BfDsFullPageSpinner
+        <CfDsFullPageSpinner
           xstyle={{
             backgroundColor: "transparent",
             position: "absolute",

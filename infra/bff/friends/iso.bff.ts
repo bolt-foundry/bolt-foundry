@@ -1,12 +1,12 @@
 #! /usr/bin/env -S bff
 
 // ./infra/bff/friends/iso.bff.ts
-import { register } from "infra/bff/bff.ts";
+import { register } from "@bfmono/infra/bff/bff.ts";
 import {
   runShellCommand,
   runShellCommandWithOutput,
-} from "infra/bff/shellBase.ts";
-import { getLogger } from "packages/logger/logger.ts";
+} from "@bfmono/infra/bff/shellBase.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
@@ -16,7 +16,7 @@ const logger = getLogger(import.meta);
  * @param options Command-line options passed to the isograph command
  * @returns Exit code (0 for success, non-zero for failure)
  */
-export async function isoCommand(options: string[]): Promise<number> {
+export async function isoCommand(options: Array<string>): Promise<number> {
   logger.info("Running isograph compiler...");
 
   // Default working directory is apps/boltFoundry where the isograph config lives

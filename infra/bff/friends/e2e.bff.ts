@@ -1,12 +1,12 @@
 #! /usr/bin/env -S bff
 
-import { register } from "infra/bff/bff.ts";
-import { runShellCommand } from "infra/bff/shellBase.ts";
-import { getLogger } from "packages/logger/logger.ts";
+import { register } from "@bfmono/infra/bff/bff.ts";
+import { runShellCommand } from "@bfmono/infra/bff/shellBase.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
-export async function e2eCommand(args: string[]): Promise<number> {
+export async function e2eCommand(args: Array<string>): Promise<number> {
   logger.info("Starting e2e tests");
 
   /**
@@ -97,7 +97,7 @@ export async function e2eCommand(args: string[]): Promise<number> {
     logger.info("Web server is ready on port 8000");
 
     // Determine test paths
-    let testPaths: string[];
+    let testPaths: Array<string>;
     if (testFilePath) {
       // If a specific test file is provided, use it directly
       logger.info(`Running specific test file: ${testFilePath}`);
@@ -189,4 +189,6 @@ register(
   "e2e",
   "Run end-to-end tests. Optionally specify a test file path.",
   e2eCommand,
+  [],
+  true, // AI-safe
 );

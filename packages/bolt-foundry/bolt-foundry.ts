@@ -1,15 +1,17 @@
 // deno-lint-ignore-file bolt-foundry/no-env-direct-access
 import type { OpenAI } from "@openai/openai";
 
+export { BfClient } from "./BfClient.ts";
+
 let logger = console;
 const enableLogging = false;
 if (!enableLogging) {
   logger = {
     ...console,
-    debug: (..._args: unknown[]) => {},
-    warn: (..._args: unknown[]) => {},
-    error: (..._args: unknown[]) => {},
-    info: (..._args: unknown[]) => {},
+    debug: (..._args: Array<unknown>) => {},
+    warn: (..._args: Array<unknown>) => {},
+    error: (..._args: Array<unknown>) => {},
+    info: (..._args: Array<unknown>) => {},
   };
 }
 
@@ -116,7 +118,7 @@ export function connectBoltFoundry(
       const clonedRes = response.clone();
 
       // Process telemetry in a non-blocking way
-      setTimeout(async () => {
+      Promise.resolve().then(async () => {
         try {
           // Extract request data
           let requestBody: OpenAIRequestBody | undefined;
@@ -195,7 +197,7 @@ export function connectBoltFoundry(
         } catch (error) {
           logger.error("Error sending telemetry", error);
         }
-      }, 0);
+      });
 
       return response;
     }

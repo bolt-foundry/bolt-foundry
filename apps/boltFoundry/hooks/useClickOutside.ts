@@ -5,7 +5,7 @@ type Options = {
   isActive?: boolean;
   showConfirmation?: boolean;
   ignoreParent?: boolean;
-  excludeElementIds?: string[];
+  excludeElementIds?: Array<string>;
   portal?: string;
 };
 

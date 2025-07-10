@@ -4,11 +4,11 @@ import {
   getConfigurationVariable,
   warmSecrets,
 } from "@bolt-foundry/get-configuration-var";
-import { getLogger } from "packages/logger/logger.ts";
-import type { Handler } from "apps/web/web.tsx";
-import { handleRequest } from "apps/web/handlers/mainHandler.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import type { Handler } from "@bfmono/apps/web/web.tsx";
+import { handleRequest } from "@bfmono/apps/web/handlers/mainHandler.ts";
 import { PostHog } from "posthog-node";
-import { trackLlmEvent } from "apps/collector/llm-event-tracker.ts";
+import { trackLlmEvent } from "@bfmono/apps/collector/llm-event-tracker.ts";
 
 const logger = getLogger(import.meta);
 

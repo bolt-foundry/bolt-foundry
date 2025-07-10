@@ -1,208 +1,114 @@
-import * as React from "react";
-import { BfDsIcon, type IconSizeType } from "apps/bfDs/components/BfDsIcon.tsx";
+import type * as React from "react";
+import { useBfDsFormContext } from "./BfDsForm.tsx";
+import { BfDsIcon } from "./BfDsIcon.tsx";
 
-export type CheckboxBaseProps = {
-  disabled?: boolean;
-  label?: string;
-  value?: boolean;
-  size?: "small" | "medium" | "large";
-  style?: React.CSSProperties;
-  className?: string;
-  meta?: string | React.ReactNode;
+export type BfDsCheckboxProps = {
+  // Form context props
+  /** Form field name for data binding */
   name?: string;
+
+  // Standalone props
+  /** Whether the checkbox is checked */
+  checked?: boolean;
+  /** Callback when check state changes */
+  onChange?: (checked: boolean) => void;
+
+  // Common props
+  /** Label text displayed next to checkbox */
+  label?: string;
+  /** Required for validation */
   required?: boolean;
-  testId?: string; // for identifying the element in posthog
-} & React.HTMLAttributes<HTMLInputElement>;
-
-type EditableProps = CheckboxBaseProps & {
-  readonly?: false;
-  onChange: (checked: boolean) => void;
+  /** Disables component */
+  disabled?: boolean;
+  /** Additional CSS classes */
+  className?: string;
+  /** Element ID */
+  id?: string;
 };
 
-type ReadonlyProps = CheckboxBaseProps & {
-  readonly: true;
-  onChange?: never;
-};
+export function BfDsCheckbox({
+  name,
+  checked,
+  onChange,
+  label,
+  disabled = false,
+  required = false,
+  className,
+  id,
+}: BfDsCheckboxProps) {
+  const formContext = useBfDsFormContext();
+  const isInForm = !!formContext;
 
-type BfDsCheckboxProps = EditableProps | ReadonlyProps;
+  // Use form context if available
+  const actualChecked = isInForm
+    ? (formContext.data as Record<string, unknown>)?.[name || ""] === true
+    : checked || false;
+  const actualOnChange = isInForm
+    ? (newChecked: boolean) => {
+      if (name && formContext.onChange && formContext.data) {
+        formContext.onChange({
+          ...(formContext.data as Record<string, unknown>),
+          [name]: newChecked,
+        });
+      }
+    }
+    : onChange;
 
-const styles: Record<string, React.CSSProperties> = {
-  checkbox: {
-    position: "relative",
-    display: "inline-block",
-  },
-  icon: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    cursor: "pointer",
-  },
-  iconDisabled: {
-    opacity: "0.5",
-    cursor: "not-allowed",
-  },
-  input: {
-    opacity: "0",
-    width: "0",
-    height: "0",
-    position: "absolute",
-  },
-  label: {
-    marginBottom: 12,
-    display: "inline-block",
-    width: "100%",
-  },
-  row: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  meta: {
-    color: "var(--textSecondary)",
-    marginTop: 4,
-  },
-};
-
-const sizeStyles: Record<
-  string,
-  Record<string, { width: IconSizeType; height: IconSizeType } | IconSizeType>
-> = {
-  small: {
-    icon: {
-      width: 12,
-      height: 12,
-    },
-    iconSize: 12,
-  },
-  medium: {
-    icon: {
-      width: 16,
-      height: 16,
-    },
-    iconSize: 16,
-  },
-  large: {
-    icon: {
-      width: 24,
-      height: 24,
-    },
-    iconSize: 24,
-  },
-};
-
-export function BfDsCheckbox(
-  {
-    disabled,
-    label,
-    value,
-    onChange,
+  const checkboxClasses = [
+    "bfds-checkbox",
+    actualChecked && "bfds-checkbox--checked",
+    disabled && "bfds-checkbox--disabled",
     className,
-    meta,
-    name,
-    required,
-    readonly,
-    size = "medium",
-    testId,
-    ...props
-  }: BfDsCheckboxProps,
-) {
-  const iconName = value ? "checkCircleSolid" : "checkCircle";
-  const iconColor = value ? "var(--success)" : "var(--textLight)";
-  const sizing =
-    sizeStyles[size]?.icon && typeof sizeStyles[size]?.icon === "object"
-      ? sizeStyles[size].icon
-      : {};
+  ].filter(Boolean).join(" ");
 
-  const checkboxIcon = (
-    <div
-      style={{
-        ...styles.icon,
-        ...sizing,
-        ...(disabled && styles.iconDisabled),
-      }}
-    >
-      <BfDsIcon
-        name={iconName}
-        color={iconColor}
-        size={sizeStyles[size].iconSize as IconSizeType}
-      />
-    </div>
-  );
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (actualOnChange) {
+      actualOnChange(e.target.checked);
+    }
+  };
 
-  const testIdValue = testId ? `${testId}-${!value}` : undefined;
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      if (actualOnChange && !disabled) {
+        actualOnChange(!actualChecked);
+      }
+    }
+  };
 
-  const checkbox = (
-    <div
-      style={{ ...styles.checkbox }}
-      data-bf-testid={testIdValue}
-    >
+  return (
+    <label className="bfds-checkbox-wrapper">
       <input
-        {...props}
         type="checkbox"
-        checked={value}
-        disabled={disabled}
-        onChange={(e) => onChange && onChange(e.target.checked)}
-        style={styles.input}
-        className={className}
+        id={id}
         name={name}
+        checked={actualChecked}
+        onChange={handleChange}
+        disabled={disabled}
         required={required}
-        readOnly={readonly}
+        className="bfds-checkbox-input"
       />
-      {checkboxIcon}
-    </div>
-  );
-
-  if (label) {
-    return (
-      <label style={styles.label}>
-        <div style={styles.row}>
-          {checkbox}
-          <div style={{ flex: 1 }}>
-            {label}
-            {required && " *"}
-          </div>
-        </div>
-        {meta && <div style={styles.meta}>{meta}</div>}
-      </label>
-    );
-  }
-
-  return (
-    <label>
-      {checkbox}
-      {meta && <div style={styles.meta}>{meta}</div>}
+      <div
+        className={checkboxClasses}
+        role="checkbox"
+        aria-checked={actualChecked}
+        tabIndex={disabled ? -1 : 0}
+        onKeyDown={handleKeyDown}
+      >
+        {actualChecked && (
+          <BfDsIcon
+            name="check"
+            size="small"
+            className="bfds-checkbox-icon"
+          />
+        )}
+      </div>
+      {label && (
+        <span className="bfds-checkbox-label">
+          {label}
+          {required && <span className="bfds-checkbox-required">*</span>}
+        </span>
+      )}
     </label>
-  );
-}
-
-export function Example() {
-  const [blank, setBlank] = React.useState(false);
-  const [small, setSmall] = React.useState(false);
-  const [medium, setMedium] = React.useState(false);
-  const [large, setLarge] = React.useState(false);
-  return (
-    <div style={{ width: 300 }}>
-      <BfDsCheckbox value={blank} onChange={() => setBlank(!blank)} />
-      <BfDsCheckbox
-        meta="This is small checkbox"
-        size="small"
-        label="Small"
-        value={small}
-        onChange={() => setSmall(!small)}
-      />
-      <BfDsCheckbox
-        size="medium"
-        label="Medium"
-        value={medium}
-        onChange={() => setMedium(!medium)}
-      />
-      <BfDsCheckbox
-        size="large"
-        label="Large"
-        value={large}
-        onChange={() => setLarge(!large)}
-      />
-    </div>
   );
 }

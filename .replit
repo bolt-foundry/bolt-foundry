@@ -7,10 +7,11 @@ channel = "stable-24_11"
 
 [deployment]
 deploymentTarget = "cloudrun"
-build = ["sh", "-c", "bff build"]
-# build = ["sh", "-c", "bff build"]
+build = ["./scripts/build.sh"]
 run = ["sh", "-c", "WEB_PORT=9999 ./build/web"]
 
+# Deno LSP handles the entire monorepo but only performs formatting in examples/
+# (configured via deno.jsonc to exclude examples/ from linting and type checking)
 [languages.deno]
 pattern = "**/*.{ts,js,tsx,jsx,json,jsonc,md,mdx}"
 [languages.deno.languageServer]
@@ -19,6 +20,13 @@ start = ["deno", "lsp"]
 enable = true
 lint = true
 config = "./deno.jsonc"
+
+# TypeScript LSP specifically for examples/ directory
+# Each example should have its own tsconfig.json that extends tsconfig.base.json
+[languages.typescript]
+pattern = "examples/**/*.{ts,tsx,js,jsx}"
+[languages.typescript.languageServer]
+start = ["typescript-language-server", "--stdio"]
 
 [workflows]
 runButton = "Run for development"
@@ -29,12 +37,8 @@ mode = "sequential"
 author = 33272860
 
 [[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "Bff Build"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "Run Web"
+task = "shell.exec"
+args = "bff build && bff serve"
 
 [[workflows.workflow]]
 name = "Run for development"
@@ -68,63 +72,6 @@ task = "shell.exec"
 args = "bff devTools --debug"
 
 [[workflows.workflow]]
-name = "Project"
-mode = "parallel"
-author = "agent"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "Test Runner"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "Tools Server"
-
-[[workflows.workflow]]
-name = "Test Runner"
-author = "agent"
-
-[workflows.workflow.metadata]
-agentRequireRestartOnSave = false
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "deno test --allow-write --allow-read infra/bff/friends/__tests__/llm.test.ts"
-
-[[workflows.workflow]]
-name = "Run Web"
-mode = "sequential"
-author = "agent"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "./build/web"
-
-[[workflows.workflow]]
-name = "Bff Build"
-mode = "sequential"
-author = "agent"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "bff build --slow-exit"
-
-[[workflows.workflow]]
-name = "Tools Server"
-author = "agent"
-
-[workflows.workflow.metadata]
-agentRequireRestartOnSave = false
-
-[[workflows.workflow.tasks]]
-task = "packager.installForAll"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "chmod +x ./apps/web/tools.tsx && ./apps/web/tools.tsx"
-waitForPort = 9999
-
-[[workflows.workflow]]
 name = "Restart language server"
 mode = "sequential"
 author = 33272860
@@ -140,7 +87,7 @@ author = 33272860
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd examples/nextjs-sample && npm run dev"
+args = "bff run examples/nextjs-sample"
 
 [[workflows.workflow]]
 name = "Run E2E Tests"
@@ -160,14 +107,6 @@ mode = "sequential"
 task = "shell.exec"
 args = "bff e2e"
 
-[[workflows.workflow]]
-name = "Run contacts cms"
-author = 33417482
-mode = "parallel"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "cd apps/contacts; npm run dev"
 
 [[workflows.workflow]]
 name = "Run internalbf.com"
@@ -176,7 +115,7 @@ mode = "parallel"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "deno run --allow-net --allow-env apps/internalbf/internalbf.ts"
+args = "bff run apps/internalbf"
 
 [[workflows.workflow]]
 name = "Run Collector"
@@ -185,11 +124,35 @@ mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "chmod +x ./apps/collector/collector.ts && ./apps/collector/collector.ts"
+args = "bff run apps/collector"
 
 [[ports]]
 localPort = 3000
 externalPort = 3002
+
+[[ports]]
+localPort = 3001
+externalPort = 6000
+
+[[ports]]
+localPort = 3002
+externalPort = 6800
+
+[[ports]]
+localPort = 3003
+externalPort = 4200
+
+[[ports]]
+localPort = 3004
+externalPort = 5173
+
+[[ports]]
+localPort = 3006
+externalPort = 8000
+
+[[ports]]
+localPort = 3007
+externalPort = 8008
 
 [[ports]]
 localPort = 3011
@@ -198,6 +161,18 @@ externalPort = 3001
 [[ports]]
 localPort = 5000
 externalPort = 5000
+
+[[ports]]
+localPort = 5003
+externalPort = 8080
+
+[[ports]]
+localPort = 5005
+externalPort = 8099
+
+[[ports]]
+localPort = 5007
+externalPort = 8081
 
 [[ports]]
 localPort = 8000

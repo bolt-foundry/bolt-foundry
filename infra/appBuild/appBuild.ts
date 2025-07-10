@@ -1,12 +1,8 @@
 #!/usr/bin/env -S deno run -A
 
 import * as esbuild from "esbuild";
-import { getLogger } from "packages/logger/logger.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
-
-import { denoFileResolver } from "./plugins/denoFileResolver.ts";
-import { contentPathRewriter } from "./plugins/contentPathRewriter.ts";
-import { ipynbPlugin } from "./plugins/ipynbPlugin.ts";
 
 const logger = getLogger(import.meta);
 
@@ -27,10 +23,35 @@ const defaultOptions: esbuild.BuildOptions = {
   publicPath: "/static/build",
   assetNames: "assets/[name]-[hash]",
   plugins: [
-    ipynbPlugin,
     mdx(),
-    contentPathRewriter,
-    denoFileResolver,
+    {
+      name: "import-map-resolver",
+      setup(build) {
+        build.onResolve({ filter: /^@bfmono\// }, (args) => {
+          const relativePath = args.path.replace(/^@bfmono\//, "");
+          const absolutePath =
+            new URL(`../../${relativePath}`, import.meta.url).pathname;
+          return { path: absolutePath, external: false };
+        });
+
+        build.onResolve({ filter: /^@iso$/ }, (_args) => {
+          const absolutePath = new URL(
+            "../../apps/boltFoundry/__generated__/__isograph/iso.ts",
+            import.meta.url,
+          ).pathname;
+          return { path: absolutePath, external: false };
+        });
+
+        build.onResolve({ filter: /^@iso\// }, (args) => {
+          const relativePath = args.path.replace(/^@iso\//, "");
+          const absolutePath = new URL(
+            `../../apps/boltFoundry/__generated__/__isograph/${relativePath}`,
+            import.meta.url,
+          ).pathname;
+          return { path: absolutePath, external: false };
+        });
+      },
+    },
   ],
   treeShaking: true,
 

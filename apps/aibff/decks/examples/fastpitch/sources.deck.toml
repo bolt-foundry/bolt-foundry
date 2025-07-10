@@ -1,0 +1,94 @@
+# Ground truth samples for sports relevance grader
+
+[samples.high-relevance-sample]
+score = 2
+description = "The first three stories are great, especially the Red Sox trade. However the hockey story is less interesting because it's not that big of a story, and the Stanton story is definitely not worthy of inclusion. Despite Stanton's starpower and the Yankees prominence, returning from injury isn't as important as stories that didn't make the cut."
+
+[[samples.high-relevance-sample.messages]]
+role = "user"
+content = """
+"id","source_id","title","content","url","published_at","scraped_at","relevance_score"
+"9","7","What do we really know about Michael Penix Jr.? Answering one big question for seven QBs entering Year 2","We answered key questions about quarterbacks from the 2024 draft class, including Penix, Caleb Williams and Jayden Daniels.","",2025-06-10T22:07:29.000Z,2025-06-10T21:18:23.707Z,"50"
+"10","11","Roman Anthony goes hitless with RBI groundout in MLB debut for the Red Sox","A 21-year-old second-round draft pick who went viral when he hit a 497-foot grand slam in Worcester, Roman Anthony was the top-rated prospect in the minors before his call-up.","https://www.nbcsports.com/mlb/news/roman-anthony-goes-hitless-with-rbi-groundout-in-mlb-debut-for-the-red-sox",2025-06-10T21:08:14.000Z,2025-06-10T21:18:26.972Z,"60"
+"215","7","Red Sox deal All-Star Devers to Giants in stunner","The Giants are sending Jordan Hicks, Kyle Harrison, outfield prospect James Tibbs III and pitching prospect Jose Bello to the Red Sox for Rafael Devers.","https://www.espn.com/mlb/story/_/id/45520142/red-sox-trade-all-star-slugger-rafael-devers-giants",2025-06-16T23:41:52.000Z,2025-06-16T23:48:06.120Z,"50"
+"216","7","Yankees' Stanton activated, set for season debut","The Yankees reinstated designated hitter Giancarlo Stanton from the injured list Monday.","https://www.espn.com/mlb/story/_/id/45524587/sources-yankees-giancarlo-stanton-make-debut-vs-angels",2025-06-16T23:41:50.000Z,2025-06-16T23:48:06.199Z,"50"
+"218","7","Spaun captures first major title, wins U.S. Open","J.J. Spaun, 34, who started Sunday one stroke behind 54-hole leader Sam Burns, survived a terrible start and challenging elements to pull away from the pack and capture his first major title with a two-stroke win in the U.S. Open at Oakmont Country Club.","https://www.espn.com/golf/story/_/id/45520741/jj-spaun-captures-first-major-title-wins-125th-us-open",2025-06-16T23:41:50.000Z,2025-06-16T23:48:06.319Z,"50"
+"""
+
+[[samples.high-relevance-sample.messages]]
+role = "assistant"
+content = """{
+  "stories": [
+    {
+      "articleId": 1,
+      "summary": "Red Sox trade All-Star Rafael Devers to Giants in a surprising move.",
+      "emoji": "⚾"
+    },
+    {
+      "articleId": 2,
+      "summary": "J.J. Spaun wins his first major title at the U.S. Open by two strokes.",
+      "emoji": "🏌️"
+    },
+    {
+      "articleId": 3,
+      "summary": "Pacers face Thunder in Game 5 of the NBA Finals; key player props revealed.",
+      "emoji": "🏀"
+    },
+    {
+      "articleId": 4,
+      "summary": "U.S. hockey names first six players for the 2026 Milan Olympics roster.",
+      "emoji": "🏒"
+    },
+    {
+      "articleId": 5,
+      "summary": "Giancarlo Stanton returns from the injured list for his season debut.",
+      "emoji": "⚾"
+    }
+  ]
+}"""
+
+[samples.mixed-relevance-sample]
+score = -3
+description = "Gymnastics news is probably less interesting and relevant than other available stories, the WNBA story is interesting but not as interesting as the Caitlin Clark story (which didn't make the cut). Also the third and fourth stories are not that interesting (typically return from injury stories are unimportant and should be deprioritized). And the final story about the Transfer Portal doesn't have a lot of relevance."
+
+[[samples.mixed-relevance-sample.messages]]
+role = "user"
+content = """ 
+"32","11","Arizona Cardinals with 5 players taking it easy during mandatory minicamp","The Cardinals began mandatory minicamp with 100% attendance, but a few players will not have a full workload.","https://cardswire.usatoday.com/story/sports/nfl/cardinals/2025/06/10/arizona-cardinals-to-take-it-easy-with-these-players-in-minicamp/84133492007/",2025-06-10T21:30:34.000Z,2025-06-10T21:38:30.207Z,"50"
+"48","11","Southern Conference Pitcher of the Year from Knoxville enters transfer portal","2025 Southern Conference Pitcher of the Year from Knoxville enters the NCAA transfer portal.","https://volswire.usatoday.com/story/sports/college/volunteers/baseball/2025/06/10/southern-conference-baseball-pitcher-of-the-year-brady-frederick-enters-transfer-portal-etsu/84132290007/",2025-06-10T21:21:12.000Z,2025-06-10T21:38:32.338Z,"50"  
+"36","11","Simone Biles apologizes to Riley Gaines, argues for 'competitive equity and inclusivity' in women's sports","Simone Biles called Riley Gaines a ""sore loser"" and a ""bully"" Friday.","https://sports.yahoo.com/olympics/article/simone-biles-apologizes-to-riley-gaines-argues-for-competitive-equity-and-inclusivity-in-womens-sports-172622624.html",2025-06-10T21:26:22.000Z,2025-06-10T21:38:30.802Z,"50"
+"38","11","Boulter makes winning start at 'special' Queen's","British number one Katie Boulter makes a winning start to her singles campaign at a Queen's tournament she had always ""dreamt"" of playing at.","https://www.bbc.com/sport/tennis/articles/cd904yvwwz1o?xtor=AL-72-%5Bpartner%5D-%5Byahoo.north.america%5D-%5Bheadline%5D-%5Bsport%5D-%5Bbizdev%5D-%5Bisapi%5D",2025-06-10T19:31:25.000Z,2025-06-10T21:38:31.040Z,"50"
+"42","11","Chicago Sky React to Major Angel Reese Announcement","The Chicago Sky had a tough weekend.  After suffering a 79–52 loss to the Indiana Fever and falling to 2–5 on the season, the team received even more difficult news on Sunday: veteran guard Courtney Vandersloot has torn her ACL and will miss the remainder of the season.  Now, on Tuesday, the Sky are set to face the defending WNBA champion and currently undefeated New York Liberty for the second time this season.","https://athlonsports.com/wnba/chicago-sky/chicago-sky-react-to-major-angel-reese-announcement",2025-06-10T21:23:59.000Z,2025-06-10T21:38:31.512Z,"50"
+"""
+
+[[samples.mixed-relevance-sample.messages]]
+role = "assistant"
+content = """{
+  "stories": [
+    {
+      "articleId": 36,
+      "summary": "Simone Biles apologizes to Riley Gaines in women's sports controversy.",
+      "emoji": "🤸"
+    },
+    {
+      "articleId": 42,
+      "summary": "Chicago Sky's Courtney Vandersloot tears ACL, out for season.",
+      "emoji": "🏀"
+    },
+    {
+      "articleId": 32,
+      "summary": "Cardinals ease workload for 5 players during mandatory minicamp.",
+      "emoji": "🏈"
+    },
+    {
+      "articleId": 38,
+      "summary": "Katie Boulter wins opening match at Queen's tennis tournament.",
+      "emoji": "🎾"
+    },
+    {
+      "articleId": 48,
+      "summary": "Southern Conference Pitcher of Year enters transfer portal.",
+      "emoji": "⚾"
+    }
+  ]
+}"""

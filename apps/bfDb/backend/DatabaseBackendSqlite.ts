@@ -1,12 +1,14 @@
 import { DatabaseSync, type StatementSync } from "sqlite";
-import { getLogger } from "packages/logger/logger.ts";
-import { BfErrorDb } from "apps/bfDb/classes/BfErrorDb.ts";
-import type { DatabaseBackend } from "apps/bfDb/backend/DatabaseBackend.ts";
-import { type BfGid, toBfGid } from "apps/bfDb/classes/BfNodeIds.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import { BfErrorDb } from "@bfmono/apps/bfDb/classes/BfErrorDb.ts";
+import type { DatabaseBackend } from "@bfmono/apps/bfDb/backend/DatabaseBackend.ts";
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
-import type { BfMetadataNode } from "apps/bfDb/coreModels/BfNode.ts";
-import type { BfMetadataEdge } from "apps/bfDb/coreModels/BfEdge.ts";
-import type { DbItem, Props } from "apps/bfDb/bfDb.ts";
+import type {
+  BfEdgeMetadata,
+  BfNodeMetadata,
+} from "@bfmono/apps/bfDb/classes/BfNode.ts";
+import type { DbItem, Props } from "@bfmono/apps/bfDb/bfDb.ts";
+import type { BfGid } from "@bfmono/lib/types.ts";
 
 const logger = getLogger(import.meta);
 
@@ -25,7 +27,7 @@ export const SQLITE_CONSTANTS = {
   SQLITE_CHANGESET_ABORT: 2,
 };
 
-type BfDbMetadata = BfMetadataNode & Partial<BfMetadataEdge>;
+type BfDbMetadata = BfNodeMetadata & Partial<BfEdgeMetadata>;
 
 type Row<
   TProps extends Props = Props,
@@ -86,11 +88,11 @@ export class DatabaseBackendSqlite implements DatabaseBackend {
 
   private rowToMetadata(row: Row): BfDbMetadata {
     return {
-      bfGid: toBfGid(row.bf_gid),
-      bfOid: toBfGid(row.bf_oid),
-      bfCid: toBfGid(row.bf_cid),
-      bfSid: toBfGid(row.bf_sid || ""),
-      bfTid: toBfGid(row.bf_tid || ""),
+      bfGid: row.bf_gid as BfGid,
+      bfOid: row.bf_oid as BfGid,
+      bfCid: row.bf_cid as BfGid,
+      bfSid: row.bf_sid || "" as BfGid,
+      bfTid: row.bf_tid || "" as BfGid,
       bfTClassName: row.bf_t_class_name || "",
       bfSClassName: row.bf_s_class_name || "",
       className: row.class_name,
@@ -183,7 +185,7 @@ export class DatabaseBackendSqlite implements DatabaseBackend {
       const placeholders = bfGids.map(() => "?").join(",");
 
       let query: string;
-      let params: unknown[];
+      let params: Array<unknown>;
 
       if (className) {
         query =
@@ -212,7 +214,7 @@ export class DatabaseBackendSqlite implements DatabaseBackend {
 
   async putItem<TProps extends Props = Props>(
     itemProps: TProps,
-    itemMetadata: BfMetadataNode | BfMetadataEdge,
+    itemMetadata: BfNodeMetadata | BfEdgeMetadata,
     sortValue = Date.now(),
   ): Promise<void> {
     logger.trace({ itemProps, itemMetadata });
@@ -376,7 +378,7 @@ export class DatabaseBackendSqlite implements DatabaseBackend {
   private static readonly defaultClause = "1=1";
 
   queryItems<TProps extends Props = Props>(
-    metadataToQuery: Partial<BfMetadataNode | BfMetadataEdge>,
+    metadataToQuery: Partial<BfNodeMetadata | BfEdgeMetadata>,
     propsToQuery: Partial<TProps> = {},
     bfGids?: Array<string>,
     orderDirection: "ASC" | "DESC" = "ASC",
@@ -395,7 +397,7 @@ export class DatabaseBackendSqlite implements DatabaseBackend {
   }
 
   queryItemsWithSizeLimit<TProps extends Props = Props>(
-    metadataToQuery: Partial<BfMetadataNode | BfMetadataEdge>,
+    metadataToQuery: Partial<BfNodeMetadata | BfEdgeMetadata>,
     propsToQuery: Partial<TProps> = {},
     bfGids?: Array<string>,
     orderDirection: "ASC" | "DESC" = "ASC",
@@ -474,10 +476,10 @@ export class DatabaseBackendSqlite implements DatabaseBackend {
       batchSize,
     });
 
-    const metadataConditions: string[] = [];
-    const propsConditions: string[] = [];
-    const specificIdConditions: string[] = [];
-    const variables: unknown[] = [];
+    const metadataConditions: Array<string> = [];
+    const propsConditions: Array<string> = [];
+    const specificIdConditions: Array<string> = [];
+    const variables: Array<unknown> = [];
 
     // Process metadata conditions
     for (const [originalKey, value] of Object.entries(metadataToQuery)) {

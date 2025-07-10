@@ -1,139 +1,103 @@
-import * as React from "react";
+import type * as React from "react";
 import { createPortal } from "react-dom";
-import { classnames } from "lib/classnames.ts";
-import { BfDsButton } from "apps/bfDs/components/BfDsButton.tsx";
-import { useBfDs } from "apps/bfDs/hooks/useBfDs.tsx";
+import { useEffect, useState } from "react";
+import { BfDsCallout } from "./BfDsCallout.tsx";
+import type { BfDsCalloutVariant } from "./BfDsCallout.tsx";
 
-const { useState, useEffect } = React;
+export const TOAST_TRANSITION_DURATION = 300;
 
-export const TRANSITION_DURATION = 500;
-
-type ToastProps = {
-  closeCallback?: () => void;
-  shouldShow?: boolean;
+export type BfDsToastItem = {
+  id: string;
+  message: React.ReactNode;
+  variant?: BfDsCalloutVariant;
+  details?: string;
   timeout?: number;
-  title?: string;
+  onDismiss?: () => void;
 };
 
-export function BfDsToast({
-  children,
-  closeCallback,
-  shouldShow = true,
-  timeout,
-  title,
-}: React.PropsWithChildren<ToastProps>) {
-  const [show, setShow] = useState(false);
-  const [inDOM, setInDOM] = useState(false);
-  const [progress, setProgress] = useState(100);
-  let domTimer: number;
+type BfDsToastProps = {
+  toast: BfDsToastItem;
+  onRemove: (id: string) => void;
+  index: number;
+};
 
-  function removeToast() {
-    setShow(false);
-    domTimer = setTimeout(() => {
-      setInDOM(false);
-      if (closeCallback) {
-        closeCallback();
-      }
-    }, TRANSITION_DURATION);
-  }
+function BfDsToastComponent({ toast, onRemove, index }: BfDsToastProps) {
+  const [isVisible, setIsVisible] = useState(false);
+  const [shouldRender, setShouldRender] = useState(true);
 
   useEffect(() => {
-    let visibilityTimer: number;
-    let progressInterval: number;
-
-    function clearTimers() {
-      clearTimeout(visibilityTimer);
-      clearTimeout(domTimer);
-      clearInterval(progressInterval);
-    }
-
-    if (shouldShow) {
-      clearTimers();
-      setInDOM(true);
-      setProgress(100);
-      visibilityTimer = setTimeout(() => setShow(true), 10);
-
-      if (timeout && timeout > 0) {
-        progressInterval = setInterval(() => {
-          setProgress((prevProgress: number) => {
-            const decrement = (100 * 10) / (timeout + TRANSITION_DURATION);
-            return Math.max(prevProgress - decrement, 0);
-          });
-        }, 10);
-
-        domTimer = setTimeout(() => {
-          removeToast();
-        }, timeout);
-      }
-    } else {
-      removeToast();
-    }
+    // Show toast after a brief delay to allow for entrance animation
+    const showTimer = setTimeout(() => setIsVisible(true), 10);
 
     return () => {
-      clearTimers();
+      clearTimeout(showTimer);
     };
-  }, [shouldShow, timeout]);
+  }, []);
 
-  const toastClasses = classnames([
-    "toast",
-    { show },
-  ]);
+  const handleDismiss = () => {
+    setIsVisible(false);
+    // Remove from DOM after animation completes
+    setTimeout(() => {
+      setShouldRender(false);
+      onRemove(toast.id);
+      toast.onDismiss?.();
+    }, TOAST_TRANSITION_DURATION);
+  };
 
-  return inDOM
-    ? createPortal(
-      <div className={toastClasses}>
-        {title && (
-          <div className="toast-title">
-            {title}
-          </div>
-        )}
-        <div className="close-toast">
-          <BfDsButton
-            iconLeft="cross"
-            kind="outline"
-            size="small"
-            onClick={removeToast}
-          />
-        </div>
-        {children}
-        {timeout && timeout > 0 && (
-          <div className="toast-progress" style={{ width: `${progress}%` }}>
-          </div>
-        )}
-      </div>,
-      document.getElementById("toast-root") as Element,
-    )
-    : null;
+  if (!shouldRender) return null;
+
+  const toastClasses = [
+    "bfds-toast",
+    isVisible ? "bfds-toast--visible" : "bfds-toast--hidden",
+  ].join(" ");
+
+  return (
+    <div
+      className={toastClasses}
+      style={{
+        "--toast-index": index,
+        "--toast-offset": `${index * 80}px`,
+      } as React.CSSProperties}
+    >
+      <BfDsCallout
+        variant={toast.variant}
+        details={toast.details}
+        visible
+        onDismiss={handleDismiss}
+        autoDismiss={toast.timeout || 0} // Pass timeout to callout for countdown display
+      >
+        {toast.message}
+      </BfDsCallout>
+    </div>
+  );
 }
 
-export function Example() {
-  const { showToast } = useBfDs();
-  const [toastIncrement, setToastIncrement] = React.useState<number>(0);
-  return (
-    <div className="ui-group">
-      {/* Plain toast */}
-      <BfDsButton text="Toast 1" onClick={() => showToast("Toasty")} />
-      {/* Self closing toast */}
-      <BfDsButton
-        text="Toast 2"
-        subtext="Self closing"
-        onClick={() => showToast("Toasty 2", { timeout: 4000 })}
-      />
-      {/* TODO Toast with clickable progress */}
-      <BfDsButton
-        text="Toast 3"
-        subtext="Click x20"
-        onClick={() => {
-          setToastIncrement(toastIncrement + 20);
-          showToast(`Toasty 3 - ${toastIncrement}%`, {
-            id: "george",
-            shouldShow: toastIncrement < 100,
-            closeCallback: () => {
-              setToastIncrement(0);
-            },
-          });
-        }}
-      />
-    </div>
+type BfDsToastContainerProps = {
+  toasts: Array<BfDsToastItem>;
+  onRemove: (id: string) => void;
+};
+
+export function BfDsToastContainer(
+  { toasts, onRemove }: BfDsToastContainerProps,
+) {
+  const toastRoot = document.getElementById("toast-root");
+
+  if (!toastRoot) {
+    // Toast root element not found - this is expected during SSR or if toast-root div is missing
+    return null;
+  }
+
+  return createPortal(
+    <div className="bfds-toast-container">
+      {toasts.map((toast, index) => (
+        <BfDsToastComponent
+          key={toast.id}
+          toast={toast}
+          onRemove={onRemove}
+          index={index}
+        />
+      ))}
+    </div>,
+    toastRoot,
   );
 }

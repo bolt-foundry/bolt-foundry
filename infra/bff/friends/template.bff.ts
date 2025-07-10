@@ -1,8 +1,8 @@
 #! /usr/bin/env -S bff
 
 // ./infra/bff/friends/template.bff.ts
-import { register } from "infra/bff/bff.ts";
-import { getLogger } from "packages/logger/logger.ts";
+import { register } from "@bfmono/infra/bff/bff.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import * as path from "@std/path";
 
 const logger = getLogger(import.meta);
@@ -33,7 +33,7 @@ async function findTemplateFile(
 }
 
 // 1) Export the command's main logic so tests can import it.
-export async function templateCommand(args: string[]): Promise<number> {
+export async function templateCommand(args: Array<string>): Promise<number> {
   if (args.length < 1) {
     logger.error("Usage: bff template <filename>");
     return 1;

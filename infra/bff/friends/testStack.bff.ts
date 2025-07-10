@@ -1,15 +1,15 @@
 #! /usr/bin/env -S bff
 
-import { register } from "infra/bff/bff.ts";
-import { getLogger } from "packages/logger/logger.ts";
+import { register } from "@bfmono/infra/bff/bff.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import {
   runShellCommand,
   runShellCommandWithOutput,
-} from "infra/bff/shellBase.ts";
+} from "@bfmono/infra/bff/shellBase.ts";
 
 const logger = getLogger(import.meta);
 
-async function getCurrentStack(): Promise<string[]> {
+async function getCurrentStack(): Promise<Array<string>> {
   const { stdout } = await runShellCommandWithOutput(
     [
       "sl",

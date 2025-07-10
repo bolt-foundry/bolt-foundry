@@ -1,12 +1,12 @@
 #! /usr/bin/env -S deno run --allow-net=localhost,0.0.0.0,127.0.0.1 --allow-env --allow-read --allow-run=sl,op
 
-import { getLogger } from "packages/logger/logger.ts";
-import { toolRoutes } from "apps/boltFoundry/routes.ts";
-import { addTools } from "infra/bff/tools.ts";
-import type { Handler } from "apps/web/web.tsx";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import { toolRoutes } from "@bfmono/apps/boltFoundry/routes.ts";
+import { addTools } from "@bfmono/infra/bff/tools.ts";
+import type { Handler } from "@bfmono/apps/web/web.tsx";
 import { renderToString } from "react-dom/server";
 import * as React from "react";
-import { matchRouteWithParams } from "apps/boltFoundry/contexts/RouterContext.tsx";
+import { matchRouteWithParams } from "@bfmono/apps/boltFoundry/contexts/RouterContext.tsx";
 
 const logger = getLogger(import.meta);
 

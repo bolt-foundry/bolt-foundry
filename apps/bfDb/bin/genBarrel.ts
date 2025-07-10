@@ -1,7 +1,7 @@
 #!/usr/bin/env -S deno run --allow-read --allow-write --allow-env
 
 import { relative } from "@std/path";
-import { getLogger } from "packages/logger/logger.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
@@ -25,12 +25,32 @@ const DEFAULT_BANNER =
 
 /** Shared code‑gen helper – renders the barrel file and writes it. */
 async function generateBarrel(cfg: BarrelConfig) {
-  const exportLines: string[] = [];
+  const exportLines: Array<string> = [];
+
+  // Handle GraphQL interfaces barrel file specially
+  const isInterfacesBarrel = cfg.out.pathname.includes("interfacesList.ts");
 
   for await (const entry of Deno.readDir(cfg.dir)) {
     if (!entry.isFile || !entry.name.endsWith(".ts")) continue;
     if (entry.name.startsWith("_")) continue; // private helpers
     if (entry.name === "__generated__") continue; // skip gen dir itself
+
+    // For the interfaces barrel, only include files with @GraphQLInterface decorator
+    if (isInterfacesBarrel) {
+      const filePath = new URL(entry.name, cfg.dir);
+      const content = await Deno.readTextFile(filePath);
+
+      // Check for @GraphQLInterface decorator in the file
+      // This works with both @GraphQLInterface() and @GraphQLInterface({...})
+      const hasDecorator = content.includes("@GraphQLInterface");
+
+      if (!hasDecorator) {
+        continue; // Skip files without the decorator
+      }
+
+      logger.debug(`Found GraphQL interface in ${entry.name}`);
+    }
+
     exportLines.push(`export * from \"${cfg.importPath(entry.name)}\";`);
   }
 
@@ -53,25 +73,25 @@ async function generateBarrel(cfg: BarrelConfig) {
 /* Barrel definitions                                                          */
 /* -------------------------------------------------------------------------- */
 
-const barrels: BarrelConfig[] = [
+const barrels: Array<BarrelConfig> = [
   // 1️⃣  Models
   {
-    dir: new URL("../models/", import.meta.url),
+    dir: new URL("../nodeTypes/", import.meta.url),
     out: new URL(
-      "../models/__generated__/modelClassesList.ts",
+      "../models/__generated__/nodeTypesList.ts",
       import.meta.url,
     ),
-    importPath: (f) => `apps/bfDb/models/${f}`,
+    importPath: (f) => `apps/bfDb/nodeTypes/${f}`,
   },
-  // 2️⃣  Core Models
-  {
-    dir: new URL("../coreModels/", import.meta.url),
-    out: new URL(
-      "../coreModels/__generated__/coreModelClassesList.ts",
-      import.meta.url,
-    ),
-    importPath: (f) => `apps/bfDb/coreModels/${f}`,
-  },
+  // // 2️⃣  Core Models
+  // {
+  //   dir: new URL("../coreModels/", import.meta.url),
+  //   out: new URL(
+  //     "../coreModels/__generated__/coreModelClassesList.ts",
+  //     import.meta.url,
+  //   ),
+  //   importPath: (f) => `apps/bfDb/coreModels/${f}`,
+  // },
   // 3️⃣  Top‑level classes (utility / abstract classes)
   {
     dir: new URL("../classes/", import.meta.url),
@@ -86,6 +106,24 @@ const barrels: BarrelConfig[] = [
       import.meta.url,
     ),
     importPath: (f) => `apps/bfDb/graphql/roots/${f}`,
+  },
+  // 5️⃣  GraphQL interfaces - scan classes directory for @GraphQLInterface decorators
+  {
+    dir: new URL("../classes/", import.meta.url),
+    out: new URL(
+      "../graphql/__generated__/interfacesList.ts",
+      import.meta.url,
+    ),
+    importPath: (f) => `apps/bfDb/classes/${f}`,
+    banner: `/**
+ * GraphQL Interface Barrel File
+ *
+ * @generated
+ * This file is auto-generated. Do not edit directly.
+ *
+ * Contains exports of all classes decorated with @GraphQLInterface.
+ * These classes will be registered as GraphQL interfaces in the schema.
+ */`,
   },
 ];
 

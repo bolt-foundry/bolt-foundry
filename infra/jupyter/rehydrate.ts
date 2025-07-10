@@ -1,6 +1,6 @@
 import * as React from "react";
 import { hydrateRoot } from "react-dom/client";
-import { getLogger } from "packages/logger/logger.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 type JupyterProps = unknown;

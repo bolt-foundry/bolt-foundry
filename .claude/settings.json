@@ -1,0 +1,61 @@
+{
+  "env": {
+    "BASH_DEFAULT_TIMEOUT_MS": "300000",
+    "BASH_MAX_TIMEOUT_MS": "600000"
+  },
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(mkdir:*)",
+      "Bash(chmod:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(**/*.test.ts)",
+      "WebFetch(domain:jsr.io)",
+      "WebFetch(domain:npmjs.com)",
+      "WebFetch(domain:developer.mozilla.org)",
+      "WebFetch(domain:deno.com)",
+      "WebFetch(domain:docs.deno.com)",
+      "WebFetch(domain:docs.github.com)",
+      "WebFetch(domain:docs.github.com)",
+      "Bash(rg:*)"
+    ],
+    "deny": [
+      "Bash(git:*)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bft safety"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bft blockGeneratedFiles"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|MultiEdit|Write|Update",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/post-update-hook.ts"
+          }
+        ]
+      }
+    ]
+  }
+}

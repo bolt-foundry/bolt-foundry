@@ -1,7 +1,7 @@
-import type { Handler } from "apps/web/web.tsx";
+import type { Handler } from "@bfmono/apps/web/web.tsx";
 import { registerAppRoutes } from "./appRoutes.ts";
 import { registerIsographRoutes } from "./isographRoutes.ts";
-import { graphQLHandler } from "apps/bfDb/graphql/graphqlServer.ts";
+import { graphQLHandler } from "@bfmono/apps/bfDb/graphql/graphqlServer.ts";
 import { handleAssemblyAI, handleLogout } from "../handlers/routeHandlers.ts";
 import { serveDir } from "@std/http";
 
@@ -46,37 +46,6 @@ function registerSpecialRoutes(routes: Map<string, Handler>): void {
 
   // Simple logout route that clears cookies
   routes.set("/logout", handleLogout);
-
-  // Forward requests to contacts-cms to local handler
-  routes.set("/contacts-cms", async (req) => {
-    const url = "https://bf-contacts.replit.app/api/contacts";
-    const headers = new Headers(req.headers);
-
-    // Read the body first
-    const body = req.method !== "GET" ? await req.json() : undefined;
-
-    // Forward the request to the external API
-    const response = await fetch(url, {
-      method: req.method,
-      headers: headers,
-      body: body ? JSON.stringify(body) : undefined,
-    });
-
-    const responseData = await response.json();
-
-    return new Response(
-      JSON.stringify({
-        success: responseData.success !== false,
-        message: responseData.message || null,
-      }),
-      {
-        status: response.status,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      },
-    );
-  });
 }
 
 /**

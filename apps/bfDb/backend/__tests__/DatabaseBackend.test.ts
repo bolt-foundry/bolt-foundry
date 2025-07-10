@@ -1,13 +1,13 @@
-// Tests for database backends and bfDb functionality
+#! /usr/bin/env -S bff test
+
 import { assertEquals } from "@std/assert";
 import { afterEach } from "@std/testing/bdd";
-import { getLogger } from "packages/logger/logger.ts";
-import { toBfGid } from "apps/bfDb/classes/BfNodeIds.ts";
-import { DatabaseBackendNeon } from "apps/bfDb/backend/DatabaseBackendNeon.ts";
-import { DatabaseBackendPg } from "apps/bfDb/backend/DatabaseBackendPg.ts";
-import type { DatabaseBackend } from "apps/bfDb/backend/DatabaseBackend.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import { DatabaseBackendNeon } from "@bfmono/apps/bfDb/backend/DatabaseBackendNeon.ts";
+import { DatabaseBackendPg } from "@bfmono/apps/bfDb/backend/DatabaseBackendPg.ts";
+import type { DatabaseBackend } from "@bfmono/apps/bfDb/backend/DatabaseBackend.ts";
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
-import { DatabaseBackendSqlite } from "apps/bfDb/backend/DatabaseBackendSqlite.ts";
+import { DatabaseBackendSqlite } from "@bfmono/apps/bfDb/backend/DatabaseBackendSqlite.ts";
 import {
   bfCloseConnection,
   bfDeleteItem,
@@ -15,9 +15,13 @@ import {
   bfPutItem,
   bfQueryItems,
   type Props,
-} from "apps/bfDb/bfDb.ts";
-import { type BfMetadataNode, BfNode } from "apps/bfDb/coreModels/BfNode.ts";
-import { CurrentViewer } from "apps/bfDb/classes/CurrentViewer.ts";
+} from "@bfmono/apps/bfDb/bfDb.ts";
+import {
+  BfNode,
+  type BfNodeMetadata,
+} from "@bfmono/apps/bfDb/classes/BfNode.ts";
+import { CurrentViewer } from "@bfmono/apps/bfDb/classes/CurrentViewer.ts";
+import type { BfGid } from "@bfmono/lib/types.ts";
 
 const logger = getLogger(import.meta);
 
@@ -89,9 +93,9 @@ async function testDatabaseOperations(
   testRunId: string,
 ) {
   // Create a unique IDs for this test run
-  const testBfOid = toBfGid(`test-org-${testRunId}`);
-  const testBfGid = toBfGid(`test-item-${testRunId}`);
-  const testBfCid = toBfGid(`test-collection-${testRunId}`);
+  const testBfOid = `test-org-${testRunId}` as BfGid;
+  const testBfGid = `test-item-${testRunId}` as BfGid;
+  const testBfCid = `test-collection-${testRunId}` as BfGid;
 
   const testProps: TestProps = {
     name: "Test Item",
@@ -188,10 +192,10 @@ Deno.test("bfDb - basic CRUD operations", async () => {
   try {
     // Create a test node
     const props = { name: "Test Node", value: 42 };
-    const metadata: BfMetadataNode = {
-      bfGid: toBfGid("test-node-1"),
-      bfOid: toBfGid("test-org-1"),
-      bfCid: toBfGid("creator-1"),
+    const metadata: BfNodeMetadata = {
+      bfGid: "test-node-1" as BfGid,
+      bfOid: "test-org-1" as BfGid,
+      bfCid: "creator-1" as BfGid,
       className: "TestNode",
       createdAt: new Date(),
       lastUpdated: new Date(),
@@ -223,9 +227,9 @@ Deno.test("bfDb - query items", async () => {
       {
         props: { name: "Node 1", type: "test", priority: 1 },
         metadata: {
-          bfGid: toBfGid("test-query-node-1"),
-          bfOid: toBfGid("test-org-1"),
-          bfCid: toBfGid("creator-1"),
+          bfGid: "test-query-node-1" as BfGid,
+          bfOid: "test-org-1" as BfGid,
+          bfCid: "creator-1" as BfGid,
           className: "TestQueryNode", // Make sure this matches the expected column name
           createdAt: new Date(),
           lastUpdated: new Date(),
@@ -235,9 +239,9 @@ Deno.test("bfDb - query items", async () => {
       {
         props: { name: "Node 2", type: "test", priority: 2 },
         metadata: {
-          bfGid: toBfGid("test-query-node-2"),
-          bfOid: toBfGid("test-org-1"),
-          bfCid: toBfGid("creator-1"),
+          bfGid: "test-query-node-2" as BfGid,
+          bfOid: "test-org-1" as BfGid,
+          bfCid: "creator-1" as BfGid,
           className: "TestQueryNode",
           createdAt: new Date(),
           lastUpdated: new Date(),
@@ -326,6 +330,8 @@ Deno.test("bfDb - query items", async () => {
 });
 
 Deno.test("bfDb - metadata handling", async () => {
+  const nodesToCleanup: Array<string> = [];
+
   try {
     type TestMetadataNodeProps = {
       name: string;
@@ -346,6 +352,8 @@ Deno.test("bfDb - metadata handling", async () => {
       { name: "Metadata Test" },
     );
     const bfGid = node.metadata.bfGid;
+    const bfOid = node.metadata.bfOid;
+    nodesToCleanup.push(bfGid);
 
     // Verify metadata properties
     assertEquals(node.metadata.className, "TestMetadataNode");
@@ -369,6 +377,9 @@ Deno.test("bfDb - metadata handling", async () => {
       true,
       "lastUpdated should be newer after update",
     );
+
+    // Clean up the created node
+    await bfDeleteItem(bfOid, bfGid);
   } finally {
     // Ensure connection is closed even if test fails
     await bfCloseConnection();
@@ -380,25 +391,38 @@ Deno.test("Database backends compatibility test", async () => {
   logger.info("Testing database backends compatibility");
   const hasDatabaseUrl = Boolean(getConfigurationVariable("DATABASE_URL"));
 
-  if (hasDatabaseUrl) {
-    // Test Neon backend if DATABASE_URL is available
-    logger.info("Testing Neon backend");
-    Deno.env.set("DB_BACKEND_TYPE", "neon");
-    const neonBackend = new DatabaseBackendNeon();
-    await runBackendTests(neonBackend, "Neon");
+  try {
+    if (hasDatabaseUrl) {
+      // Test Neon backend if DATABASE_URL is available
+      logger.info("Testing Neon backend");
+      Deno.env.set("DB_BACKEND_TYPE", "neon");
+      const neonBackend = new DatabaseBackendNeon();
+      await runBackendTests(neonBackend, "Neon");
 
-    // Test PostgreSQL backend if DATABASE_URL is available
-    logger.info("Testing PostgreSQL backend");
-    Deno.env.set("DB_BACKEND_TYPE", "pg");
-    const pgBackend = new DatabaseBackendPg();
-    await runBackendTests(pgBackend, "PostgreSQL");
-  } else {
-    logger.info("Skipping Neon and PostgreSQL tests - DATABASE_URL not set");
+      // Ensure backend is fully closed before moving to next test
+      await bfCloseConnection();
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // Test PostgreSQL backend if DATABASE_URL is available
+      logger.info("Testing PostgreSQL backend");
+      Deno.env.set("DB_BACKEND_TYPE", "pg");
+      const pgBackend = new DatabaseBackendPg();
+      await runBackendTests(pgBackend, "PostgreSQL");
+
+      // Ensure backend is fully closed before moving to next test
+      await bfCloseConnection();
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    } else {
+      logger.info("Skipping Neon and PostgreSQL tests - DATABASE_URL not set");
+    }
+
+    // Always test SQLite backend as it doesn't require external dependencies
+    logger.info("Testing SQLite backend");
+    Deno.env.set("DB_BACKEND_TYPE", "sqlite");
+    const sqliteBackend = new DatabaseBackendSqlite();
+    await runBackendTests(sqliteBackend, "SQLite");
+  } finally {
+    // Final cleanup
+    await bfCloseConnection();
   }
-
-  // Always test SQLite backend as it doesn't require external dependencies
-  logger.info("Testing SQLite backend");
-  Deno.env.set("DB_BACKEND_TYPE", "sqlite");
-  const sqliteBackend = new DatabaseBackendSqlite();
-  await runBackendTests(sqliteBackend, "SQLite");
 });

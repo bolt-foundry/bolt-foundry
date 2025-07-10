@@ -2,84 +2,10 @@ import type {IsographEntrypoint, NormalizationAst, RefetchQueryNormalizationArti
 import {Query__EntrypointLogin__param} from './param_type.ts';
 import {Query__EntrypointLogin__output_type} from './output_type.ts';
 import readerResolver from './resolver_reader.ts';
+import queryText from './query_text.ts';
+import normalizationAst from './normalization_ast.ts';
 const nestedRefetchQueries: RefetchQueryNormalizationArtifactWrapper[] = [];
 
-const queryText = 'query EntrypointLogin  {\
-  currentViewer {\
-    __typename,\
-    id,\
-    __typename,\
-    ... on CurrentViewerLoggedIn {\
-      id,\
-      __typename,\
-    },\
-    ... on CurrentViewerLoggedOut {\
-      id,\
-      __typename,\
-    },\
-  },\
-}';
-
-const normalizationAst: NormalizationAst = {
-  kind: "NormalizationAst",
-  selections: [
-    {
-      kind: "Linked",
-      fieldName: "currentViewer",
-      arguments: null,
-      concreteType: null,
-      selections: [
-        {
-          kind: "Scalar",
-          fieldName: "__typename",
-          arguments: null,
-        },
-        {
-          kind: "Scalar",
-          fieldName: "id",
-          arguments: null,
-        },
-        {
-          kind: "Scalar",
-          fieldName: "__typename",
-          arguments: null,
-        },
-        {
-          kind: "InlineFragment",
-          type: "CurrentViewerLoggedIn",
-          selections: [
-            {
-              kind: "Scalar",
-              fieldName: "id",
-              arguments: null,
-            },
-            {
-              kind: "Scalar",
-              fieldName: "__typename",
-              arguments: null,
-            },
-          ],
-        },
-        {
-          kind: "InlineFragment",
-          type: "CurrentViewerLoggedOut",
-          selections: [
-            {
-              kind: "Scalar",
-              fieldName: "id",
-              arguments: null,
-            },
-            {
-              kind: "Scalar",
-              fieldName: "__typename",
-              arguments: null,
-            },
-          ],
-        },
-      ],
-    },
-  ],
-};
 const artifact: IsographEntrypoint<
   Query__EntrypointLogin__param,
   Query__EntrypointLogin__output_type,

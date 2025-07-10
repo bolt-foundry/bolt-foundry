@@ -1,7 +1,7 @@
 #! /usr/bin/env -S bff
 
 // File: infra/bff/githubLogger.ts
-import { getLogger } from "packages/logger/logger.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 export interface GithubAnnotationMeta {
   file?: string;
@@ -9,7 +9,11 @@ export interface GithubAnnotationMeta {
   col?: number;
 }
 
-function annotationLine(
+function escapeGithubData(str: string): string {
+  return str.replace(/%/g, "%25").replace(/\r/g, "%0D").replace(/\n/g, "%0A");
+}
+
+export function annotationLine(
   type: "error" | "warning" | "notice",
   message: string,
   meta?: GithubAnnotationMeta,
@@ -25,7 +29,7 @@ function annotationLine(
   if (typeof col === "number") {
     lineOut += `,col=${col}`;
   }
-  lineOut += `::${message}`;
+  lineOut += `::${escapeGithubData(message)}`;
   return lineOut;
 }
 

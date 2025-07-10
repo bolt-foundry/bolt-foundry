@@ -1,9 +1,11 @@
-import type { BfGid } from "apps/bfDb/classes/BfNodeIds.ts";
-import type { BfMetadataNode } from "apps/bfDb/coreModels/BfNode.ts";
-import type { BfMetadataEdge } from "apps/bfDb/coreModels/BfEdge.ts";
-import type { DbItem, Props } from "apps/bfDb/bfDb.ts";
+import type { BfGid } from "@bfmono/lib/types.ts";
+import type {
+  BfEdgeMetadata,
+  BfNodeMetadata,
+} from "@bfmono/apps/bfDb/classes/BfNode.ts";
+import type { DbItem, Props } from "@bfmono/apps/bfDb/bfDb.ts";
 
-export type BfDbMetadata = BfMetadataNode & Partial<BfMetadataEdge>;
+export type BfDbMetadata = BfNodeMetadata & Partial<BfEdgeMetadata>;
 
 export interface DatabaseBackend {
   initialize(): Promise<void>;
@@ -21,18 +23,18 @@ export interface DatabaseBackend {
   ): Promise<Array<DbItem<TProps>>>;
   putItem<TProps extends Props = Props>(
     itemProps: TProps,
-    itemMetadata: BfMetadataNode | BfMetadataEdge,
+    itemMetadata: BfNodeMetadata | BfEdgeMetadata,
     sortValue?: number,
   ): Promise<void>;
   queryItems<TProps extends Props = Props>(
-    metadataToQuery: Partial<BfMetadataNode | BfMetadataEdge>,
+    metadataToQuery: Partial<BfNodeMetadata | BfEdgeMetadata>,
     propsToQuery?: Partial<TProps>,
     bfGids?: Array<string>,
     orderDirection?: "ASC" | "DESC",
     orderBy?: string,
   ): Promise<Array<DbItem<TProps>>>;
   queryItemsWithSizeLimit<TProps extends Props = Props>(
-    metadataToQuery: Partial<BfMetadataNode | BfMetadataEdge>,
+    metadataToQuery: Partial<BfNodeMetadata | BfEdgeMetadata>,
     propsToQuery?: Partial<TProps>,
     bfGids?: Array<string>,
     orderDirection?: "ASC" | "DESC",

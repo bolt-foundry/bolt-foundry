@@ -1,0 +1,34 @@
+{
+  "stories": [
+    {
+      "articleId": 1,
+      "summary": "Red Sox trade All-Star Rafael Devers to Giants in a surprising move.",
+      "relevanceRating":3,
+      "emoji": "⚾"
+    },
+    {
+      "articleId": 2,
+      "summary": "J.J. Spaun wins his first major title at the U.S. Open by two strokes.",
+      "relevanceRating:3,
+      "emoji": "🏌️"
+    },
+    {
+      "articleId": 3,
+      "summary": "Pacers face Thunder in Game 5 of the NBA Finals; key player props revealed.",
+      "relevanceRating":3,
+      "emoji": "🏀"
+    },
+    {
+      "articleId": 4,
+      "summary": "U.S. hockey names first six players for the 2026 Milan Olympics roster.",
+      "relevanceRating:2,
+      "emoji": "🏒"
+    },
+    {
+      "articleId": 5,
+      "summary": "Giancarlo Stanton returns from the injured list for his season debut.",
+      "relevanceRating":1,
+      "emoji": "⚾"
+    }
+  ]
+}

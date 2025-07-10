@@ -1,0 +1,96 @@
+name: Publish bff-eval Release
+
+# DISABLED - NPM publishing workflows have been disabled
+# on:
+#   workflow_dispatch:
+#     inputs:
+#       version:
+#         description: "Version to publish (e.g., 1.0.0)"
+#         required: true
+#         type: string
+#       tag:
+#         description: "NPM tag (e.g., latest, beta, next)"
+#         required: true
+#         default: "latest"
+#         type: string
+
+# Workflow is disabled - uncomment the 'on:' section above to re-enable
+on:
+  workflow_dispatch:
+    if: false
+
+jobs:
+  build-and-publish:
+    name: Build and Publish bff-eval Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+        with: { determinate: true }
+
+      - name: Setup Nix caching
+        uses: DeterminateSystems/flakehub-cache-action@main
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org/"
+
+      # Set Deno cache directory
+      - name: Set Deno cache directory
+        run: echo "DENO_DIR=${RUNNER_TEMP}/deno-cache" >> "$GITHUB_ENV"
+
+      # Cache node_modules
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        id: dependency-cache
+        with:
+          path: |
+            node_modules
+            packages/bff-eval/node_modules
+            ~/.npm
+          key: ${{ runner.os }}-bff-eval-deps-${{ hashFiles('packages/bff-eval/package-lock.json', 'packages/bff-eval/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-bff-eval-deps-
+
+      # Build bolt-foundry package first (which bff-eval depends on)
+      - name: Build bolt-foundry package
+        run: |
+          nix develop --impure --command bff build --include-bolt-foundry --skip-barrels --skip-routes --skip-content --skip-config-keys --skip-gql-types --skip-isograph
+
+      - name: Install dependencies
+        working-directory: packages/bff-eval
+        run: npm ci
+
+      - name: Update version in package.json
+        working-directory: packages/bff-eval
+        run: |
+          npm version ${{ github.event.inputs.version }} --no-git-tag-version
+          echo "Updated package.json version to ${{ github.event.inputs.version }}"
+
+      - name: Build package
+        working-directory: packages/bff-eval
+        run: npm run build
+
+      - name: Make bin executable
+        working-directory: packages/bff-eval
+        run: chmod +x dist/bin/bff-eval.js
+
+      - name: Publish to npm
+        working-directory: packages/bff-eval
+        run: npm publish --access public --tag ${{ github.event.inputs.tag }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create Git Tag
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git tag -a bff-eval-v${{ github.event.inputs.version }} -m "Release bff-eval v${{ github.event.inputs.version }}"
+          git push origin bff-eval-v${{ github.event.inputs.version }}

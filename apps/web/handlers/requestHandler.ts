@@ -1,5 +1,5 @@
-import { matchRouteWithParams } from "apps/boltFoundry/contexts/RouterContext.tsx";
-import type { Handler } from "apps/web/web.tsx";
+import { matchRouteWithParams } from "@bfmono/apps/boltFoundry/contexts/RouterContext.tsx";
+import type { Handler } from "@bfmono/apps/web/web.tsx";
 
 /**
  * Matches a route path to a handler and handles any redirects

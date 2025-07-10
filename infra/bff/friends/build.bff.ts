@@ -1,21 +1,18 @@
 #! /usr/bin/env -S bff
 
-import { runShellCommand } from "infra/bff/shellBase.ts";
-import { register } from "infra/bff/bff.ts";
+import { runShellCommand } from "@bfmono/infra/bff/shellBase.ts";
+import { register } from "@bfmono/infra/bff/bff.ts";
 import {
   getConfigurationVariable,
-  refreshAllSecrets,
-} from "packages/get-configuration-var/get-configuration-var.ts";
-import { getLogger } from "packages/logger/logger.ts";
-import { DeploymentEnvs } from "infra/constants/deploymentEnvs.ts";
+} from "@bfmono/packages/get-configuration-var/get-configuration-var.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import { DeploymentEnvs } from "@bfmono/infra/constants/deploymentEnvs.ts";
 import {
   PRIVATE_CONFIG_KEYS,
   PUBLIC_CONFIG_KEYS,
-} from "apps/boltFoundry/__generated__/configKeys.ts";
+} from "@bfmono/apps/boltFoundry/__generated__/configKeys.ts";
 
 const logger = getLogger(import.meta);
-
-await refreshAllSecrets();
 
 export const ENVIRONMENT_ONLY_KEYS = [
   "CI",
@@ -67,6 +64,7 @@ const DEFAULT_NETWORK_DESTINATIONS = [
   "app.posthog.com",
   "bf-contacts.replit.app:443",
   "oauth2.googleapis.com:443",
+  "api.github.com",
 ];
 
 const allowedNetworkDestionations = [...DEFAULT_NETWORK_DESTINATIONS];
@@ -98,6 +96,7 @@ const readableLocations = [
   "/tmp",
   "static/",
   "tmp/",
+  "docs/",
 ];
 
 const writableLocations = [
@@ -400,7 +399,6 @@ async function sh(command: string, cwd?: string): Promise<number> {
 export async function build(args: Array<string>): Promise<number> {
   const waitForFail = args.includes("--slow-exit");
   const debug = args.includes("--debug");
-  const includeBoltFoundry = args.includes("--include-bolt-foundry");
   const skipConfigKeys = args.includes("--skip-config-keys");
 
   if (debug) {
@@ -421,26 +419,7 @@ export async function build(args: Array<string>): Promise<number> {
   await Deno.writeFile("static/build/.gitkeep", new Uint8Array());
 
   // Build bolt-foundry package only if explicitly requested
-  if (includeBoltFoundry) {
-    if (debug) logMemoryUsage("before bolt-foundry package build");
-    logger.info("Building bolt-foundry package...");
-    const boltFoundryBuildResult = await runShellCommand([
-      "deno",
-      "run",
-      "-A",
-      "packages/bolt-foundry/bin/build.ts",
-    ]);
-    if (debug) logMemoryUsage("after bolt-foundry package build");
-
-    if (boltFoundryBuildResult !== 0) {
-      logger.error("Failed to build bolt-foundry package");
-      return boltFoundryBuildResult;
-    }
-  } else {
-    logger.info(
-      "Skipping bolt-foundry package build (use --include-bolt-foundry to build it)",
-    );
-  }
+  // NOTE: bolt-foundry build script removed - no build.ts file exists
 
   logger.info("Starting build process");
 
@@ -469,17 +448,11 @@ export async function build(args: Array<string>): Promise<number> {
     return routesBuildResult;
   }
 
-  if (debug) logMemoryUsage("before content build");
-  const contentResult = await sh("./infra/appBuild/contentBuild.ts");
-  if (debug) logMemoryUsage("after content build");
+  // Content build removed for v0.1 - using runtime markdown rendering instead
 
-  if (contentResult !== 0) {
-    return contentResult;
-  }
-
-  if (debug) logMemoryUsage("before graphql server");
-  const result = await sh("./apps/bfDb/graphql/graphqlServer.ts");
-  if (debug) logMemoryUsage("after graphql server");
+  if (debug) logMemoryUsage("before graphql types");
+  const result = await runShellCommand(["bff", "genGqlTypes"]);
+  if (debug) logMemoryUsage("after graphql types");
 
   if (result) return result;
   if (result && waitForFail) {
@@ -529,4 +502,6 @@ register(
   "build",
   "Builds the current project. Use --debug to show memory and system stats, --slow-exit to wait on failure.",
   build,
+  [],
+  true, // Mark as AI-safe
 );

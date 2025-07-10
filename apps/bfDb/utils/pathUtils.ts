@@ -1,6 +1,4 @@
-// In apps/bfDb/utils/pathUtils.ts
-
-import { type BfGid, toBfGid } from "apps/bfDb/classes/BfNodeIds.ts";
+import type { BfGid } from "@bfmono/lib/types.ts";
 
 /**
  * Converts a file path to a BfGid with file:// scheme
@@ -9,7 +7,7 @@ import { type BfGid, toBfGid } from "apps/bfDb/classes/BfNodeIds.ts";
 export function pathToBfGid(path: string): BfGid {
   // Convert absolute paths to bf://$RELATIVEPATH
 
-  return toBfGid(path.replace(Deno.cwd(), "bf://"));
+  return path.replace(Deno.cwd(), "bf://") as BfGid;
 }
 
 /**

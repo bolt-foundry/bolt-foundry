@@ -1,180 +1,158 @@
-import {
-  forwardRef,
-  useContext,
-  useEffect,
-  useId,
-  useImperativeHandle,
-  useState,
-} from "react";
-import { BfDsIcon, type BfDsIconType } from "apps/bfDs/components/BfDsIcon.tsx";
-import { classnames } from "lib/classnames.ts";
-import { BfDsToggle } from "apps/bfDs/components/BfDsToggle.tsx";
-import { ListItemExpandContext } from "apps/bfDs/components/BfDsList.tsx";
+import type * as React from "react";
+import { useEffect, useRef, useState } from "react";
+import { BfDsIcon } from "./BfDsIcon.tsx";
+import { useBfDsList } from "./BfDsList.tsx";
 
-export type BfDsListItemHandle = {
-  setExpand: (value: boolean) => void;
-  isExpanded: () => boolean;
-};
-
-type Props = {
-  action?: React.ReactNode;
-  content: string | React.ReactNode;
-  expandedContent?: React.ReactNode;
-  expandCallback?: (newExpandingState?: boolean) => void;
-  iconLeft?: BfDsIconType;
-  iconLeftColor?: string;
-  iconRight?: BfDsIconType;
-  isHighlighted?: boolean;
-  footer?: string | React.ReactNode;
-  onDoubleClick?: () => void;
+export type BfDsListItemProps = {
+  /** Content to display in the list item */
+  children: React.ReactNode;
+  /** When true, shows active state styling */
+  active?: boolean;
+  /** When true, disables interaction and shows disabled styling */
+  disabled?: boolean;
+  /** Click handler - when provided, renders as button instead of li */
   onClick?: () => void;
-  toggle?: () => void;
-  toggled?: boolean;
-  xstyle?: React.CSSProperties;
+  /** Additional CSS classes */
+  className?: string;
+  /** Content to show when expanded - makes item expandable if provided */
+  expandContents?: React.ReactNode;
 };
 
-export const BfDsListItem = forwardRef<BfDsListItemHandle, Props>(
-  (
-    {
-      action,
-      content,
-      expandedContent,
-      expandCallback,
-      iconLeft,
-      iconLeftColor,
-      iconRight,
-      isHighlighted,
-      footer,
-      onClick,
-      onDoubleClick,
-      toggle,
-      toggled,
-      xstyle,
-    },
-    ref,
-  ) => {
-    const [expand, setExpand] = useState(false);
-    const itemId = useId(); // Generate a unique ID for this list item
-    const { mutuallyExclusive, activeItem, setActiveItem } = useContext(
-      ListItemExpandContext,
-    );
+export function BfDsListItem({
+  children,
+  active = false,
+  disabled = false,
+  onClick,
+  className,
+  expandContents,
+}: BfDsListItemProps) {
+  const [localIsExpanded, setLocalIsExpanded] = useState(false);
+  const listContext = useBfDsList();
+  const itemRef = useRef<HTMLLIElement>(null);
+  const [listIndex, setListIndex] = useState<number | null>(null);
+  const isExpandable = !!expandContents;
 
-    // Listen for changes in active item if we're in a mutually exclusive context
-    useEffect(() => {
-      if (mutuallyExclusive && expandedContent) {
-        // If this item is not the active item, collapse it
-        if (activeItem !== null && activeItem !== itemId && expand) {
-          setExpand(false);
-          expandCallback?.(false);
-        }
-      }
-    }, [activeItem, mutuallyExclusive, itemId, expandCallback]);
-
-    useImperativeHandle(ref, () => ({
-      setExpand: (value: boolean) => {
-        setExpand(value);
-        expandCallback?.(value);
-        // Update the context if we're in a mutually exclusive list
-        if (mutuallyExclusive && expandedContent) {
-          if (value) {
-            setActiveItem(itemId);
-          } else if (activeItem === itemId) {
-            setActiveItem(null);
-          }
-        }
-      },
-      isExpanded: () => expand,
-    }));
-
-    function handleClick(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
-      if ((e.target as HTMLElement).closest(".ignore-internal-click")) {
-        return;
-      }
-      const currentExpandedState = expand;
-
-      if (expandedContent) {
-        const newExpandState = !currentExpandedState;
-        setExpand(newExpandState);
-        expandCallback?.(newExpandState);
-
-        // Handle mutually exclusive expanding
-        if (mutuallyExclusive) {
-          if (newExpandState) {
-            setActiveItem(itemId);
-          } else if (activeItem === itemId) {
-            setActiveItem(null);
-          }
-        }
-      }
-
-      if (onClick) {
-        onClick();
-      }
+  // Get the item index from the list context after mounting
+  useEffect(() => {
+    if (listContext && itemRef.current) {
+      const index = listContext.getItemIndex(itemRef);
+      setListIndex(index);
     }
-    const clickable = (typeof onClick === "function" && !isHighlighted) ||
-      expandedContent != null;
+  }, [listContext]);
 
-    const listItemRowClasses = classnames([
-      "list-item-row",
-      { isHighlighted },
-      { clickable },
-    ]);
+  // Use accordion state if available, otherwise use local state
+  const isExpanded = listContext?.accordion && typeof listIndex === "number"
+    ? listContext.expandedIndex === listIndex
+    : localIsExpanded;
 
-    return (
-      <div
-        className="list-item"
-        style={xstyle}
-        onClick={(e) => handleClick(e)}
-        onDoubleClick={onDoubleClick}
-      >
-        <div className={listItemRowClasses}>
-          {iconLeft && (
-            <div className="list-item-icon">
-              <BfDsIcon
-                name={iconLeft}
-                color={iconLeftColor ?? "var(--textSecondary)"}
-              />
-            </div>
-          )}
+  const itemClasses = [
+    "bfds-list-item",
+    active && "bfds-list-item--active",
+    disabled && "bfds-list-item--disabled",
+    (onClick || isExpandable) && !disabled && "bfds-list-item--clickable",
+    isExpandable && "bfds-list-item--expandable",
+    isExpanded && "bfds-list-item--expanded",
+    onClick && isExpandable && "bfds-list-item--has-separate-expand",
+    className,
+  ].filter(Boolean).join(" ");
 
-          <div className="list-item-main">
-            <div className="list-item-text">{content}</div>
-            {footer && (
-              <div className="list-item-meta">
-                {footer}
-              </div>
-            )}
-          </div>
-          {expandedContent && (
-            <div className="list-item-icon">
-              <BfDsIcon
-                name={expand ? "arrowUp" : "arrowDown"}
-                color="var(--textSecondary)"
-              />
-            </div>
-          )}
-          {iconRight && !expandedContent && (
-            <div className="list-item-icon">
-              <BfDsIcon name={iconRight} color="var(--textSecondary)" />
-            </div>
-          )}
-          {toggle && (
-            <div className="list-item-toggle">
-              <BfDsToggle value={!!toggled} onChange={toggle} />
-            </div>
-          )}
-          {action && (
-            <div className="list-item-action ignore-internal-click">
-              {action}
-            </div>
-          )}
-        </div>
-        {expandedContent && expand && (
-          <div className="list-item-expanded ignore-internal-click">
-            {expandedContent}
-          </div>
-        )}
+  const handleExpandClick = () => {
+    if (disabled) return;
+
+    if (listContext?.accordion && typeof listIndex === "number") {
+      // Accordion mode: toggle via context
+      listContext.setExpandedIndex(isExpanded ? null : listIndex);
+    } else {
+      // Independent mode: toggle local state
+      setLocalIsExpanded(!localIsExpanded);
+    }
+  };
+
+  const handleMainClick = () => {
+    if (disabled) return;
+    if (onClick) {
+      onClick();
+    }
+  };
+
+  const mainContent = (
+    <div className="bfds-list-item__content">
+      <div className="bfds-list-item__main">
+        {children}
       </div>
+      {isExpandable && (
+        <div className="bfds-list-item__icon">
+          <BfDsIcon
+            name={isExpanded ? "arrowDown" : "arrowLeft"}
+            size="small"
+          />
+        </div>
+      )}
+    </div>
+  );
+
+  const expandedContent = isExpandable && isExpanded && expandContents && (
+    <div className="bfds-list-item__expanded-content">
+      {expandContents}
+    </div>
+  );
+
+  // For expandable items, we need a wrapper li to contain both the button and expanded content
+  if (isExpandable) {
+    return (
+      <li ref={itemRef} className={itemClasses}>
+        <button
+          type="button"
+          className="bfds-list-item__button"
+          onClick={onClick ? handleMainClick : handleExpandClick}
+          disabled={disabled}
+        >
+          {onClick
+            ? (
+              // If there's an onClick, show content without expand icon since expansion will be via separate trigger
+              <div className="bfds-list-item__content">
+                <div className="bfds-list-item__main">
+                  {children}
+                </div>
+              </div>
+            )
+            : mainContent}
+        </button>
+        {onClick && (
+          // Separate expand button when there's also an onClick
+          <button
+            type="button"
+            className="bfds-list-item__expand-button"
+            onClick={handleExpandClick}
+            disabled={disabled}
+            aria-label={isExpanded ? "Collapse" : "Expand"}
+          >
+            <BfDsIcon
+              name={isExpanded ? "arrowDown" : "arrowLeft"}
+              size="small"
+            />
+          </button>
+        )}
+        {expandedContent}
+      </li>
     );
-  },
-);
+  }
+
+  // For non-expandable items, always render as li with optional button child
+  return (
+    <li ref={itemRef} className={itemClasses}>
+      {onClick && !disabled
+        ? (
+          <button
+            type="button"
+            className="bfds-list-item__button"
+            onClick={handleMainClick}
+            disabled={disabled}
+          >
+            {mainContent}
+          </button>
+        )
+        : mainContent}
+    </li>
+  );
+}

@@ -1,116 +1,258 @@
-import { render } from "infra/testing/ui-testing.ts";
+import { render } from "@bfmono/infra/testing/ui-testing.ts";
 import { assertEquals, assertExists } from "@std/assert";
 import { BfDsCheckbox } from "../BfDsCheckbox.tsx";
 
-Deno.test("BfDsCheckbox renders with label", () => {
-  const labelText = "Accept terms";
-  const { getByText } = render(
-    <BfDsCheckbox label={labelText} onChange={() => {}} />,
-  );
-
-  const label = getByText(labelText);
-  assertExists(label, `Label with text "${labelText}" should exist`);
-});
-
-Deno.test("BfDsCheckbox renders as checked when value is true", () => {
-  const { doc } = render(
-    <BfDsCheckbox value onChange={() => {}} />,
-  );
-
-  // The component uses icon to show checked state
-  const icon = doc?.querySelector(".icon") || doc?.querySelector("svg");
-  assertExists(icon, "Icon element should exist");
-
-  // Check for an input with checked attribute
-  const input = doc?.querySelector("input[type='checkbox']");
-  assertExists(input, "Checkbox input element should exist");
-  assertEquals(
-    input?.hasAttribute("checked") || input?.getAttribute("checked") === "",
-    true,
-    "Input should be checked",
-  );
-});
-
-Deno.test("BfDsCheckbox renders as unchecked when value is false", () => {
-  const { doc } = render(
-    <BfDsCheckbox value={false} onChange={() => {}} />,
-  );
-
-  // Check that the input is not checked
-  const input = doc?.querySelector("input[type='checkbox']");
-  assertExists(input, "Checkbox input element should exist");
-  assertEquals(
-    input?.hasAttribute("checked") || input?.getAttribute("checked") === "",
-    false,
-    "Input should not be checked",
-  );
-});
-
-Deno.test("BfDsCheckbox renders as disabled when disabled prop is true", () => {
-  const { doc } = render(
-    <BfDsCheckbox disabled onChange={() => {}} />,
-  );
-
-  const input = doc?.querySelector("input[type='checkbox']");
-  assertExists(input, "Checkbox input element should exist");
-  assertEquals(
-    input?.hasAttribute("disabled"),
-    true,
-    "Input should have disabled attribute",
-  );
-});
-
-Deno.test("BfDsCheckbox renders with different sizes", () => {
+Deno.test("BfDsCheckbox renders in standalone mode", () => {
   const { doc } = render(
     <BfDsCheckbox
-      label="Size Test"
-      value
+      label="Accept terms"
+      checked={false}
       onChange={() => {}}
-      size="large"
     />,
   );
 
-  // Look for the checkbox input
-  const checkbox = doc?.querySelector("input[type='checkbox']");
-  assertExists(checkbox, "Checkbox input should exist");
+  const label = doc?.querySelector("label");
+  const input = doc?.querySelector("input[type='checkbox']");
+  const checkboxDiv = doc?.querySelector(".bfds-checkbox");
+  const labelSpan = doc?.querySelector(".bfds-checkbox-label");
 
-  // The main checkbox container
-  const checkboxContainer = doc?.querySelector("div[data-bf-testid]") ||
-    doc?.querySelector("input[type='checkbox']")?.parentElement;
-  assertExists(checkboxContainer, "Checkbox container should exist");
-
-  // Look for the icon - BfDsIcon is rendered with the appropriate size
-  const icon = doc?.querySelector("svg");
-  assertExists(icon, "Icon element should exist");
-
-  // Verify the checkbox label contains the text
-  const labelElement = doc?.querySelector("label");
-  assertExists(labelElement, "Label element should exist");
-
-  const labelText = labelElement?.textContent;
+  assertExists(label, "Label wrapper should exist");
+  assertExists(input, "Checkbox input should exist");
+  assertExists(checkboxDiv, "Checkbox visual element should exist");
+  assertExists(labelSpan, "Label text should exist");
   assertEquals(
-    labelText?.includes("Size Test"),
-    true,
-    "Label should contain 'Size Test'",
+    labelSpan?.textContent?.trim(),
+    "Accept terms",
+    "Label should display correct text",
   );
 });
 
-Deno.test("BfDsCheckbox renders with meta information", () => {
-  const metaText = "Additional information";
-  const { getByText } = render(
-    <BfDsCheckbox meta={metaText} onChange={() => {}} />,
-  );
-
-  const meta = getByText(metaText);
-  assertExists(meta, `Meta text "${metaText}" should exist`);
-});
-
-Deno.test("BfDsCheckbox renders with test ID when provided", () => {
-  const testId = "test-checkbox";
+Deno.test("BfDsCheckbox renders in checked state", () => {
   const { doc } = render(
-    <BfDsCheckbox testId={testId} value={false} onChange={() => {}} />,
+    <BfDsCheckbox
+      label="Checked box"
+      checked
+      onChange={() => {}}
+    />,
   );
 
-  const checkbox = doc?.querySelector(`[data-bf-testid="${testId}-true"]`);
-  assertExists(checkbox, "Checkbox with test ID should exist");
+  const input = doc?.querySelector(
+    "input[type='checkbox']",
+  ) as HTMLInputElement;
+  const checkboxDiv = doc?.querySelector(".bfds-checkbox");
+  const icon = doc?.querySelector(".bfds-checkbox-icon");
+
+  assertExists(input, "Checkbox input should exist");
+  assertEquals(input?.hasAttribute("checked"), true, "Input should be checked");
+  assertEquals(
+    checkboxDiv?.className?.includes("bfds-checkbox--checked"),
+    true,
+    "Checkbox should have checked class",
+  );
+  assertExists(icon, "Check icon should be visible when checked");
+});
+
+Deno.test("BfDsCheckbox renders in unchecked state", () => {
+  const { doc } = render(
+    <BfDsCheckbox
+      label="Unchecked box"
+      checked={false}
+      onChange={() => {}}
+    />,
+  );
+
+  const input = doc?.querySelector(
+    "input[type='checkbox']",
+  ) as HTMLInputElement;
+  const checkboxDiv = doc?.querySelector(".bfds-checkbox");
+  const icon = doc?.querySelector(".bfds-checkbox-icon");
+
+  assertExists(input, "Checkbox input should exist");
+  assertEquals(
+    input?.hasAttribute("checked"),
+    false,
+    "Input should not be checked",
+  );
+  assertEquals(
+    checkboxDiv?.className?.includes("bfds-checkbox--checked"),
+    false,
+    "Checkbox should not have checked class",
+  );
+  assertEquals(icon, null, "Check icon should not be visible when unchecked");
+});
+
+Deno.test("BfDsCheckbox renders in disabled state", () => {
+  const { doc } = render(
+    <BfDsCheckbox
+      label="Disabled checkbox"
+      disabled
+      onChange={() => {}}
+    />,
+  );
+
+  const input = doc?.querySelector(
+    "input[type='checkbox']",
+  ) as HTMLInputElement;
+  const checkboxDiv = doc?.querySelector(".bfds-checkbox");
+
+  assertExists(input, "Checkbox input should exist");
+  assertEquals(
+    input?.hasAttribute("disabled"),
+    true,
+    "Input should be disabled",
+  );
+  assertEquals(
+    checkboxDiv?.className?.includes("bfds-checkbox--disabled"),
+    true,
+    "Checkbox should have disabled class",
+  );
+});
+
+Deno.test("BfDsCheckbox renders with required attribute", () => {
+  const { doc } = render(
+    <BfDsCheckbox
+      label="Required checkbox"
+      required
+      onChange={() => {}}
+    />,
+  );
+
+  const input = doc?.querySelector(
+    "input[type='checkbox']",
+  ) as HTMLInputElement;
+  const requiredSpan = doc?.querySelector(".bfds-checkbox-required");
+
+  assertExists(input, "Checkbox input should exist");
+  assertEquals(
+    input?.hasAttribute("required"),
+    true,
+    "Input should be required",
+  );
+  assertExists(requiredSpan, "Required indicator should exist");
+  assertEquals(
+    requiredSpan?.textContent,
+    "*",
+    "Required indicator should show asterisk",
+  );
+});
+
+Deno.test("BfDsCheckbox renders without label", () => {
+  const { doc } = render(
+    <BfDsCheckbox
+      checked={false}
+      onChange={() => {}}
+    />,
+  );
+
+  const label = doc?.querySelector("label");
+  const input = doc?.querySelector("input[type='checkbox']");
+  const labelSpan = doc?.querySelector(".bfds-checkbox-label");
+
+  assertExists(label, "Label wrapper should exist");
+  assertExists(input, "Checkbox input should exist");
+  assertEquals(
+    labelSpan,
+    null,
+    "Label text should not exist when no label provided",
+  );
+});
+
+Deno.test("BfDsCheckbox renders with custom className", () => {
+  const { doc } = render(
+    <BfDsCheckbox
+      label="Custom class"
+      className="custom-checkbox"
+      checked={false}
+      onChange={() => {}}
+    />,
+  );
+
+  const checkboxDiv = doc?.querySelector(".bfds-checkbox");
+  assertExists(checkboxDiv, "Checkbox should exist");
+  assertEquals(
+    checkboxDiv?.className?.includes("custom-checkbox"),
+    true,
+    "Checkbox should include custom class",
+  );
+});
+
+Deno.test("BfDsCheckbox renders with custom id", () => {
+  const { doc } = render(
+    <BfDsCheckbox
+      label="Custom ID"
+      id="custom-checkbox-id"
+      checked={false}
+      onChange={() => {}}
+    />,
+  );
+
+  const input = doc?.querySelector("input[type='checkbox']");
+  assertExists(input, "Checkbox input should exist");
+  assertEquals(input?.id, "custom-checkbox-id", "Input should have custom ID");
+});
+
+Deno.test("BfDsCheckbox renders with name attribute", () => {
+  const { doc } = render(
+    <BfDsCheckbox
+      label="Named checkbox"
+      name="test-checkbox"
+      checked={false}
+      onChange={() => {}}
+    />,
+  );
+
+  const input = doc?.querySelector("input[type='checkbox']");
+  assertExists(input, "Checkbox input should exist");
+  assertEquals(
+    input?.getAttribute("name"),
+    "test-checkbox",
+    "Input should have correct name attribute",
+  );
+});
+
+Deno.test("BfDsCheckbox accessibility attributes", () => {
+  const { doc } = render(
+    <BfDsCheckbox
+      label="Accessible checkbox"
+      checked
+      onChange={() => {}}
+    />,
+  );
+
+  const checkboxDiv = doc?.querySelector(".bfds-checkbox");
+  assertExists(checkboxDiv, "Checkbox visual element should exist");
+  assertEquals(
+    checkboxDiv?.getAttribute("role"),
+    "checkbox",
+    "Should have checkbox role",
+  );
+  assertEquals(
+    checkboxDiv?.getAttribute("aria-checked"),
+    "true",
+    "Should have correct aria-checked value",
+  );
+  assertEquals(
+    checkboxDiv?.getAttribute("tabIndex"),
+    "0",
+    "Should be focusable",
+  );
+});
+
+Deno.test("BfDsCheckbox accessibility when disabled", () => {
+  const { doc } = render(
+    <BfDsCheckbox
+      label="Disabled accessible checkbox"
+      disabled
+      checked={false}
+      onChange={() => {}}
+    />,
+  );
+
+  const checkboxDiv = doc?.querySelector(".bfds-checkbox");
+  assertExists(checkboxDiv, "Checkbox visual element should exist");
+  assertEquals(
+    checkboxDiv?.getAttribute("tabIndex"),
+    "-1",
+    "Should not be focusable when disabled",
+  );
 });

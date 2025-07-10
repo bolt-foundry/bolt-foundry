@@ -1,10 +1,10 @@
 import type * as React from "react";
 import type { ExtractReadFromStore, FragmentReference } from "@isograph/react";
 import { useResult } from "@isograph/react";
-import { getLogger } from "packages/logger/logger.ts";
-import { BfError } from "infra/BfError.ts";
-import type { RouteEntrypoint } from "apps/boltFoundry/__generated__/builtRoutes.ts";
-import type { BfIsographEntrypoint } from "lib/BfIsographEntrypoint.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import { BfError } from "@bfmono/lib/BfError.ts";
+import type { RouteEntrypoint } from "@bfmono/apps/boltFoundry/__generated__/builtRoutes.ts";
+import type { BfIsographEntrypoint } from "@bfmono/lib/BfIsographEntrypoint.ts";
 
 const _logger = getLogger(import.meta);
 

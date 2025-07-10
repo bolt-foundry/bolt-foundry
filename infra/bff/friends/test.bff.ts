@@ -1,12 +1,12 @@
 #! /usr/bin/env -S bff
 
-import { register } from "infra/bff/bff.ts";
-import { runShellCommand } from "infra/bff/shellBase.ts";
-import { getLogger } from "packages/logger/logger.ts";
+import { register } from "@bfmono/infra/bff/bff.ts";
+import { runShellCommand } from "@bfmono/infra/bff/shellBase.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
-export async function testCommand(options: string[]): Promise<number> {
+export async function testCommand(options: Array<string>): Promise<number> {
   logger.info("Running tests...");
 
   const paths = ["apps", "infra", "lib", "packages", "util", "sites"];
@@ -15,12 +15,7 @@ export async function testCommand(options: string[]): Promise<number> {
   const runnablePaths = options.length > 0
     ? options
     : [...pathsStrings, ...pathsStringsX];
-  const testArgs = ["deno", "test", "-A", ...runnablePaths];
-
-  // Allow passing specific test files or additional arguments
-  if (options.length > 0) {
-    testArgs.push(...options);
-  }
+  const testArgs = ["deno", "test", "-A", "--trace-leaks", ...runnablePaths];
 
   const result = await runShellCommand(testArgs, undefined, {}, true, true);
 
@@ -37,10 +32,6 @@ register(
   "test",
   "Run project tests",
   testCommand,
-);
-
-register(
-  "t",
-  "Run project tests",
-  testCommand,
+  [],
+  true, // AI-safe
 );

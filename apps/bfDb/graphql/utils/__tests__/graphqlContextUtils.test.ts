@@ -9,9 +9,9 @@ import {
   setLoginSuccessHeaders,
   signSession,
   verifySession,
-} from "apps/bfDb/graphql/utils/graphqlContextUtils.ts";
+} from "@bfmono/apps/bfDb/graphql/utils/graphqlContextUtils.ts";
 import { assert, assertEquals, assertExists, assertMatch } from "@std/assert";
-import type { BfGid } from "apps/bfDb/classes/BfNodeIds.ts";
+import type { BfGid } from "@bfmono/lib/types.ts";
 
 // Ensure deterministic secret for crypto helpers
 Deno.env.set("JWT_SECRET", "test_secret_key");

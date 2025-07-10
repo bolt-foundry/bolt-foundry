@@ -1,88 +1,145 @@
 import * as React from "react";
-import { fonts } from "apps/bfDs/const.tsx";
+import { useBfDsFormContext } from "./BfDsForm.tsx";
 
-export type TextAreaProps = {
-  onChange?: React.ChangeEventHandler<HTMLTextAreaElement>;
-  label?: string;
-  className?: string;
-  passedRef?: React.RefObject<HTMLTextAreaElement | null>;
-  xstyle?: React.CSSProperties;
-} & React.TextareaHTMLAttributes<HTMLTextAreaElement>;
+export type BfDsTextAreaState = "default" | "error" | "success" | "disabled";
 
-const styles: Record<string, React.CSSProperties> = {
-  textarea: {
-    background: "var(--background)",
-    color: "var(--text)",
-    fontFamily: fonts.fontFamily,
-    fontSize: 16,
-    padding: "6px 12px",
-    borderRadius: 6,
-    borderWidth: 1,
-    borderStyle: "solid",
-    borderColor: "var(--textSecondary)",
-    boxSizing: "border-box",
-  },
-  label: {
-    display: "flex",
-    flexDirection: "column",
-    marginBottom: 12,
-  },
-};
+export type BfDsTextAreaProps =
+  & {
+    // Form context props
+    /** Form field name for data binding */
+    name?: string;
 
-export function BfDsTextArea(
-  {
-    label,
-    value,
-    onChange,
-    placeholder,
-    className,
-    name,
-    required,
-    rows,
-    xstyle,
-    passedRef,
-    ...props
-  }: TextAreaProps,
-) {
-  const textareaRef = passedRef ?? React.useRef<HTMLTextAreaElement>(null);
+    // Standalone props
+    /** Current textarea value */
+    value?: string;
+    /** Change event handler */
+    onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
 
-  React.useEffect(() => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
-
-    const adjustHeight = () => {
-      if (!xstyle?.height && !xstyle?.flex) {
-        textarea.style.height = "auto";
-        textarea.style.height = `${textarea.scrollHeight}px`;
-      }
-    };
-
-    adjustHeight();
-  }, [value]);
-
-  const textarea = (
-    <textarea
-      {...props}
-      value={value}
-      onChange={onChange}
-      placeholder={placeholder}
-      style={{ ...styles.textarea, ...xstyle }}
-      className={className}
-      name={name}
-      ref={textareaRef}
-      required={required}
-      rows={rows ?? 2}
-    />
-  );
-
-  if (label) {
-    return (
-      <label style={styles.label}>
-        {label}
-        {required && " *"}
-        {textarea}
-      </label>
-    );
+    // Common props
+    /** Label text displayed above textarea */
+    label?: string;
+    /** Placeholder text when empty */
+    placeholder?: string;
+    /** Required for validation */
+    required?: boolean;
+    /** Visual state of the textarea */
+    state?: BfDsTextAreaState;
+    /** Error message to display */
+    errorMessage?: string;
+    /** Success message to display */
+    successMessage?: string;
+    /** Help text displayed below textarea */
+    helpText?: string;
+    /** Additional CSS classes */
+    className?: string;
+    /** Resize behavior for textarea */
+    resize?: "none" | "both" | "horizontal" | "vertical";
   }
-  return textarea;
+  & Omit<
+    React.TextareaHTMLAttributes<HTMLTextAreaElement>,
+    "value" | "onChange"
+  >;
+
+export function BfDsTextArea({
+  name,
+  value: standaloneProp,
+  onChange: standaloneOnChange,
+  label,
+  placeholder,
+  required = false,
+  state = "default",
+  errorMessage,
+  successMessage,
+  helpText,
+  className,
+  disabled,
+  id,
+  resize = "vertical",
+  ...props
+}: BfDsTextAreaProps) {
+  const formContext = useBfDsFormContext();
+  const textAreaId = id || React.useId();
+  const helpTextId = `${textAreaId}-help`;
+  const errorId = `${textAreaId}-error`;
+  const successId = `${textAreaId}-success`;
+
+  // Determine if we're in form context or standalone mode
+  const isInFormContext = formContext !== null && name !== undefined;
+
+  // Get value and onChange from form context or standalone props
+  const value = isInFormContext && formContext?.data && name
+    ? (formContext.data[name as keyof typeof formContext.data] as string) ?? ""
+    : standaloneProp ?? "";
+
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    if (isInFormContext && formContext?.onChange && formContext?.data && name) {
+      formContext.onChange({ ...formContext.data, [name]: e.target.value });
+    } else if (standaloneOnChange) {
+      standaloneOnChange(e);
+    }
+  };
+
+  // Get error state from form context if available
+  const formError = isInFormContext && formContext?.errors && name
+    ? formContext.errors[name as keyof typeof formContext.errors]
+    : undefined;
+  const actualErrorMessage =
+    (formError as unknown as { message?: string })?.message ||
+    errorMessage;
+  const actualState = disabled ? "disabled" : (formError ? "error" : state);
+
+  const classes = [
+    "bfds-textarea",
+    `bfds-textarea--${actualState}`,
+    `bfds-textarea--resize-${resize}`,
+    className,
+  ].filter(Boolean).join(" ");
+
+  const containerClasses = [
+    "bfds-textarea-container",
+    `bfds-textarea-container--${actualState}`,
+  ].filter(Boolean).join(" ");
+
+  return (
+    <div className={containerClasses}>
+      {label && (
+        <label htmlFor={textAreaId} className="bfds-textarea-label">
+          {label}
+          {required && <span className="bfds-textarea-required">*</span>}
+        </label>
+      )}
+      <textarea
+        {...props}
+        id={textAreaId}
+        name={name}
+        className={classes}
+        placeholder={placeholder}
+        disabled={disabled || actualState === "disabled"}
+        required={required}
+        value={value}
+        onChange={handleChange}
+        aria-describedby={[
+          helpText ? helpTextId : null,
+          actualErrorMessage ? errorId : null,
+          successMessage ? successId : null,
+        ].filter(Boolean).join(" ") || undefined}
+        aria-invalid={actualState === "error"}
+      />
+      {helpText && (
+        <div id={helpTextId} className="bfds-textarea-help">
+          {helpText}
+        </div>
+      )}
+      {actualState === "error" && actualErrorMessage && (
+        <div id={errorId} className="bfds-textarea-error" role="alert">
+          {actualErrorMessage}
+        </div>
+      )}
+      {actualState === "success" && successMessage && (
+        <div id={successId} className="bfds-textarea-success">
+          {successMessage}
+        </div>
+      )}
+    </div>
+  );
 }

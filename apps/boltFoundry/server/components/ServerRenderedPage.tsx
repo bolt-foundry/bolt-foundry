@@ -1,5 +1,5 @@
-import { colors, colorsDark, fonts } from "apps/bfDs/const.tsx";
-import { getLogger } from "packages/logger/logger.ts";
+import { colors, colorsDark, fonts } from "@bfmono/apps/cfDs/const.tsx";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 const _logger = getLogger(import.meta);
 
 const varsString = Object.entries({ ...colors, ...fonts }).reduce(
@@ -41,12 +41,26 @@ export function ServerRenderedPage(
             __html: cssVarsString + cssVarsDarkString,
           }}
         />
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              `document.documentElement.setAttribute("data-theme", "dark");`,
+          }}
+        >
+        </script>
+
         <link rel="stylesheet" href="/static/marketingpagestyle.css" />
+        <link rel="stylesheet" href="/static/cfDsStyle.css" />
         <link rel="stylesheet" href="/static/bfDsStyle.css" />
         <link rel="stylesheet" href="/static/blogStyle.css" />
+        <link rel="stylesheet" href="/static/formatterStyle.css" />
         <link rel="stylesheet" href="/static/appStyle.css" />
-        <link rel="stylesheet" href="/static/toolsStyle.css" />
-        <link rel="stylesheet" href="/static/lexicalStyle.css" />
+        <link rel="stylesheet" href="/static/landingStyle.css" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        {
+          /* <link rel="stylesheet" href="/static/toolsStyle.css" />
+        <link rel="stylesheet" href="/static/lexicalStyle.css" /> */
+        }
         <link
           href="https://fonts.googleapis.com/css2?family=DM+Mono&family=DM+Sans:wght@200;400;500;700&family=Bebas+Neue&display=swap&family=Roboto:wght@300&display=swap"
           rel="stylesheet"
@@ -54,7 +68,7 @@ export function ServerRenderedPage(
         <link
           rel="shortcut icon"
           type="image/jpg"
-          href="https://bf-static-assets.s3.amazonaws.com/favicon.ico"
+          href="https://bolt-foundry-assets.s3.us-east-2.amazonaws.com/favicon.ico"
         />
         <script
           type="module"

@@ -78,7 +78,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const validatedData = insertContactSchema.parse(req.body);
 
       // Check for dry run mode (email ending with .dryrun@example.com)
-      const isDryRun = validatedData.email && 
+      const isDryRun = validatedData.email &&
         /\.dryrun@example\.com$/.test(validatedData.email);
 
       if (isDryRun) {
@@ -94,10 +94,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
           createdAt: new Date(),
           updatedAt: new Date(),
           emailSentAt: null,
-          dryRun: true
+          dryRun: true,
         });
       }
-      
+
       console.log(
         "Creating new contact with data:",
         JSON.stringify(validatedData),
@@ -128,11 +128,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
             );
 
             // Mark the contact as contacted and set emailSentAt
-            await storage.updateContact(newContact.id, { 
+            await storage.updateContact(newContact.id, {
               contacted: true,
-              emailSentAt: new Date()
+              emailSentAt: new Date(),
             });
-            console.log(`Updated contact ${newContact.id} to contacted=true and set emailSentAt`);
+            console.log(
+              `Updated contact ${newContact.id} to contacted=true and set emailSentAt`,
+            );
 
             // Refresh the contact data to include the updated status
             const updatedContact = await storage.getContact(newContact.id);
@@ -418,7 +420,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const emailSent = await sendWaitlistWelcomeEmail(
         contact.email,
         contact.name,
-        true // Skip enabled check for manual sending
+        true, // Skip enabled check for manual sending
       );
 
       if (!emailSent) {
@@ -434,7 +436,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         `Successfully sent waitlist welcome email to ${contact.email}`,
       );
       // Update contact with email sent timestamp
-      await storage.updateContact(id, { contacted: true, emailSentAt: new Date() });
+      await storage.updateContact(id, {
+        contacted: true,
+        emailSentAt: new Date(),
+      });
 
       console.log(`Successfully updated contact ${id} to contacted=true`);
       return res.status(200).json(await storage.getContact(id)); //return updated contact

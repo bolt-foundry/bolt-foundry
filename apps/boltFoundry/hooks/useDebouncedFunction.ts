@@ -7,7 +7,7 @@ import { useCallback, useRef } from "react";
  * @returns Debounced function
  */
 // deno-lint-ignore no-explicit-any
-export function useDebouncedFunction<T extends (...args: any[]) => any>(
+export function useDebouncedFunction<T extends (...args: Array<any>) => any>(
   fn: T,
   delay: number,
 ): T {

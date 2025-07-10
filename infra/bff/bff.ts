@@ -7,6 +7,7 @@ type Friend = {
   description: string;
   options: Array<Record<string, string>>;
   command: BffCommand;
+  aiSafe?: boolean;
 };
 
 // Scan the "friends" directory for files that end with ".bff.ts" and import them.
@@ -24,6 +25,7 @@ function wordWrap(str: string, maxWidth: number) {
 friendMap.set("help", {
   description: "Prints this help message.",
   options: [],
+  aiSafe: true,
   command: async (cmdOptions) => {
     const startTime = performance.now();
     try {
@@ -45,11 +47,14 @@ friendMap.set("help", {
 
       Usage:
         bff <friend> [options]
+        bff ai <friend> [options]  # Run only AI-safe commands
 
       Friends:
         ${
-        commands.map(([name, { description }]) =>
-          (`${name.padEnd(longestNameLength + 5)} ${description}`).padEnd(
+        commands.map(([name, { description, aiSafe }]) =>
+          (`${name.padEnd(longestNameLength + 5)} ${description}${
+            aiSafe ? " [AI-safe]" : ""
+          }`).padEnd(
             80,
             " ",
           )
@@ -74,7 +79,8 @@ export function register(
   name: string,
   description: string,
   command: BffCommand,
-  options = [],
+  options: Array<Record<string, string>> = [],
+  aiSafe = false,
 ) {
   // Wrap the command with analytics tracking
   const wrappedCommand: BffCommand = async (cmdOptions) => {
@@ -95,5 +101,10 @@ export function register(
     }
   };
 
-  friendMap.set(name, { description, options, command: wrappedCommand });
+  friendMap.set(name, {
+    description,
+    options,
+    command: wrappedCommand,
+    aiSafe,
+  });
 }

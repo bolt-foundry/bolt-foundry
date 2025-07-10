@@ -2,7 +2,7 @@
 
 // Source vault: "c7qk6vxetcikihgccsc2p7d37q"
 // Public tag  : "bolt-foundry-frontend-public"  (7 keys)
-// Private tag : "bolt-foundry-backend-private" (27 keys)
+// Private tag : "bolt-foundry-backend-private" (28 keys)
 
 export const PUBLIC_CONFIG_KEYS = [
   "APPS_INTERNALBF_POSTHOG_API_KEY",
@@ -23,6 +23,7 @@ export const PRIVATE_CONFIG_KEYS = [
   "DATABASE_BACKEND",
   "DATABASE_URL",
   "DATABASE_URL_CONTACTS",
+  "DB_BACKEND_TYPE",
   "EMAIL_FROM",
   "EMAIL_HOST",
   "EMAIL_PASS",
@@ -35,7 +36,7 @@ export const PRIVATE_CONFIG_KEYS = [
   "OPENAI_BASE_URL",
   "OPENAI_ORG_ID",
   "OPENAI_PROJECT_ID",
-  "OPEN_ROUTER_API_KEY",
+  "OPENROUTER_API_KEY",
   "THANKSBOT_DISCORD_TO_NOTION_MAP_DATABASE_ID",
   "THANKSBOT_NOTION_DATABASE_ID",
   "THANKSBOT_NOTION_TOKEN",

@@ -2,18 +2,18 @@
 
 // File: infra/bff/shellBase.ts
 
-import { getLogger } from "packages/logger/logger.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
-import { register } from "infra/bff/bff.ts";
-import startSpinner from "lib/terminalSpinner.ts";
+import { register } from "@bfmono/infra/bff/bff.ts";
+import { startSpinner } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
 // Global array to track running child processes
-export const runningProcesses: Deno.ChildProcess[] = [];
+export const runningProcesses: Array<Deno.ChildProcess> = [];
 
 export async function runShellCommand(
-  commandArray: string[],
+  commandArray: Array<string>,
   cwdString = Deno.cwd(),
   additionalEnv: Record<string, string> = {},
   useSpinner = true,
@@ -63,7 +63,7 @@ export async function runShellCommand(
  * an object { stdout, code, success }.
  */
 export async function runShellCommandWithOutput(
-  commandArray: string[],
+  commandArray: Array<string>,
   additionalEnv: Record<string, string> = {},
   useSpinner = true,
   silent = false,
@@ -118,10 +118,10 @@ export async function runShellCommandWithOutput(
 export function registerShellCommand(
   name: string,
   description: string,
-  commandArray: string[],
+  commandArray: Array<string>,
   useSpinner = true,
 ) {
-  const shellCommand = (args: string[]) => {
+  const shellCommand = (args: Array<string>) => {
     return runShellCommand(
       [...commandArray, ...args],
       undefined,

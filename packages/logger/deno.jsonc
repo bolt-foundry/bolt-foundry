@@ -9,5 +9,8 @@
     "loglevel": "npm:loglevel@^1.9.2",
     "loglevel-plugin-prefix": "npm:loglevel-plugin-prefix@^0.8.4",
     "@bolt-foundry/get-configuration-var": "jsr:@bolt-foundry/get-configuration-var@0.0.0-dev.0"
+  },
+  "compilerOptions": {
+    "lib": ["deno.ns", "es2022", "dom"]
   }
 }

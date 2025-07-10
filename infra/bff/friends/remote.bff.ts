@@ -1,9 +1,9 @@
 #! /usr/bin/env -S bff
 
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
-import { register } from "infra/bff/bff.ts";
-import { getLogger } from "packages/logger/logger.ts";
-import startSpinner from "lib/terminalSpinner.ts";
+import { register } from "@bfmono/infra/bff/bff.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import { startSpinner } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
@@ -178,7 +178,7 @@ const remoteHandler = async ([target, specificFolder]: Array<string>) => {
   }
 
   const bfPath = getConfigurationVariable("PWD");
-  const dirsToMount: string[] = [];
+  const dirsToMount: Array<string> = [];
   const dirsToAvoid: Array<string> = [
     "bin",
     "node_modules",

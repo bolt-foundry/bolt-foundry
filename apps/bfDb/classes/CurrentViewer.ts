@@ -1,8 +1,11 @@
-import { GraphQLObjectBase } from "apps/bfDb/graphql/GraphQLObjectBase.ts";
-import { BfErrorInvalidEmail } from "./BfErrorInvalidEmail.ts";
-import { type BfGid, toBfGid } from "../classes/BfNodeIds.ts";
-import { claimsFromRequest } from "apps/bfDb/graphql/utils/graphqlContextUtils.ts";
-import { getLogger } from "packages/logger/logger.ts";
+import { GraphQLObjectBase } from "@bfmono/apps/bfDb/graphql/GraphQLObjectBase.ts";
+import { claimsFromRequest } from "@bfmono/apps/bfDb/graphql/utils/graphqlContextUtils.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import type { BfGid } from "@bfmono/lib/types.ts";
+import type { GoogleTokenInfo } from "@bfmono/lib/types/googleTokenInfo.ts";
+import { BfOrganization } from "@bfmono/apps/bfDb/nodeTypes/BfOrganization.ts";
+import { BfError } from "@bfmono/lib/BfError.ts";
+import { BfPerson } from "@bfmono/apps/bfDb/nodeTypes/BfPerson.ts";
 
 const logger = getLogger(import.meta);
 
@@ -22,45 +25,41 @@ export class CurrentViewer extends GraphQLObjectBase {
   override toString() {
     return `${this.constructor.name}(${this.personBfGid}, ${this.orgBfOid})`;
   }
-  /* GraphQL -------------------------------------------------------------- */
-  static override gqlSpec = this.defineGqlNode(
-    (field, _rel, mutation) => {
-      field.id("id"); // refresh‑token version
-      field.string("personBfGid");
-      field.string("orgBfOid");
 
-      mutation.custom("loginWithEmailDev", {
-        args: (a) => a.nonNull.string("email"),
-        returns: (r) => r.object(CurrentViewer, "currentViewer"),
-        resolve: async (_src, { email }, ctx) => {
-          const currentViewer = await ctx.loginWithEmailDev(email);
-          return { currentViewer };
-        },
-      });
-
-      mutation.custom("loginWithGoogle", {
+  /* ----------------------------------------------------------------------
+   *  GraphQL spec
+   * -------------------------------------------------------------------- */
+  static override gqlSpec = this.defineGqlNode((gql) =>
+    gql
+      .id("id")
+      .string("personBfGid")
+      .string("orgBfOid")
+      .mutation("loginWithGoogle", {
         args: (a) => a.nonNull.string("idToken"),
-        returns: (r) => r.object(CurrentViewer, "currentViewer"),
-        resolve: async (_src, { idToken }, ctx) => {
+        returns: "CurrentViewer", // ← new API
+        resolve: async (_src, args, ctx) => {
+          const idToken = args.idToken as string;
           const currentViewer = await ctx.loginWithGoogleToken(idToken);
           return { currentViewer };
         },
-      });
-    },
+      })
+      .object("currentViewer", () => Promise.resolve(CurrentViewer)) // ← expose the payload object
   );
 
-  /* Properties ----------------------------------------------------------- */
+  /* ----------------------------------------------------------------------
+   *  Properties
+   * -------------------------------------------------------------------- */
   readonly orgBfOid: BfGid;
   readonly personBfGid: BfGid;
 
-  constructor(personBfGid: BfGid, orgBfOid: BfGid, tokenVersion = 1) {
-    super(String(tokenVersion)); // expose refresh‑token version as `id`
+  protected constructor(personBfGid: BfGid, orgBfOid: BfGid, tokenVersion = 1) {
+    super(String(tokenVersion)); // expose refresh-token version as `id`
     this.orgBfOid = orgBfOid;
     this.personBfGid = personBfGid;
   }
 
   /* ------------------------------------------------------------------
-   *  dev‑only helpers used by tests & seed scripts
+   *  dev-only helpers used by tests & seed scripts
    * ------------------------------------------------------------------ */
   static __DANGEROUS_USE_IN_SCRIPTS_ONLY__createLoggedIn(
     _meta: ImportMeta,
@@ -69,31 +68,14 @@ export class CurrentViewer extends GraphQLObjectBase {
     tokenVersion = 1,
   ): CurrentViewer {
     return new CurrentViewerLoggedIn(
-      toBfGid(id),
-      toBfGid(orgSlug),
+      id as BfGid,
+      orgSlug as BfGid,
       tokenVersion,
-    );
-  }
-
-  /** simple e‑mail login helper (dev only) */
-  // deno-lint-ignore require-await
-  static async loginWithEmailDev(
-    email: string,
-  ): Promise<CurrentViewerLoggedIn> {
-    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
-      throw new BfErrorInvalidEmail(email);
-    }
-    const id = crypto.randomUUID?.() ?? email;
-    return new CurrentViewerLoggedIn(
-      toBfGid(`person:${id}`),
-      toBfGid("dev-org"),
-      1,
     );
   }
 
   /**
    * Authenticate user with Google ID token
-   * Verifies the token, then creates or updates the user record
    */
   static async loginWithGoogleToken(
     idToken: string,
@@ -101,42 +83,60 @@ export class CurrentViewer extends GraphQLObjectBase {
     logger.debug("Verifying Google ID token");
 
     try {
-      // Verify token with Google's tokeninfo endpoint
       const tokenInfoUrl = new URL("https://oauth2.googleapis.com/tokeninfo");
       tokenInfoUrl.searchParams.append("id_token", idToken);
 
       const response = await fetch(tokenInfoUrl.toString());
-
       if (!response.ok) {
         logger.warn("Google token verification failed", await response.text());
         throw new Error("Invalid Google token");
       }
 
-      const tokenInfo = await response.json();
+      const tokenInfo: GoogleTokenInfo = await response.json();
       logger.debug("Google token verified successfully");
 
-      // Check if email is verified
       if (!tokenInfo.email_verified) {
         logger.warn("Google account email not verified", tokenInfo.email);
-        throw new Error("Email not verified with Google");
+        throw new BfError("Email not verified with Google");
+      }
+      if (!tokenInfo.hd) {
+        logger.warn(
+          "Google account not part of an organization",
+          tokenInfo.email,
+        );
+        throw new BfError("Google account not part of an organization");
       }
 
-      // In a real implementation, we would:
-      // 1. Find or create BfPerson with this email
-      // 2. Find or create BfOrganization for this person
-      // 3. Create JWT session tokens
+      const personId = `google-person:${tokenInfo.sub}` as BfGid;
+      const orgId = `google-org:${tokenInfo.hd}` as BfGid;
 
-      // For now, create a user with a deterministic ID based on email
-      const personId = `person:${tokenInfo.email}`;
-      const orgId = "org:google-login";
+      const cv = new CurrentViewerLoggedIn(personId, orgId);
 
-      logger.debug(`Created session for Google user: ${personId}`);
+      let org = await BfOrganization.find(cv, orgId);
+      if (!org) {
+        logger.debug("Creating new organization for", orgId);
+        org = await BfOrganization.__DANGEROUS__createUnattached(cv, {
+          name: tokenInfo.hd,
+          domain: tokenInfo.hd,
+        });
+      }
 
-      return new CurrentViewerLoggedIn(
-        toBfGid(personId),
-        toBfGid(orgId),
-        1,
-      );
+      let person = await BfPerson.find(cv, personId);
+      if (!person) {
+        logger.debug("Creating new person for", personId);
+        person = await BfPerson.__DANGEROUS__createUnattached(
+          cv,
+          { email: tokenInfo.email, name: tokenInfo.name ?? "" },
+          {
+            bfOid: personId,
+            bfCid: "GOOGLE_TOKEN" as BfGid,
+            bfGid: personId,
+          },
+        );
+      }
+
+      // await org.addPersonIfNotMember(person);
+      return cv;
     } catch (error) {
       logger.error("Google login failed", error);
       throw error;
@@ -144,14 +144,13 @@ export class CurrentViewer extends GraphQLObjectBase {
   }
 
   /* ------------------------------------------------------------------
-   *  HTTP→Viewer extraction – delegates to utils.claimsFromRequest
+   *  HTTP→Viewer extraction
    * ------------------------------------------------------------------ */
   static async createFromRequest(
     _meta: ImportMeta,
     req: Request,
     resHeaders?: Headers,
   ): Promise<CurrentViewer> {
-    // --- existing JWT-based logic ---
     try {
       const claims = await claimsFromRequest(req, resHeaders);
       if (!claims) {
@@ -162,8 +161,8 @@ export class CurrentViewer extends GraphQLObjectBase {
         `Restored viewer ${claims.personGid} (org ${claims.orgOid})`,
       );
       return this.makeLoggedInCv(
-        toBfGid(claims.personGid),
-        toBfGid(claims.orgOid),
+        claims.personGid as BfGid,
+        claims.orgOid as BfGid,
         claims.tokenVersion,
       );
     } catch (err) {
@@ -175,10 +174,6 @@ export class CurrentViewer extends GraphQLObjectBase {
   /* ------------------------------------------------------------------
    *  Factory helpers
    * ------------------------------------------------------------------ */
-
-  /**
-   * Build a fully‑populated Logged‑in viewer.
-   */
   static makeLoggedInCv(
     personBfGid: BfGid,
     orgBfOid: BfGid,
@@ -187,23 +182,18 @@ export class CurrentViewer extends GraphQLObjectBase {
     return new CurrentViewerLoggedIn(personBfGid, orgBfOid, tokenVersion);
   }
 
-  /**
-   * Build a Logged‑out viewer (anonymous).  Uses deterministic placeholder
-   * GIDs so equality checks in tests stay stable across runs.
-   */
   static makeLoggedOutCv(tokenVersion = 1): CurrentViewerLoggedOut {
     return new CurrentViewerLoggedOut(
-      toBfGid("person:anonymous"),
-      toBfGid("org:public"),
+      "person:anonymous" as BfGid,
+      "org:public" as BfGid,
       tokenVersion,
     );
   }
 
-  /* ---------------------------------------------------------------------- */
-  /*  GraphQL serialisation                                                 */
-  /* ---------------------------------------------------------------------- */
-
-  toGraphql() {
+  /* ----------------------------------------------------------------------
+   *  GraphQL serialisation
+   * -------------------------------------------------------------------- */
+  override toGraphql() {
     return {
       __typename: this.constructor.name as CurrentViewerTypenames,
       id: this.id,
@@ -213,14 +203,12 @@ export class CurrentViewer extends GraphQLObjectBase {
   }
 }
 
-/* -------------------------------------------------------------------------- */
-/*  Concrete subclasses                                                      */
-/* -------------------------------------------------------------------------- */
-
+/* --------------------------------------------------------------------------
+ *  Concrete subclasses
+ * ------------------------------------------------------------------------ */
 export class CurrentViewerLoggedIn extends CurrentViewer {
-  static override gqlSpec = this.defineGqlNode(() => {});
+  static override gqlSpec = this.defineGqlNode((gql) => gql);
 }
-
 export class CurrentViewerLoggedOut extends CurrentViewer {
-  static override gqlSpec = this.defineGqlNode(() => {});
+  static override gqlSpec = this.defineGqlNode((gql) => gql);
 }

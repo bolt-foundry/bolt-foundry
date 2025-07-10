@@ -1,16 +1,18 @@
 import { neon, type NeonQueryFunction } from "@neondatabase/serverless";
-import { getLogger } from "packages/logger/logger.ts";
-import { BfErrorDb } from "apps/bfDb/classes/BfErrorDb.ts";
-import type { DatabaseBackend } from "apps/bfDb/backend/DatabaseBackend.ts";
-import { type BfGid, toBfGid } from "apps/bfDb/classes/BfNodeIds.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import { BfErrorDb } from "@bfmono/apps/bfDb/classes/BfErrorDb.ts";
+import type { DatabaseBackend } from "@bfmono/apps/bfDb/backend/DatabaseBackend.ts";
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
-import type { BfMetadataNode } from "apps/bfDb/coreModels/BfNode.ts";
-import type { BfMetadataEdge } from "apps/bfDb/coreModels/BfEdge.ts";
-import type { DbItem, Props } from "apps/bfDb/bfDb.ts";
+import type {
+  BfEdgeMetadata,
+  BfNodeMetadata,
+} from "@bfmono/apps/bfDb/classes/BfNode.ts";
+import type { DbItem, Props } from "@bfmono/apps/bfDb/bfDb.ts";
+import type { BfGid } from "@bfmono/lib/types.ts";
 
 const logger = getLogger(import.meta);
 
-type BfDbMetadata = BfMetadataNode & Partial<BfMetadataEdge>;
+type BfDbMetadata = BfNodeMetadata & Partial<BfEdgeMetadata>;
 
 type Row<
   TProps extends Props = Props,
@@ -45,11 +47,11 @@ export class DatabaseBackendNeon implements DatabaseBackend {
 
   private rowToMetadata(row: Row): BfDbMetadata {
     return {
-      bfGid: toBfGid(row.bf_gid),
-      bfOid: toBfGid(row.bf_oid),
-      bfCid: toBfGid(row.bf_cid),
-      bfSid: toBfGid(row.bf_sid),
-      bfTid: toBfGid(row.bf_tid),
+      bfGid: row.bf_gid as BfGid,
+      bfOid: row.bf_oid as BfGid,
+      bfCid: row.bf_cid as BfGid,
+      bfSid: row.bf_sid as BfGid,
+      bfTid: row.bf_tid as BfGid,
       bfTClassName: row.bf_t_class_name,
       bfSClassName: row.bf_s_class_name,
       className: row.class_name,
@@ -142,7 +144,7 @@ export class DatabaseBackendNeon implements DatabaseBackend {
 
   async putItem<TProps extends Props = Props>(
     itemProps: TProps,
-    itemMetadata: BfMetadataNode | BfMetadataEdge,
+    itemMetadata: BfNodeMetadata | BfEdgeMetadata,
     sortValue = Date.now(),
   ): Promise<void> {
     logger.trace({ itemProps, itemMetadata });
@@ -223,7 +225,7 @@ export class DatabaseBackendNeon implements DatabaseBackend {
   private static readonly defaultClause = "1=1";
 
   queryItems<TProps extends Props = Props>(
-    metadataToQuery: Partial<BfMetadataNode | BfMetadataEdge>,
+    metadataToQuery: Partial<BfNodeMetadata | BfEdgeMetadata>,
     propsToQuery: Partial<TProps> = {},
     bfGids?: Array<string>,
     orderDirection: "ASC" | "DESC" = "ASC",
@@ -242,7 +244,7 @@ export class DatabaseBackendNeon implements DatabaseBackend {
   }
 
   queryItemsWithSizeLimit<TProps extends Props = Props>(
-    metadataToQuery: Partial<BfMetadataNode | BfMetadataEdge>,
+    metadataToQuery: Partial<BfNodeMetadata | BfEdgeMetadata>,
     propsToQuery: Partial<TProps> = {},
     bfGids?: Array<string>,
     orderDirection: "ASC" | "DESC" = "ASC",
@@ -304,10 +306,10 @@ export class DatabaseBackendNeon implements DatabaseBackend {
       batchSize,
     });
 
-    const metadataConditions: string[] = [];
-    const propsConditions: string[] = [];
-    const specificIdConditions: string[] = [];
-    const variables: unknown[] = [];
+    const metadataConditions: Array<string> = [];
+    const propsConditions: Array<string> = [];
+    const specificIdConditions: Array<string> = [];
+    const variables: Array<unknown> = [];
 
     // Process metadata conditions
     for (const [originalKey, value] of Object.entries(metadataToQuery)) {
@@ -357,10 +359,10 @@ export class DatabaseBackendNeon implements DatabaseBackend {
         ...propsConditions,
         ...specificIdConditions,
       ].filter(Boolean).join(" AND ");
-      const query = await this.getSql()(
-        `SELECT COUNT(*) FROM bfdb WHERE ${allConditions}`,
-        variables,
-      );
+      const sql = this.getSql();
+      const query = await sql`SELECT COUNT(*) FROM bfdb WHERE ${
+        sql.unsafe(allConditions)
+      }`;
       return Array.from(
         { length: parseInt(query[0].count, 10) },
         () => ({} as DbItem<TProps>),
@@ -392,7 +394,8 @@ export class DatabaseBackendNeon implements DatabaseBackend {
       const query = buildQuery(offset);
       try {
         logger.debug("Executing query", query, variables);
-        const rows = await this.getSql()(query, variables) as Array<
+        const sql = this.getSql();
+        const rows = await sql`${sql.unsafe(query)}` as Array<
           Row<TProps>
         >;
 
@@ -577,9 +580,7 @@ export class DatabaseBackendNeon implements DatabaseBackend {
 
     for (const index of indexes) {
       try {
-        await sql`CREATE INDEX IF NOT EXISTS ${
-          sql(`idx_bfdb_${index}`)
-        } ON bfdb (${sql(index)})`;
+        await sql`CREATE INDEX IF NOT EXISTS idx_bfdb_${index} ON bfdb (${index})`;
       } catch (e) {
         logger.debug(
           `Index creation for ${index} failed, may already exist`,

@@ -1,26 +1,27 @@
 import { useState } from "react";
-import { BfDsListItem } from "apps/bfDs/components/BfDsListItem.tsx";
-import { BfDsList } from "apps/bfDs/components/BfDsList.tsx";
+import { CfDsListItem } from "@bfmono/apps/cfDs/components/CfDsListItem.tsx";
+import { CfDsList } from "@bfmono/apps/cfDs/components/CfDsList.tsx";
 
-import { ColorsAndFonts } from "apps/bfDs/demo/ColorsAndFonts.tsx";
-import { Example as ExampleBreadcrumb } from "apps/bfDs/components/BfDsBreadcrumbs.tsx";
-import { Example as ExampleCallout } from "apps/bfDs/components/BfDsCallout.tsx";
-import { Example as ExampleDropzone } from "apps/bfDs/components/BfDsDropzone.tsx";
-import { Example as ExampleTable } from "apps/bfDs/components/BfDsTable.tsx";
-import { Example as ExampleToast } from "apps/bfDs/components/BfDsToast.tsx";
-import { Example as ExampleTodos } from "apps/bfDs/components/BfDsTodos.tsx";
-import { Example as ExampleList } from "apps/bfDs/components/BfDsList.tsx";
-import { Example as ExampleModal } from "apps/bfDs/components/BfDsModal.tsx";
-import { Example as ExamplePill } from "apps/bfDs/components/BfDsPill.tsx";
-import { Example as ExampleSheet } from "apps/bfDs/components/BfDsSheet.tsx";
-import { Demo as GlimmerDemo } from "apps/bfDs/components/BfDsGlimmer.tsx";
-import { Buttons } from "apps/bfDs/demo/Buttons.tsx";
-import { RouterLink } from "apps/boltFoundry/components/Router/RouterLink.tsx";
-import { Form } from "apps/bfDs/components/demo/Form.tsx";
-import { IconDemo } from "apps/bfDs/components/BfDsIcon.tsx";
-import { Tooltips } from "apps/bfDs/components/demo/Tooltips.tsx";
-import { getLogger } from "packages/logger/logger.ts";
-import { KitchenSink } from "apps/bfDs/components/demo/KitchenSink.tsx";
+import { ColorsAndFonts } from "@bfmono/apps/cfDs/demo/ColorsAndFonts.tsx";
+import { Example as ExampleBreadcrumb } from "@bfmono/apps/cfDs/components/CfDsBreadcrumbs.tsx";
+import { Example as ExampleCallout } from "@bfmono/apps/cfDs/components/CfDsCallout.tsx";
+import { Example as ExampleDropzone } from "@bfmono/apps/cfDs/components/CfDsDropzone.tsx";
+import { Example as ExampleTable } from "@bfmono/apps/cfDs/components/CfDsTable.tsx";
+import { Example as ExampleTabs } from "@bfmono/apps/cfDs/components/CfDsTabs.tsx";
+import { Example as ExampleToast } from "@bfmono/apps/cfDs/components/CfDsToast.tsx";
+import { Example as ExampleTodos } from "@bfmono/apps/cfDs/components/CfDsTodos.tsx";
+import { Example as ExampleList } from "@bfmono/apps/cfDs/components/CfDsList.tsx";
+import { Example as ExampleModal } from "@bfmono/apps/cfDs/components/CfDsModal.tsx";
+import { Example as ExamplePill } from "@bfmono/apps/cfDs/components/CfDsPill.tsx";
+import { Example as ExampleSheet } from "@bfmono/apps/cfDs/components/CfDsSheet.tsx";
+import { Demo as GlimmerDemo } from "@bfmono/apps/cfDs/components/CfDsGlimmer.tsx";
+import { Buttons } from "@bfmono/apps/cfDs/demo/Buttons.tsx";
+import { RouterLink } from "@bfmono/apps/boltFoundry/components/Router/RouterLink.tsx";
+import { Form } from "@bfmono/apps/cfDs/components/demo/Form.tsx";
+import { IconDemo } from "@bfmono/apps/cfDs/components/CfDsIcon.tsx";
+import { Tooltips } from "@bfmono/apps/cfDs/components/demo/Tooltips.tsx";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import { KitchenSink } from "@bfmono/apps/cfDs/components/demo/KitchenSink.tsx";
 const _logger = getLogger(import.meta);
 
 type DemoData = {
@@ -119,6 +120,15 @@ const demoData: Array<DemoData> = [
     component: <ExampleSheet />,
   },
   {
+    name: "Tabs",
+    component: (
+      <div className="ui-section">
+        <h2>Tabs</h2>
+        <ExampleTabs />
+      </div>
+    ),
+  },
+  {
     name: "Tables",
     component: (
       <div className="ui-section">
@@ -155,7 +165,7 @@ const demoData: Array<DemoData> = [
 ];
 
 export function PageUIDemo() {
-  const [tab, setTab] = useState(1);
+  const [tab, setTab] = useState(0);
 
   const demoComponent = demoData[tab]?.component ?? (
     <div>Pick one from the sidebar</div>
@@ -166,16 +176,16 @@ export function PageUIDemo() {
       <div className="ui-sidebar">
         <RouterLink to="/">Home</RouterLink>
         <h1>Demo</h1>
-        <BfDsList>
+        <CfDsList>
           {demoData.map((demo, index) => (
-            <BfDsListItem
+            <CfDsListItem
               content={demo.name}
               isHighlighted={index === tab}
               onClick={() => setTab(index)}
               key={demo.name}
             />
           ))}
-        </BfDsList>
+        </CfDsList>
       </div>
       <div className="ui-content">
         {demoComponent}

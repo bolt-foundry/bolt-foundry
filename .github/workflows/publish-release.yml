@@ -1,41 +1,68 @@
 name: Publish Release
 
+# DISABLED - NPM publishing workflows have been disabled
+# on:
+#   workflow_dispatch:
+#     inputs:
+#       version:
+#         description: "Version to publish (e.g., 1.0.0)"
+#         required: true
+#         type: string
+#       tag:
+#         description: "NPM tag (e.g., latest, beta, next)"
+#         required: true
+#         default: "latest"
+#         type: string
+
+# Workflow is disabled - uncomment the 'on:' section above to re-enable
 on:
   workflow_dispatch:
-    inputs:
-      version:
-        description: "Version to publish (e.g., 1.0.0)"
-        required: true
-        type: string
-      tag:
-        description: "NPM tag (e.g., latest, beta, next)"
-        required: true
-        default: "latest"
-        type: string
+    if: false
 
 jobs:
   build-and-publish:
     name: Build and Publish Release
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     steps:
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+        with: { determinate: true }
+
+      - name: Setup Nix caching
+        uses: DeterminateSystems/flakehub-cache-action@main
+
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
+          repository: bolt-foundry/bolt-foundry
           fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ssh-strict: true
+          persist-credentials: true
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      # Set Deno cache directory
+      - name: Set Deno cache directory
+        run: echo "DENO_DIR=${RUNNER_TEMP}/deno-cache" >> "$GITHUB_ENV"
+
+      # Restore Nix store cache
+      - name: Restore nix store cache
+        uses: actions/cache@v4
+        id: nix-cache
         with:
-          node-version: "20"
-          registry-url: "https://registry.npmjs.org/"
+          path: |
+            /nix/store
+            /nix/var/nix/db
+            /nix/var/nix/profiles
+            ~/.cache/nix
+          key: ${{ runner.os }}-nix-store-${{ hashFiles('**/*.nix', 'flake.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-nix-store-
 
-      - name: Setup Deno
-        uses: denoland/setup-deno@v1
-        with:
-          deno-version: v1.x
-
-      # Cache node_modules and vendor directories
-      - name: Cache node_modules and vendor folders
+      # Cache node_modules, vendor, and Deno dependencies
+      - name: Cache dependencies
         uses: actions/cache@v4
         id: dependency-cache
         with:
@@ -48,42 +75,124 @@ jobs:
             */*/*/vendor
             ~/.npm
             packages/bolt-foundry/npm/node_modules
-          key: ${{ runner.os }}-deps-${{ hashFiles('**/package-lock.json', '**/package.json', 'package-lock.json', 'package.json') }}
+            ${{ env.DENO_DIR }}
+          key: ${{ runner.os }}-deps-${{ hashFiles('**/package-lock.json', '**/package.json', 'package-lock.json', 'package.json', '**/deno.json*', '**/deno.lock') }}
           restore-keys: |
             ${{ runner.os }}-deps-
 
-      - name: Install dependencies
-        run: npm ci
+      # Parse .replit env using pure bash
+      - name: Parse .replit env and export to GitHub Actions
+        run: |
+          # Extract the [env] section from .replit
+          sed -n '/^\[env\]/,/^\[/p' .replit | grep -v '^\[' > .env_section
+
+          # Process each line in the environment section
+          while IFS= read -r line; do
+            # Skip empty lines, comments, or section headers
+            if [[ "$line" =~ ^[[:space:]]*$ || "$line" =~ ^[[:space:]]*# || "$line" =~ ^\[ ]]; then
+              continue
+            fi
+
+            # Extract key and value
+            if [[ "$line" =~ ^([A-Za-z0-9_]+)[[:space:]]*=[[:space:]]*(.*) ]]; then
+              key="${BASH_REMATCH[1]}"
+              value="${BASH_REMATCH[2]}"
+
+              # Skip PATH variable as it's handled separately
+              if [[ "$key" == "PATH" ]]; then
+                continue
+              fi
+
+              # Remove quotes if present
+              value="${value//\"/}"
+
+              # Replace $REPL_HOME with $GITHUB_WORKSPACE
+              value="${value//\$REPL_HOME/$GITHUB_WORKSPACE}"
+
+              # Skip commented out variables
+              if [[ "$key" == \#* ]]; then
+                continue
+              fi
+
+              echo "$key=$value" >> $GITHUB_ENV
+              echo "Added environment variable: $key"
+            fi
+          done < .env_section
+
+          # Clean up temporary file
+          rm .env_section
+
+      # Set secret-dependent environment variables
+      - name: Set environment variables
+        run: |
+          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> $GITHUB_ENV
+          echo "ASSEMBLY_AI_KEY=${{ secrets.ASSEMBLY_AI_KEY }}" >> $GITHUB_ENV
+          echo "OPEN_AI_API_KEY=${{ secrets.OPEN_AI_API_KEY }}" >> $GITHUB_ENV
+          echo "OPEN_ROUTER_API_KEY=${{ secrets.OPEN_ROUTER_API_KEY }}" >> $GITHUB_ENV
+          echo "POSTHOG_API_KEY=${{ secrets.POSTHOG_API_KEY }}" >> $GITHUB_ENV
+          echo "INFRA_BIN_PATH=$GITHUB_WORKSPACE/infra/bin" >> $GITHUB_ENV
+          echo "$GITHUB_WORKSPACE/infra/bin" >> $GITHUB_PATH
+
+      # Cache the nix development shell specifically
+      - name: Cache nix development shell
+        id: nix-shell-cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            /tmp/nix-shell-cache
+          key: ${{ runner.os }}-nix-shell-${{ hashFiles('shell.nix', 'default.nix', 'flake.nix', 'flake.lock') }}
+
+      # Pre-build the development shell if it's not in cache
+      - name: Pre-build nix development shell
+        if: steps.nix-shell-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p /tmp/nix-shell-cache
+          # Build the dev shell into a profile
+          nix develop . --impure --profile /tmp/nix-shell-cache/profile
 
       - name: Update version in deno.jsonc and npm
         run: |
-          cd packages/bolt-foundry
-          # Update version in deno.jsonc
-          deno run -A --unstable -e "
-            const denoJsonc = JSON.parse(Deno.readTextFileSync('./deno.json'));
-            denoJsonc.version = '${{ github.event.inputs.version }}';
-            Deno.writeTextFileSync('./deno.json', JSON.stringify(denoJsonc, null, 2));
-            console.log('Updated deno.json version to ${{ github.event.inputs.version }}');
+          cd $GITHUB_WORKSPACE
+          # Use the cached profile for the development shell
+          nix develop . --impure --profile /tmp/nix-shell-cache/profile --command bash -c "
+            cd packages/bolt-foundry
+            # Update version in deno.json using jq instead of deno eval
+            ls -la
+            jq --arg version '${{ github.event.inputs.version }}' '.version = \$version' ./deno.json > ./deno.json.tmp
+            mv ./deno.json.tmp ./deno.json
+            echo \"Updated deno.json version to ${{ github.event.inputs.version }}\"
           "
 
       - name: Build package
         run: |
-          cd packages/bolt-foundry
-          deno run -A bin/build.ts
+          cd $GITHUB_WORKSPACE
+          # Use the cached profile for the development shell
+          nix develop . --impure --profile /tmp/nix-shell-cache/profile --command bash -c "
+            deno run -A packages/bolt-foundry/bin/build.ts
+          "
 
       - name: Publish to npm
         run: |
-          cd packages/bolt-foundry/npm
-          npm publish --access public --tag ${{ github.event.inputs.tag }}
+          cd $GITHUB_WORKSPACE
+          # Use the cached profile for the development shell
+          nix develop . --impure --profile /tmp/nix-shell-cache/profile --command bash -c "
+            cd packages/bolt-foundry/npm
+            echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
+            npm publish --access public --tag ${{ github.event.inputs.tag }}
+          "
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Publish to JSR
-        run: |
-          cd packages/bolt-foundry
-          deno publish --allow-dirty --token ${{ secrets.JSR_TOKEN }}
-        env:
-          JSR_TOKEN: ${{ secrets.JSR_TOKEN }}
+      # - name: Publish to JSR
+      #   run: |
+      #     cd $GITHUB_WORKSPACE
+      #     # Use the cached profile for the development shell
+      #     nix develop . --impure --profile /tmp/nix-shell-cache/profile --command bash -c "
+      #       cd packages/bolt-foundry
+      #       deno publish --allow-dirty --token ${{ secrets.JSR_TOKEN }}
+      #     "
+      #   env:
+      #     JSR_TOKEN: ${{ secrets.JSR_TOKEN }}
 
       - name: Create Git Tag
         run: |

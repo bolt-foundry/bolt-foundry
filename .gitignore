@@ -4,7 +4,8 @@ build/**
 nix_system
 .direnv
 attached_assets/
-static/build/*
+static/build/**
+static/tmp/*
 .cache
 .local
 node_modules
@@ -24,3 +25,9 @@ generated-icon.png
 .config/op/
 .config/op/*.sock
 .env
+.env.local
+*.local.*
+.DS_Store
+
+# Generated Claude commands for BFT
+.claude/commands/bft/

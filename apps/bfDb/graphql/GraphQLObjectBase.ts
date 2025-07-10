@@ -1,23 +1,10 @@
-import { BfError } from "infra/BfError.ts";
+import type { GraphqlNode } from "@bfmono/apps/bfDb/graphql/helpers.ts";
 import {
-  defineGqlNode as _baseDefineGqlNode,
   type GqlNodeSpec,
-} from "./builder/builder.ts";
+  makeGqlSpec,
+} from "@bfmono/apps/bfDb/builders/graphql/makeGqlSpec.ts";
 
-type HasGqlSpecCtor = {
-  new (...args: unknown[]): unknown; // <- constructor signature
-  gqlSpec?: GqlNodeSpec; // <- static prop
-};
-/** Small helper so other files can do `isGraphQLObjectBase(SomeCtor)` */
-export function isGraphQLObjectBase(
-  ctor: unknown,
-): ctor is typeof GraphQLObjectBase {
-  return typeof ctor === "function" &&
-    "defineGqlNode" in ctor &&
-    "gqlSpec" in ctor;
-}
-
-export class GraphQLObjectBase {
+export abstract class GraphQLObjectBase {
   /* ────────────────────────────────
    *  Runtime identity helpers
    * ────────────────────────────────*/
@@ -35,94 +22,65 @@ export class GraphQLObjectBase {
   }
 
   // allow subclasses to override the id
-  protected constructor(tmpId?: string) {
+  constructor(tmpId?: string) {
     if (tmpId) this.#tmpId = tmpId;
   }
 
-  /* ────────────────────────────────
-   *  GraphQL definition cache
-   * ────────────────────────────────*/
-
   /**
-   * Public DSL entry-point.
-   *  ✔ adds an `id()` helper automatically
-   *  ✔ throws if generic mutation helpers are invoked
-   *  ✔ caches the generated spec so callers get the same object back
+   * Define a GraphQL node using the fluent builder pattern.
+   * This is the primary way to define GraphQL types for nodes.
+   *
+   * The builder provides methods for:
+   * - Scalar fields (.string(), .int(), .boolean(), .id())
+   * - Object relationships (.object())
+   * - Mutations (.mutation())
+   * - Required fields (.nonNull.string(), etc.)
+   *
+   * Object fields without custom resolvers are automatically treated as edge
+   * relationships, with the field name becoming the edge role.
+   *
+   * Example:
+   * ```typescript
+   * static override gqlSpec = this.defineGqlNode(gql =>
+   *   gql
+   *     .string("name")
+   *     .id("id")
+   *     .nonNull.boolean("isActive")
+   *     .object("owner", () => OtherClass)
+   *     .mutation("update", {
+   *       args: (a) => a.nonNull.string("newName"),
+   *       returns: (r) => r.boolean("success").string("message"),
+   *       resolve: (root, args, ctx) => ({ success: true, message: "Updated" })
+   *     })
+   * );
+   * ```
+   *
+   * @param def Builder function that configures the GraphQL type
+   * @returns GqlNodeSpec with fields, relations, and mutations
    */
   static defineGqlNode(
-    def: Parameters<typeof _baseDefineGqlNode>[0] | null,
-  ): GqlNodeSpec | null | undefined {
-    // 0) explicit opt-out
-    if (def === null) return (this.gqlSpec = null);
-
-    // 1) return our own cached copy (but not an ancestor’s)
-    if (Object.prototype.hasOwnProperty.call(this, "gqlSpec") && this.gqlSpec) {
-      return this.gqlSpec;
-    }
-
-    //— Wrap the user callback to (a) inject id helper, (b) ban update/delete —
-    const wrapped = (
-      // #techdebt
-      // deno-lint-ignore no-explicit-any
-      field: any,
-      // deno-lint-ignore no-explicit-any
-      relation: any,
-      // deno-lint-ignore no-explicit-any
-      mutation: any,
-    ) => {
-      // 1) Ensure `id()` always exists even if user never calls it
-      if (!("id" in field)) {
-        field.id = (name = "id") => {
-          // Delegate to normal scalar builder so types line up
-          return field.string(name); // "id" becomes scalar later
-        };
-      }
-
-      // Always materialise the field so specs that *never* call `field.id()`
-      // still end up with it in the SDL.  Calling it twice is harmless.
-      field.id("id");
-
-      // 2) Keep only the custom mutation helper
-      const bad = () => {
-        throw new BfError(
-          "Generic mutation helpers don't exist on GraphQLObjectBase and BfNodeBase. " +
-            "Use mutation.custom(…) instead.",
-        );
-      };
-      Object.defineProperties(mutation, {
-        update: { value: bad },
-        delete: { value: bad },
-        create: { value: bad },
-      });
-
-      // 3) Finally run the user’s callback
-      if (def) {
-        def(field, relation, mutation);
-      }
-    };
-
-    //— Build and cache the spec ————————————————————————————————
-    const spec = _baseDefineGqlNode(wrapped);
-    spec.owner ??= this.name;
-
-    // subclasses that *extend* another GraphQLObjectBase automatically
-    // inherit the parent’s implements-chain
-    const Parent = Object.getPrototypeOf(this) as HasGqlSpecCtor;
-    // Skip the base class itself – we don’t want a GraphQLObjectBase
-    // interface appearing in the schema (would require resolveType).
-    if (
-      isGraphQLObjectBase(Parent) && Parent !== this && Parent.gqlSpec
-    ) {
-      // put the direct parent first, then keep whatever it already implements
-      spec.implements = [Parent.name, ...(Parent.gqlSpec.implements ?? [])];
-    }
-
-    return (this.gqlSpec = spec);
+    def: Parameters<typeof makeGqlSpec>[0],
+  ): GqlNodeSpec {
+    return makeGqlSpec(def);
   }
 
-  static gqlSpec?: GqlNodeSpec | null | undefined = this.defineGqlNode(
-    (field) => {
-      field.id("id");
-    },
-  );
+  /**
+   * Default GraphQL specification that includes only an ID field.
+   * Subclasses should override this with their own field definitions.
+   */
+  static gqlSpec?: GqlNodeSpec = this.defineGqlNode((gql) => gql.id("id"));
+
+  /**
+   * Converts the object to a GraphQL-compatible format.
+   * This implementation returns the minimal required fields, but subclasses
+   * (especially BfNode) provide more comprehensive implementations.
+   *
+   * @returns A GraphQL-compatible representation of this object
+   */
+  toGraphql(): GraphqlNode {
+    return {
+      __typename: this.__typename,
+      id: this.id,
+    };
+  }
 }

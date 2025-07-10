@@ -4,18 +4,18 @@
 import { assert, assertStringIncludes } from "@std/assert";
 import { join } from "@std/path";
 import { emptyDir } from "@std/fs";
-import { llm } from "infra/bff/friends/llm.bff.ts";
-import { getLogger } from "packages/logger/logger.ts";
+import { llm } from "@bfmono/infra/bff/friends/llm.bff.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
-async function runLlmAndCapture(args: string[]): Promise<string[]> {
+async function runLlmAndCapture(args: Array<string>): Promise<Array<string>> {
   const bffLlmLogger = getLogger(
     import.meta.resolve("infra/bff/friends/llm.bff.ts").replace("file://", ""),
   );
-  const lines: string[] = [];
+  const lines: Array<string> = [];
   const originalInfo = bffLlmLogger.info;
 
   try {
-    bffLlmLogger.info = (...msgs: unknown[]) => {
+    bffLlmLogger.info = (...msgs: Array<unknown>) => {
       // collect everything that would have gone to logger.info
       lines.push(msgs.map(String).join(" "));
     };

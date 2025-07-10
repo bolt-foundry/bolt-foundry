@@ -2,7 +2,7 @@ import {
   createIsographEnvironment,
   createIsographStore,
 } from "@isograph/react";
-import { getLogger } from "packages/logger/logger.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
@@ -43,7 +43,7 @@ export function getEnvironment() {
   // @ts-expect-error Not typed on the window yet
   globalThis.__ISOGRAPH_STORE__ ??= createIsographStore();
   // @ts-expect-error Not typed on the window yet
-  return globalThis.__ISOGRAPH__ENVIRONMENT__ ??= createIsographEnvironment(
+  return globalThis.__ISOGRAPH_ENVIRONMENT__ ??= createIsographEnvironment(
     // @ts-expect-error Not typed on the window yet
     globalThis.__ISOGRAPH_STORE__,
     makeNetworkRequest,

@@ -1,16 +1,18 @@
-import { getLogger } from "packages/logger/logger.ts";
-import { BfErrorDb } from "apps/bfDb/classes/BfErrorDb.ts";
-import type { BfGid } from "apps/bfDb/classes/BfNodeIds.ts";
-import type { BfMetadataNode } from "apps/bfDb/coreModels/BfNode.ts";
-import type { BfMetadataEdge } from "apps/bfDb/coreModels/BfEdge.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import { BfErrorDb } from "@bfmono/apps/bfDb/classes/BfErrorDb.ts";
+import type { BfGid } from "@bfmono/lib/types.ts";
+import type {
+  BfEdgeMetadata,
+  BfNodeMetadata,
+} from "@bfmono/apps/bfDb/classes/BfNode.ts";
 import type {
   Connection,
   ConnectionArguments,
   Edge,
   PageInfo,
 } from "graphql-relay";
-import type { BfDbMetadata } from "apps/bfDb/backend/DatabaseBackend.ts";
-import { closeBackend, getBackend } from "apps/bfDb/bfDbBackend.ts";
+import type { BfDbMetadata } from "@bfmono/apps/bfDb/backend/DatabaseBackend.ts";
+import { closeBackend, getBackend } from "@bfmono/apps/bfDb/bfDbBackend.ts";
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 
 const logger = getLogger(import.meta);
@@ -84,7 +86,7 @@ export async function bfPutItem<
   TProps extends Props = Props,
 >(
   itemProps: TProps,
-  itemMetadata: BfMetadataNode | BfMetadataEdge,
+  itemMetadata: BfNodeMetadata | BfEdgeMetadata,
   sortValue = Date.now(),
 ): Promise<void> {
   const backend = await getBackend();
@@ -271,7 +273,7 @@ export async function bfQueryItemsUnified<
 export async function bfQueryItems<
   TProps extends Props = Props,
 >(
-  metadataToQuery: Partial<BfMetadataNode | BfMetadataEdge>,
+  metadataToQuery: Partial<BfNodeMetadata | BfEdgeMetadata>,
   propsToQuery: Partial<TProps> = {},
   bfGids?: Array<string>,
   orderDirection: "ASC" | "DESC" = "ASC",
@@ -310,7 +312,7 @@ export async function bfQueryItems<
 export async function bfQueryItemsWithSizeLimit<
   TProps extends Props = Props,
 >(
-  metadataToQuery: Partial<BfMetadataNode | BfMetadataEdge>,
+  metadataToQuery: Partial<BfNodeMetadata | BfEdgeMetadata>,
   propsToQuery: Partial<TProps> = {},
   bfGids?: Array<string>,
   orderDirection: "ASC" | "DESC" = "ASC",
@@ -340,7 +342,7 @@ export async function bfQueryItemsWithSizeLimit<
 export async function bfQueryItemsTop<
   TProps extends Props = Props,
 >(
-  metadataToQuery: Partial<BfMetadataNode | BfMetadataEdge>,
+  metadataToQuery: Partial<BfNodeMetadata | BfEdgeMetadata>,
   propsToQuery: Partial<TProps> = {},
   bfGids?: Array<string>,
   orderDirection: "ASC" | "DESC" = "ASC",
@@ -366,7 +368,7 @@ export async function bfQueryItemsTop<
 export async function bfQueryItem<
   TProps extends Props = Props,
 >(
-  metadataToQuery: Partial<BfMetadataNode | BfMetadataEdge>,
+  metadataToQuery: Partial<BfNodeMetadata | BfEdgeMetadata>,
   propsToQuery: Partial<TProps> = {},
   bfGid?: string,
   orderDirection: "ASC" | "DESC" = "ASC",
@@ -389,7 +391,7 @@ export async function bfQueryItem<
 }
 
 export async function bfQueryItemsStream<TProps extends Props = Props>(
-  metadataToQuery: Partial<BfMetadataNode | BfMetadataEdge>,
+  metadataToQuery: Partial<BfNodeMetadata | BfEdgeMetadata>,
   propsToQuery: Partial<TProps> = {},
   bfGids?: Array<string>,
   orderDirection: "ASC" | "DESC" = "ASC",
@@ -417,7 +419,7 @@ export async function bfQueryItemsStream<TProps extends Props = Props>(
 export async function bfQueryItemsStreamWithSizeLimit<
   TProps extends Props = Props,
 >(
-  metadataToQuery: Partial<BfMetadataNode | BfMetadataEdge>,
+  metadataToQuery: Partial<BfNodeMetadata | BfEdgeMetadata>,
   propsToQuery: Partial<TProps> = {},
   bfGids?: Array<string>,
   orderDirection: "ASC" | "DESC" = "ASC",

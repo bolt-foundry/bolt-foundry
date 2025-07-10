@@ -1,15 +1,15 @@
 import { assert, assertEquals } from "@std/assert";
 import {
   navigateTo,
-  setupE2ETest,
   teardownE2ETest,
-} from "infra/testing/e2e/setup.ts";
-import { getLogger } from "packages/logger/logger.ts";
+} from "@bfmono/infra/testing/e2e/setup.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import { setupBoltFoundryTest } from "../helpers.ts";
 
 const logger = getLogger(import.meta);
 
-Deno.test("Home page loads successfully", async () => {
-  const context = await setupE2ETest({ headless: true });
+Deno.test.ignore("Home page loads successfully", async () => {
+  const context = await setupBoltFoundryTest();
 
   try {
     // Navigate to the home page

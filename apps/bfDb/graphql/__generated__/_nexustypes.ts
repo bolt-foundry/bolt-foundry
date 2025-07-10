@@ -8,14 +8,9 @@
 
 import type { Context } from "./../graphqlContext.ts"
 import type { core, connectionPluginCore } from "nexus"
-declare global {
-  interface NexusGenCustomInputMethods<TypeName extends string> {
-    json<FieldName extends string>(fieldName: FieldName, opts?: core.CommonInputFieldConfig<TypeName, FieldName>): void // "JSON";
-  }
-}
+
 declare global {
   interface NexusGenCustomOutputMethods<TypeName extends string> {
-    json<FieldName extends string>(fieldName: FieldName, ...opts: core.ScalarOutSpread<TypeName, FieldName>): void // "JSON";
     /**
      * Adds a Relay-style connection to the type, with numerous options for configuration
      *
@@ -45,59 +40,44 @@ export interface NexusGenScalars {
   Float: number
   Boolean: boolean
   ID: string
-  JSON: any
+  IsoDate: any
 }
 
 export interface NexusGenObjects {
-  BfEdge: { // root type
-    id?: string | null; // ID
+  BfEdge: {};
+  BfOrganization: {};
+  BfPerson: {};
+  BlogPost: {};
+  BlogPostConnection: { // root type
+    count?: number | null; // Int
+    edges?: Array<NexusGenRootTypes['BlogPostEdge'] | null> | null; // [BlogPostEdge]
+    nodes?: Array<NexusGenRootTypes['BlogPost'] | null> | null; // [BlogPost]
+    pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
   }
-  BfEdgeBase: { // root type
-    id?: string | null; // ID
+  BlogPostEdge: { // root type
+    cursor: string; // String!
+    node?: NexusGenRootTypes['BlogPost'] | null; // BlogPost
   }
-  BfOrganization: { // root type
-    id?: string | null; // ID
-    name?: string | null; // String
-    person: NexusGenRootTypes['BfPerson'][]; // [BfPerson!]!
-    settings?: NexusGenScalars['JSON'] | null; // JSON
-  }
-  BfPerson: { // root type
-    email?: string | null; // String
-    id?: string | null; // ID
-    name?: string | null; // String
-  }
-  CurrentViewerLoggedIn: { // root type
-    id?: string | null; // ID
-    orgBfOid?: string | null; // String
-    personBfGid?: string | null; // String
-  }
-  CurrentViewerLoggedOut: { // root type
-    id?: string | null; // ID
-    orgBfOid?: string | null; // String
-    personBfGid?: string | null; // String
-  }
-  JoinPayload: { // root type
+  GithubRepoStats: {};
+  JoinWaitlistPayload: { // root type
     message?: string | null; // String
-    success?: boolean | null; // Boolean
-  }
-  LoginWithEmailDevPayload: { // root type
-    currentViewer: NexusGenRootTypes['CurrentViewer']; // CurrentViewer!
-  }
-  LoginWithGooglePayload: { // root type
-    currentViewer: NexusGenRootTypes['CurrentViewer']; // CurrentViewer!
+    success: boolean; // Boolean!
   }
   Mutation: {};
-  Query: {};
-  Waitlist: { // root type
-    ok?: boolean | null; // Boolean
+  PageInfo: { // root type
+    endCursor?: string | null; // String
+    hasNextPage: boolean; // Boolean!
+    hasPreviousPage: boolean; // Boolean!
+    startCursor?: string | null; // String
   }
+  PublishedDocument: {};
+  Query: {};
+  Waitlist: {};
 }
 
 export interface NexusGenInterfaces {
-  BfNode: core.Discriminate<'BfOrganization', 'optional'> | core.Discriminate<'BfPerson', 'optional'>;
-  BfNodeBase: core.Discriminate<'BfEdge', 'optional'> | core.Discriminate<'BfOrganization', 'optional'> | core.Discriminate<'BfPerson', 'optional'>;
-  CurrentViewer: core.Discriminate<'CurrentViewerLoggedIn', 'optional'> | core.Discriminate<'CurrentViewerLoggedOut', 'optional'>;
-  GraphQLObjectBase: core.Discriminate<'CurrentViewerLoggedIn', 'optional'> | core.Discriminate<'CurrentViewerLoggedOut', 'optional'>;
+  BfNode: any;
+  Node: any;
 }
 
 export interface NexusGenUnions {
@@ -109,68 +89,74 @@ export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 
 export interface NexusGenFieldTypes {
   BfEdge: { // field return type
-    id: string | null; // ID
-  }
-  BfEdgeBase: { // field return type
-    id: string | null; // ID
+    id: string; // ID!
   }
   BfOrganization: { // field return type
-    id: string | null; // ID
+    domain: string | null; // String
     name: string | null; // String
-    person: NexusGenRootTypes['BfPerson'][]; // [BfPerson!]!
-    settings: NexusGenScalars['JSON'] | null; // JSON
   }
   BfPerson: { // field return type
     email: string | null; // String
-    id: string | null; // ID
+    memberOf: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
     name: string | null; // String
   }
-  CurrentViewerLoggedIn: { // field return type
-    id: string | null; // ID
-    orgBfOid: string | null; // String
-    personBfGid: string | null; // String
+  BlogPost: { // field return type
+    author: string | null; // String
+    content: string; // String!
+    excerpt: string; // String!
+    heroImage: string | null; // String
+    id: string; // ID!
+    publishedAt: NexusGenScalars['IsoDate'] | null; // IsoDate
+    tags: string; // String!
+    title: string; // String!
+    updatedAt: NexusGenScalars['IsoDate'] | null; // IsoDate
   }
-  CurrentViewerLoggedOut: { // field return type
-    id: string | null; // ID
-    orgBfOid: string | null; // String
-    personBfGid: string | null; // String
+  BlogPostConnection: { // field return type
+    count: number | null; // Int
+    edges: Array<NexusGenRootTypes['BlogPostEdge'] | null> | null; // [BlogPostEdge]
+    nodes: Array<NexusGenRootTypes['BlogPost'] | null> | null; // [BlogPost]
+    pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
   }
-  JoinPayload: { // field return type
+  BlogPostEdge: { // field return type
+    cursor: string; // String!
+    node: NexusGenRootTypes['BlogPost'] | null; // BlogPost
+  }
+  GithubRepoStats: { // field return type
+    id: string; // ID!
+    stars: number; // Int!
+  }
+  JoinWaitlistPayload: { // field return type
     message: string | null; // String
-    success: boolean | null; // Boolean
-  }
-  LoginWithEmailDevPayload: { // field return type
-    currentViewer: NexusGenRootTypes['CurrentViewer']; // CurrentViewer!
-  }
-  LoginWithGooglePayload: { // field return type
-    currentViewer: NexusGenRootTypes['CurrentViewer']; // CurrentViewer!
+    success: boolean; // Boolean!
   }
   Mutation: { // field return type
-    joinWaitlist: NexusGenRootTypes['JoinPayload'] | null; // JoinPayload
-    loginWithEmailDevCurrentViewer: NexusGenRootTypes['LoginWithEmailDevPayload'] | null; // LoginWithEmailDevPayload
-    loginWithGoogleCurrentViewer: NexusGenRootTypes['LoginWithGooglePayload'] | null; // LoginWithGooglePayload
+    joinWaitlist: NexusGenRootTypes['JoinWaitlistPayload'] | null; // JoinWaitlistPayload
+  }
+  PageInfo: { // field return type
+    endCursor: string | null; // String
+    hasNextPage: boolean; // Boolean!
+    hasPreviousPage: boolean; // Boolean!
+    startCursor: string | null; // String
+  }
+  PublishedDocument: { // field return type
+    content: string; // String!
+    id: string; // ID!
   }
   Query: { // field return type
-    currentViewer: NexusGenRootTypes['CurrentViewer']; // CurrentViewer!
-  }
-  Waitlist: { // field return type
+    blogPost: NexusGenRootTypes['BlogPost'] | null; // BlogPost
+    blogPosts: NexusGenRootTypes['BlogPostConnection'] | null; // BlogPostConnection
+    documentsBySlug: NexusGenRootTypes['PublishedDocument'] | null; // PublishedDocument
+    githubRepoStats: NexusGenRootTypes['GithubRepoStats'] | null; // GithubRepoStats
     ok: boolean | null; // Boolean
   }
+  Waitlist: { // field return type
+    id: string | null; // ID
+  }
   BfNode: { // field return type
-    id: string | null; // ID
+    id: string; // ID!
   }
-  BfNodeBase: { // field return type
-    id: string | null; // ID
-  }
-  CurrentViewer: { // field return type
-    id: string | null; // ID
-    orgBfOid: string | null; // String
-    personBfGid: string | null; // String
-  }
-  GraphQLObjectBase: { // field return type
-    id: string | null; // ID
-    orgBfOid: string | null; // String
-    personBfGid: string | null; // String
+  Node: { // field return type
+    id: string; // ID!
   }
 }
 
@@ -178,66 +164,72 @@ export interface NexusGenFieldTypeNames {
   BfEdge: { // field return type name
     id: 'ID'
   }
-  BfEdgeBase: { // field return type name
-    id: 'ID'
-  }
   BfOrganization: { // field return type name
-    id: 'ID'
+    domain: 'String'
     name: 'String'
-    person: 'BfPerson'
-    settings: 'JSON'
   }
   BfPerson: { // field return type name
     email: 'String'
-    id: 'ID'
+    memberOf: 'BfOrganization'
     name: 'String'
   }
-  CurrentViewerLoggedIn: { // field return type name
+  BlogPost: { // field return type name
+    author: 'String'
+    content: 'String'
+    excerpt: 'String'
+    heroImage: 'String'
     id: 'ID'
-    orgBfOid: 'String'
-    personBfGid: 'String'
+    publishedAt: 'IsoDate'
+    tags: 'String'
+    title: 'String'
+    updatedAt: 'IsoDate'
   }
-  CurrentViewerLoggedOut: { // field return type name
+  BlogPostConnection: { // field return type name
+    count: 'Int'
+    edges: 'BlogPostEdge'
+    nodes: 'BlogPost'
+    pageInfo: 'PageInfo'
+  }
+  BlogPostEdge: { // field return type name
+    cursor: 'String'
+    node: 'BlogPost'
+  }
+  GithubRepoStats: { // field return type name
     id: 'ID'
-    orgBfOid: 'String'
-    personBfGid: 'String'
+    stars: 'Int'
   }
-  JoinPayload: { // field return type name
+  JoinWaitlistPayload: { // field return type name
     message: 'String'
     success: 'Boolean'
   }
-  LoginWithEmailDevPayload: { // field return type name
-    currentViewer: 'CurrentViewer'
-  }
-  LoginWithGooglePayload: { // field return type name
-    currentViewer: 'CurrentViewer'
-  }
   Mutation: { // field return type name
-    joinWaitlist: 'JoinPayload'
-    loginWithEmailDevCurrentViewer: 'LoginWithEmailDevPayload'
-    loginWithGoogleCurrentViewer: 'LoginWithGooglePayload'
+    joinWaitlist: 'JoinWaitlistPayload'
+  }
+  PageInfo: { // field return type name
+    endCursor: 'String'
+    hasNextPage: 'Boolean'
+    hasPreviousPage: 'Boolean'
+    startCursor: 'String'
+  }
+  PublishedDocument: { // field return type name
+    content: 'String'
+    id: 'ID'
   }
   Query: { // field return type name
-    currentViewer: 'CurrentViewer'
+    blogPost: 'BlogPost'
+    blogPosts: 'BlogPostConnection'
+    documentsBySlug: 'PublishedDocument'
+    githubRepoStats: 'GithubRepoStats'
+    ok: 'Boolean'
   }
   Waitlist: { // field return type name
-    ok: 'Boolean'
+    id: 'ID'
   }
   BfNode: { // field return type name
     id: 'ID'
   }
-  BfNodeBase: { // field return type name
+  Node: { // field return type name
     id: 'ID'
-  }
-  CurrentViewer: { // field return type name
-    id: 'ID'
-    orgBfOid: 'String'
-    personBfGid: 'String'
-  }
-  GraphQLObjectBase: { // field return type name
-    id: 'ID'
-    orgBfOid: 'String'
-    personBfGid: 'String'
   }
 }
 
@@ -245,33 +237,32 @@ export interface NexusGenArgTypes {
   Mutation: {
     joinWaitlist: { // args
       company?: string | null; // String
-      email?: string | null; // String
-      name?: string | null; // String
-    }
-    loginWithEmailDevCurrentViewer: { // args
       email: string; // String!
+      name: string; // String!
     }
-    loginWithGoogleCurrentViewer: { // args
-      idToken: string; // String!
+  }
+  Query: {
+    blogPost: { // args
+      slug?: string | null; // String
+    }
+    blogPosts: { // args
+      after?: string | null; // String
+      before?: string | null; // String
+      filterByYear?: string | null; // String
+      first?: number | null; // Int
+      last?: number | null; // Int
+      sortDirection?: string | null; // String
+    }
+    documentsBySlug: { // args
+      slug?: string | null; // String
     }
   }
 }
 
 export interface NexusGenAbstractTypeMembers {
-  BfNode: "BfOrganization" | "BfPerson"
-  BfNodeBase: "BfEdge" | "BfOrganization" | "BfPerson"
-  CurrentViewer: "CurrentViewerLoggedIn" | "CurrentViewerLoggedOut"
-  GraphQLObjectBase: "CurrentViewerLoggedIn" | "CurrentViewerLoggedOut"
 }
 
 export interface NexusGenTypeInterfaces {
-  BfEdge: "BfNodeBase"
-  BfOrganization: "BfNode" | "BfNodeBase"
-  BfPerson: "BfNode" | "BfNodeBase"
-  CurrentViewerLoggedIn: "CurrentViewer" | "GraphQLObjectBase"
-  CurrentViewerLoggedOut: "CurrentViewer" | "GraphQLObjectBase"
-  BfNode: "BfNodeBase"
-  CurrentViewer: "GraphQLObjectBase"
 }
 
 export type NexusGenObjectNames = keyof NexusGenObjects;
@@ -288,13 +279,13 @@ export type NexusGenUnionNames = never;
 
 export type NexusGenObjectsUsingAbstractStrategyIsTypeOf = never;
 
-export type NexusGenAbstractsUsingStrategyResolveType = "BfNode" | "BfNodeBase" | "CurrentViewer" | "GraphQLObjectBase";
+export type NexusGenAbstractsUsingStrategyResolveType = "BfNode" | "Node";
 
 export type NexusGenFeaturesConfig = {
   abstractTypeStrategies: {
     __typename: true
+    resolveType: true
     isTypeOf: false
-    resolveType: false
   }
 }
 

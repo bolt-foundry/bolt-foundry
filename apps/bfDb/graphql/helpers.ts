@@ -3,9 +3,12 @@ import {
   type ConnectionArguments,
   connectionFromArray,
 } from "graphql-relay";
-import type { BfNodeBase } from "apps/bfDb/classes/BfNodeBase.ts";
+import type { JSONValue } from "@bfmono/apps/bfDb/bfDb.ts";
+import type { BfNode } from "@bfmono/apps/bfDb/classes/BfNode.ts";
 
-export type GraphqlNode = Record<string, unknown> & {
+export type GraphqlNode<
+  T extends Record<string, JSONValue> = Record<string, JSONValue>,
+> = T & {
   id: string;
   __typename: string;
 };
@@ -13,7 +16,7 @@ export type GraphqlNode = Record<string, unknown> & {
  * Convert a BfNodeBase instance into the standard GraphQL representation
  * (id, __typename, props + computed getters).
  */
-export function toGraphqlFromNode(node: BfNodeBase): GraphqlNode {
+export function toGraphqlFromNode(node: BfNode): GraphqlNode {
   const descriptors = Object.getOwnPropertyDescriptors(node as object);
   const skip = new Set(["metadata", "cv", "props"]);
 
@@ -36,9 +39,9 @@ export function toGraphqlFromNode(node: BfNodeBase): GraphqlNode {
  * Build a Relay‑style Connection from an array of GraphQL‑ready nodes.
  */
 export function connectionFromNodes<N>(
-  graphqlNodes: N[],
+  graphqlNodes: Array<N>,
   args: ConnectionArguments,
 ): Connection<N> {
   // deno-lint-ignore no-explicit-any
-  return connectionFromArray(graphqlNodes as any[], args) as Connection<N>;
+  return connectionFromArray(graphqlNodes as Array<any>, args) as Connection<N>;
 }

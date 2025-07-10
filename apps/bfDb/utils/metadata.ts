@@ -1,17 +1,19 @@
-import { toBfGid } from "apps/bfDb/classes/BfNodeIds.ts";
-import { generateUUID } from "lib/generateUUID.ts";
-import type { BfMetadataBase } from "apps/bfDb/classes/BfNodeBase.ts";
-import type { BfMetadataEdgeBase } from "apps/bfDb/classes/BfEdgeBase.ts";
-import type { CurrentViewer } from "apps/bfDb/classes/CurrentViewer.ts";
+import { generateUUID } from "@bfmono/lib/generateUUID.ts";
+import type {
+  BfEdgeMetadata,
+  BfMetadata,
+} from "@bfmono/apps/bfDb/classes/BfNode.ts";
+import type { CurrentViewer } from "@bfmono/apps/bfDb/classes/CurrentViewer.ts";
+import type { BfGid } from "@bfmono/lib/types.ts";
 
 /** Generate base node metadata */
-export function generateNodeMetadata<T extends BfMetadataBase>(
+export function generateNodeMetadata<T extends BfMetadata>(
   cv: CurrentViewer,
   className: string,
   partial: Partial<T> = {},
 ): T {
   return {
-    bfGid: toBfGid(generateUUID()),
+    bfGid: generateUUID() as BfGid,
     bfOid: cv.orgBfOid,
     className,
     sortValue: Date.now(),
@@ -20,7 +22,7 @@ export function generateNodeMetadata<T extends BfMetadataBase>(
 }
 
 /** Generate base edge metadata (node + source/target fields) */
-export function generateEdgeMetadata<T extends BfMetadataEdgeBase>(
+export function generateEdgeMetadata<T extends BfEdgeMetadata>(
   cv: CurrentViewer,
   source: { metadata: { bfGid: string; className: string } },
   target: { metadata: { bfGid: string; className: string } },

@@ -1,0 +1,63 @@
+# .github/workflows/flakehub-publish-rolling.yml
+name: CI + FlakeHub
+
+on:
+  push: # keeps the automatic path
+    branches: [main]
+  workflow_dispatch: # <-- this enables the Run-button
+    inputs: # (optional) pass parameters at run-time
+      ref:
+        description: "Branch or tag to build"
+        required: false
+        default: "main"
+      include_outputs:
+        description: "Upload realised store paths?"
+        type: boolean
+        default: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.ref || 'main' }}
+
+      - uses: DeterminateSystems/nix-installer-action@main
+        with: { determinate: true }
+
+      - uses: DeterminateSystems/flakehub-cache-action@main
+
+      # Remove large files before build
+      - name: Remove large files
+        run: |
+          # Remove large media files before building
+          rm -rf static/assets/videos
+          rm -rf static/assets/images
+
+          # Check size after removal
+          echo "Repository size after removal:"
+          du -sh .
+
+      # build whatever you want cached
+      - run: nix develop .#devShells.x86_64-linux.default -c true
+
+      # Verify repository size after cleaning
+      - name: Verify Repository Size
+        run: |
+          # Check size after large files were removed
+          echo "Repository size after removal:"
+          du -sh .
+
+          # Double-check for any remaining large files
+          echo "Any remaining large files:"
+          find . -type f -size +5M | grep -v "\.git" | grep -v "\.sl" | xargs du -sh 2>/dev/null || echo "No large files found"
+
+      # Push the cleaned repository to FlakeHub
+      - uses: DeterminateSystems/flakehub-push@v2
+        with:
+          rolling: true
+          visibility: public

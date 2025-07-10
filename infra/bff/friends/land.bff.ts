@@ -1,12 +1,12 @@
 #! /usr/bin/env -S bff
 
 import { parse as parseToml, stringify as stringifyToml } from "@std/toml";
-import { register } from "infra/bff/bff.ts";
+import { register } from "@bfmono/infra/bff/bff.ts";
 import {
   runShellCommand,
   runShellCommandWithOutput,
-} from "infra/bff/shellBase.ts";
-import { getLogger } from "packages/logger/logger.ts";
+} from "@bfmono/infra/bff/shellBase.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
@@ -88,17 +88,28 @@ export async function land(): Promise<number> {
     return installResult;
   }
 
-  // Build BFF with bolt-foundry package
-  logger.info("Building BFF with bolt-foundry package...");
+  // Build BFF
+  logger.info("Building BFF...");
   const buildResult = await runShellCommand([
     "bff",
     "build",
-    "--include-bolt-foundry",
   ]);
 
   if (buildResult !== 0) {
     logger.error("Failed to build BFF");
     return buildResult;
+  }
+
+  // Generate Claude commands for BFT
+  logger.info("Generating Claude commands for BFT...");
+  const claudifyResult = await runShellCommand([
+    "bft",
+    "claudify",
+  ]);
+
+  if (claudifyResult !== 0) {
+    logger.error("Failed to generate Claude commands");
+    return claudifyResult;
   }
 
   const currentSaplingHash = await getCurrentSaplingHash();
@@ -164,6 +175,23 @@ export async function land(): Promise<number> {
     }
   } else {
     logger.info("No .replit.local.toml file found, skipping merge step.");
+  }
+
+  // Delete .env.local file if it exists
+  logger.info("Checking for .env.local file...");
+  const envLocalExists = await exists(".env.local");
+
+  if (envLocalExists) {
+    logger.info("Deleting .env.local file before git commit...");
+    try {
+      await Deno.remove(".env.local");
+      logger.info("Successfully deleted .env.local");
+    } catch (error) {
+      logger.error("Error deleting .env.local:", error);
+      // Continue with the process even if the delete fails
+    }
+  } else {
+    logger.info("No .env.local file found, skipping deletion.");
   }
 
   // Create git commit with sapling commits and hash

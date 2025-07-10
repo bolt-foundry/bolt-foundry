@@ -26,8 +26,8 @@
 //
 // Needs an authenticated `op` CLI session (or service-account token).
 
-import { register } from "infra/bff/bff.ts";
-import { getLogger } from "packages/logger/logger.ts";
+import { register } from "@bfmono/infra/bff/bff.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const td = new TextDecoder();
 const logger = getLogger(import.meta);
@@ -51,14 +51,14 @@ async function firstVault(): Promise<string> {
 }
 
 export async function genConfigKeys(
-  [vault, publicTag, privateTag]: string[],
+  [vault, publicTag, privateTag]: Array<string>,
 ) {
   const VAULT = vault ?? await firstVault() ?? "Shared";
   const PUB_TAG = publicTag ?? "bolt-foundry-frontend-public";
   const PRIV_TAG = privateTag ?? "bolt-foundry-backend-private";
 
   // helper – list item titles (upper‑cased) for a given tag
-  async function fetchKeys(tag: string): Promise<string[]> {
+  async function fetchKeys(tag: string): Promise<Array<string>> {
     const { success, stdout, stderr } = await new Deno.Command("op", {
       args: [
         "item",
@@ -94,7 +94,7 @@ export async function genConfigKeys(
   /* ------------------------------------------------------------------ */
   const dest = "apps/boltFoundry/__generated__/configKeys.ts";
 
-  const lines: string[] = [
+  const lines: Array<string> = [
     "/* @generated */",
     "",
     `// Source vault: "${VAULT}"`,

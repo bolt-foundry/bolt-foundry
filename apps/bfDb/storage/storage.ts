@@ -7,10 +7,12 @@
 import { AdapterRegistry } from "./AdapterRegistry.ts";
 import { registerDefaultAdapter } from "./registerDefaultAdapter.ts";
 
-import type { BfGid } from "apps/bfDb/classes/BfNodeIds.ts";
-import type { DbItem, Props } from "apps/bfDb/bfDb.ts";
-import type { BfMetadataNode } from "apps/bfDb/coreModels/BfNode.ts";
-import type { BfMetadataEdge } from "apps/bfDb/coreModels/BfEdge.ts";
+import type { BfGid } from "@bfmono/lib/types.ts";
+import type { DbItem, Props } from "@bfmono/apps/bfDb/bfDb.ts";
+import type {
+  BfEdgeMetadata,
+  BfNodeMetadata,
+} from "@bfmono/apps/bfDb/classes/BfNode.ts";
 
 /**
  * Ensures an adapter is available and returns it.
@@ -37,7 +39,7 @@ export const storage = {
     return adapter().getItem<T>(bfOid, bfGid);
   },
 
-  async put<T extends Props, M extends BfMetadataNode | BfMetadataEdge>(
+  async put<T extends Props, M extends BfNodeMetadata | BfEdgeMetadata>(
     props: T,
     metadata: M,
   ) {
@@ -47,12 +49,12 @@ export const storage = {
   query<T extends Props>(
     metadata: Record<string, unknown>,
     props: Partial<T> = {},
-    bfGids?: BfGid[],
+    bfGids?: Array<BfGid>,
     order: "ASC" | "DESC" = "ASC",
     orderBy?: string,
     // legacy `options` arg retained for backward‑compat but ignored here
     _options: Record<string, unknown> = {},
-  ): Promise<DbItem<T>[]> {
+  ): Promise<Array<DbItem<T>>> {
     // Current DatabaseBackend interface ignores order/orderBy; we pass them so
     // the signature is future‑proof once those params are respected.
     return adapter().queryItems<T>(

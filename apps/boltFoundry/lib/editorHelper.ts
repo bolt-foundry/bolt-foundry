@@ -1,4 +1,4 @@
-import { getLogger } from "packages/logger/logger.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
@@ -49,7 +49,7 @@ export function findIndexRange(content: string, textToHighlight: string) {
       const lastWord = searchWords[searchWords.length - 1];
 
       // Find all occurrences of first word
-      const firstWordIndexes: number[] = [];
+      const firstWordIndexes: Array<number> = [];
       let idx = normalizedContent.indexOf(firstWord);
       while (idx !== -1) {
         firstWordIndexes.push(idx);
@@ -57,7 +57,7 @@ export function findIndexRange(content: string, textToHighlight: string) {
       }
 
       // Find all occurrences of last word
-      const lastWordIndexes: number[] = [];
+      const lastWordIndexes: Array<number> = [];
       idx = normalizedContent.indexOf(lastWord);
       while (idx !== -1) {
         lastWordIndexes.push(idx);

@@ -1,5 +1,5 @@
-import { CfLogo } from "apps/bfDs/static/CfLogo.tsx";
-import { RouterLink } from "apps/boltFoundry/components/Router/RouterLink.tsx";
+import { CfLogo } from "@bfmono/apps/cfDs/static/CfLogo.tsx";
+import { RouterLink } from "@bfmono/apps/boltFoundry/components/Router/RouterLink.tsx";
 
 export function SubpageHeaderTitle({ children }: React.PropsWithChildren) {
   return (

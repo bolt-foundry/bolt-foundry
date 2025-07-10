@@ -7,9 +7,9 @@
 import type {
   BfDbMetadata,
   DatabaseBackend,
-} from "apps/bfDb/backend/DatabaseBackend.ts";
-import type { DbItem, Props } from "apps/bfDb/bfDb.ts";
-import { getLogger } from "packages/logger/logger.ts";
+} from "@bfmono/apps/bfDb/backend/DatabaseBackend.ts";
+import type { DbItem, Props } from "@bfmono/apps/bfDb/bfDb.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
@@ -86,12 +86,12 @@ export class InMemoryAdapter implements DatabaseBackend {
   }
 
   getItemsByBfGid<TProps extends Props = Props>(
-    bfGids: string[],
+    bfGids: Array<string>,
   ): Promise<Array<DbItem<TProps>>> {
     logger.debug("InMemoryAdapter.getItemsByBfGid(%s)", dbg(bfGids));
     const rows = bfGids
       .map((id) => this.store.get(id) as StorageRow<TProps> | undefined)
-      .filter(Boolean) as StorageRow<TProps>[];
+      .filter(Boolean) as Array<StorageRow<TProps>>;
     logger.debug(" → %d rows", rows.length);
     return Promise.resolve(rows);
   }
@@ -121,7 +121,7 @@ export class InMemoryAdapter implements DatabaseBackend {
   queryItems<TProps extends Props = Props>(
     metadataToQuery: Partial<BfDbMetadata>,
     propsToQuery: Partial<TProps> = {},
-    bfGids?: string[],
+    bfGids?: Array<string>,
   ): Promise<Array<DbItem<TProps>>> {
     logger.debug(
       "InMemoryAdapter.queryItems meta=%s props=%s ids=%s",
@@ -129,7 +129,7 @@ export class InMemoryAdapter implements DatabaseBackend {
       dbg(propsToQuery),
       dbg(bfGids),
     );
-    let rows = Array.from(this.store.values()) as StorageRow<TProps>[];
+    let rows = Array.from(this.store.values()) as Array<StorageRow<TProps>>;
     if (bfGids?.length) {
       rows = rows.filter((r) => bfGids.includes(r.metadata.bfGid));
     }

@@ -1,156 +1,70 @@
-import * as React from "react";
-import { classnames } from "lib/classnames.ts";
-import { BfDsIcon } from "apps/bfDs/components/BfDsIcon.tsx";
-import { BfDsListItem } from "apps/bfDs/components/BfDsListItem.tsx";
-import { getLogger } from "packages/logger/logger.ts";
-const logger = getLogger(import.meta);
-const BfError = Error;
+import type * as React from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useRef,
+  useState,
+} from "react";
 
-type Props = {
-  collapsible?: boolean;
-  defaultCollapsed?: boolean;
-  header?: string;
-  separator?: boolean;
-  mutuallyExclusive?: boolean;
+type BfDsListProps = {
+  /** List items (typically BfDsListItem components) */
+  children: React.ReactNode;
+  /** Additional CSS classes */
+  className?: string;
+  /** When true, only one item can be expanded at a time */
+  accordion?: boolean;
 };
 
-// Context for handling mutually exclusive expanding
-export const ListItemExpandContext = React.createContext<{
-  mutuallyExclusive: boolean;
-  activeItem: string | null;
-  setActiveItem: (id: string | null) => void;
-}>({
-  mutuallyExclusive: false,
-  activeItem: null,
-  setActiveItem: () => {},
-});
+type BfDsListContextType = {
+  accordion: boolean;
+  expandedIndex: number | null;
+  setExpandedIndex: (index: number | null) => void;
+  getItemIndex: (ref: React.RefObject<HTMLElement | null>) => number | null;
+};
+
+const BfDsListContext = createContext<BfDsListContextType | null>(null);
 
 export function BfDsList(
-  {
-    children,
-    collapsible,
-    defaultCollapsed,
-    header,
-    separator,
-    mutuallyExclusive = false,
-  }: React.PropsWithChildren<Props>,
+  { children, className, accordion = false }: BfDsListProps,
 ) {
-  const [collapsed, setCollapsed] = React.useState(defaultCollapsed ?? false);
-  const [activeItem, setActiveItem] = React.useState<string | null>(null);
-  if (collapsible && !header) {
-    throw new BfError(
-      "BfDsList: A header is required when collapsible is true.",
-    );
-  }
-  if (defaultCollapsed && !collapsible) {
-    throw new BfError(
-      "BfDsList: defaultCollapsed can only be used when colllapsible is true.",
-    );
-  }
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  const listRef = useRef<HTMLUListElement>(null);
 
-  const listClasses = classnames([
-    "list",
-    { bottomSeparator: separator },
-  ]);
+  const listClasses = [
+    "bfds-list",
+    accordion && "bfds-list--accordion",
+    className,
+  ].filter(Boolean).join(" ");
 
-  const expandClasses = classnames([
-    "list-expandIcon",
-    { collapsed },
-  ]);
+  const getItemIndex = useCallback(
+    (ref: React.RefObject<HTMLElement | null>) => {
+      if (!ref.current || !listRef.current) return null;
 
-  const showContent = collapsible ? !collapsed : true;
+      const listItems = Array.from(listRef.current.children);
+      const index = listItems.indexOf(ref.current);
+      return index >= 0 ? index : null;
+    },
+    [],
+  );
+
+  const contextValue: BfDsListContextType = {
+    accordion,
+    expandedIndex,
+    setExpandedIndex,
+    getItemIndex,
+  };
 
   return (
-    <div className={listClasses}>
-      {header && (
-        <div className="list-header">
-          <div className="list-header-title">{header}</div>
-          {collapsible && (
-            <div
-              className="list-header-toggle"
-              onClick={() => setCollapsed(!collapsed)}
-            >
-              <div className={expandClasses}>
-                <BfDsIcon name="arrowDown" />
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-      <ListItemExpandContext.Provider
-        value={{ mutuallyExclusive, activeItem, setActiveItem }}
-      >
-        {showContent && children}
-      </ListItemExpandContext.Provider>
-    </div>
+    <BfDsListContext.Provider value={contextValue}>
+      <ul ref={listRef} className={listClasses}>
+        {children}
+      </ul>
+    </BfDsListContext.Provider>
   );
 }
 
-export function Example() {
-  const expandStyle = {
-    border: "1px solid var(--border)",
-    borderRadius: 8,
-    padding: "8px 12px",
-    background: "var(--alwaysDark)",
-    color: "var(--alwaysLight)",
-  };
-  return (
-    <div className="flexColumn gapLarge">
-      <BfDsList header="List header">
-        <BfDsListItem content="Item 1" />
-        <BfDsListItem content="Item 2" expandedContent="Item 2 more content" />
-        <BfDsListItem content="Item 3" iconRight="home" />
-        <BfDsListItem
-          content="Item 4 clickable"
-          onClick={() => logger.log("clicked")}
-        />
-        <BfDsListItem
-          content="Item 5"
-          isHighlighted
-          footer="Footer"
-          toggle={() => logger.log("toggled")}
-        />
-      </BfDsList>
-      <BfDsList header="List with separators" separator>
-        <BfDsListItem content="Item 1" />
-        <BfDsListItem content="Item 2" />
-        <BfDsListItem content="Item 3" />
-      </BfDsList>
-      <BfDsList header="Collapsible" collapsible>
-        <BfDsListItem content="Item 1" />
-        <BfDsListItem content="Item 2" />
-        <BfDsListItem content="Item 3" />
-      </BfDsList>
-      <BfDsList
-        header="Default collapsed"
-        collapsible
-        defaultCollapsed
-      >
-        <BfDsListItem content="Item 1" />
-        <BfDsListItem content="Item 2" />
-        <BfDsListItem content="Item 3" />
-      </BfDsList>
-      <BfDsList
-        header="Mutually Exclusive Expanding"
-        mutuallyExclusive
-      >
-        <BfDsListItem
-          content="Expandable Item 1"
-          expandedContent={<div style={expandStyle}>Content for Item 1</div>}
-        />
-        <BfDsListItem
-          content="Expandable Item 2"
-          expandedContent={<div style={expandStyle}>Content for Item 2</div>}
-        />
-        <BfDsListItem
-          content="Expandable Item 3"
-          expandedContent={<div style={expandStyle}>Content for Item 3</div>}
-        />
-        <BfDsListItem
-          content="Expandable Item 4"
-          expandedContent={<div style={expandStyle}>Content for Item 4</div>}
-        />
-      </BfDsList>
-    </div>
-  );
+export function useBfDsList() {
+  const context = useContext(BfDsListContext);
+  return context;
 }

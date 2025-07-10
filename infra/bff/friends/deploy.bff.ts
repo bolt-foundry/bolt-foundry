@@ -1,12 +1,12 @@
 #! /usr/bin/env -S bff
 
-import { register } from "infra/bff/bff.ts";
-import { runShellCommand } from "infra/bff/shellBase.ts";
-import { getLogger } from "packages/logger/logger.ts";
+import { register } from "@bfmono/infra/bff/bff.ts";
+import { runShellCommand } from "@bfmono/infra/bff/shellBase.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
-export async function deployCommand(_options: string[]): Promise<number> {
+export async function deployCommand(_options: Array<string>): Promise<number> {
   logger.info("Starting deployment process...");
 
   // Run CI checks first

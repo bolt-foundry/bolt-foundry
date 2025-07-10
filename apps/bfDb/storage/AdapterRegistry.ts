@@ -3,7 +3,7 @@
 // Storage Adapter Registry — concrete implementation
 // =================================================
 
-import { BfError } from "infra/BfError.ts";
+import { BfError } from "@bfmono/lib/BfError.ts";
 import type { DatabaseBackend } from "../backend/DatabaseBackend.ts";
 
 // Alias: moving forward we’ll refer to all adapters through this name.

@@ -1,223 +1,136 @@
 import * as React from "react";
-import { fonts } from "apps/bfDs/const.tsx";
-import { BfDsSpinner } from "apps/bfDs/components/BfDsSpinner.tsx";
+import { useBfDsFormContext } from "./BfDsForm.tsx";
 
-export type InputBaseProps = {
-  autoFocus?: boolean;
-  autoSelect?: boolean;
-  disabled?: boolean;
-  label?: string;
-  value?: string | number | Array<string> | undefined;
-  placeholder?: string;
-  type?: string;
-  style?: React.CSSProperties;
-  className?: string;
-  meta?: string | React.ReactNode;
+export type BfDsInputState = "default" | "error" | "success" | "disabled";
+
+export type BfDsInputProps = {
+  // Form context props
+  /** Form field name for data binding */
   name?: string;
-  numberAttributes?: NumberType;
-  pattern?: string;
+
+  // Standalone props
+  /** Current input value */
+  value?: string;
+  /** Change event handler */
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+
+  // Common props
+  /** Label text displayed above input */
+  label?: string;
+  /** Placeholder text when empty */
+  placeholder?: string;
+  /** Required for validation */
   required?: boolean;
-  showSpinner?: boolean;
-  testId?: string; // for identifying the element in posthog
-  xstyle?: React.CSSProperties;
-  onBlur?: React.FocusEventHandler<HTMLInputElement>;
-  onFocus?: React.FocusEventHandler<HTMLInputElement>;
-} & React.InputHTMLAttributes<HTMLInputElement>;
+  /** Visual state of the input */
+  state?: BfDsInputState;
+  /** Error message to display */
+  errorMessage?: string;
+  /** Success message to display */
+  successMessage?: string;
+  /** Help text displayed below input */
+  helpText?: string;
+  /** Additional CSS classes */
+  className?: string;
+} & Omit<React.InputHTMLAttributes<HTMLInputElement>, "value" | "onChange">;
 
-type EditableProps = InputBaseProps & {
-  readonly?: false;
-  onChange?: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
-  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
-};
+export function BfDsInput({
+  name,
+  value: standaloneProp,
+  onChange: standaloneOnChange,
+  label,
+  placeholder,
+  required = false,
+  state = "default",
+  errorMessage,
+  successMessage,
+  helpText,
+  className,
+  disabled,
+  id,
+  ...props
+}: BfDsInputProps) {
+  const formContext = useBfDsFormContext();
+  const inputId = id || React.useId();
+  const helpTextId = `${inputId}-help`;
+  const errorId = `${inputId}-error`;
+  const successId = `${inputId}-success`;
 
-type ReadonlyProps = InputBaseProps & {
-  readonly: true;
-  onChange?: never;
-  onKeyDown?: never;
-};
-type InputProps = EditableProps | ReadonlyProps;
+  // Determine if we're in form context or standalone mode
+  const isInFormContext = formContext !== null && name !== undefined;
 
-type NumberType = {
-  min?: number;
-  max?: number;
-  step?: number;
-};
+  // Get value and onChange from form context or standalone props
+  const value = isInFormContext && formContext?.data && name
+    ? (formContext.data[name as keyof typeof formContext.data] as string) ?? ""
+    : standaloneProp ?? "";
 
-const styles: Record<string, React.CSSProperties> = {
-  disabledStyle: {
-    opacity: 0.3,
-    cursor: "not-allowed",
-  },
-  input: {
-    background: "var(--background)",
-    boxSizing: "border-box",
-    color: "var(--text)",
-    fontFamily: fonts.fontFamily,
-    fontSize: 16,
-    padding: "6px 10px",
-    borderRadius: 6,
-    borderWidth: 1,
-    borderStyle: "solid",
-    borderColor: "var(--textSecondary)",
-    width: "100%",
-  },
-  inputContainer: {
-    position: "relative",
-  },
-  label: {
-    display: "flex",
-    flexDirection: "column",
-  },
-  meta: {
-    color: "var(--textSecondary)",
-    marginTop: 4,
-  },
-  spinner: {
-    position: "absolute",
-    right: 10,
-    top: 10,
-  },
-};
-
-export function BfDsInput(
-  {
-    autoFocus,
-    autoSelect,
-    disabled,
-    label,
-    value,
-    onBlur,
-    onChange,
-    onFocus,
-    onKeyDown,
-    placeholder,
-    type,
-    className,
-    meta,
-    name,
-    numberAttributes = {},
-    pattern,
-    required,
-    readonly,
-    showSpinner,
-    testId,
-    xstyle,
-    ...props
-  }: InputProps,
-) {
-  const inputRef = React.useRef<HTMLInputElement>(null);
-
-  React.useEffect(() => {
-    if (autoSelect) {
-      inputRef.current?.select();
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (isInFormContext && formContext?.onChange && formContext?.data && name) {
+      formContext.onChange({ ...formContext.data, [name]: e.target.value });
+    } else if (standaloneOnChange) {
+      standaloneOnChange(e);
     }
-  }, [autoSelect]);
+  };
 
-  const input = (
-    <input
-      {...props}
-      disabled={disabled}
-      value={value}
-      onBlur={onBlur}
-      onChange={onChange}
-      onKeyDown={onKeyDown}
-      onFocus={onFocus}
-      placeholder={placeholder}
-      type={type}
-      style={{
-        ...styles.input,
-        ...xstyle,
-        ...(disabled && styles.disabledStyle),
-      }}
-      className={className}
-      name={name}
-      pattern={pattern}
-      required={required}
-      readOnly={readonly}
-      ref={inputRef}
-      data-bf-testid={testId}
-      autoFocus={autoFocus}
-      {...(type === "number" ? numberAttributes : {})}
-    />
-  );
+  // Get error state from form context if available
+  const formError = isInFormContext && formContext?.errors && name
+    ? formContext.errors[name as keyof typeof formContext.errors]
+    : undefined;
+  const actualErrorMessage =
+    (formError as unknown as { message?: string })?.message ||
+    errorMessage;
+  const actualState = disabled ? "disabled" : (formError ? "error" : state);
 
-  if (label) {
-    return (
-      <label htmlFor={name} style={styles.label}>
-        {label}
-        {required && " *"}
-        <div style={styles.inputContainer}>
-          {input}
-          {showSpinner && (
-            <div style={styles.spinner}>
-              <BfDsSpinner size={16} />
-            </div>
-          )}
+  const classes = [
+    "bfds-input",
+    `bfds-input--${actualState}`,
+    className,
+  ].filter(Boolean).join(" ");
+
+  const containerClasses = [
+    "bfds-input-container",
+    `bfds-input-container--${actualState}`,
+  ].filter(Boolean).join(" ");
+
+  return (
+    <div className={containerClasses}>
+      {label && (
+        <label htmlFor={inputId} className="bfds-input-label">
+          {label}
+          {required && <span className="bfds-input-required">*</span>}
+        </label>
+      )}
+      <input
+        {...props}
+        id={inputId}
+        name={name}
+        className={classes}
+        placeholder={placeholder}
+        disabled={disabled || actualState === "disabled"}
+        required={required}
+        value={value}
+        onChange={handleChange}
+        aria-describedby={[
+          helpText ? helpTextId : null,
+          actualErrorMessage ? errorId : null,
+          successMessage ? successId : null,
+        ].filter(Boolean).join(" ") || undefined}
+        aria-invalid={actualState === "error"}
+      />
+      {helpText && (
+        <div id={helpTextId} className="bfds-input-help">
+          {helpText}
         </div>
-        {meta && <div style={styles.meta}>{meta}</div>}
-      </label>
-    );
-  }
-  return (
-    <div>
-      <div style={styles.inputContainer}>
-        {input}
-        {showSpinner && (
-          <div style={styles.spinner}>
-            <BfDsSpinner size={16} />
-          </div>
-        )}
-      </div>
-      {meta && <div style={styles.meta}>{meta}</div>}
-    </div>
-  );
-}
-
-export function Example() {
-  return (
-    <div className="ui-group">
-      <BfDsInput
-        label="Text input"
-        placeholder="Placeholder"
-        onChange={() => {}}
-      />
-      <BfDsInput
-        label="Number input"
-        placeholder="Placeholder"
-        type="number"
-        onChange={() => {}}
-      />
-      <BfDsInput
-        label="Password input"
-        placeholder="Placeholder"
-        type="password"
-        onChange={() => {}}
-      />
-      <BfDsInput
-        label="Disabled input"
-        placeholder="Placeholder"
-        disabled
-        onChange={() => {}}
-      />
-      <BfDsInput
-        label="Required input"
-        placeholder="Placeholder"
-        required
-        onChange={() => {}}
-      />
-      <BfDsInput label="Read-only input" placeholder="Placeholder" readonly />
-      <BfDsInput
-        label="Input with meta"
-        placeholder="Placeholder"
-        meta="Meta"
-        onChange={() => {}}
-      />
-      <BfDsInput
-        label="Input with spinner"
-        placeholder="Placeholder"
-        showSpinner
-        onChange={() => {}}
-      />
+      )}
+      {actualState === "error" && actualErrorMessage && (
+        <div id={errorId} className="bfds-input-error" role="alert">
+          {actualErrorMessage}
+        </div>
+      )}
+      {actualState === "success" && successMessage && (
+        <div id={successId} className="bfds-input-success">
+          {successMessage}
+        </div>
+      )}
     </div>
   );
 }

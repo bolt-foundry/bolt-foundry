@@ -31,7 +31,7 @@ type Props = React.PropsWithChildren<{
 
 export function PageError({ error }: Props) {
   return (
-    <div style={styles.pageContainer}>
+    <div className="error-page" style={styles.pageContainer}>
       <div className="logo" style={styles.logo}>
         <svg
           version="1.1"

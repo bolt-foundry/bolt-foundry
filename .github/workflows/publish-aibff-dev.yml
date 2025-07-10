@@ -1,0 +1,350 @@
+name: Publish aibff Dev Release
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "apps/aibff/**"
+      - ".github/workflows/publish-aibff-dev.yml"
+
+jobs:
+  build-and-release:
+    name: Build and Release aibff Dev
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Required for creating releases and tags
+
+    steps:
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+        with: { determinate: true }
+
+      - name: Setup Nix caching
+        uses: DeterminateSystems/flakehub-cache-action@main
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      # Set Deno cache directory
+      - name: Set Deno cache directory
+        run: echo "DENO_DIR=${RUNNER_TEMP}/deno-cache" >> "$GITHUB_ENV"
+
+      # Cache node_modules
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        id: dependency-cache
+        with:
+          path: |
+            node_modules
+            ~/.npm
+            ${{ env.DENO_DIR }}
+          key: ${{ runner.os }}-aibff-deps-${{ hashFiles('package-lock.json', 'package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-aibff-deps-
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Get version info
+        id: version
+        run: |
+          # Get the base version from version.ts
+          BASE_VERSION=$(grep 'VERSION = ' apps/aibff/version.ts | cut -d'"' -f2 | sed 's/-dev$//')
+
+          # Get short git hash
+          GIT_HASH=$(git rev-parse --short HEAD)
+
+          # Create dev version
+          DEV_VERSION="${BASE_VERSION}-dev-${GIT_HASH}"
+
+          echo "version=${DEV_VERSION}" >> "$GITHUB_OUTPUT"
+          echo "git_hash=${GIT_HASH}" >> "$GITHUB_OUTPUT"
+          echo "Dev version: ${DEV_VERSION}"
+
+      - name: Update version
+        run: |
+          # Update version.ts with dev version and build metadata
+          BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%S.000Z")
+          BUILD_COMMIT="${{ steps.version.outputs.git_hash }}"
+
+          sed -i.bak "s/VERSION = \".*\"/VERSION = \"${{ steps.version.outputs.version }}\"/" apps/aibff/version.ts
+          sed -i.bak "s/BUILD_TIME = \".*\"/BUILD_TIME = \"$BUILD_TIME\"/" apps/aibff/version.ts
+          sed -i.bak "s/BUILD_COMMIT = \".*\"/BUILD_COMMIT = \"$BUILD_COMMIT\"/" apps/aibff/version.ts
+          rm apps/aibff/version.ts.bak
+
+          echo "Updated version to ${{ steps.version.outputs.version }}"
+          cat apps/aibff/version.ts
+
+      - name: Build aibff binaries for all platforms
+        run: |
+          # Build for Linux x64
+          echo "Building for Linux x64..."
+          nix develop --impure --command deno run --allow-all apps/aibff/main.ts rebuild --platform linux --arch x86_64
+
+          # Build for Windows x64
+          echo "Building for Windows x64..."
+          nix develop --impure --command deno run --allow-all apps/aibff/main.ts rebuild --platform windows --arch x86_64
+
+          # Build for macOS ARM64
+          echo "Building for macOS ARM64..."
+          nix develop --impure --command deno run --allow-all apps/aibff/main.ts rebuild --platform darwin --arch aarch64
+
+      - name: Test Linux binary
+        run: |
+          # Test the Linux binary (native platform)
+          BINARY_PATH="build/bin/aibff-linux-x86_64"
+
+          # Make it executable
+          chmod +x "$BINARY_PATH"
+
+          # Test version output
+          "$BINARY_PATH" --version
+
+          # Test help output
+          "$BINARY_PATH" --help
+
+      - name: Create archives for all platforms
+        run: |
+          cd build/bin
+
+          # Make Unix binaries executable before archiving
+          chmod +x aibff-linux-x86_64
+          chmod +x aibff-darwin-aarch64
+
+          # Create archives with simplified names
+          echo "Creating Linux archive..."
+          tar -czf aibff-linux-x86_64.tar.gz --transform 's/aibff-linux-x86_64/aibff/' aibff-linux-x86_64
+          sha256sum aibff-linux-x86_64.tar.gz > aibff-linux-x86_64.tar.gz.sha256
+
+          echo "Creating Windows archive..."
+          # Use zip for Windows (more common on Windows)
+          cp aibff-windows-x86_64.exe aibff.exe
+          zip aibff-windows-x86_64.zip aibff.exe
+          rm aibff.exe
+          sha256sum aibff-windows-x86_64.zip > aibff-windows-x86_64.zip.sha256
+
+          echo "Creating macOS archive..."
+          tar -czf aibff-darwin-aarch64.tar.gz --transform 's/aibff-darwin-aarch64/aibff/' aibff-darwin-aarch64
+          sha256sum aibff-darwin-aarch64.tar.gz > aibff-darwin-aarch64.tar.gz.sha256
+
+          # List created archives
+          ls -la *.tar.gz* *.zip*
+
+      - name: Upload Linux artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: aibff-linux-x86_64
+          path: |
+            build/bin/aibff-linux-x86_64.tar.gz
+            build/bin/aibff-linux-x86_64.tar.gz.sha256
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: aibff-windows-x86_64
+          path: |
+            build/bin/aibff-windows-x86_64.zip
+            build/bin/aibff-windows-x86_64.zip.sha256
+
+      - name: Upload macOS artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: aibff-darwin-aarch64
+          path: |
+            build/bin/aibff-darwin-aarch64.tar.gz
+            build/bin/aibff-darwin-aarch64.tar.gz.sha256
+
+  create-release:
+    name: Create GitHub Dev Release
+    needs: build-and-release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Required for creating releases and tags
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get version info
+        id: version
+        run: |
+          # Get the base version from version.ts
+          BASE_VERSION=$(grep 'VERSION = ' apps/aibff/version.ts | cut -d'"' -f2 | sed 's/-dev$//')
+
+          # Get short git hash
+          GIT_HASH=$(git rev-parse --short HEAD)
+
+          # Create dev version
+          DEV_VERSION="${BASE_VERSION}-dev-${GIT_HASH}"
+
+          echo "version=${DEV_VERSION}" >> "$GITHUB_OUTPUT"
+          echo "git_hash=${GIT_HASH}" >> "$GITHUB_OUTPUT"
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts/
+
+      - name: Get commit info
+        id: commit
+        run: |
+          # Get commit message and author
+          COMMIT_MSG=$(git log -1 --pretty=format:"%s")
+          COMMIT_AUTHOR=$(git log -1 --pretty=format:"%an")
+          COMMIT_HASH=$(git rev-parse HEAD)
+
+          # Export for use in release notes
+          echo "message=${COMMIT_MSG}" >> "$GITHUB_OUTPUT"
+          echo "author=${COMMIT_AUTHOR}" >> "$GITHUB_OUTPUT"
+          echo "hash=${COMMIT_HASH}" >> "$GITHUB_OUTPUT"
+
+      - name: Create release notes
+        run: |
+          cat > release-notes.md << EOF
+          # aibff ${{ steps.version.outputs.version }}
+
+          This is a development release built from commit [\`${{ steps.version.outputs.git_hash }}\`](https://github.com/${{ github.repository }}/commit/${{ steps.commit.outputs.hash }}).
+
+          **Latest commit:** ${{ steps.commit.outputs.message }} by @${{ steps.commit.outputs.author }}
+
+          ## Installation
+
+          Download the appropriate binary for your platform and extract it:
+
+          \`\`\`bash
+          # Linux x64
+          curl -L https://github.com/${{ github.repository }}/releases/download/aibff-dev-${{ steps.version.outputs.git_hash }}/aibff-linux-x86_64.tar.gz | tar xz
+
+          # macOS ARM64
+          curl -L https://github.com/${{ github.repository }}/releases/download/aibff-dev-${{ steps.version.outputs.git_hash }}/aibff-darwin-aarch64.tar.gz | tar xz
+
+          # Windows x64 (PowerShell)
+          Invoke-WebRequest https://github.com/${{ github.repository }}/releases/download/aibff-dev-${{ steps.version.outputs.git_hash }}/aibff-windows-x86_64.zip -OutFile aibff-windows-x86_64.zip
+          Expand-Archive aibff-windows-x86_64.zip -DestinationPath .
+          \`\`\`
+
+          ## Usage
+
+          \`\`\`bash
+          # Check version
+          ./aibff --version
+
+          # Run evaluation
+          ./aibff eval grader.deck.md samples.jsonl
+          \`\`\`
+
+          ## Checksums
+
+          Verify your download with the provided SHA256 checksums:
+
+          \`\`\`
+          $(cat artifacts/*/*.sha256)
+          \`\`\`
+
+          ---
+
+          ⚠️ **This is a development release and may be unstable. For production use, please use the [latest stable release](https://github.com/${{ github.repository }}/releases/latest).**
+          EOF
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: aibff-dev-${{ steps.version.outputs.git_hash }}
+          name: aibff dev-${{ steps.version.outputs.git_hash }}
+          body_path: release-notes.md
+          draft: false
+          prerelease: true
+          files: |
+            artifacts/*/*.tar.gz
+            artifacts/*/*.tar.gz.sha256
+            artifacts/*/*.zip
+            artifacts/*/*.zip.sha256
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-npm:
+    name: Publish to npm (dev)
+    needs: create-release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # Required for npm provenance
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Get version info
+        id: version
+        run: |
+          # Get the base version from version.ts
+          BASE_VERSION=$(grep 'VERSION = ' apps/aibff/version.ts | cut -d'"' -f2 | sed 's/-dev$//')
+
+          # Get short git hash
+          GIT_HASH=$(git rev-parse --short HEAD)
+
+          # Create dev version
+          DEV_VERSION="${BASE_VERSION}-dev.${GIT_HASH}"
+
+          echo "version=${DEV_VERSION}" >> "$GITHUB_OUTPUT"
+          echo "git_hash=${GIT_HASH}" >> "$GITHUB_OUTPUT"
+
+      - name: Update npm package version
+        run: |
+          cd packages/aibff
+
+          # Update package.json version
+          npm version ${{ steps.version.outputs.version }} --no-git-tag-version
+
+          echo "Updated package.json to version ${{ steps.version.outputs.version }}"
+          cat package.json | grep version
+
+      - name: Download binaries from GitHub Release
+        run: |
+          cd packages/aibff
+          mkdir -p bin
+
+          # Download binaries from the just-created GitHub release
+          RELEASE_TAG="aibff-dev-${{ steps.version.outputs.git_hash }}"
+
+          # Download Linux binary
+          curl -L -o bin/aibff-linux-x86_64 \
+            "https://github.com/${{ github.repository }}/releases/download/${RELEASE_TAG}/aibff-linux-x86_64"
+
+          # Download macOS binary
+          curl -L -o bin/aibff-darwin-aarch64 \
+            "https://github.com/${{ github.repository }}/releases/download/${RELEASE_TAG}/aibff-darwin-aarch64"
+
+          # Download Windows binary
+          curl -L -o bin/aibff-windows-x86_64.exe \
+            "https://github.com/${{ github.repository }}/releases/download/${RELEASE_TAG}/aibff-windows-x86_64.exe"
+
+          # Make Unix binaries executable
+          chmod +x bin/aibff-linux-x86_64
+          chmod +x bin/aibff-darwin-aarch64
+
+          # Verify binaries exist
+          ls -la bin/
+
+      - name: Publish to npm with dev tag
+        run: |
+          cd packages/aibff
+          npm publish --tag dev --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

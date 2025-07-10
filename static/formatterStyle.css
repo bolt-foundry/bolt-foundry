@@ -1,0 +1,225 @@
+.formatter-container {
+  height: 100vh;
+  background-color: var(--pageBackground);
+}
+.formatter-nav {
+  padding: 16px 24px;
+  border-right: 1px solid var(--border);
+}
+.formatter-logo {
+  width: 96px;
+  height: 18px;
+  aspect-ratio: 8.6 / 1;
+}
+h1.formatter-nav-text {
+  font-family: var(--marketingFontFamily);
+  font-size: 32px;
+  line-height: 1;
+  margin: 0;
+  margin-left: -0.03em;
+  color: var(--fourtharyColor);
+}
+
+.formatter-helper-text {
+  font-size: 0.8em;
+}
+
+.formatter-content {
+  overflow-y: auto;
+}
+
+.formatter-content-main {
+  padding: 16px 24px;
+  overflow-y: auto;
+  background: var(--background);
+}
+
+.formatter-content-main-footer {
+  background: var(--alwaysDark);
+  color: var(--alwaysLight);
+  padding: 8px 24px;
+}
+
+.formatter-section-header {
+  /* margin-bottom: 16px; */
+}
+
+.formatter-section-header h2 {
+  margin: 0;
+  font-weight: 600;
+}
+
+.formatter-section-footer {
+  background: var(--textSecondary060);
+  padding: 8px;
+  border-radius: 12px;
+}
+
+.formatter-card {
+  background: var(--pageBackground);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  padding: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.formatter-card:hover {
+  border-color: var(--fourtharyColor030);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.formatter-card-header-row {
+  cursor: pointer;
+}
+
+.formatter-card-title {
+  font-weight: 500;
+}
+
+.formatter-card-expanded {
+  padding: 20px;
+  margin: 16px 8px;
+  background: var(--textSecondary005);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.formatter-card-expanded-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.formatter-card-input-group {
+  /* margin-bottom: 16px; */
+}
+
+.formatter-card-expanded .cfds-form-label {
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.formatter-content-sidebar {
+  padding: 16px 24px;
+  border-left: 1px solid var(--border);
+  width: 400px;
+}
+
+.formatter-model-picker-form {
+  background: var(--secondaryColor005);
+  border-radius: 8px;
+  border: 1px solid var(--secondaryColor010);
+  padding: 16px;
+}
+
+.formatter-testing-compare {
+  background: var(--secondaryColor005);
+  border: 1px solid var(--secondaryColor010);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.formatter-testing-compare-title {
+  color: var(--secondaryColor);
+  font-weight: bold;
+}
+
+.formatter-testing .bolt-symbol {
+  height: 18px;
+  width: 18px;
+}
+
+.rowButton {
+  cursor: pointer;
+  background: transparent;
+  padding: 8px;
+  margin: 0 -8px;
+  border-radius: 8px;
+}
+.rowButton.fourthary:hover {
+  background: var(--fourtharyColor005);
+}
+.rowButton.secondary:hover {
+  background: var(--secondaryColor005);
+}
+
+.formatter-testing-options-variables {
+  background: var(--textSecondary005);
+  border-radius: 8px;
+  border: 1px solid var(--textSecondary010);
+  padding: 16px;
+}
+
+
+.formatter-results-waiting {
+  background: var(--textSecondary005);
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid var(--textSecondary010);
+}
+
+.formatter-result {
+  background: var(--secondaryColor005);
+  border: 1px solid var(--secondaryColor010);
+  border-radius: 8px;
+  padding: 8px;
+}
+.formatter-result.base {
+  background: var(--fourtharyColor005);
+  border: 1px solid var(--fourtharyColor010);
+}
+
+.formatter-result .title {
+  font-size: 1.1em;
+  font-weight: 600;
+}
+.formatter-result .result {
+  background: var(--background);
+  border-radius: 6px;
+  padding: 8px;
+  border: 1px solid var(--secondaryColor010);
+}
+.formatter-result.base .result {
+  border: 1px solid var(--fourtharyColor010);
+}
+.formatter-result .stats {
+  font-size: 0.8em;
+  color: var(--secondaryColor);
+}
+.formatter-result.base .stats {
+  color: var(--fourtharyColor);
+}
+
+.formatter-results-summary {
+  background: var(--primaryColor005);
+  border: 1px solid var(--primaryColor030);
+  padding: 8px;
+  border-radius: 12px;
+}
+
+.formatter-results-summary .title {
+  font-size: 1.1em;
+  font-weight: 600;
+}
+
+.formatter-results-summary .stat {
+  background: var(--background);
+  border: 1px solid var(--primaryColor030);
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.formatter-results-summary .stat .title {
+  font-size: 1em;
+}
+
+.formatter-results-summary .stat .tip {
+  font-size: 0.8em;
+  margin-top: 0.8em;
+}

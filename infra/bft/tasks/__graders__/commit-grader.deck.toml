@@ -1,0 +1,285 @@
+# Sample evaluations for commit message grader
+
+[samples.excellent-commit]
+score = 3
+
+[[samples.excellent-commit.messages]]
+role = "user"
+content = """
+I need to commit these changes:
+
+```
+$ bff ai status
+M apps/aibff/src/commands/calibrate.ts
+M apps/aibff/src/grader.ts
+A apps/aibff/src/utils/scoring.ts
+```
+
+The diff shows I've added a new scoring utility module and updated the calibrate command to use it.
+"""
+
+[[samples.excellent-commit.messages]]
+role = "assistant"
+content = """
+I'll help you create a commit for these changes. Let me first examine the detailed changes.
+
+```bash
+bff ai diff
+```
+
+Based on the changes, I can see you've extracted scoring logic into a dedicated utility module. This appears to be a refactoring to improve code organization.
+
+Here's the commit message I recommend:
+
+```
+Extract scoring logic into dedicated utility module
+
+Refactor the calibrate command to use a centralized scoring utility, improving
+code organization and reusability. This separation makes the scoring logic
+easier to test and maintain.
+
+Changes:
+- Create utils/scoring.ts with score calculation functions
+- Update calibrate.ts to use the new scoring utilities
+- Update grader.ts to import from the new module
+- Remove duplicate scoring logic from calibrate command
+
+Test plan:
+1. Run existing calibrate tests: `bff test apps/aibff/__tests__/calibrate.test.ts`
+2. Verify calibration reports generate correctly: `bff aibff calibrate --model gpt-4`
+3. Check that scores match previous implementation
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+```
+
+To create this commit, run:
+```bash
+bff commit
+```
+
+Then paste the commit message above.
+"""
+
+[samples.good-with-staging-error]
+score = -1
+
+[[samples.good-with-staging-error.messages]]
+role = "user"
+content = """
+Help me commit this change to fix a bug in the dashboard:
+
+```
+$ sl status
+M apps/boltFoundry/src/components/Dashboard.tsx
+```
+"""
+
+[[samples.good-with-staging-error.messages]]
+role = "assistant"
+content = """
+I'll help you commit this bug fix. Let me first stage the file and then create a commit.
+
+```bash
+git add apps/boltFoundry/src/components/Dashboard.tsx
+```
+
+Now let me check the diff to understand the bug fix:
+
+```bash
+git diff --cached
+```
+
+Based on the changes, here's the commit message:
+
+```
+Fix dashboard rendering issue with empty data
+
+Resolve crash when dashboard receives null or undefined data from the API.
+Added proper null checks and default values.
+
+Changes:
+- Add null check in Dashboard.tsx before mapping data
+- Provide empty array default for chart data
+- Add loading state while data is being fetched
+
+Test plan:
+1. Start the app with `bff devTools`
+2. Navigate to dashboard before data loads
+3. Verify no console errors appear
+4. Check that loading spinner displays correctly
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+```
+"""
+
+[samples.poor-format]
+score = -2
+
+[[samples.poor-format.messages]]
+role = "user"
+content = """
+I updated the README and added a new test file. Can you create a commit?
+"""
+
+[[samples.poor-format.messages]]
+role = "assistant"
+content = """
+Here's a commit message for your changes:
+
+"Updated README and added new test file
+
+This commit updates the project README with new installation instructions and adds a test file for the new feature."
+
+You can commit with:
+```
+git commit -m "Updated README and added new test file"
+```
+"""
+
+[samples.split-commits-suggestion]
+score = 3
+
+[[samples.split-commits-suggestion.messages]]
+role = "user"
+content = """
+I have these changes ready:
+
+```
+$ bff ai status
+M packages/validation/validation.ts
+M apps/boltFoundry/src/forms/LoginForm.tsx
+A infra/bft/tasks/deploy.bft.ts
+M infra/bft/README.md
+M .github/workflows/ci.yml
+```
+
+The validation changes fix a bug, the deploy task is a new feature, and the CI changes update our build process.
+"""
+
+[[samples.split-commits-suggestion.messages]]
+role = "assistant"
+content = """
+Let me examine these changes in detail:
+
+```bash
+bff ai diff
+```
+
+I notice these changes represent three distinct logical units. I recommend splitting them into separate commits for better organization and history:
+
+**Commit 1: Fix validation bug**
+```
+Fix email validation regex pattern
+
+Correct the email validation regex to properly handle subdomains and special
+characters. The previous pattern was too restrictive and rejected valid emails.
+
+Changes:
+- Update email regex in packages/validation/validation.ts
+- Update LoginForm.tsx to show more specific validation errors
+
+Test plan:
+1. Run validation tests: `bff test packages/validation/__tests__/validation.test.ts`
+2. Test login form with emails like user@sub.example.com
+3. Verify previously rejected valid emails now pass
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+```
+
+**Commit 2: Add deployment task for BFT**
+```
+Add deploy task to BFT task system
+
+Implement automated deployment task that handles building, testing, and
+deploying applications through the BFT task runner.
+
+Changes:
+- Create infra/bft/tasks/deploy.bft.ts with deployment logic
+- Update infra/bft/README.md with deploy task documentation
+
+Test plan:
+1. Run deploy task in dry-run mode: `bff deploy --dry-run`
+2. Verify task validates environment before proceeding
+3. Check that all pre-deployment checks pass
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+```
+
+**Commit 3: Update CI workflow for new build process**
+```
+Update CI workflow to use bff commands
+
+Migrate GitHub Actions workflow from npm scripts to bff commands for
+consistency with local development environment.
+
+Changes:
+- Replace npm run commands with bff equivalents in .github/workflows/ci.yml
+- Add caching for Deno dependencies
+- Update build matrix for latest Deno version
+
+Test plan:
+1. Push to a feature branch to trigger CI
+2. Verify all CI checks pass with new commands
+3. Check that build artifacts are correctly generated
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+```
+
+To create these commits:
+1. First commit the validation fix: `bff commit packages/validation/validation.ts apps/boltFoundry/src/forms/LoginForm.tsx`
+2. Then the deploy task: `bff commit infra/bft/tasks/deploy.bft.ts infra/bft/README.md`
+3. Finally the CI update: `bff commit .github/workflows/ci.yml`
+"""
+
+[samples.missing-test-plan]
+score = 0
+
+[[samples.missing-test-plan.messages]]
+role = "user"
+content = """
+Can you help me commit this CSS update?
+
+$ bff ai status
+M apps/boltFoundry/src/styles/theme.css
+"""
+
+[[samples.missing-test-plan.messages]]
+role = "assistant"
+content = """
+Let me check what changed in the CSS file:
+
+```bash
+bff ai diff
+```
+
+I'll create a commit message for your CSS updates:
+
+```
+Update theme colors for better accessibility
+
+Improve color contrast ratios throughout the application to meet WCAG AA
+standards. This ensures better readability for users with visual impairments.
+
+Changes:
+- Darken primary text color from #666 to #333
+- Increase contrast for disabled button states
+- Update link colors for better visibility
+- Adjust background colors for form inputs
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+```
+
+Run `bff commit` to create this commit.
+"""
