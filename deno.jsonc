@@ -2,6 +2,7 @@
   "unstable": ["temporal", "webgpu"],
   "nodeModulesDir": "auto",
   "imports": {
+    "@anthropic-ai/claude-code": "npm:@anthropic-ai/claude-code@^1.0.48",
     "@bfmono/": "./",
     "@bolt-foundry/bolt-foundry": "./packages/bolt-foundry/bolt-foundry.ts",
     "@bolt-foundry/bolt-foundry/": "./packages/bolt-foundry/",
