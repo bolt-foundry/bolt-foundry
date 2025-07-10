@@ -22,8 +22,7 @@ interface ExtractedContext {
 
 interface Sample {
   id: string;
-  input: string;
-  expected: string;
+  messages: Array<SampleMessage>;
   score?: number;
 }
 
@@ -34,7 +33,7 @@ interface SampleMessage {
 
 interface SampleDefinition {
   score?: number;
-  messages?: Array<SampleMessage>;
+  messages: Array<SampleMessage>;
 }
 
 interface OpenAIMessage {
@@ -261,29 +260,13 @@ export function extractSamplesFromMarkdown(
 
         const sample = sampleDef as SampleDefinition;
 
-        // Extract messages if available
+        // Add sample if it has messages
         if (sample.messages && Array.isArray(sample.messages)) {
-          // Find the last user message for input
-          let lastUserMessage = "";
-          let lastAssistantMessage = "";
-
-          for (const message of sample.messages) {
-            if (message.role === "user") {
-              lastUserMessage = message.content;
-            } else if (message.role === "assistant") {
-              lastAssistantMessage = message.content;
-            }
-          }
-
-          // Only add sample if we have both user and assistant messages
-          if (lastUserMessage && lastAssistantMessage) {
-            samples.push({
-              id: sampleId,
-              input: lastUserMessage,
-              expected: lastAssistantMessage,
-              score: sample.score,
-            });
-          }
+          samples.push({
+            id: sampleId,
+            messages: sample.messages,
+            score: sample.score,
+          });
         }
       }
     }
@@ -453,9 +436,16 @@ function renderDeck(
   // Add context Q&A pairs in the order they were defined in the deck
   for (const [key, definition] of Object.entries(extractedContext)) {
     if (key in context && definition.assistantQuestion) {
+      // Handle array/object values by JSON stringifying them
+      const contextValue = context[key];
+      const valueString =
+        typeof contextValue === "object" && contextValue !== null
+          ? JSON.stringify(contextValue)
+          : String(contextValue);
+
       messages.push(
         { role: "assistant", content: definition.assistantQuestion },
-        { role: "user", content: String(context[key]) },
+        { role: "user", content: valueString },
       );
       usedVars.add(key);
     }
