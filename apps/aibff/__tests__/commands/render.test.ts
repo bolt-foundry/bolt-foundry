@@ -4,16 +4,16 @@ import { join } from "@std/path";
 
 // Test removed - render command doesn't show help, just exits
 
-Deno.test("render command - treats --help as deck file", async () => {
-  let errorOutput = "";
+Deno.test("render command - shows help with --help flag", async () => {
+  let output = "";
   // deno-lint-ignore no-console
-  const originalPrintErr = console.error;
+  const originalPrintLn = console.log;
   const originalExit = Deno.exit;
 
-  // Mock console.error to capture output
+  // Mock console.log to capture output
   // deno-lint-ignore no-console
-  console.error = (msg: string) => {
-    errorOutput += msg + "\n";
+  console.log = (msg: string) => {
+    output += msg + "\n";
   };
 
   // Mock Deno.exit
@@ -32,11 +32,12 @@ Deno.test("render command - treats --help as deck file", async () => {
 
   // Restore original functions
   // deno-lint-ignore no-console
-  console.error = originalPrintErr;
+  console.log = originalPrintLn;
   Deno.exit = originalExit;
 
-  // Since --help is treated as a file path, it should show file not found error
-  assertStringIncludes(errorOutput, "Error: File not found: --help");
+  // Should show help message
+  assertStringIncludes(output, "Usage: aibff render");
+  assertStringIncludes(output, "--context-file");
   assertEquals(exitCode, 1);
 });
 

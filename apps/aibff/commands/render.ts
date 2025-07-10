@@ -4,6 +4,7 @@ import type { Command } from "./types.ts";
 import { parse as parseTOML } from "@std/toml";
 import { extractToml as extractFrontmatter } from "@std/front-matter";
 import * as path from "@std/path";
+import { parse as parseFlags } from "@std/flags";
 
 // UI helper (to be extracted later)
 const ui = {
@@ -536,12 +537,31 @@ export const renderCommand: Command = {
   name: "render",
   description: "Render a deck file to see the generated prompt structure",
   run: async (args: Array<string>) => {
-    if (args.length === 0) {
-      ui.printLn("Usage: aibff render <deck.md>");
+    // Parse arguments using Deno's standard library
+    const flags = parseFlags(args, {
+      string: ["context-file"],
+      boolean: ["help"],
+      stopEarly: false,
+      "--": true,
+    });
+
+    // Show help if requested or no arguments
+    if (flags.help || flags._.length === 0) {
+      ui.printLn("Usage: aibff render <deck.md> [options]");
+      ui.printLn("");
+      ui.printLn("Options:");
+      ui.printLn(
+        "  --context-file <path>  Path to TOML file with context values",
+      );
+      ui.printLn("  --help                 Show this help message");
+      ui.printLn("");
+      ui.printLn("Examples:");
+      ui.printLn("  aibff render deck.md");
+      ui.printLn("  aibff render deck.md --context-file context.toml");
       Deno.exit(1);
     }
 
-    const deckPath = args[0];
+    const deckPath = String(flags._[0]);
 
     try {
       const deckContent = await Deno.readTextFile(deckPath);
@@ -550,7 +570,7 @@ export const renderCommand: Command = {
         deckPath,
       );
 
-      // Build context values and warn for missing defaults
+      // Build context values from defaults
       const contextValues: Record<string, unknown> = {};
       for (const [key, definition] of Object.entries(extractedContext)) {
         if (definition.default !== undefined) {
@@ -565,6 +585,29 @@ export const renderCommand: Command = {
           if (definition.type) {
             ui.printWarn(`  Type: ${definition.type}`);
           }
+        }
+      }
+
+      // Load context from file if provided
+      if (flags["context-file"]) {
+        const contextFilePath = String(flags["context-file"]);
+        try {
+          const contextFileContent = await Deno.readTextFile(contextFilePath);
+          const contextFromFile = parseTOML(contextFileContent);
+
+          // Merge context from file, overriding defaults
+          Object.assign(contextValues, contextFromFile);
+        } catch (error) {
+          if (error instanceof Deno.errors.NotFound) {
+            ui.printErr(`Error: Context file not found: ${contextFilePath}`);
+          } else {
+            ui.printErr(
+              `Error parsing context file: ${
+                error instanceof Error ? error.message : String(error)
+              }`,
+            );
+          }
+          Deno.exit(1);
         }
       }
 
