@@ -1,7 +1,12 @@
+import { iso } from "@iso-bfc";
 import { BfDsButton } from "@bfmono/apps/bfDs/index.ts";
-import { useRouter } from "../Router.tsx";
+import { useRouter } from "../contexts/RouterContext.tsx";
 
-export function Home() {
+export const Home = iso(`
+  field Query.Home @component {
+    __typename
+  }
+`)(function Home() {
   const { navigate } = useRouter();
 
   return (
@@ -38,4 +43,4 @@ export function Home() {
       </footer>
     </div>
   );
-}
+});
