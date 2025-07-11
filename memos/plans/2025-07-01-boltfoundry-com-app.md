@@ -1,8 +1,9 @@
 # Implementation Memo: New boltFoundry.com App
 
 **Date**: 2025-07-01\
-**Status**: Planning\
-**Phase**: 1 (Hello World)
+**Updated**: 2025-07-11\
+**Status**: In Progress\
+**Phase**: 1.5 (Isograph Integration)
 
 ## Overview
 
@@ -151,11 +152,77 @@ bft app boltfoundry.com --port 4000  # Custom port
 - E2E tests with Puppeteer (following aibff pattern)
 - Integration tests for API endpoints
 
+## Phase 1.5: Isograph Integration (Current)
+
+### Overview
+
+Add Isograph GraphQL integration to the existing boltfoundry-com app for landing
+page routing. This leverages the proven patterns from apps/boltFoundry while
+keeping the scope minimal.
+
+### Goals
+
+- Add isograph routing to existing boltfoundry-com app
+- Create single entrypoint for home route
+- Establish GraphQL integration foundation for future expansion
+- Maintain existing Vite + Deno architecture
+
+### Implementation Steps
+
+#### 1. Add Isograph Configuration
+
+**File**: `apps/boltfoundry-com/isograph.config.json`
+
+```json
+{
+  "project_root": ".",
+  "artifact_directory": "./__generated__",
+  "schema": "../bfDb/graphql/__generated__/schema.graphql",
+  "options": {
+    "on_invalid_id_type": "ignore",
+    "include_file_extensions_in_import_statements": true,
+    "no_babel_transform": true
+  }
+}
+```
+
+#### 2. Update Build System
+
+- Add isograph compilation to `infra/bft/tasks/iso.bft.ts`
+- Update `infra/appBuild/routesBuild.ts` to include boltfoundry-com
+- Add import mappings to root `deno.jsonc` for boltfoundry-com
+
+#### 3. Create Isograph Environment
+
+**Client**: `apps/boltfoundry-com/isographEnvironment.ts` **Server**:
+`apps/boltfoundry-com/server/isographEnvironment.ts`
+
+Follow patterns from apps/boltFoundry environment setup
+
+#### 4. Add Entrypoint Structure
+
+**Directory**: `apps/boltfoundry-com/entrypoints/`
+
+- `EntrypointHome.ts` - Single entrypoint for landing page
+
+#### 5. Update Router Integration
+
+- Modify `src/App.tsx` to support isograph entrypoints
+- Add `BfIsographFragmentReader` integration
+- Update router to handle both traditional and isograph routes
+
+### Success Criteria
+
+- [ ] Landing page renders via isograph entrypoint
+- [ ] Build system generates isograph artifacts
+- [ ] Routing works with both traditional and GraphQL-powered routes
+- [ ] Maintains existing dev/build/serve functionality
+
 ## Phase 2: Full Webapp (Future)
 
 ### Planned Enhancements
 
-- GraphQL integration with existing bfDb
+- Additional isograph entrypoints for new pages
 - User authentication and session management
 - Dynamic content management
 - Advanced routing and page management
@@ -164,9 +231,9 @@ bft app boltfoundry.com --port 4000  # Custom port
 
 ### Migration Path
 
-- Phase 1 provides solid foundation for Phase 2 expansion
-- Architecture supports adding GraphQL, database, and auth layers
-- Can leverage existing aibff patterns for advanced features
+- Phase 1.5 establishes isograph foundation
+- Phase 2 can add additional entrypoints and features
+- Can leverage full apps/boltFoundry patterns as needed
 
 ## Risk Assessment
 
