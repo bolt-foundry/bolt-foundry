@@ -35,7 +35,7 @@ export class AISummarizer {
   async initialize(): Promise<void> {
     try {
       this.deckPath =
-        "/home/runner/workspace/decks/team-summary-analysis.deck.md";
+        "/home/runner/workspace/infra/bft/tasks/team-summary-analysis.bft.deck.md";
       // Verify the deck file exists
       await Deno.stat(this.deckPath);
       logger.debug("Successfully found team summary analysis deck");
