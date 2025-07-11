@@ -13,6 +13,8 @@
     "@deno/dnt": "jsr:@deno/dnt@^0.41.3",
     "@iso": "./apps/boltFoundry/__generated__/__isograph/iso.ts",
     "@iso/": "./apps/boltFoundry/__generated__/__isograph/",
+    "@iso-bfc": "./apps/boltfoundry-com/__generated__/__isograph/iso.ts",
+    "@iso-bfc/": "./apps/boltfoundry-com/__generated__/__isograph/",
     "@isograph/babel-plugin": "npm:@isograph/babel-plugin@^0.3.1",
     "@isograph/react": "npm:@isograph/react@^0.3.1",
     "@lexical/mark": "npm:@lexical/mark@^0.33.0",
