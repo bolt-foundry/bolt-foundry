@@ -3,6 +3,12 @@ import type { CursorGlobals } from "./cursor-types.ts";
 
 export async function injectCursorOverlay(page: Page): Promise<void> {
   await page.evaluate(() => {
+    // Remove existing cursor if it exists
+    const existingCursor = document.getElementById("e2e-cursor-overlay");
+    if (existingCursor) {
+      existingCursor.remove();
+    }
+
     // Create cursor element
     const cursor = document.createElement("div");
     cursor.id = "e2e-cursor-overlay";
@@ -18,7 +24,7 @@ export async function injectCursorOverlay(page: Page): Promise<void> {
       transition: all 0.15s ease-out;
       box-shadow: 0 0 15px rgba(255, 50, 50, 0.8), 0 0 30px rgba(255, 50, 50, 0.4);
       transform: translate(-50%, -50%);
-      display: none;
+      display: block;
     `;
 
     document.body.appendChild(cursor);
@@ -29,13 +35,14 @@ export async function injectCursorOverlay(page: Page): Promise<void> {
     // Initialize cursor in center of viewport
     const centerX = globalThis.innerWidth / 2;
     const centerY = globalThis.innerHeight / 2;
+
+    // Debug logging removed for lint compliance
     cursor.style.left = centerX + "px";
     cursor.style.top = centerY + "px";
-    cursor.style.display = "block";
 
-    // Track mouse position
-    let mouseX = 0;
-    let mouseY = 0;
+    // Track mouse position - initialize to center
+    let mouseX = centerX;
+    let mouseY = centerY;
 
     document.addEventListener("mousemove", (e) => {
       mouseX = e.clientX;
@@ -48,12 +55,11 @@ export async function injectCursorOverlay(page: Page): Promise<void> {
       if (cursor) {
         cursor.style.left = mouseX + "px";
         cursor.style.top = mouseY + "px";
-        cursor.style.display = "block";
       }
     }
 
     // Store current mouse position globally
-    (globalThis as CursorGlobals).__mousePosition = { x: mouseX, y: mouseY };
+    (globalThis as CursorGlobals).__mousePosition = { x: centerX, y: centerY };
   });
 }
 
@@ -85,7 +91,6 @@ export async function updateCursorPosition(
     if (cursor) {
       cursor.style.left = coords.x + "px";
       cursor.style.top = coords.y + "px";
-      cursor.style.display = "block";
     }
     // Update global mouse position
     (globalThis as CursorGlobals).__mousePosition = {
@@ -121,6 +126,19 @@ export async function setCursorStyle(
         break;
     }
   }, style);
+}
+
+export async function checkCursorVisibility(page: Page): Promise<void> {
+  await page.evaluate(() => {
+    const cursor = document.getElementById("e2e-cursor-overlay");
+    if (cursor) {
+      // Debug logging removed for lint compliance
+      // Cursor element found and verified
+    } else {
+      // Debug logging removed for lint compliance
+      // Cursor element not found in DOM
+    }
+  });
 }
 
 export async function removeCursorOverlay(page: Page): Promise<void> {

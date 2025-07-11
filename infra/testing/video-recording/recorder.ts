@@ -1,6 +1,9 @@
-import type { Page } from "puppeteer-core";
+import type { CDPSession, Page } from "puppeteer-core";
 import { join } from "@std/path";
 import { ensureDir } from "@std/fs";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
+
+const logger = getLogger(import.meta);
 import {
   convertFramesToVideo,
   type VideoConversionOptions,
@@ -12,6 +15,7 @@ export interface VideoRecordingSession {
   startTime: number;
   name: string;
   outputDir: string;
+  cdpSession?: CDPSession; // Store CDP session for cleanup
 }
 
 export async function startScreencastRecording(
@@ -28,6 +32,7 @@ export async function startScreencastRecording(
     startTime: Date.now(),
     name,
     outputDir,
+    cdpSession, // Store CDP session reference
   };
 
   await cdpSession.send("Page.enable");
@@ -45,10 +50,16 @@ export async function startScreencastRecording(
     );
     session.frames.push(frameBuffer);
 
-    // Acknowledge the frame
-    cdpSession.send("Page.screencastFrameAck", {
-      sessionId: frame.sessionId,
-    });
+    // Acknowledge the frame with error handling
+    try {
+      cdpSession.send("Page.screencastFrameAck", {
+        sessionId: frame.sessionId,
+      }).catch(() => {
+        // Ignore acknowledgment errors during cleanup
+      });
+    } catch {
+      // Ignore acknowledgment errors during cleanup
+    }
   });
 
   return session;
@@ -57,10 +68,42 @@ export async function startScreencastRecording(
 export async function stopScreencastRecording(
   page: Page,
   session: VideoRecordingSession,
-): Promise<string> {
-  const cdpSession = await page.target().createCDPSession();
+  videoOptions: VideoConversionOptions = {},
+): Promise<VideoConversionResult> {
+  // By default, convert to video with frame preservation
+  const defaultOptions: VideoConversionOptions = {
+    preserveFrames: true,
+    ...videoOptions,
+  };
 
-  await cdpSession.send("Page.stopScreencast");
+  return await stopScreencastRecordingWithVideo(page, session, defaultOptions);
+}
+
+export async function stopScreencastRecordingFramesOnly(
+  page: Page,
+  session: VideoRecordingSession,
+): Promise<string> {
+  // Use the stored CDP session if available, otherwise create a new one
+  const cdpSession = session.cdpSession ||
+    await page.target().createCDPSession();
+
+  try {
+    await cdpSession.send("Page.stopScreencast");
+  } catch (error) {
+    // Ignore errors if the session is already closed
+    logger.warn("Failed to stop screencast:", error);
+  }
+
+  // Clean up the stored CDP session
+  if (session.cdpSession) {
+    try {
+      await session.cdpSession.detach();
+    } catch (error) {
+      // Ignore cleanup errors
+      logger.warn("Failed to detach CDP session:", error);
+    }
+    session.cdpSession = undefined;
+  }
 
   const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
   const frameDir = join(session.outputDir, `${timestamp}_${session.name}`);
@@ -87,7 +130,7 @@ export async function stopScreencastRecordingWithVideo(
   videoOptions: VideoConversionOptions = {},
 ): Promise<VideoConversionResult> {
   // First stop recording and save frames
-  const frameDir = await stopScreencastRecording(page, session);
+  const frameDir = await stopScreencastRecordingFramesOnly(page, session);
 
   // Then convert frames to video
   const videoResult = await convertFramesToVideo(frameDir, videoOptions);

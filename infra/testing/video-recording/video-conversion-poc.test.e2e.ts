@@ -15,7 +15,7 @@ Deno.test.ignore("Video conversion proof of concept - MP4", async () => {
 
   try {
     // Start video recording with MP4 conversion
-    const stopRecording = await context.startVideoRecordingWithConversion(
+    const stopRecording = await context.startVideoRecording(
       "conversion-poc-mp4",
       {
         outputFormat: "mp4",
@@ -94,7 +94,7 @@ Deno.test.ignore("Video conversion proof of concept - WebM", async () => {
 
   try {
     // Start video recording with WebM conversion
-    const stopRecording = await context.startVideoRecordingWithConversion(
+    const stopRecording = await context.startVideoRecording(
       "conversion-poc-webm",
       {
         outputFormat: "webm",
