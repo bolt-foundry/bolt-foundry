@@ -1,34 +1,8 @@
 import { useState } from "react";
-
-// Simple button fallback
-function SimpleButton({ children, onClick, variant = "primary" }: {
-  children: React.ReactNode;
-  onClick?: () => void;
-  variant?: "primary" | "secondary";
-}) {
-  const buttonStyle = {
-    padding: "0.5rem 1rem",
-    border: "none",
-    borderRadius: "0.25rem",
-    cursor: "pointer",
-    backgroundColor: variant === "primary" ? "#3b82f6" : "#6b7280",
-    color: "white",
-    fontSize: "0.875rem",
-    fontWeight: "500",
-  };
-
-  return (
-    <button type="button" style={buttonStyle} onClick={onClick}>
-      {children}
-    </button>
-  );
-}
+import { BfDsButton } from "@bfmono/apps/bfDs/index.ts";
 
 export function UIDemo() {
   const [count, setCount] = useState(5);
-
-  // Use simple fallback buttons for now to avoid import issues
-  const BfDsButton = SimpleButton;
 
   return (
     <div style={{ padding: "2rem", maxWidth: "800px", margin: "0 auto" }}>
