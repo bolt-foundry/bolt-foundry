@@ -11,6 +11,7 @@ import {
   PRIVATE_CONFIG_KEYS,
   PUBLIC_CONFIG_KEYS,
 } from "@bfmono/apps/boltFoundry/__generated__/configKeys.ts";
+import { isoCommand } from "@bfmono/infra/bft/tasks/iso.bft.ts";
 
 const logger = getLogger(import.meta);
 
@@ -462,10 +463,7 @@ export async function build(args: Array<string>): Promise<number> {
   }
 
   if (debug) logMemoryUsage("before isograph compiler");
-  const isographResult = await runShellCommand(
-    ["deno", "run", "-A", "npm:@isograph/compiler"],
-    "apps/boltFoundry",
-  );
+  const isographResult = await isoCommand([]);
   if (debug) logMemoryUsage("after isograph compiler");
 
   if (isographResult && waitForFail) {

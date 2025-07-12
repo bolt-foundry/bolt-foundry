@@ -2,8 +2,7 @@ import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Express, NextFunction, Request, Response } from "express";
 import session from "express-session";
-import { randomBytes, scrypt, timingSafeEqual } from "crypto";
-import { promisify } from "util";
+import { timingSafeEqual } from "node:crypto";
 import { storage } from "./storage";
 import {
   insertUserSchema,
@@ -36,26 +35,72 @@ type SafeUser = {
 // Create a PostgreSQL session store
 const PostgresSessionStore = connectPg(session);
 
-// Promisify scrypt for password hashing
-const scryptAsync = promisify(scrypt);
-
 /**
- * Hash a password using scrypt with a random salt
+ * Hash a password using Web Crypto API
  */
 async function hashPassword(password: string) {
-  const salt = randomBytes(16).toString("hex");
-  const buf = (await scryptAsync(password, salt, 64)) as Buffer;
-  return `${buf.toString("hex")}.${salt}`;
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const encoder = new TextEncoder();
+  const data = encoder.encode(password);
+  
+  const key = await crypto.subtle.importKey(
+    "raw",
+    data,
+    { name: "PBKDF2" },
+    false,
+    ["deriveBits"]
+  );
+  
+  const derivedBits = await crypto.subtle.deriveBits(
+    {
+      name: "PBKDF2",
+      salt: salt,
+      iterations: 100000,
+      hash: "SHA-256"
+    },
+    key,
+    256
+  );
+  
+  const hashArray = new Uint8Array(derivedBits);
+  const saltHex = Array.from(salt).map(b => b.toString(16).padStart(2, '0')).join('');
+  const hashHex = Array.from(hashArray).map(b => b.toString(16).padStart(2, '0')).join('');
+  
+  return `${hashHex}.${saltHex}`;
 }
 
 /**
  * Compare a supplied password against a stored hashed password
  */
 async function comparePasswords(supplied: string, stored: string) {
-  const [hashed, salt] = stored.split(".");
-  const hashedBuf = Buffer.from(hashed, "hex");
-  const suppliedBuf = (await scryptAsync(supplied, salt, 64)) as Buffer;
-  return timingSafeEqual(hashedBuf, suppliedBuf);
+  const [hashed, saltHex] = stored.split(".");
+  const salt = new Uint8Array(saltHex.match(/.{2}/g)?.map(byte => parseInt(byte, 16)) || []);
+  const hashedBytes = new Uint8Array(hashed.match(/.{2}/g)?.map(byte => parseInt(byte, 16)) || []);
+  
+  const encoder = new TextEncoder();
+  const data = encoder.encode(supplied);
+  
+  const key = await crypto.subtle.importKey(
+    "raw",
+    data,
+    { name: "PBKDF2" },
+    false,
+    ["deriveBits"]
+  );
+  
+  const derivedBits = await crypto.subtle.deriveBits(
+    {
+      name: "PBKDF2",
+      salt: salt,
+      iterations: 100000,
+      hash: "SHA-256"
+    },
+    key,
+    256
+  );
+  
+  const suppliedBytes = new Uint8Array(derivedBits);
+  return timingSafeEqual(hashedBytes, suppliedBytes);
 }
 
 /**

@@ -19,51 +19,67 @@ const logger = getLogger(import.meta);
 export async function isoCommand(options: Array<string>): Promise<number> {
   logger.info("Running isograph compiler...");
 
-  // Default working directory is apps/boltFoundry where the isograph config lives
-  const workingDir = "apps/boltFoundry";
+  // Apps that have isograph configurations
+  const appsWithIsograph = ["apps/boltFoundry", "apps/boltfoundry-com"];
+  
+  const verbose = options.includes("--verbose");
+  if (verbose) {
+    options = options.filter((opt) => opt !== "--verbose");
+  }
+
+  let overallResult = 0;
 
   try {
-    // When called directly, provide more verbose output
-    if (options.includes("--verbose")) {
-      options = options.filter((opt) => opt !== "--verbose");
-      const { stdout, stderr, code } = await runShellCommandWithOutput(
-        [
-          "deno",
-          "run",
-          "--no-check",
-          "-A",
-          "npm:@isograph/compiler",
-          ...options,
-        ],
-      );
+    // Compile isograph for each app that has a configuration
+    for (const workingDir of appsWithIsograph) {
+      logger.info(`Compiling isograph for ${workingDir}...`);
 
-      if (stdout) logger.info(stdout);
-      if (stderr) logger.error(stderr);
+      if (verbose) {
+        const { stdout, stderr, code } = await runShellCommandWithOutput(
+          [
+            "deno",
+            "run",
+            "--no-check",
+            "-A",
+            "npm:@isograph/compiler",
+            ...options,
+          ],
+          workingDir,
+        );
 
-      if (code === 0) {
-        logger.info("✅ Isograph compilation completed successfully");
-        await restartLspServer();
+        if (stdout) logger.info(stdout);
+        if (stderr) logger.error(stderr);
+
+        if (code === 0) {
+          logger.info(`✅ Isograph compilation for ${workingDir} completed successfully`);
+        } else {
+          logger.error(`❌ Isograph compilation for ${workingDir} failed with code ${code}`);
+          overallResult = code;
+        }
       } else {
-        logger.error(`❌ Isograph compilation failed with code ${code}`);
-      }
+        // Standard execution for build pipeline
+        const result = await runShellCommand(
+          ["deno", "run", "-A", "npm:@isograph/compiler", ...options],
+          workingDir,
+        );
 
-      return code;
+        if (result === 0) {
+          logger.info(`✅ Isograph compilation for ${workingDir} completed successfully`);
+        } else {
+          logger.error(`❌ Isograph compilation for ${workingDir} failed with code ${result}`);
+          overallResult = result;
+        }
+      }
     }
 
-    // Standard execution for build pipeline
-    const result = await runShellCommand(
-      ["deno", "run", "-A", "npm:@isograph/compiler", ...options],
-      workingDir,
-    );
-
-    if (result === 0) {
-      logger.info("✅ Isograph compilation completed successfully");
+    if (overallResult === 0) {
+      logger.info("✅ All isograph compilations completed successfully");
       await restartLspServer();
     } else {
-      logger.error(`❌ Isograph compilation failed with code ${result}`);
+      logger.error("❌ One or more isograph compilations failed");
     }
 
-    return result;
+    return overallResult;
   } catch (error) {
     logger.error("Error running isograph compiler:", error);
     return 1;
