@@ -54,6 +54,7 @@ export interface GqlRelationDef {
   description?: string;
   args?: Record<string, unknown>;
   resolve?: GqlFieldResolver;
+  nonNull?: boolean;
   isEdgeRelationship?: boolean;
   isSourceToTarget?: boolean;
   // deno-lint-ignore no-explicit-any

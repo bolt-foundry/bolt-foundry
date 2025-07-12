@@ -1,0 +1,104 @@
+### @generated 
+"""ISO 8601 date string (e.g., 2025-06-10T14:30:00.000Z)"""
+scalar IsoDate
+
+"""Base interface for all Bolt Foundry database nodes"""
+interface BfNode {
+  id: ID!
+}
+
+"""An object with a unique identifier"""
+interface Node {
+  id: ID!
+}
+
+type BlogPost {
+  id: ID!
+  content: String!
+  author: String
+  publishedAt: IsoDate
+  updatedAt: IsoDate
+  tags: String!
+  excerpt: String!
+  title: String!
+  heroImage: String
+}
+
+type PublishedDocument {
+  id: ID!
+  content: String!
+}
+
+type BoltFoundryComCurrentViewer {
+  blogPost(slug: String): BlogPost
+  documentsBySlug(slug: String): PublishedDocument
+  blogPosts(
+    sortDirection: String
+    filterByYear: String
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor"""
+    after: String
+
+    """Returns the last n elements from the list."""
+    last: Int
+
+    """Returns the elements in the list that come before the specified cursor"""
+    before: String
+  ): BlogPostConnection
+}
+
+type Query {
+  currentViewer: BoltFoundryComCurrentViewer
+}
+
+type BlogPostConnection {
+  """
+  https://facebook.github.io/relay/graphql/connections.htm#sec-Edge-Types
+  """
+  edges: [BlogPostEdge]
+
+  """
+  https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo
+  """
+  pageInfo: PageInfo!
+
+  """Flattened list of BlogPost type"""
+  nodes: [BlogPost]
+  count: Int
+}
+
+type BlogPostEdge {
+  """https://facebook.github.io/relay/graphql/connections.htm#sec-Cursor"""
+  cursor: String!
+
+  """https://facebook.github.io/relay/graphql/connections.htm#sec-Node"""
+  node: BlogPost
+}
+
+"""
+PageInfo cursor, as defined in https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo
+"""
+type PageInfo {
+  """
+  Used to indicate whether more edges exist following the set defined by the clients arguments.
+  """
+  hasNextPage: Boolean!
+
+  """
+  Used to indicate whether more edges exist prior to the set defined by the clients arguments.
+  """
+  hasPreviousPage: Boolean!
+
+  """
+  The cursor corresponding to the first nodes in edges. Null if the connection is empty.
+  """
+  startCursor: String
+
+  """
+  The cursor corresponding to the last nodes in edges. Null if the connection is empty.
+  """
+  endCursor: String
+}
