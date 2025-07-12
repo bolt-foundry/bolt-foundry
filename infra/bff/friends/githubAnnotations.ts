@@ -265,3 +265,164 @@ export async function runCheckWithGithubAnnotations(): Promise<number> {
   }
   return code;
 }
+
+/**
+ * Run E2E tests with GitHub Annotations for failures.
+ */
+export async function runE2EWithGithubAnnotations(
+  testArgs: Array<string>,
+): Promise<number> {
+  let code = 0;
+  try {
+    const { stdout: rawOutput, stderr: errors } =
+      await runShellCommandWithOutput(
+        testArgs,
+        {},
+        false,
+        true,
+      );
+
+    // Check stderr for any critical errors first
+    if (errors) {
+      const errorLines = errors.split("\n").filter(Boolean);
+      for (const line of errorLines) {
+        if (line.includes("error:") || line.includes("Error:")) {
+          const message = stripArrowLines(line);
+          printGitHubAnnotation("error", `[E2E ERROR] ${message}`);
+          code = 1;
+        }
+      }
+    }
+
+    // Parse test output for failures
+    if (rawOutput) {
+      const lines = rawOutput.split("\n").filter(Boolean);
+      for (const line of lines) {
+        // Look for test failure patterns
+        if (line.includes("FAILED") || line.includes("failed")) {
+          // Try to extract test file and name
+          const testMatch = line.match(
+            /(\S+\.e2e\.ts).*?(\w+.*?)(?:FAILED|failed)/,
+          );
+          if (testMatch) {
+            const [, filePath, testName] = testMatch;
+            const normalizedPath = normalizeFilePath(filePath);
+            printGitHubAnnotation(
+              "error",
+              `[E2E TEST FAIL] ${testName}`,
+              normalizedPath,
+            );
+          } else {
+            printGitHubAnnotation(
+              "error",
+              `[E2E TEST FAIL] ${stripArrowLines(line)}`,
+            );
+          }
+          code = 1;
+        }
+      }
+    }
+  } catch (err) {
+    logger.error("Error running E2E tests:", err);
+    const errorMsg = err instanceof Error ? err.message : String(err);
+    printGitHubAnnotation("error", `[E2E ERROR] ${stripArrowLines(errorMsg)}`);
+    code = 1;
+  }
+  return code;
+}
+
+/**
+ * Run build pipeline with GitHub Annotations for failures.
+ */
+export async function runBuildWithGithubAnnotations(): Promise<number> {
+  let code = 0;
+  try {
+    // We'll run the build steps individually to get better error reporting
+    const steps = [
+      { name: "genGqlTypes", cmd: ["bft", "genGqlTypes"] },
+      { name: "iso", cmd: ["bft", "iso"] },
+      {
+        name: "webCompilation",
+        cmd: [
+          "deno",
+          "compile",
+          "--no-check",
+          "--output=build/web",
+          "apps/web/web.tsx",
+        ],
+      },
+    ];
+
+    for (const step of steps) {
+      logger.info(`Running build step: ${step.name}...`);
+      const { stdout: output, stderr: errors } =
+        await runShellCommandWithOutput(
+          step.cmd,
+          {},
+          false,
+          true,
+        );
+
+      // Check for errors in stderr
+      if (errors) {
+        const errorLines = errors.split("\n").filter(Boolean);
+        for (const line of errorLines) {
+          if (line.includes("error:") || line.includes("Error:")) {
+            const message = stripArrowLines(line);
+            // Try to extract file path if available
+            const fileMatch = line.match(
+              /(?:at\s+|file:\/\/)([^:\s]+\.(?:ts|tsx|js|jsx))(?::(\d+)(?::(\d+))?)?/,
+            );
+            if (fileMatch) {
+              const [, filePath, lineNum, colNum] = fileMatch;
+              const normalizedPath = normalizeFilePath(filePath);
+              printGitHubAnnotation(
+                "error",
+                `[BUILD ${step.name.toUpperCase()}] ${message}`,
+                normalizedPath,
+                lineNum ? parseInt(lineNum) : undefined,
+                colNum ? parseInt(colNum) : undefined,
+              );
+            } else {
+              printGitHubAnnotation(
+                "error",
+                `[BUILD ${step.name.toUpperCase()}] ${message}`,
+              );
+            }
+            code = 1;
+          }
+        }
+      }
+
+      // Check for errors in stdout as well
+      if (output) {
+        const outputLines = output.split("\n").filter(Boolean);
+        for (const line of outputLines) {
+          if (line.includes("error:") || line.includes("Error:")) {
+            const message = stripArrowLines(line);
+            printGitHubAnnotation(
+              "error",
+              `[BUILD ${step.name.toUpperCase()}] ${message}`,
+            );
+            code = 1;
+          }
+        }
+      }
+
+      // If this step failed, stop the build pipeline
+      if (code !== 0) {
+        printGitHubAnnotation("error", `Build failed at step: ${step.name}`);
+        break;
+      }
+    }
+  } catch (err) {
+    logger.error("Error running build pipeline:", err);
+    const errorMsg = err instanceof Error ? err.message : String(err);
+    printGitHubAnnotation(
+      "error",
+      `[BUILD ERROR] ${stripArrowLines(errorMsg)}`,
+    );
+    code = 1;
+  }
+  return code;
+}
