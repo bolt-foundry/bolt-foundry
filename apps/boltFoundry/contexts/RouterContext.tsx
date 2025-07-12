@@ -226,10 +226,10 @@ export type RouterProviderProps = {
 
 export function addAllRoutes() {
   // We'll store them exactly as declared
-  appRoutes.forEach((_value, key) => {
+  appRoutes.forEach((_value: RouteGuts, key: string) => {
     addRoute(key);
   });
-  isographAppRoutes.forEach((_value, key) => {
+  isographAppRoutes.forEach((_value: any, key: string) => {
     addRoute(key);
   });
   logger.debug(

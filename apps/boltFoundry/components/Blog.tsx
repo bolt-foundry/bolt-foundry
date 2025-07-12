@@ -1,29 +1,9 @@
-import { iso } from "@bfmono/apps/boltFoundry/__generated__/__isograph/iso.ts";
-import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { CfDsButton } from "@bfmono/apps/cfDs/components/CfDsButton.tsx";
 import { BlogSimple } from "./BlogSimple.tsx";
 import { Nav } from "@bfmono/apps/boltFoundry/components/Nav.tsx";
 
-const _logger = getLogger(import.meta);
-
-// Main Blog component that switches between list and single post
-export const Blog = iso(`
-  field Query.Blog($slug: String) @component {
-    blogPost(slug: $slug) {
-      BlogPostView
-    }
-    blogPosts(first: 10, sortDirection: "DESC") {
-      BlogList
-    }
-  }
-`)(function Blog({ data, parameters = {} }) {
-  const hasSlug = Boolean(parameters?.slug);
-
-  // If data is not available, use the simple component
-  if (!data) {
-    return <BlogSimple slug={parameters?.slug ?? undefined} />;
-  }
-
+// Main Blog component - temporarily disabled
+export function Blog({ parameters }: { parameters?: { slug?: string } }) {
   return (
     <div className="landing-page">
       {/* Header */}
@@ -32,13 +12,10 @@ export const Blog = iso(`
       <section className="docs-section">
         <div className="landing-content">
           <div className="blog-layout">
-            {hasSlug
-              ? (data.blogPost
-                ? <data.blogPost.BlogPostView />
-                : <div>Blog post not found</div>)
-              : (data.blogPosts
-                ? <data.blogPosts.BlogList />
-                : <div>Loading blog posts...</div>)}
+            <div>
+              <h1>Blog</h1>
+              <p>Blog functionality is temporarily disabled.</p>
+            </div>
           </div>
         </div>
         <div className="landing-footer">
@@ -65,4 +42,4 @@ export const Blog = iso(`
       </section>
     </div>
   );
-});
+}

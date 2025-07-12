@@ -17,8 +17,8 @@ export function registerAppRoutes(routes: Map<string, Handler>): void {
 
   // Register each app route in the routes Map
   for (const [path] of appRoutesMap.entries()) {
-    routes.set(path, async function AppRoute(request, routeParams) {
-      return await handleAppRoute(request, routeParams, path);
+    routes.set(path as string, async function AppRoute(request, routeParams) {
+      return await handleAppRoute(request, routeParams, path as string);
     });
   }
 }

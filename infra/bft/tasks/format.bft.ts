@@ -1,5 +1,6 @@
 import { runShellCommand } from "@bfmono/infra/bff/shellBase.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import { runFormatWithGithubAnnotations } from "@bfmono/infra/bff/friends/githubAnnotations.ts";
 import type { TaskDefinition } from "@bfmono/infra/bft/bft.ts";
 
 const logger = getLogger(import.meta);
@@ -9,10 +10,18 @@ export async function formatCommand(options: Array<string>): Promise<number> {
 
   const args = ["deno", "fmt"];
 
-  // Add any file arguments
-  if (options.length > 0) {
-    args.push(...options);
+  // Check for GitHub annotations mode
+  const githubMode = options.includes("--github") || options.includes("-g");
+  if (githubMode) {
+    logger.info("Running in GitHub annotations mode...");
+    return await runFormatWithGithubAnnotations();
   }
+
+  // Add all other arguments (excluding our custom flags)
+  const filteredOptions = options.filter((opt) =>
+    opt !== "--github" && opt !== "-g"
+  );
+  args.push(...filteredOptions);
 
   const result = await runShellCommand(args);
 
