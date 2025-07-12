@@ -68,6 +68,7 @@
     "jsr:@ts-morph/bootstrap@0.24": "0.24.0",
     "jsr:@ts-morph/common@0.24": "0.24.0",
     "npm:@anthropic-ai/claude-code@*": "1.0.48",
+    "npm:@anthropic-ai/claude-code@^1.0.51": "1.0.51",
     "npm:@babel/preset-react@^7.25.7": "7.27.1_@babel+core@7.28.0",
     "npm:@deno/vite-plugin@^1.0.4": "1.0.5_vite@6.3.5__picomatch@4.0.2_@types+node@22.15.15",
     "npm:@hexagon/base64@^1.1.27": "1.1.28",
@@ -392,6 +393,18 @@
         "@img/sharp-win32-x64"
       ],
       "scripts": true,
+      "bin": true
+    },
+    "@anthropic-ai/claude-code@1.0.51": {
+      "integrity": "sha512-annBc4ez7nDPbp+di6bjIQGiAdmdVln4k3gAYioym2MxOEl3py5s7SsoR+dNSmfgfIHUdKBTbtXnXD5rkmO5aA==",
+      "optionalDependencies": [
+        "@img/sharp-darwin-arm64",
+        "@img/sharp-darwin-x64",
+        "@img/sharp-linux-arm",
+        "@img/sharp-linux-arm64",
+        "@img/sharp-linux-x64",
+        "@img/sharp-win32-x64"
+      ],
       "bin": true
     },
     "@babel/code-frame@7.27.1": {
@@ -3395,6 +3408,7 @@
       "jsr:@std/streams@^1.0.10",
       "jsr:@std/testing@^1.0.9",
       "jsr:@std/toml@^1.0.4",
+      "npm:@anthropic-ai/claude-code@^1.0.51",
       "npm:@isograph/babel-plugin@~0.3.1",
       "npm:@isograph/react@~0.3.1",
       "npm:@lexical/mark@0.33",
