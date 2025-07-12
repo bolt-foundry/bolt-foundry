@@ -1,0 +1,4 @@
+### @generated 
+type Query {
+  ok: Boolean!
+}

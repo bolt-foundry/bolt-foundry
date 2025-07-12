@@ -49,7 +49,7 @@ bft ai                 # List AI-safe commands
 3. **Test first** - Follow TDD practices in testing card
 4. **Use BFT commands** - Prefer `bft` over direct commands
 5. **TypeScript array syntax** - Always use `Array<T>` instead of `T[]` for
-   array types (e.g., `Array<BfDsLiteTabItem>` not `BfDsLiteTabItem[]`)
+   array types
 
 ## Dependency Management
 

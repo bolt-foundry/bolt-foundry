@@ -1,53 +1,55 @@
 import { GraphQLObjectBase } from "../GraphQLObjectBase.ts";
-import { PublishedDocument } from "@bfmono/apps/bfDb/nodeTypes/PublishedDocument.ts";
-import { BlogPost } from "@bfmono/apps/bfDb/nodeTypes/BlogPost.ts";
-import { GithubRepoStats } from "@bfmono/apps/bfDb/nodeTypes/GithubRepoStats.ts";
+import { blogQueries } from "@bfmono/apps/bfDb/graphql/queries/blogQueries.ts";
+import { documentQueries } from "@bfmono/apps/bfDb/graphql/queries/documentQueries.ts";
+import { systemQueries } from "@bfmono/apps/bfDb/graphql/queries/systemQueries.ts";
 
+/**
+ * Query root class that demonstrates fragment composition
+ *
+ * This class now uses the fragment composition system to build the Query root
+ * from modular fragments, while maintaining the exact same schema output
+ * for backward compatibility.
+ */
 export class Query extends GraphQLObjectBase {
-  static override gqlSpec = this.defineGqlNode((field) =>
-    field
-      .boolean("ok")
-      .object("documentsBySlug", () => PublishedDocument, {
-        args: (a) => a.string("slug"),
-        resolve: async (_root, args, _ctx, _info) => {
-          const slug = (args.slug as string) || "getting-started";
-          const post = await PublishedDocument.findX(slug).catch(() => null);
-          return post;
-        },
-      })
-      .object("blogPost", () => BlogPost, {
-        args: (a) => a.string("slug"),
-        resolve: async (_root, args, _ctx, _info) => {
-          const slug = (args.slug as string) || "README";
-          const post = await BlogPost.findX(slug).catch(() => null);
-          return post;
-        },
-      })
-      .connection("blogPosts", () => BlogPost, {
-        args: (a) =>
-          a
-            .string("sortDirection")
-            .string("filterByYear"),
-        resolve: async (_root, args, _ctx) => {
-          // Default to reverse chronological order
-          const sortDir = (args.sortDirection as "ASC" | "DESC") || "DESC";
-          const posts = await BlogPost.listAll(sortDir);
+  /**
+   * Legacy implementation - maintains exact same schema output
+   * Uses fragments internally but composes them into the same structure
+   */
+  static override gqlSpec = (() => {
+    // Merge all query fragments into a single spec
+    const mergedSpec = {
+      fields: {},
+      relations: {},
+      connections: {},
+      mutations: {},
+    };
 
-          // Apply year filter if provided
-          const filtered = args.filterByYear
-            ? posts.filter((p) => p.id.startsWith(args.filterByYear as string))
-            : posts;
+    // Merge blog queries
+    Object.assign(mergedSpec.fields, blogQueries.spec.fields);
+    Object.assign(mergedSpec.relations, blogQueries.spec.relations);
+    if (blogQueries.spec.connections) {
+      Object.assign(mergedSpec.connections, blogQueries.spec.connections);
+    }
 
-          // Return relay connection
-          return BlogPost.connection(filtered, args);
-        },
-      })
-      .object("githubRepoStats", () => GithubRepoStats, {
-        resolve: async () => {
-          return await GithubRepoStats.findX();
-        },
-      })
-  );
+    // Merge document queries
+    Object.assign(mergedSpec.fields, documentQueries.spec.fields);
+    Object.assign(mergedSpec.relations, documentQueries.spec.relations);
+    if (documentQueries.spec.connections) {
+      Object.assign(
+        mergedSpec.connections,
+        documentQueries.spec.connections,
+      );
+    }
+
+    // Merge system queries
+    Object.assign(mergedSpec.fields, systemQueries.spec.fields);
+    Object.assign(mergedSpec.relations, systemQueries.spec.relations);
+    if (systemQueries.spec.connections) {
+      Object.assign(mergedSpec.connections, systemQueries.spec.connections);
+    }
+
+    return mergedSpec;
+  })();
 
   override toGraphql() {
     return { __typename: "Query", id: "Query" };
