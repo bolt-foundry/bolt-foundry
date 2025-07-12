@@ -2,41 +2,59 @@
 
 import type { TaskDefinition } from "../bft.ts";
 import { ui } from "@bfmono/packages/cli-ui/cli-ui.ts";
-import { join } from "@std/path";
 import { ensureDir } from "@std/fs";
 import { parse as parseTOML } from "@std/toml";
 
-interface ClaudeCommand {
+interface AgentCommand {
   name: string;
   description: string;
   content: string;
 }
 
-async function claudify(_args: Array<string>): Promise<number> {
-  ui.info("Generating Claude commands for all BFT tasks...");
+async function agentify(_args: Array<string>): Promise<number> {
+  ui.info("Generating agent commands and configuration...");
 
-  const tasksDir = join(import.meta.dirname!, ".");
-  const claudeCommandsDir = join(
-    import.meta.dirname!,
-    "../../../.claude/commands/bft",
-  );
+  const tasksDir =
+    new URL(import.meta.resolve("@bfmono/infra/bft/tasks/")).pathname;
+  const agentsDir =
+    new URL(import.meta.resolve("@bfmono/.agents/commands/bft/")).pathname;
+  const claudeDir =
+    new URL(import.meta.resolve("@bfmono/.claude/commands/bft/")).pathname;
+  const claudeTasksDir =
+    new URL(import.meta.resolve("@bfmono/.claude/commands/bft-tasks/"))
+      .pathname;
 
-  // Ensure the .claude/commands/bft directory exists
-  await ensureDir(claudeCommandsDir);
+  // Clean up old infrastructure
+  try {
+    await Deno.remove(claudeDir, { recursive: true });
+    ui.debug("Removed existing .claude/commands/bft directory");
+  } catch {
+    // Directory doesn't exist, which is fine
+  }
+
+  try {
+    await Deno.remove(claudeTasksDir, { recursive: true });
+    ui.debug("Removed existing .claude/commands/bft-tasks directory");
+  } catch {
+    // Directory doesn't exist, which is fine
+  }
+
+  // Ensure the .agents/commands/bft directory exists
+  await ensureDir(agentsDir);
 
   // Clean out existing files to avoid orphans
   try {
-    for await (const entry of Deno.readDir(claudeCommandsDir)) {
-      if (entry.isFile && entry.name.endsWith(".md")) {
-        await Deno.remove(join(claudeCommandsDir, entry.name));
+    for await (const entry of Deno.readDir(agentsDir)) {
+      if (entry.isFile) {
+        await Deno.remove(new URL(entry.name, `file://${agentsDir}`).pathname);
       }
     }
-    ui.debug("Cleaned existing Claude command files");
+    ui.debug("Cleaned existing agent command files");
   } catch (error) {
     ui.warn(`Failed to clean existing files: ${error}`);
   }
 
-  const commands: Array<ClaudeCommand> = [];
+  const commands: Array<AgentCommand> = [];
   let generatedCount = 0;
 
   try {
@@ -46,14 +64,16 @@ async function claudify(_args: Array<string>): Promise<number> {
         if (entry.name.endsWith(".bft.ts")) {
           const taskName = entry.name.slice(0, -7); // Remove .bft.ts
 
-          // Skip claudify itself to avoid recursion
-          if (taskName === "claudify") {
+          // Skip agentify itself to avoid recursion
+          if (taskName === "agentify") {
             continue;
           }
 
           try {
             // Import the task to get its definition
-            const modulePath = join(tasksDir, entry.name);
+            const modulePath = new URL(
+              import.meta.resolve(`@bfmono/infra/bft/tasks/${entry.name}`),
+            ).pathname;
             const module = await import(modulePath);
             const taskDef = module.bftDefinition;
 
@@ -62,10 +82,11 @@ async function claudify(_args: Array<string>): Promise<number> {
               commands.push(command);
 
               // Write the command file
-              const commandPath = join(claudeCommandsDir, `${taskName}.md`);
+              const commandPath =
+                new URL(`${taskName}.md`, `file://${agentsDir}`).pathname;
               await Deno.writeTextFile(
                 commandPath,
-                formatClaudeCommand(command),
+                formatAgentCommand(command),
               );
               ui.output(`✓ Generated command for: ${taskName}`);
               generatedCount++;
@@ -77,7 +98,9 @@ async function claudify(_args: Array<string>): Promise<number> {
           const taskName = entry.name.slice(0, -12); // Remove .bft.deck.md
 
           try {
-            const deckPath = join(tasksDir, entry.name);
+            const deckPath = new URL(
+              import.meta.resolve(`@bfmono/infra/bft/tasks/${entry.name}`),
+            ).pathname;
             const deckContent = await Deno.readTextFile(deckPath);
 
             // Extract frontmatter to get purpose
@@ -111,8 +134,9 @@ async function claudify(_args: Array<string>): Promise<number> {
             commands.push(command);
 
             // Write the command file
-            const commandPath = join(claudeCommandsDir, `${taskName}.md`);
-            await Deno.writeTextFile(commandPath, formatClaudeCommand(command));
+            const commandPath =
+              new URL(`${taskName}.md`, `file://${agentsDir}`).pathname;
+            await Deno.writeTextFile(commandPath, formatAgentCommand(command));
             ui.output(`✓ Generated command for deck: ${taskName}`);
             generatedCount++;
           } catch (error) {
@@ -122,24 +146,33 @@ async function claudify(_args: Array<string>): Promise<number> {
       }
     }
 
+    // Generate AGENTS.md file
+    await generateAgentsMd(agentsDir);
+    ui.output("✓ Generated AGENTS.md");
+
     // Also generate a help command
-    const helpCommand: ClaudeCommand = {
+    const helpCommand: AgentCommand = {
       name: "bft-help",
       description: "Show all available BFT tasks",
       content: "Show all available BFT tasks",
     };
 
-    const helpPath = join(claudeCommandsDir, "help.md");
-    await Deno.writeTextFile(helpPath, formatClaudeCommand(helpCommand));
+    const helpPath = new URL("help.md", `file://${agentsDir}`).pathname;
+    await Deno.writeTextFile(helpPath, formatAgentCommand(helpCommand));
     ui.output("✓ Generated command for: help");
     generatedCount++;
 
+    // Create symlinks
+    await createSymlinks(agentsDir);
+
     ui.info(
-      `\nSuccessfully generated ${generatedCount} Claude commands in ${claudeCommandsDir}`,
+      `\nSuccessfully generated ${
+        generatedCount + 1
+      } agent commands in ${agentsDir}`,
     );
     return 0;
   } catch (error) {
-    ui.error(`Failed to generate Claude commands: ${error}`);
+    ui.error(`Failed to generate agent commands: ${error}`);
     return 1;
   }
 }
@@ -147,7 +180,7 @@ async function claudify(_args: Array<string>): Promise<number> {
 function generateCommandForTask(
   taskName: string,
   taskDef: TaskDefinition,
-): ClaudeCommand {
+): AgentCommand {
   const name = `bft-${taskName}`;
   const description = taskDef.description;
 
@@ -182,7 +215,7 @@ async function generateCommandForDeck(
   taskName: string,
   purpose: string,
   deckPath: string,
-): Promise<ClaudeCommand> {
+): Promise<AgentCommand> {
   const name = `bft-${taskName}`;
   const description = purpose;
 
@@ -283,7 +316,59 @@ async function getContextParamsForDeck(
   return [];
 }
 
-function formatClaudeCommand(command: ClaudeCommand): string {
+async function generateAgentsMd(agentsDir: string): Promise<void> {
+  const agentsMdPath =
+    new URL(import.meta.resolve("@bfmono/AGENTS.md")).pathname;
+  const agentsMdContent = await Deno.readTextFile(agentsMdPath);
+
+  const targetPath = new URL("AGENTS.md", `file://${agentsDir}`).pathname;
+  await Deno.writeTextFile(targetPath, agentsMdContent);
+}
+
+async function createSymlinks(agentsDir: string): Promise<void> {
+  const repoRoot = new URL(import.meta.resolve("@bfmono/")).pathname;
+
+  // Create .claude/commands/bft symlink
+  const claudeDir =
+    new URL(".claude/commands/bft", `file://${repoRoot}`).pathname;
+  try {
+    await Deno.symlink(agentsDir, claudeDir);
+    ui.output("✓ Created symlink: .claude/commands/bft → .agents/commands/bft");
+  } catch (error) {
+    ui.warn(`Failed to create .claude symlink: ${error}`);
+  }
+
+  // Create AGENTS.md symlink
+  const agentsMdSource = new URL("AGENTS.md", `file://${agentsDir}`).pathname;
+  const agentsMdTarget = new URL("AGENTS.md", `file://${repoRoot}`).pathname;
+  try {
+    await Deno.remove(agentsMdTarget);
+  } catch {
+    // File doesn't exist, which is fine
+  }
+  try {
+    await Deno.symlink(agentsMdSource, agentsMdTarget);
+    ui.output("✓ Created symlink: AGENTS.md → .agents/commands/bft/AGENTS.md");
+  } catch (error) {
+    ui.warn(`Failed to create AGENTS.md symlink: ${error}`);
+  }
+
+  // Create CLAUDE.md symlink
+  const claudeMdTarget = new URL("CLAUDE.md", `file://${repoRoot}`).pathname;
+  try {
+    await Deno.remove(claudeMdTarget);
+  } catch {
+    // File doesn't exist, which is fine
+  }
+  try {
+    await Deno.symlink(agentsMdSource, claudeMdTarget);
+    ui.output("✓ Created symlink: CLAUDE.md → .agents/commands/bft/AGENTS.md");
+  } catch (error) {
+    ui.warn(`Failed to create CLAUDE.md symlink: ${error}`);
+  }
+}
+
+function formatAgentCommand(command: AgentCommand): string {
   return `---
 name: ${command.name}
 description: ${command.description}
@@ -295,13 +380,13 @@ ${command.content}
 
 // Export the task definition for autodiscovery
 export const bftDefinition = {
-  description: "Generate Claude commands for all BFT tasks",
+  description: "Generate agent commands and configuration for all BFT tasks",
   aiSafe: true,
-  fn: claudify,
+  fn: agentify,
 } satisfies TaskDefinition;
 
 // When run directly as a script
 if (import.meta.main) {
   const scriptArgs = Deno.args.slice(2); // Skip "run" and script name
-  Deno.exit(await claudify(scriptArgs));
+  Deno.exit(await agentify(scriptArgs));
 }
