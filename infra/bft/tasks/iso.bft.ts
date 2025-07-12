@@ -1,14 +1,22 @@
-import {
-  runShellCommand,
-  type runShellCommandWithOutput as _runShellCommandWithOutput,
-} from "@bfmono/infra/bff/shellBase.ts";
+import { runShellCommand } from "@bfmono/infra/bff/shellBase.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import type { TaskDefinition } from "@bfmono/infra/bft/bft.ts";
+import { generateAllAppSchemas } from "@bfmono/infra/bft/tasks/genAppSchemas.bft.ts";
 
 const logger = getLogger(import.meta);
 
 export async function isoCommand(options: Array<string>): Promise<number> {
   logger.info("Running isograph compiler...");
+
+  // First, generate selective app schemas
+  logger.info("Generating selective app schemas...");
+  const schemaSuccess = await generateAllAppSchemas();
+  if (!schemaSuccess) {
+    logger.error(
+      "❌ App schema generation failed, skipping isograph compilation",
+    );
+    return 1;
+  }
 
   // Working directories with isograph configs
   const workingDirs = [

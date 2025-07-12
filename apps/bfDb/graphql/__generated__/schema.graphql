@@ -60,6 +60,17 @@ type BlogPostEdge {
   node: BlogPost
 }
 
+type CurrentViewer {
+  currentViewer: CurrentViewer
+  id: ID
+  orgBfOid: String
+  personBfGid: String
+}
+
+type CurrentViewerLoggedIn
+
+type CurrentViewerLoggedOut
+
 type GithubRepoStats {
   id: ID!
   stars: Int!
@@ -75,6 +86,7 @@ type JoinWaitlistPayload {
 
 type Mutation {
   joinWaitlist(company: String, email: String!, name: String!): JoinWaitlistPayload
+  loginWithGoogle(idToken: String!): CurrentViewer
 }
 
 """An object with a unique identifier"""
@@ -129,6 +141,7 @@ type Query {
     last: Int
     sortDirection: String
   ): BlogPostConnection
+  currentViewer: CurrentViewer!
   documentsBySlug(slug: String): PublishedDocument
   githubRepoStats: GithubRepoStats
   ok: Boolean

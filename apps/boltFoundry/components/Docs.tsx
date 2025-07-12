@@ -1,13 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { iso } from "@bfmono/apps/boltFoundry/__generated__/__isograph/iso.ts";
 import { PageError } from "@bfmono/apps/boltFoundry/pages/PageError.tsx";
-import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { marked, Renderer } from "marked";
 import { CfDsButton } from "@bfmono/apps/cfDs/components/CfDsButton.tsx";
 import { DocsSidebar } from "@bfmono/apps/boltFoundry/components/DocsSidebar.tsx";
 import { Nav } from "@bfmono/apps/boltFoundry/components/Nav.tsx";
-
-const _logger = getLogger(import.meta);
 
 export const Docs = iso(`
   field Query.Docs($slug: String) @component {

@@ -58,6 +58,7 @@ export interface NexusGenObjects {
     cursor: string; // String!
     node?: NexusGenRootTypes['BlogPost'] | null; // BlogPost
   }
+  CurrentViewer: {};
   GithubRepoStats: {};
   JoinWaitlistPayload: { // root type
     message?: string | null; // String
@@ -121,6 +122,12 @@ export interface NexusGenFieldTypes {
     cursor: string; // String!
     node: NexusGenRootTypes['BlogPost'] | null; // BlogPost
   }
+  CurrentViewer: { // field return type
+    currentViewer: NexusGenRootTypes['CurrentViewer'] | null; // CurrentViewer
+    id: string | null; // ID
+    orgBfOid: string | null; // String
+    personBfGid: string | null; // String
+  }
   GithubRepoStats: { // field return type
     id: string; // ID!
     stars: number; // Int!
@@ -131,6 +138,7 @@ export interface NexusGenFieldTypes {
   }
   Mutation: { // field return type
     joinWaitlist: NexusGenRootTypes['JoinWaitlistPayload'] | null; // JoinWaitlistPayload
+    loginWithGoogle: NexusGenRootTypes['CurrentViewer'] | null; // CurrentViewer
   }
   PageInfo: { // field return type
     endCursor: string | null; // String
@@ -145,6 +153,7 @@ export interface NexusGenFieldTypes {
   Query: { // field return type
     blogPost: NexusGenRootTypes['BlogPost'] | null; // BlogPost
     blogPosts: NexusGenRootTypes['BlogPostConnection'] | null; // BlogPostConnection
+    currentViewer: NexusGenRootTypes['CurrentViewer']; // CurrentViewer!
     documentsBySlug: NexusGenRootTypes['PublishedDocument'] | null; // PublishedDocument
     githubRepoStats: NexusGenRootTypes['GithubRepoStats'] | null; // GithubRepoStats
     ok: boolean | null; // Boolean
@@ -194,6 +203,12 @@ export interface NexusGenFieldTypeNames {
     cursor: 'String'
     node: 'BlogPost'
   }
+  CurrentViewer: { // field return type name
+    currentViewer: 'CurrentViewer'
+    id: 'ID'
+    orgBfOid: 'String'
+    personBfGid: 'String'
+  }
   GithubRepoStats: { // field return type name
     id: 'ID'
     stars: 'Int'
@@ -204,6 +219,7 @@ export interface NexusGenFieldTypeNames {
   }
   Mutation: { // field return type name
     joinWaitlist: 'JoinWaitlistPayload'
+    loginWithGoogle: 'CurrentViewer'
   }
   PageInfo: { // field return type name
     endCursor: 'String'
@@ -218,6 +234,7 @@ export interface NexusGenFieldTypeNames {
   Query: { // field return type name
     blogPost: 'BlogPost'
     blogPosts: 'BlogPostConnection'
+    currentViewer: 'CurrentViewer'
     documentsBySlug: 'PublishedDocument'
     githubRepoStats: 'GithubRepoStats'
     ok: 'Boolean'
@@ -239,6 +256,9 @@ export interface NexusGenArgTypes {
       company?: string | null; // String
       email: string; // String!
       name: string; // String!
+    }
+    loginWithGoogle: { // args
+      idToken: string; // String!
     }
   }
   Query: {

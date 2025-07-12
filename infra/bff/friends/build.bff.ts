@@ -130,11 +130,11 @@ const denoCompilationCommand = [
 
 // Helper function to format memory usage in MB
 function formatMemoryUsage(memoryUsage: Deno.MemoryUsage): string {
-  const _formatMB = (bytes: number) => `${Math.round(bytes / 1024 / 1024)} MB`;
-  return `RSS: ${_formatMB(memoryUsage.rss)} | Heap Total: ${
-    _formatMB(memoryUsage.heapTotal)
-  } | Heap Used: ${_formatMB(memoryUsage.heapUsed)} | External: ${
-    _formatMB(memoryUsage.external)
+  const formatMB = (bytes: number) => `${Math.round(bytes / 1024 / 1024)} MB`;
+  return `RSS: ${formatMB(memoryUsage.rss)} | Heap Total: ${
+    formatMB(memoryUsage.heapTotal)
+  } | Heap Used: ${formatMB(memoryUsage.heapUsed)} | External: ${
+    formatMB(memoryUsage.external)
   }`;
 }
 

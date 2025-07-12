@@ -1,10 +1,7 @@
 import { iso } from "@bfmono/apps/boltFoundry/__generated__/__isograph/iso.ts";
-import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { CfDsButton } from "@bfmono/apps/cfDs/components/CfDsButton.tsx";
 import { BlogSimple } from "./BlogSimple.tsx";
 import { Nav } from "@bfmono/apps/boltFoundry/components/Nav.tsx";
-
-const _logger = getLogger(import.meta);
 
 // Main Blog component that switches between list and single post
 export const Blog = iso(`
