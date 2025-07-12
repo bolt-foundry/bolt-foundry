@@ -9,16 +9,22 @@ import { extendType, objectType } from "nexus";
 import { gqlSpecToNexus } from "@bfmono/apps/bfDb/builders/graphql/gqlSpecToNexus.ts";
 import * as rootsModule from "@bfmono/apps/bfDb/graphql/roots/__generated__/rootObjectsList.ts";
 import * as nodeTypesModule from "@bfmono/apps/bfDb/models/__generated__/nodeTypesList.ts";
+import * as classesModule from "@bfmono/apps/bfDb/classes/__generated__/classesList.ts";
 // Import the loadInterfaces function to register GraphQL interfaces
 import { loadInterfaces } from "@bfmono/apps/bfDb/graphql/graphqlInterfaces.ts";
+import * as interfaceClasses from "@bfmono/apps/bfDb/graphql/__generated__/interfacesList.ts";
 // Import the correct type for GraphQL object constructors
 import type { AnyGraphqlObjectBaseCtor } from "@bfmono/apps/bfDb/builders/bfDb/types.ts";
 // Import custom scalars
 import { IsoDate } from "@bfmono/apps/bfDb/graphql/scalars/IsoDate.ts";
+// Import GqlNodeSpec type for proper type casting
+import type { GqlNodeSpec } from "@bfmono/apps/bfDb/builders/graphql/makeGqlBuilder.ts";
 // Interface classes are automatically loaded via the barrel file in __generated__/interfacesList.ts
 
 const roots = Object.values(rootsModule);
 const nodeTypes = Object.values(nodeTypesModule);
+const classes = Object.values(classesModule);
+const interfaces = Object.values(interfaceClasses);
 
 /**
  * Loads GraphQL types using our new builder pattern.
@@ -48,6 +54,55 @@ export async function loadGqlTypes() {
 
     const nexusTypes = await gqlSpecToNexus(nodeSpec, nodeName, {
       classType: nodeType as AnyGraphqlObjectBaseCtor,
+    });
+
+    const mainType = objectType(nexusTypes.mainType);
+    types.push(mainType);
+
+    // Process payload types if they exist
+    if (nexusTypes.payloadTypes) {
+      for (
+        const [typeName, typeDef] of Object.entries(
+          nexusTypes.payloadTypes,
+        )
+      ) {
+        payloadTypeObjects[typeName] = objectType(
+          typeDef as Parameters<typeof objectType>[0],
+        );
+      }
+    }
+
+    // Create the mutation type if it exists
+    if (nexusTypes.mutationType) {
+      const mutationType = extendType(
+        nexusTypes.mutationType as Parameters<typeof extendType>[0],
+      );
+      mutationTypes.push(mutationType);
+    }
+  }
+
+  // Process all classes (similar to node types but from classes directory)
+  // Filter out classes that are already processed as nodeTypes or interfaces to avoid duplicates
+  const nodeTypeNames = new Set(nodeTypes.map((nt) => nt.name));
+  const interfaceNames = new Set(interfaces.map((intf) => intf.name));
+  for (const classType of classes) {
+    // Skip if it's not a class with gqlSpec
+    if (
+      !("gqlSpec" in classType) || !classType.gqlSpec ||
+      typeof classType !== "function"
+    ) continue;
+
+    // Skip if this class was already processed as a nodeType or interface
+    if (
+      nodeTypeNames.has(classType.name) || interfaceNames.has(classType.name)
+    ) continue;
+
+    const classSpec =
+      (classType as typeof classType & { gqlSpec: GqlNodeSpec }).gqlSpec;
+    const className = classType.name;
+
+    const nexusTypes = await gqlSpecToNexus(classSpec, className, {
+      classType: classType as AnyGraphqlObjectBaseCtor,
     });
 
     const mainType = objectType(nexusTypes.mainType);

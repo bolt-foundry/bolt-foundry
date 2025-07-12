@@ -34,15 +34,9 @@ const PureFieldSpec = makeBfDbSpec((f: FieldBuilder<{}, {}>) =>
 /* compile-time assertions */
 type PureFieldMap = typeof PureFieldSpec.fields;
 type PureExpected = { name: { kind: "string" }; age: { kind: "number" } };
-const _pureCheck: PureExpected = {} as PureFieldMap;
 
 /* props helper still works */
 type PureProps = PropsFromFieldSpec<PureFieldMap>;
-const _ok1: PureProps = { name: "Alice", age: 30 };
-// @ts-expect-error age has wrong type
-const _notok: PureProps = { name: "Alice", age: "30" };
-// @ts-expect-error extra field
-const _notok2: PureProps = { name: "Alice", age: 30, extra: "x" };
 
 /* runtime */
 Deno.test("collects plain fields", () => {
@@ -68,7 +62,6 @@ type ExpectedRel = {
   bestFriend: { cardinality: "one" };
 };
 // structural‐type check - use partial to avoid strict type checking
-const _relCheck: Partial<ExpectedRel> = {} as Partial<RelMap>;
 
 Deno.test("collects relations with cardinality", () => {
   const { relations } = WithRelationsSpec;

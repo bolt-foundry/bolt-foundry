@@ -20,9 +20,7 @@ import { RouterLink } from "@bfmono/apps/boltFoundry/components/Router/RouterLin
 import { Form } from "@bfmono/apps/cfDs/components/demo/Form.tsx";
 import { IconDemo } from "@bfmono/apps/cfDs/components/CfDsIcon.tsx";
 import { Tooltips } from "@bfmono/apps/cfDs/components/demo/Tooltips.tsx";
-import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { KitchenSink } from "@bfmono/apps/cfDs/components/demo/KitchenSink.tsx";
-const _logger = getLogger(import.meta);
 
 type DemoData = {
   name: string;

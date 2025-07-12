@@ -7,7 +7,10 @@ export type RouteEntrypoint = {
 };
 
 iso(`entrypoint Query.EntrypointHome`)
+iso(`entrypoint Query.EntrypointUIDemo`)
 
 import entrypointHome from "@iso-bfc/Query/EntrypointHome/entrypoint.ts"
+import entrypointUIDemo from "@iso-bfc/Query/EntrypointUIDemo/entrypoint.ts"
 
 export {entrypointHome};
+export {entrypointUIDemo};

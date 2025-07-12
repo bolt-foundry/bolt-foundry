@@ -3,9 +3,6 @@
 import type { TaskDefinition } from "../bft.ts";
 import { ui } from "@bfmono/packages/cli-ui/cli-ui.ts";
 import { parseArgs } from "@std/cli";
-import { getLogger } from "@bolt-foundry/logger";
-
-const _logger = getLogger(import.meta);
 
 async function app(args: Array<string>): Promise<number> {
   if (args.length === 0) {

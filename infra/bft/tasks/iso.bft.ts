@@ -1,14 +1,44 @@
-import {
-  runShellCommand,
-  type runShellCommandWithOutput as _runShellCommandWithOutput,
-} from "@bfmono/infra/bff/shellBase.ts";
+import { runShellCommand } from "@bfmono/infra/bff/shellBase.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import type { TaskDefinition } from "@bfmono/infra/bft/bft.ts";
+import { generateAllAppSchemas } from "@bfmono/infra/bft/tasks/genAppSchemas.bft.ts";
 
 const logger = getLogger(import.meta);
 
 export async function isoCommand(options: Array<string>): Promise<number> {
   logger.info("Running isograph compiler...");
+
+  // First, generate selective app schemas
+  logger.info("Generating selective app schemas...");
+  const schemaSuccess = await generateAllAppSchemas();
+  if (!schemaSuccess) {
+    logger.error(
+      "❌ App schema generation failed, skipping isograph compilation",
+    );
+    return 1;
+  }
+
+  // Generate routes before compilation to clean up stale references
+  logger.info("Generating built routes...");
+  try {
+    const routesBuildPath =
+      new URL(import.meta.resolve("@bfmono/infra/appBuild/routesBuild.ts"))
+        .pathname;
+    const repoRoot = new URL(import.meta.resolve("@bfmono/")).pathname;
+    const routesBuildResult = await runShellCommand(
+      ["deno", "run", "-A", routesBuildPath],
+      repoRoot,
+    );
+
+    if (routesBuildResult !== 0) {
+      logger.error("❌ Routes build failed");
+      return routesBuildResult;
+    }
+    logger.info("✅ Routes build completed successfully");
+  } catch (error) {
+    logger.error("Error running routes build:", error);
+    return 1;
+  }
 
   // Working directories with isograph configs
   const workingDirs = [
@@ -46,29 +76,6 @@ export async function isoCommand(options: Array<string>): Promise<number> {
 
   if (overallResult === 0) {
     logger.info("✅ All Isograph compilations completed successfully");
-
-    // Generate routes after successful compilation
-    logger.info("Generating built routes...");
-    try {
-      const routesBuildPath =
-        new URL(import.meta.resolve("@bfmono/infra/appBuild/routesBuild.ts"))
-          .pathname;
-      const repoRoot = new URL(import.meta.resolve("@bfmono/")).pathname;
-      const routesBuildResult = await runShellCommand(
-        ["deno", "run", "-A", routesBuildPath],
-        repoRoot,
-      );
-
-      if (routesBuildResult === 0) {
-        logger.info("✅ Routes build completed successfully");
-      } else {
-        logger.error("❌ Routes build failed");
-        overallResult = routesBuildResult;
-      }
-    } catch (error) {
-      logger.error("Error running routes build:", error);
-      overallResult = 1;
-    }
   } else {
     logger.error("❌ One or more Isograph compilations failed");
   }

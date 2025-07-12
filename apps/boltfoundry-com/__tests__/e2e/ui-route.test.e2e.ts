@@ -13,15 +13,15 @@ Deno.test("UI route renders UIDemo component correctly", async () => {
   const context = await setupBoltFoundryComTest();
 
   try {
-    // Skip video recording to avoid protocol errors
-    // const stopRecording = await context.startVideoRecording(
-    //   "ui-route-demo",
-    //   {
-    //     outputFormat: "mp4" as const,
-    //     framerate: 24,
-    //     quality: "medium" as const,
-    //   },
-    // );
+    // Start video recording
+    const stopRecording = await context.startVideoRecording(
+      "ui-route-demo",
+      {
+        outputFormat: "mp4" as const,
+        framerate: 24,
+        quality: "medium" as const,
+      },
+    );
 
     // Navigate to the /ui route
     await navigateTo(context, "/ui");
@@ -123,13 +123,13 @@ Deno.test("UI route renders UIDemo component correctly", async () => {
 
     logger.info("UI route test completed successfully");
 
-    // Skip video recording to avoid protocol errors
-    // const videoResult = await stopRecording();
-    // if (videoResult) {
-    //   logger.info(`Video saved to: ${videoResult.videoPath}`);
-    // } else {
-    //   logger.error("Video recording failed: No result returned");
-    // }
+    // Stop video recording
+    const videoResult = await stopRecording();
+    if (videoResult) {
+      logger.info(`Video saved to: ${videoResult.videoPath}`);
+    } else {
+      logger.error("Video recording failed: No result returned");
+    }
   } catch (error) {
     await context.takeScreenshot("ui-route-test-error");
     logger.error("UI route test failed:", error);

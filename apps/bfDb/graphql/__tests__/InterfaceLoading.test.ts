@@ -92,7 +92,7 @@ Deno.test("loadInterfaces correctly loads interfaces from the barrel file", () =
 Deno.test("GraphQL schema includes all interfaces with correct fields", async () => {
   // Process test interface with gqlSpecToNexus
   const testInterfaceSpec = TestDirectoryInterface.gqlSpec;
-  const _testInterfaceNexus = await gqlSpecToNexus(
+  await gqlSpecToNexus(
     testInterfaceSpec,
     "TestDirectoryInterface",
     {

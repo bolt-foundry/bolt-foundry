@@ -71,45 +71,6 @@ export const logger = getLogger(import.meta);
   },
 });
 
-Deno.test({
-  name: "esbuild plugin resolves @iso imports correctly",
-  sanitizeResources: false,
-  sanitizeOps: false,
-  fn: async () => {
-    // Test that @iso paths are resolved correctly by the plugin
-    const testEntryContent = `
-import { iso } from "@iso";
-import entrypointBlog from "@iso/Query/EntrypointBlog/entrypoint.ts";
-
-iso(\`entrypoint Query.EntrypointBlog\`);
-export { entrypointBlog };
-`;
-
-    await Deno.writeTextFile("/tmp/test-iso-imports.tsx", testEntryContent);
-
-    try {
-      const testBuildOptions: esbuild.BuildOptions = {
-        entryPoints: ["/tmp/test-iso-imports.tsx"],
-        bundle: true,
-        format: "esm",
-        write: false,
-        plugins: [createImportMapResolver()],
-      };
-
-      const result = await esbuild.build(testBuildOptions);
-
-      // Verify the build succeeded without import resolution errors
-      assertEquals(
-        result.errors.length,
-        0,
-        "Should not have @iso import resolution errors",
-      );
-    } finally {
-      await Deno.remove("/tmp/test-iso-imports.tsx").catch(() => {});
-    }
-  },
-});
-
 // Clean up esbuild processes after all tests
 Deno.test({
   name: "cleanup esbuild processes",

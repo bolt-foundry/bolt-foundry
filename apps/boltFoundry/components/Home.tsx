@@ -1,23 +1,8 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { iso } from "@bfmono/apps/boltFoundry/__generated__/__isograph/iso.ts";
 import { CfDsButton } from "@bfmono/apps/cfDs/components/CfDsButton.tsx";
 import { CfDsCopyButton } from "@bfmono/apps/cfDs/components/CfDsCopyButton.tsx";
-import { useMutation } from "@bfmono/apps/boltFoundry/hooks/isographPrototypes/useMutation.tsx";
-import joinWaitlistMutation from "@bfmono/apps/boltFoundry/__generated__/__isograph/Mutation/JoinWaitlist/entrypoint.ts";
-
-import { getLogger } from "@bfmono/packages/logger/logger.ts";
-import { CfDsForm } from "@bfmono/apps/cfDs/components/CfDsForm/CfDsForm.tsx";
-import { CfDsFormTextInput } from "@bfmono/apps/cfDs/components/CfDsForm/CfDsFormTextInput.tsx";
-import { CfDsFormSubmitButton } from "@bfmono/apps/cfDs/components/CfDsForm/CfDsFormSubmitButton.tsx";
 import { Nav } from "@bfmono/apps/boltFoundry/components/Nav.tsx";
-
-const logger = getLogger(import.meta);
-
-type WaitlistFormData = {
-  name: string;
-  email: string;
-  company: string;
-};
 
 export const Home = iso(`
 field Query.Home @component {
@@ -27,10 +12,6 @@ field Query.Home @component {
     }
   }
 `)(function Home({ data }) {
-  const { commit } = useMutation(joinWaitlistMutation);
-  const [formSubmitting, setFormSubmitting] = useState(false);
-  const [formSubmat, setFormSubmat] = useState(false);
-  const [error, setError] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
   const substackRef = useRef<HTMLDivElement>(null);
 
@@ -44,45 +25,6 @@ field Query.Home @component {
     if (substackRef.current) {
       substackRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  };
-
-  function submitWaitlistForm(value: WaitlistFormData) {
-    setFormSubmitting(true);
-    setError(false);
-
-    try {
-      commit(
-        { name: value.name, email: value.email, company: value.company },
-        {
-          onError: () => {
-            logger.error("Error joining waitlist");
-            setError(true);
-            setFormSubmitting(false);
-          },
-          onComplete: ({ joinWaitlist }) => {
-            if (!joinWaitlist.success) {
-              logger.error(joinWaitlist.message);
-              setError(true);
-              setFormSubmitting(false);
-              return;
-            }
-            logger.info("Successfully joined waitlist");
-            setFormSubmat(true);
-            setFormSubmitting(false);
-          },
-        },
-      );
-    } catch (error) {
-      logger.error("Unexpected error during form submission", error);
-      setError(true);
-      setFormSubmitting(false);
-    }
-  }
-
-  const initialFormData = {
-    name: "",
-    email: "",
-    company: "",
   };
 
   // const bfCode = "npm install @bolt-foundry/bolt-foundry";
@@ -132,63 +74,45 @@ field Query.Home @component {
         </div>
       </main>
 
-      {/* Substack Subscription */}
+      {/* Contact Section */}
       <section className="substack-section" ref={substackRef}>
         <div className="landing-content">
           <div className="substack-container">
-            <h2 className="substack-title">Stay updated</h2>
+            <h2 className="substack-title">Get in touch</h2>
             <div className="substack-form">
               <div style={{ marginBottom: 12 }}>
-                We're happy to have you here.
+                We're happy to have you here. Join our community or reach out
+                directly.
               </div>
-              {formSubmat
-                ? (
-                  <div>
-                    <h3>Thanks for joining the waitlist!</h3>
-                    We'll be in touch soon.
-                    <div style={{ marginTop: 12 }}>
-                      <CfDsButton
-                        kind="dan"
-                        iconLeft="arrowUp"
-                        text="Back to top"
-                        onClick={scrollToTop}
-                      />
-                    </div>
-                  </div>
-                )
-                : (
-                  <CfDsForm
-                    testId="waitlist-form"
-                    initialData={initialFormData}
-                    onSubmit={submitWaitlistForm}
-                    xstyle={{
-                      display: "flex",
-                      gap: 8,
-                      flexDirection: "column",
-                    }}
-                  >
-                    <CfDsFormTextInput id="name" title="What is your name?" />
-                    <CfDsFormTextInput id="email" title="What is your email?" />
-                    <CfDsFormTextInput
-                      id="company"
-                      title="Where do you work?"
-                    />
-                    <CfDsFormSubmitButton
-                      testId="waitlist-submit"
-                      disabled={formSubmitting}
-                      text="Submit"
-                      showSpinner={formSubmitting}
-                    />
-                    {error && (
-                      <div>
-                        <h3>Oops!</h3>
-                        There was an error... email{" "}
-                        <a href="mailto:dan@boltfoundry.com">Dan</a>{" "}
-                        and we'll get in touch.
-                      </div>
-                    )}
-                  </CfDsForm>
-                )}
+              <div
+                style={{
+                  display: "flex",
+                  gap: 12,
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                }}
+              >
+                <CfDsButton
+                  kind="dan"
+                  iconLeft="brand-discord"
+                  text="Join Discord"
+                  href="https://discord.gg/tU5ksTBfEj"
+                  hrefTarget="_blank"
+                />
+                <CfDsButton
+                  kind="dan"
+                  text="Email us"
+                  href="mailto:dan@boltfoundry.com"
+                />
+                <div style={{ marginTop: 12 }}>
+                  <CfDsButton
+                    kind="danDim"
+                    iconLeft="arrowUp"
+                    text="Back to top"
+                    onClick={scrollToTop}
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>

@@ -3,9 +3,9 @@
 ## Overview
 
 Implement video recording capabilities for E2E tests using Puppeteer's Chrome
-DevTools Protocol screencast API. Videos will be automatically uploaded to
-GitHub's CDN and linked in commit messages to provide visual documentation of
-test execution.
+DevTools Protocol screencast API. Videos will be locally managed with selective
+sharing via gist uploads to provide visual documentation of test execution for
+development and debugging.
 
 ## Goals
 
@@ -15,8 +15,8 @@ test execution.
    functionality
 3. **Test execution records** - Create an audit trail of test runs for important
    changes
-4. **Automated workflow** - AI assistant determines relevant tests and includes
-   videos in commits
+4. **Local workflow enhancement** - AI assistant manages local video artifacts
+   and provides gist upload tooling for selective sharing
 
 ## Technical Architecture
 
@@ -184,11 +184,71 @@ Deno.test("Home page with video", async () => {
 - [ ] Implement video compression settings
 - [ ] Add progress logging for long recordings
 
-### Phase 3: Local Video Management
+### Phase 3: Local Gist Integration
 
-- [ ] Implement video file compression and optimization
+- [ ] Create gist upload utilities for selective video sharing
+- [ ] Implement local video file management and cleanup
+- [ ] Add commit message integration for shared videos
+- [ ] Create workflow for AI assistant to suggest shareable videos
+
+### Phase 3: Local Gist Upload Integration
+
+- [ ] Implement local gist upload functionality for selective video sharing
+- [ ] Add video file compression and optimization
+- [ ] Create gist URL extraction and commit message integration
 - [ ] Add video playback utilities for local review
 - [ ] Create video indexing and search capabilities
+
+## Local Artifact Management
+
+### Video Storage Strategy
+
+```typescript
+// video-manager.ts
+export interface VideoArtifact {
+  path: string;
+  testName: string;
+  timestamp: Date;
+  size: number;
+  duration: number;
+  uploaded?: {
+    gistUrl: string;
+    publicUrl: string;
+    uploadedAt: Date;
+  };
+}
+
+export class LocalVideoManager {
+  private artifactsIndex: VideoArtifact[] = [];
+
+  async recordTestVideo(testName: string): Promise<VideoArtifact> {
+    // Record video and save to local storage
+    // Update artifacts index
+  }
+
+  async uploadToGist(artifact: VideoArtifact): Promise<string> {
+    // Upload video to public gist
+    // Return public URL for commit messages
+  }
+
+  async cleanupOldVideos(retentionDays = 7): Promise<void> {
+    // Clean up videos older than retention period
+    // Keep uploaded videos longer
+  }
+
+  getSuggestedVideosForCommit(changes: string[]): VideoArtifact[] {
+    // AI assistant logic to suggest relevant videos
+  }
+}
+```
+
+### Selective Sharing Workflow
+
+1. **Local Recording** - All test videos saved locally for debugging
+2. **Manual Upload** - Developer chooses important videos to share
+3. **AI Suggestions** - Assistant recommends videos based on code changes
+4. **Commit Integration** - Shared videos included in commit messages
+5. **Cleanup** - Local videos cleaned up automatically after retention period
 
 ## Configuration
 
@@ -199,7 +259,8 @@ BF_E2E_RECORD_VIDEO=true          # Enable video recording
 BF_E2E_VIDEO_DIR=/tmp/videos      # Video output directory
 BF_E2E_VIDEO_FORMAT=webm          # Output format (webm, mp4, av1)
 BF_E2E_VIDEO_QUALITY=80           # Quality setting (0-100)
-GITHUB_TOKEN=...                  # For uploading videos
+BF_GIST_UPLOAD_ENABLED=false      # Enable selective gist uploads
+GITHUB_TOKEN=...                  # For gist uploads (optional)
 ```
 
 ## Example Commit Message
@@ -210,10 +271,12 @@ feat: Add dark mode toggle to settings page
 Implemented user-requested dark mode functionality with persistent
 preference storage and smooth transitions.
 
-Test Videos:
-- Settings page dark mode toggle: https://user-images.githubusercontent.com/.../video1.webm
-- Theme persistence across navigation: https://user-images.githubusercontent.com/.../video2.webm
-- Mobile responsive dark mode: https://user-images.githubusercontent.com/.../video3.webm
+Local test videos recorded for debugging and review:
+- /tmp/videos/2025-07-12_dark-mode-toggle.webm
+- /tmp/videos/2025-07-12_theme-persistence.webm
+
+Shared test demonstration:
+- Settings page dark mode: https://gist.githubusercontent.com/.../video1.webm
 
 Co-Authored-By: Claude <noreply@anthropic.com>
 ```
@@ -229,21 +292,25 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 5. **Performance metrics** - Overlay performance data on videos
 6. **Video thumbnails** - Generate preview images for commit messages
 
-### GitHub Integration (Future Work)
+### Local Development Integration
 
-7. **GitHub API client** - Upload videos to GitHub CDN via draft issues
-8. **Video upload functionality** - Extract and validate CDN URLs
-9. **Commit message integration** - Format commit messages with video links
-10. **AI Assistant Integration** - Automatically run relevant tests with
-    recording and include videos in commits
+7. **Gist upload tooling** - Upload selected videos to public gists for sharing
+8. **Local artifact management** - Organize and clean up video files
+   automatically
+9. **Selective sharing workflow** - Choose which videos to share based on
+   importance
+10. **AI Assistant Integration** - Help determine which test videos are worth
+    uploading and include appropriate links in commits
 
 ## Success Metrics
 
 - Video recording adds <5% overhead to test execution time
-- Videos successfully upload 99%+ of the time
+- Local video storage efficient and organized
+- Gist uploads succeed 99%+ of the time when attempted
 - File sizes reasonable (<10MB for typical test)
 - Clear video quality at 1080p resolution
 - Zero impact on test reliability
+- Selective sharing reduces noise while preserving important demonstrations
 
 ## Dependencies
 
@@ -255,11 +322,12 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 ## Security Considerations
 
-- Videos should respect `BF_CI` environment detection
+- Videos stored locally by default for privacy
 - Never record sensitive data (passwords, tokens)
-- Ensure GitHub tokens are properly scoped
-- Videos inherit repository access permissions
-- Consider video retention policies
+- Gist uploads are public - only share non-sensitive demonstrations
+- Ensure GitHub tokens are properly scoped for gist access only
+- Local video cleanup prevents disk space issues
+- Consider video retention policies for both local and uploaded content
 
 ## Open Questions
 
@@ -271,8 +339,10 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 ## Next Steps
 
-1. Review and approve this plan
+1. Review and approve this updated local-first plan
 2. Create video-recording directory structure
-3. Implement basic screencast recorder
+3. Implement basic screencast recorder with local storage
 4. Test with a single E2E test
-5. Iterate based on initial results
+5. Add local video management utilities
+6. Implement selective gist upload functionality
+7. Iterate based on local development workflow needs

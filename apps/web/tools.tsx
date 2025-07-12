@@ -1,11 +1,8 @@
 #! /usr/bin/env -S deno run --allow-net=localhost,0.0.0.0,127.0.0.1 --allow-env --allow-read --allow-run=sl,op
 
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
-import { toolRoutes } from "@bfmono/apps/boltFoundry/routes.ts";
 import { addTools } from "@bfmono/infra/bff/tools.ts";
 import type { Handler } from "@bfmono/apps/web/web.tsx";
-import { renderToString } from "react-dom/server";
-import * as React from "react";
 import { matchRouteWithParams } from "@bfmono/apps/boltFoundry/contexts/RouterContext.tsx";
 
 const logger = getLogger(import.meta);
@@ -14,42 +11,6 @@ const routes = new Map<string, Handler>();
 
 // Add tool routes
 addTools(routes);
-for (const entry of toolRoutes.entries()) {
-  const [path, { Component }] = entry;
-
-  const nextUrl = renderToString(React.createElement(Component));
-  routes.set(path, async function ToolRoute(_req, routeParams) {
-    const ENVIRONMENT = {
-      nextUrl,
-      routeParams,
-    };
-    const extensionPath = import.meta.resolve(
-      "infra/replit-extension/extension.js",
-    );
-    const extensionCode = await Deno.readTextFile(
-      new URL(extensionPath),
-    );
-
-    return new Response(
-      `
-      <!DOCTYPE html>
-      <body>
-        <div class="updatable">
-        not yet
-        </div>
-        <script>
-        window.ENVIRONMENT = ${JSON.stringify(ENVIRONMENT)};
-        </script>
-        <script type="module">
-        ${extensionCode}
-        </script>
-      </body>
-      </html>
-    `,
-      { headers: { "content-type": "text/html" } },
-    );
-  });
-}
 
 function matchRoute(pathWithParams: string): [Handler, Record<string, string>] {
   const match = matchRouteWithParams(pathWithParams);

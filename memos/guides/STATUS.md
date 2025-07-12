@@ -41,7 +41,6 @@ _For definitions of project phases and priority levels, see [WUT](/404.md) and
 | packages/logger                | Production    | 🟢     | Feature stability                      | Centralized logging utilities                     | [NPM](https://www.npmjs.com/package/@bolt-foundry/logger)                |
 | apps/bfDb                      | Alpha         | ⏱️     | Expand barrel system for GraphQL types | Database ORM with multi-backend support & GraphQL | [README](../../apps/bfDb/memos/guides/data-model.md), [GraphQL](/404.md) |
 | apps/collector                 | Production    | ✅     | Future roadmap expansion               | LLM usage analytics collector                     | [Status](../../apps/collector/memos/guides/status.md)                    |
-| apps/contacts                  | Private Beta  | 🚫     | Migrate waitlist to bfDb               | CRM application with email integration            | [Server](/404.md)                                                        |
 
 ## Notes
 
@@ -55,8 +54,6 @@ _For definitions of project phases and priority levels, see [WUT](/404.md) and
   future product features
 - GraphQL Builder (v0.0.3) has core functionality but is on hold pending v0.0.4
   improvements
-- **Contacts app is deprecated** - Waitlist functionality needs to be migrated
-  to bfDb with GraphQL integration
 - For detailed 2025 roadmap including Alpha, Private Beta, and Public Beta
   phases, see [Product Plan](/404.md)
 - Individual project status is tracked in their respective docs directories when

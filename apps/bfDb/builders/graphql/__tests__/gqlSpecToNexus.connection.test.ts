@@ -196,7 +196,7 @@ Deno.test("gqlSpecToNexus should resolve target type from thunk", async () => {
     },
   };
 
-  const _result = await gqlSpecToNexus(spec, "TestType");
+  await gqlSpecToNexus(spec, "TestType");
 
   // After processing, the type should be resolved
   const connection = spec.connections?.testNodes as GqlConnectionDef;
@@ -231,7 +231,7 @@ Deno.test("gqlSpecToNexus should handle async target thunks", async () => {
     },
   };
 
-  const _result = await gqlSpecToNexus(spec, "TestType");
+  await gqlSpecToNexus(spec, "TestType");
 
   // Type should be resolved even with async thunk
   const connection = spec.connections?.testNodes as GqlConnectionDef;

@@ -1,12 +1,9 @@
 import type * as React from "react";
 import type { ExtractReadFromStore, FragmentReference } from "@isograph/react";
 import { useResult } from "@isograph/react";
-import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { BfError } from "@bfmono/lib/BfError.ts";
 import type { RouteEntrypoint } from "@bfmono/apps/boltFoundry/__generated__/builtRoutes.ts";
 import type { BfIsographEntrypoint } from "@bfmono/lib/BfIsographEntrypoint.ts";
-
-const _logger = getLogger(import.meta);
 
 type NetworkRequestReaderOptions = {
   suspendIfInFlight: boolean;

@@ -30,4 +30,4 @@ generated-icon.png
 .DS_Store
 
 # Generated Claude commands for BFT
-.claude/commands/bft/
+# .claude/commands/bft/ - now checked in as generated files

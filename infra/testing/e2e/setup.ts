@@ -137,7 +137,7 @@ export async function setupE2ETest(options: {
   // Fallback to environment variable if no server started and no baseUrl provided
   if (!baseUrl) {
     baseUrl = getConfigurationVariable("BF_E2E_BASE_URL") ||
-      "http://localhost:8000";
+      "http://localhost:8002";
   }
 
   // Run in headless mode by default for consistency and performance

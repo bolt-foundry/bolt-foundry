@@ -119,8 +119,7 @@
     "**/node_modules/**",
     "examples/**",
     "**/dist/**",
-    "packages/aibff",
-    "apps/contacts/**"
+    "packages/aibff"
   ],
   "lint": {
     "exclude": [
