@@ -1,7 +1,3 @@
-import { getLogger } from "@bfmono/packages/logger/logger.ts";
-
-const _logger = getLogger(import.meta);
-
 export function processNotebookContent(notebookContent: string) {
   const { cells } = JSON.parse(notebookContent);
 

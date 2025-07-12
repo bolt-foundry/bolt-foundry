@@ -6,6 +6,7 @@ import {
 import {
   appRoutes,
   isographAppRoutes,
+  type RouteGuts,
 } from "@bfmono/apps/boltFoundry/routes.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { useLazyReference } from "@isograph/react";
@@ -18,13 +19,13 @@ export function AppRoot() {
   const params = { ...routerProps.routeParams, ...routerProps.queryParams };
   logger.debug("params", params);
   const { currentPath } = routerProps;
-  const matchingRoute = Array.from(appRoutes).find(([path]) => {
+  const matchingRoute = Array.from(appRoutes).find(([path]: [string, RouteGuts]) => {
     const pathMatch = matchRouteWithParams(currentPath, path);
     return pathMatch.match === true;
   });
 
   const isographMatchingRoute = Array.from(isographAppRoutes).find(
-    ([path]) => {
+    ([path]: [string, any]) => {
       const pathMatch = matchRouteWithParams(currentPath, path);
       return pathMatch.match === true;
     },
@@ -37,10 +38,11 @@ export function AppRoot() {
   );
 
   if (isographMatchingRoute) {
-    const [_, entrypoint] = isographMatchingRoute;
-    const { fragmentReference } = useLazyReference(entrypoint, {
+    const [_, entrypoint] = isographMatchingRoute as [string, any];
+    const result = useLazyReference(entrypoint as any, {
       ...params,
-    });
+    }) as { fragmentReference: any };
+    const { fragmentReference } = result;
 
     const { currentPath } = routerProps;
 
@@ -55,7 +57,7 @@ export function AppRoot() {
   }
 
   if (matchingRoute) {
-    const [_path, { Component }] = matchingRoute;
+    const [_path, { Component }] = matchingRoute as [string, RouteGuts];
     return <Component />;
   }
 

@@ -4,14 +4,11 @@ import {
   getConfigurationVariable,
   warmSecrets,
 } from "@bolt-foundry/get-configuration-var";
-import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import {
   defaultRoute,
   registerAllRoutes,
 } from "@bfmono/apps/web/routes/routeRegistry.ts";
 import { handleRequest } from "@bfmono/apps/web/handlers/mainHandler.ts";
-
-const _logger = getLogger(import.meta);
 
 // Warm the secrets cache before starting auto-refresh
 const warmPromise = warmSecrets();
