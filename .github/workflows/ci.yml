@@ -105,7 +105,7 @@ jobs:
             export DENO_DIR=\"/home/runner/.cache/deno\"
             export OP_SERVICE_ACCOUNT_TOKEN=\"$OP_SERVICE_ACCOUNT_TOKEN\"
             export PATH=\"\$PATH:\$PWD/infra/bin\"
-            bft lint
+            bft lint -g
           "
 
   format:
@@ -147,7 +147,7 @@ jobs:
             export DENO_DIR=\"/home/runner/.cache/deno\"
             export OP_SERVICE_ACCOUNT_TOKEN=\"$OP_SERVICE_ACCOUNT_TOKEN\"
             export PATH=\"\$PATH:\$PWD/infra/bin\"
-            bft format --check
+            bft format --check -g
           "
 
   typecheck:
@@ -189,7 +189,7 @@ jobs:
             export DENO_DIR=\"/home/runner/.cache/deno\"
             export OP_SERVICE_ACCOUNT_TOKEN=\"$OP_SERVICE_ACCOUNT_TOKEN\"
             export PATH=\"\$PATH:\$PWD/infra/bin\"
-            bft check
+            bft check -g
           "
 
   test:
@@ -231,7 +231,49 @@ jobs:
             export DENO_DIR=\"/home/runner/.cache/deno\"
             export OP_SERVICE_ACCOUNT_TOKEN=\"$OP_SERVICE_ACCOUNT_TOKEN\"
             export PATH=\"\$PATH:\$PWD/infra/bin\"
-            bft test
+            bft test -g
+          "
+
+  verify-generated:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: setup
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+
+      - uses: DeterminateSystems/nix-installer-action@main
+        with: { determinate: true }
+
+      - uses: DeterminateSystems/flakehub-cache-action@main
+
+      - name: Restore Deno / vendored / node cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            vendor
+            node_modules
+            /home/runner/.cache/deno
+          key: deno-${{ runner.os }}-${{ hashFiles('**/deno.json*', '**/package.json', '**/deno.lock') }}
+          restore-keys: |
+            deno-${{ runner.os }}-
+
+      - name: Put repo tools on PATH
+        run: echo "$GITHUB_WORKSPACE/infra/bin" >> "$GITHUB_PATH"
+
+      - name: Verify generated files are up-to-date
+        run: |
+          nix develop .#github-actions --accept-flake-config --command bash -euc "
+            export DENO_DIR=\"/home/runner/.cache/deno\"
+            export OP_SERVICE_ACCOUNT_TOKEN=\"$OP_SERVICE_ACCOUNT_TOKEN\"
+            export PATH=\"\$PATH:\$PWD/infra/bin\"
+            bft verify-generated -g
           "
 
   build:
@@ -273,7 +315,7 @@ jobs:
             export DENO_DIR=\"/home/runner/.cache/deno\"
             export OP_SERVICE_ACCOUNT_TOKEN=\"$OP_SERVICE_ACCOUNT_TOKEN\"
             export PATH=\"\$PATH:\$PWD/infra/bin\"
-            bft build
+            bft build -g
           "
 
       # Upload build artifacts for e2e tests
@@ -337,7 +379,7 @@ jobs:
             export BF_E2E_SCREENSHOT_DIR=\"\$PWD/tmp/screenshots\"
             export BF_E2E_VIDEO_DIR=\"\$PWD/tmp/videos\"
             echo \"E2E artifacts will be saved to: screenshots=\${BF_E2E_SCREENSHOT_DIR}, videos=\${BF_E2E_VIDEO_DIR}\"
-            bft e2e --build
+            bft e2e --build -g
           "
 
       # Debug: Check what E2E artifacts were created

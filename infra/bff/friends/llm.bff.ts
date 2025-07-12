@@ -35,11 +35,11 @@ interface LlmOptions {
  * Lazily load & cache the Python-based `tiktoken` encoding object.
  */
 // deno-lint-ignore no-explicit-any
-let _encoding: any; // storing the tiktoken encoding object
-let _pythonEnvSet = false; // so we only set env once
+let encoding: any; // storing the tiktoken encoding object
+let pythonEnvSet = false; // so we only set env once
 
 async function ensurePythonEnv() {
-  if (_pythonEnvSet) return;
+  if (pythonEnvSet) return;
 
   // 1) run your one-line Python to get the library directory
   // Using the new Deno.Command API
@@ -60,20 +60,20 @@ async function ensurePythonEnv() {
   // 2) set the env var for denosaurs/python
   Deno.env.set("DENO_PYTHON_PATH", soPath);
 
-  _pythonEnvSet = true;
+  pythonEnvSet = true;
 }
 
 async function getEncoding() {
-  if (!_encoding) {
+  if (!encoding) {
     // Make sure the environment is configured *before* we import the python module
     await ensurePythonEnv();
 
     // Dynamically import the python & tiktoken
     const { python } = await import("@denosaurs/python");
     const tiktoken = python.import("tiktoken");
-    _encoding = tiktoken.get_encoding("cl100k_base");
+    encoding = tiktoken.get_encoding("cl100k_base");
   }
-  return _encoding;
+  return encoding;
 }
 
 /**
