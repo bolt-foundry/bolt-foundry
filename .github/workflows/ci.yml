@@ -234,6 +234,48 @@ jobs:
             bft test
           "
 
+  verify-generated:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: setup
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+
+      - uses: DeterminateSystems/nix-installer-action@main
+        with: { determinate: true }
+
+      - uses: DeterminateSystems/flakehub-cache-action@main
+
+      - name: Restore Deno / vendored / node cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            vendor
+            node_modules
+            /home/runner/.cache/deno
+          key: deno-${{ runner.os }}-${{ hashFiles('**/deno.json*', '**/package.json', '**/deno.lock') }}
+          restore-keys: |
+            deno-${{ runner.os }}-
+
+      - name: Put repo tools on PATH
+        run: echo "$GITHUB_WORKSPACE/infra/bin" >> "$GITHUB_PATH"
+
+      - name: Verify generated files are up-to-date
+        run: |
+          nix develop .#github-actions --accept-flake-config --command bash -euc "
+            export DENO_DIR=\"/home/runner/.cache/deno\"
+            export OP_SERVICE_ACCOUNT_TOKEN=\"$OP_SERVICE_ACCOUNT_TOKEN\"
+            export PATH=\"\$PATH:\$PWD/infra/bin\"
+            bft verify-generated
+          "
+
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -267,13 +309,14 @@ jobs:
       - name: Put repo tools on PATH
         run: echo "$GITHUB_WORKSPACE/infra/bin" >> "$GITHUB_PATH"
 
-      - name: Run build
+      - name: Run web build only
         run: |
           nix develop .#github-actions --accept-flake-config --command bash -euc "
             export DENO_DIR=\"/home/runner/.cache/deno\"
             export OP_SERVICE_ACCOUNT_TOKEN=\"$OP_SERVICE_ACCOUNT_TOKEN\"
             export PATH=\"\$PATH:\$PWD/infra/bin\"
-            bft build
+            # Only compile the web app, skip generation steps
+            deno compile --no-check --output=build/web --include=static --allow-net=0.0.0.0,127.0.0.1,localhost,api.assemblyai.com,openrouter.ai,api.openai.com,app.posthog.com,bf-contacts.replit.app:443,oauth2.googleapis.com:443,api.github.com --allow-env=CI,COLORTERM,DEBUG,DENO_TRACE_PERMISSIONS,FORCE_COLOR,FORCE_DB_BACKEND,NODE_ENV,NODE_PG_FORCE_NATIVE,REPL_HOME,REPL_SLUG,REPLIT_DEV_DOMAIN,SQLITE_DB_PATH,TEAMCITY_VERSION,TERM,TF_BUILD,USER,WS_NO_BUFFER_UTIL,XDG_CONFIG_HOME,XDG_DATA_HOME,BF_CACHE_TTL_SEC,BF_CACHE_ENV,BF_ENV,BF_VAULT_ID,APPS_INTERNALBF_POSTHOG_API_KEY,ENABLE_SPECIFIC_LOGGERS,GOOGLE_OAUTH_CLIENT_ID,LOG_LEVEL,LOG_LOGGERS_TO_ENABLE,POSTHOG_API_KEY,UNIT_TEST_PUBLIC,ASSEMBLY_AI_KEY,COLLECTOR_PORT,DATABASE_BACKEND,DATABASE_URL,DATABASE_URL_CONTACTS,DB_BACKEND_TYPE,EMAIL_FROM,EMAIL_HOST,EMAIL_PASS,EMAIL_PORT,EMAIL_USER,EXAMPLES_NEXTJS_SAMPLE_POSTHOG_API_KEY,GOOGLE_OAUTH_CLIENT_SECRET,JWT_SECRET,OPENAI_API_KEY,OPENAI_BASE_URL,OPENAI_ORG_ID,OPENAI_PROJECT_ID,OPENROUTER_API_KEY,THANKSBOT_DISCORD_TO_NOTION_MAP_DATABASE_ID,THANKSBOT_NOTION_DATABASE_ID,THANKSBOT_NOTION_TOKEN,UNIT_TEST_SECRET,WAITLIST_API_KEY,WEB_PORT --allow-read=/tmp,static/,tmp/,docs/ --allow-write=/tmp,tmp --allow-run=op apps/web/web.tsx
           "
 
       # Upload build artifacts for e2e tests
