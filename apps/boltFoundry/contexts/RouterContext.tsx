@@ -15,6 +15,7 @@ import {
 } from "@bfmono/apps/boltFoundry/routes.ts";
 import { createPortal } from "react-dom";
 import { CfDsFullPageSpinner } from "@bfmono/apps/cfDs/components/CfDsSpinner.tsx";
+import type { IsographEntrypoint } from "@isograph/react";
 
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 const logger = getLogger(import.meta);
@@ -226,10 +227,10 @@ export type RouterProviderProps = {
 
 export function addAllRoutes() {
   // We'll store them exactly as declared
-  appRoutes.forEach((_value, key) => {
+  appRoutes.forEach((_value: RouteGuts, key: string) => {
     addRoute(key);
   });
-  isographAppRoutes.forEach((_value, key) => {
+  isographAppRoutes.forEach((_value: IsographEntrypoint<unknown, unknown, unknown>, key: string) => {
     addRoute(key);
   });
   logger.debug(

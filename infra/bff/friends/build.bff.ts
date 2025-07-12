@@ -11,6 +11,7 @@ import {
   PRIVATE_CONFIG_KEYS,
   PUBLIC_CONFIG_KEYS,
 } from "@bfmono/apps/boltFoundry/__generated__/configKeys.ts";
+import { isoCommand } from "@bfmono/infra/bft/tasks/iso.bft.ts";
 
 const logger = getLogger(import.meta);
 
@@ -62,7 +63,6 @@ const DEFAULT_NETWORK_DESTINATIONS = [
   "openrouter.ai",
   "api.openai.com",
   "app.posthog.com",
-  "bf-contacts.replit.app:443",
   "oauth2.googleapis.com:443",
   "api.github.com",
 ];
@@ -130,11 +130,11 @@ const denoCompilationCommand = [
 
 // Helper function to format memory usage in MB
 function formatMemoryUsage(memoryUsage: Deno.MemoryUsage): string {
-  const _formatMB = (bytes: number) => `${Math.round(bytes / 1024 / 1024)} MB`;
-  return `RSS: ${_formatMB(memoryUsage.rss)} | Heap Total: ${
-    _formatMB(memoryUsage.heapTotal)
-  } | Heap Used: ${_formatMB(memoryUsage.heapUsed)} | External: ${
-    _formatMB(memoryUsage.external)
+  const formatMB = (bytes: number) => `${Math.round(bytes / 1024 / 1024)} MB`;
+  return `RSS: ${formatMB(memoryUsage.rss)} | Heap Total: ${
+    formatMB(memoryUsage.heapTotal)
+  } | Heap Used: ${formatMB(memoryUsage.heapUsed)} | External: ${
+    formatMB(memoryUsage.external)
   }`;
 }
 
@@ -462,10 +462,7 @@ export async function build(args: Array<string>): Promise<number> {
   }
 
   if (debug) logMemoryUsage("before isograph compiler");
-  const isographResult = await runShellCommand(
-    ["deno", "run", "-A", "npm:@isograph/compiler"],
-    "apps/boltFoundry",
-  );
+  const isographResult = await isoCommand([]);
   if (debug) logMemoryUsage("after isograph compiler");
 
   if (isographResult && waitForFail) {

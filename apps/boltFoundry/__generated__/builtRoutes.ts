@@ -6,23 +6,14 @@ export type RouteEntrypoint = {
   title: string;
 };
 
-iso(`entrypoint Mutation.JoinWaitlist`)
-iso(`entrypoint Query.EntrypointBlog`)
-iso(`entrypoint Query.EntrypointDocs`)
 iso(`entrypoint Query.EntrypointFormatter`)
 iso(`entrypoint Query.EntrypointHome`)
 iso(`entrypoint Query.EntrypointLogin`)
 
-import entrypointBlog from "@iso/Query/EntrypointBlog/entrypoint.ts"
-import entrypointDocs from "@iso/Query/EntrypointDocs/entrypoint.ts"
 import entrypointFormatter from "@iso/Query/EntrypointFormatter/entrypoint.ts"
 import entrypointHome from "@iso/Query/EntrypointHome/entrypoint.ts"
 import entrypointLogin from "@iso/Query/EntrypointLogin/entrypoint.ts"
-import joinWaitlist from "@iso/Mutation/JoinWaitlist/entrypoint.ts"
 
-export {entrypointBlog};
-export {entrypointDocs};
 export {entrypointFormatter};
 export {entrypointHome};
 export {entrypointLogin};
-export {joinWaitlist};

@@ -6,11 +6,13 @@ import {
 import {
   appRoutes,
   isographAppRoutes,
+  type RouteGuts,
 } from "@bfmono/apps/boltFoundry/routes.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { useLazyReference } from "@isograph/react";
 import { ErrorBoundary } from "@bfmono/apps/boltFoundry/components/ErrorBoundary.tsx";
 import { BfIsographFragmentReader } from "@bfmono/lib/BfIsographFragmentReader.tsx";
+import type { IsographEntrypoint } from "@isograph/react";
 const logger = getLogger(import.meta);
 
 export function AppRoot() {
@@ -18,13 +20,15 @@ export function AppRoot() {
   const params = { ...routerProps.routeParams, ...routerProps.queryParams };
   logger.debug("params", params);
   const { currentPath } = routerProps;
-  const matchingRoute = Array.from(appRoutes).find(([path]) => {
-    const pathMatch = matchRouteWithParams(currentPath, path);
-    return pathMatch.match === true;
-  });
+  const matchingRoute = Array.from(appRoutes).find(
+    ([path]: [string, RouteGuts]) => {
+      const pathMatch = matchRouteWithParams(currentPath, path);
+      return pathMatch.match === true;
+    },
+  );
 
   const isographMatchingRoute = Array.from(isographAppRoutes).find(
-    ([path]) => {
+    ([path]: [string, IsographEntrypoint<unknown, unknown, unknown>]) => {
       const pathMatch = matchRouteWithParams(currentPath, path);
       return pathMatch.match === true;
     },
@@ -37,10 +41,11 @@ export function AppRoot() {
   );
 
   if (isographMatchingRoute) {
-    const [_, entrypoint] = isographMatchingRoute;
-    const { fragmentReference } = useLazyReference(entrypoint, {
+    const [_, entrypoint] = isographMatchingRoute as [string, IsographEntrypoint<unknown, unknown, unknown>];
+    const result = useLazyReference(entrypoint, {
       ...params,
-    });
+    }) as { fragmentReference: unknown };
+    const { fragmentReference } = result;
 
     const { currentPath } = routerProps;
 
@@ -55,7 +60,7 @@ export function AppRoot() {
   }
 
   if (matchingRoute) {
-    const [_path, { Component }] = matchingRoute;
+    const [_path, { Component }] = matchingRoute as [string, RouteGuts];
     return <Component />;
   }
 
