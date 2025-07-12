@@ -2,7 +2,15 @@ import express, { NextFunction, type Request, Response } from "express";
 import { registerRoutes } from "./routes";
 import { log, serveStatic, setupVite } from "./vite";
 import { pool } from "./db";
-import os from "os";
+// Note: OS info functions will be replaced with Deno equivalents
+const os = {
+  hostname: () => Deno.hostname(),
+  platform: () => Deno.build.os,
+  release: () => "unknown", // Deno doesn't expose OS release info
+  freemem: () => 0, // Not available in Deno
+  totalmem: () => 0, // Not available in Deno
+  cpus: () => [] as Array<any>, // Not available in Deno
+};
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { initializeAuthEmailService } from "./auth";
@@ -12,12 +20,8 @@ console.log("🚀 Starting Bolt Foundry CMS Server...");
 console.log(`📅 Server time: ${new Date().toISOString()}`);
 console.log(`💻 Hostname: ${os.hostname()}`);
 console.log(`🔌 Platform: ${os.platform()} ${os.release()}`);
-console.log(
-  `💾 Memory: ${Math.round(os.freemem() / 1024 / 1024)}MB free of ${
-    Math.round(os.totalmem() / 1024 / 1024)
-  }MB`,
-);
-console.log(`🧵 CPUs: ${os.cpus().length}`);
+console.log(`💾 Memory: Not available in Deno`);
+console.log(`🧵 CPUs: Not available in Deno`);
 console.log("======================================");
 
 const app = express();
