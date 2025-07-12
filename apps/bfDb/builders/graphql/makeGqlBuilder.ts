@@ -480,7 +480,37 @@ export function makeGqlBuilder<
           return builder;
         },
 
-        object: builder.object,
+        object: (name, targetThunk, opts = {}) => {
+          // Create the argument builder function
+          const argFn = makeArgBuilder();
+
+          // The field name is used as the GraphQL type name initially
+          // This will be resolved at runtime using the targetThunk
+          const typeName = name;
+
+          // Store the thunk function for later resolution
+          const _targetThunk = targetThunk;
+
+          // Process args function if provided
+          const args = opts.args ? argFn(opts.args) : {};
+
+          // By default, all object fields without a custom resolver are edge relationships
+          const isEdgeRelationship = !opts.resolve;
+
+          // Store the relation definition with edge relationship info and nonNull flag
+          spec.relations[name] = {
+            type: typeName,
+            args: args,
+            resolve: opts.resolve,
+            nonNull: true, // This is the key difference from the regular object method
+            // Edge relationship properties - implicitly created for fields without custom resolvers
+            isEdgeRelationship: isEdgeRelationship,
+            isSourceToTarget: opts.isSourceToTarget !== false, // Default to true
+            // Store the thunk function for later use
+            _targetThunk: _targetThunk,
+          };
+          return builder;
+        },
         mutation: builder.mutation,
         connection: builder.connection, // Connections can't be nonNull
         _spec: builder._spec,

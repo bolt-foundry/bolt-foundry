@@ -552,7 +552,7 @@ export async function gqlSpecToNexus(
           resolver = createDefaultRelationResolver(relationName);
         }
 
-        t.field(relationName, {
+        const relationConfig = {
           type: relation.type,
           description: relation.description,
           // Handle arguments if provided - convert to Nexus format
@@ -581,7 +581,14 @@ export async function gqlSpecToNexus(
               return null;
             }
           },
-        });
+        };
+
+        // Check if the relation should be non-null
+        if (relation.nonNull) {
+          t.nonNull.field(relationName, relationConfig);
+        } else {
+          t.field(relationName, relationConfig);
+        }
       }
 
       // Process connections
