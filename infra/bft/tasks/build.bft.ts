@@ -1,4 +1,5 @@
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import { runBuildWithGithubAnnotations } from "@bfmono/infra/bff/friends/githubAnnotations.ts";
 import type { TaskDefinition } from "@bfmono/infra/bft/bft.ts";
 import { genGqlTypesCommand } from "./genGqlTypes.bft.ts";
 import { isoCommand } from "./iso.bft.ts";
@@ -130,6 +131,13 @@ async function compileWebApp(): Promise<number> {
 }
 
 export async function buildCommand(options: Array<string>): Promise<number> {
+  // Check for GitHub annotations mode
+  const githubMode = options.includes("--github") || options.includes("-g");
+  if (githubMode) {
+    logger.info("Running build pipeline in GitHub annotations mode...");
+    return await runBuildWithGithubAnnotations();
+  }
+
   logger.info("Starting build pipeline...");
 
   try {
@@ -170,7 +178,7 @@ export async function buildCommand(options: Array<string>): Promise<number> {
 
 export const bftDefinition = {
   description:
-    "Run the full build pipeline (genGqlTypes → iso → web compilation)",
+    "Run the full build pipeline (genGqlTypes → iso → web compilation). Use --github/-g for GitHub annotations output",
   fn: buildCommand,
   aiSafe: true,
 } satisfies TaskDefinition;
