@@ -224,7 +224,7 @@ Deno.test("SSR serves correct response headers", async () => {
     );
 
     assert(
-      html?.includes("Coming Soon"),
+      html?.includes("Structured prompts, reliable output"),
       "HTML should contain server-rendered subtitle",
     );
 

@@ -47,32 +47,10 @@ export interface NexusGenObjects {
   BfEdge: {};
   BfOrganization: {};
   BfPerson: {};
-  BlogPost: {};
-  BlogPostConnection: { // root type
-    count?: number | null; // Int
-    edges?: Array<NexusGenRootTypes['BlogPostEdge'] | null> | null; // [BlogPostEdge]
-    nodes?: Array<NexusGenRootTypes['BlogPost'] | null> | null; // [BlogPost]
-    pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
-  }
-  BlogPostEdge: { // root type
-    cursor: string; // String!
-    node?: NexusGenRootTypes['BlogPost'] | null; // BlogPost
-  }
+  CurrentViewer: {};
   GithubRepoStats: {};
-  JoinWaitlistPayload: { // root type
-    message?: string | null; // String
-    success: boolean; // Boolean!
-  }
   Mutation: {};
-  PageInfo: { // root type
-    endCursor?: string | null; // String
-    hasNextPage: boolean; // Boolean!
-    hasPreviousPage: boolean; // Boolean!
-    startCursor?: string | null; // String
-  }
-  PublishedDocument: {};
   Query: {};
-  Waitlist: {};
 }
 
 export interface NexusGenInterfaces {
@@ -100,57 +78,23 @@ export interface NexusGenFieldTypes {
     memberOf: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
     name: string | null; // String
   }
-  BlogPost: { // field return type
-    author: string | null; // String
-    content: string; // String!
-    excerpt: string; // String!
-    heroImage: string | null; // String
-    id: string; // ID!
-    publishedAt: NexusGenScalars['IsoDate'] | null; // IsoDate
-    tags: string; // String!
-    title: string; // String!
-    updatedAt: NexusGenScalars['IsoDate'] | null; // IsoDate
-  }
-  BlogPostConnection: { // field return type
-    count: number | null; // Int
-    edges: Array<NexusGenRootTypes['BlogPostEdge'] | null> | null; // [BlogPostEdge]
-    nodes: Array<NexusGenRootTypes['BlogPost'] | null> | null; // [BlogPost]
-    pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
-  }
-  BlogPostEdge: { // field return type
-    cursor: string; // String!
-    node: NexusGenRootTypes['BlogPost'] | null; // BlogPost
+  CurrentViewer: { // field return type
+    currentViewer: NexusGenRootTypes['CurrentViewer'] | null; // CurrentViewer
+    id: string | null; // ID
+    orgBfOid: string | null; // String
+    personBfGid: string | null; // String
   }
   GithubRepoStats: { // field return type
     id: string; // ID!
     stars: number; // Int!
   }
-  JoinWaitlistPayload: { // field return type
-    message: string | null; // String
-    success: boolean; // Boolean!
-  }
   Mutation: { // field return type
-    joinWaitlist: NexusGenRootTypes['JoinWaitlistPayload'] | null; // JoinWaitlistPayload
-  }
-  PageInfo: { // field return type
-    endCursor: string | null; // String
-    hasNextPage: boolean; // Boolean!
-    hasPreviousPage: boolean; // Boolean!
-    startCursor: string | null; // String
-  }
-  PublishedDocument: { // field return type
-    content: string; // String!
-    id: string; // ID!
+    loginWithGoogle: NexusGenRootTypes['CurrentViewer'] | null; // CurrentViewer
   }
   Query: { // field return type
-    blogPost: NexusGenRootTypes['BlogPost'] | null; // BlogPost
-    blogPosts: NexusGenRootTypes['BlogPostConnection'] | null; // BlogPostConnection
-    documentsBySlug: NexusGenRootTypes['PublishedDocument'] | null; // PublishedDocument
+    currentViewer: NexusGenRootTypes['CurrentViewer']; // CurrentViewer!
     githubRepoStats: NexusGenRootTypes['GithubRepoStats'] | null; // GithubRepoStats
     ok: boolean | null; // Boolean
-  }
-  Waitlist: { // field return type
-    id: string | null; // ID
   }
   BfNode: { // field return type
     id: string; // ID!
@@ -173,57 +117,23 @@ export interface NexusGenFieldTypeNames {
     memberOf: 'BfOrganization'
     name: 'String'
   }
-  BlogPost: { // field return type name
-    author: 'String'
-    content: 'String'
-    excerpt: 'String'
-    heroImage: 'String'
+  CurrentViewer: { // field return type name
+    currentViewer: 'CurrentViewer'
     id: 'ID'
-    publishedAt: 'IsoDate'
-    tags: 'String'
-    title: 'String'
-    updatedAt: 'IsoDate'
-  }
-  BlogPostConnection: { // field return type name
-    count: 'Int'
-    edges: 'BlogPostEdge'
-    nodes: 'BlogPost'
-    pageInfo: 'PageInfo'
-  }
-  BlogPostEdge: { // field return type name
-    cursor: 'String'
-    node: 'BlogPost'
+    orgBfOid: 'String'
+    personBfGid: 'String'
   }
   GithubRepoStats: { // field return type name
     id: 'ID'
     stars: 'Int'
   }
-  JoinWaitlistPayload: { // field return type name
-    message: 'String'
-    success: 'Boolean'
-  }
   Mutation: { // field return type name
-    joinWaitlist: 'JoinWaitlistPayload'
-  }
-  PageInfo: { // field return type name
-    endCursor: 'String'
-    hasNextPage: 'Boolean'
-    hasPreviousPage: 'Boolean'
-    startCursor: 'String'
-  }
-  PublishedDocument: { // field return type name
-    content: 'String'
-    id: 'ID'
+    loginWithGoogle: 'CurrentViewer'
   }
   Query: { // field return type name
-    blogPost: 'BlogPost'
-    blogPosts: 'BlogPostConnection'
-    documentsBySlug: 'PublishedDocument'
+    currentViewer: 'CurrentViewer'
     githubRepoStats: 'GithubRepoStats'
     ok: 'Boolean'
-  }
-  Waitlist: { // field return type name
-    id: 'ID'
   }
   BfNode: { // field return type name
     id: 'ID'
@@ -235,26 +145,8 @@ export interface NexusGenFieldTypeNames {
 
 export interface NexusGenArgTypes {
   Mutation: {
-    joinWaitlist: { // args
-      company?: string | null; // String
-      email: string; // String!
-      name: string; // String!
-    }
-  }
-  Query: {
-    blogPost: { // args
-      slug?: string | null; // String
-    }
-    blogPosts: { // args
-      after?: string | null; // String
-      before?: string | null; // String
-      filterByYear?: string | null; // String
-      first?: number | null; // Int
-      last?: number | null; // Int
-      sortDirection?: string | null; // String
-    }
-    documentsBySlug: { // args
-      slug?: string | null; // String
+    loginWithGoogle: { // args
+      idToken: string; // String!
     }
   }
 }
