@@ -23,16 +23,16 @@ const PRIVATE_KEY = "UNIT_TEST_SECRET"; // expected vault value: "shh-not-public
 const UNKNOWN_KEY = "MISSING_FROM_CONFIG_KEYS";
 
 /* ─────────── helper – run only if the private item exists ─────────── */
-let _hasPrivateCache: boolean | null = null;
+let hasPrivateCache: boolean | null = null;
 function hasPrivateItem(): boolean {
-  if (_hasPrivateCache !== null) return _hasPrivateCache;
+  if (hasPrivateCache !== null) return hasPrivateCache;
   try {
     const v = getSecret(PRIVATE_KEY);
-    _hasPrivateCache = v !== undefined;
+    hasPrivateCache = v !== undefined;
   } catch {
-    _hasPrivateCache = false;
+    hasPrivateCache = false;
   }
-  return _hasPrivateCache;
+  return hasPrivateCache;
 }
 
 /* ─────────── ENV precedence ─────────── */

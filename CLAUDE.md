@@ -1,1 +1,1 @@
-AGENTS.md
+/Users/randallb/randallb.com/areas/bolt-foundry-monorepo/.agents/commands/bft/AGENTS.md

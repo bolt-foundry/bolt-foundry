@@ -1,5 +1,6 @@
 import { runShellCommand } from "@bfmono/infra/bff/shellBase.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import { runE2EWithGithubAnnotations } from "@bfmono/infra/bff/friends/githubAnnotations.ts";
 import type { TaskDefinition } from "@bfmono/infra/bft/bft.ts";
 import {
   getRequiredServers,
@@ -258,15 +259,17 @@ async function resolveTestFiles(
 export async function e2eCommand(options: Array<string>): Promise<number> {
   // Parse command line arguments
   const parsed = parseArgs(options, {
-    boolean: ["build", "verbose", "show-browser"],
+    boolean: ["build", "verbose", "show-browser", "github"],
     string: ["show-browser"],
     alias: {
       b: "build",
       v: "verbose",
+      g: "github",
     },
     default: {
       "show-browser": false,
       verbose: false,
+      github: false,
     },
     unknown: () => {
       // Allow unknown args to be passed through to deno test
@@ -276,6 +279,24 @@ export async function e2eCommand(options: Array<string>): Promise<number> {
 
   const shouldShowBrowser = parsed["show-browser"] === true;
   const verbose = parsed.verbose;
+  const githubMode = parsed.github;
+
+  // Check for GitHub annotations mode early
+  if (githubMode) {
+    logger.info("Running E2E tests in GitHub annotations mode...");
+
+    // Build test args for annotation mode
+    const testArgs = ["deno", "test", "-A"];
+
+    // Filter out our custom flags and add remaining options
+    const filteredOptions = options.filter((opt) =>
+      !opt.startsWith("--show-browser") && opt !== "--build" && opt !== "-b" &&
+      opt !== "--verbose" && opt !== "-v" && opt !== "--github" && opt !== "-g"
+    );
+    testArgs.push(...filteredOptions);
+
+    return await runE2EWithGithubAnnotations(testArgs);
+  }
 
   // Acquire E2E lock to prevent concurrent runs
   await acquireE2ELock();
@@ -285,7 +306,7 @@ export async function e2eCommand(options: Array<string>): Promise<number> {
   // Get remaining args for deno test (excluding our parsed flags)
   const denoTestOptions = options.filter((opt) =>
     !opt.startsWith("--show-browser") && opt !== "--build" && opt !== "-b" &&
-    opt !== "--verbose" && opt !== "-v"
+    opt !== "--verbose" && opt !== "-v" && opt !== "--github" && opt !== "-g"
   );
 
   const testFilePatterns = denoTestOptions.filter((opt) =>
@@ -443,7 +464,7 @@ export async function e2eCommand(options: Array<string>): Promise<number> {
 
 export const bftDefinition = {
   description:
-    "Run end-to-end tests. Options: --show-browser, --verbose/-v, --build/-b, plus all deno test flags (--no-check, etc.)",
+    "Run end-to-end tests. Options: --show-browser, --verbose/-v, --build/-b, --github/-g, plus all deno test flags (--no-check, etc.)",
   fn: e2eCommand,
   aiSafe: true,
 } satisfies TaskDefinition;
