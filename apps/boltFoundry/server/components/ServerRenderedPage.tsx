@@ -1,6 +1,4 @@
 import { colors, colorsDark, fonts } from "@bfmono/apps/cfDs/const.tsx";
-import { getLogger } from "@bfmono/packages/logger/logger.ts";
-const _logger = getLogger(import.meta);
 
 const varsString = Object.entries({ ...colors, ...fonts }).reduce(
   (acc, [key, value]) => {
