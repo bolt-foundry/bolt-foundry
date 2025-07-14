@@ -7,7 +7,12 @@
  */
 
 import { assertEquals } from "@std/assert";
-import { BfNode, type InferProps } from "@bfmono/apps/bfDb/classes/BfNode.ts";
+import {
+  type BfEdgeMetadata,
+  BfNode,
+  type InferProps,
+} from "@bfmono/apps/bfDb/classes/BfNode.ts";
+import { BfEdge } from "@bfmono/apps/bfDb/nodeTypes/BfEdge.ts";
 import { withIsolatedDb } from "@bfmono/apps/bfDb/bfDb.ts";
 import { makeLoggedInCv } from "@bfmono/apps/bfDb/utils/testUtils.ts";
 
@@ -25,6 +30,20 @@ class BfExamplePerson extends BfNode<InferProps<typeof BfExamplePerson>> {
       .string("name")
       .number("age")
       .string("isEvil")
+  );
+}
+
+class BfExampleOrg extends BfNode<InferProps<typeof BfExampleOrg>> {
+  static override gqlSpec = this.defineGqlNode((f) =>
+    f
+      .string("orgName")
+      .string("domain")
+  );
+
+  static override bfNodeSpec = this.defineBfNode((f) =>
+    f
+      .string("orgName")
+      .string("domain")
   );
 }
 
@@ -81,10 +100,115 @@ Deno.test("props accessor returns plain scalar values", async () => {
       email: "alice@example.com",
     });
 
-    // @ts-expect-error – foo doesn’t exist
+    // @ts-expect-error – foo doesn't exist
     alice.props.foo;
 
     assertEquals(alice.props.name, "Alice");
     assertEquals(alice.props.email, "alice@example.com");
+  });
+});
+
+Deno.test("createTargetNode creates target node and edge", async () => {
+  await withIsolatedDb(async () => {
+    const cv = makeLoggedInCv();
+
+    // Create source node (org)
+    const org = await BfExampleOrg.__DANGEROUS__createUnattached(cv, {
+      orgName: "Test Corp",
+      domain: "testcorp.com",
+    });
+
+    // Use createTargetNode to create target person and edge
+    const person = await org.createTargetNode(BfExamplePerson, {
+      name: "Alice",
+      email: "alice@example.com",
+      age: 30,
+      isEvil: "no",
+    });
+
+    // Verify target node was created correctly
+    assertEquals(person.props.name, "Alice");
+    assertEquals(person.props.email, "alice@example.com");
+    assertEquals(person.props.age, 30);
+    assertEquals(person.metadata.bfOid, cv.orgBfOid);
+    assertEquals(person.metadata.bfCid, cv.personBfGid);
+
+    // Verify edge was created
+    const edges = await BfEdge.query(
+      cv,
+      {
+        bfSid: org.metadata.bfGid,
+        bfTid: person.metadata.bfGid,
+      },
+      {},
+      [],
+    );
+
+    assertEquals(edges.length, 1);
+    const edgeMetadata = edges[0].metadata as BfEdgeMetadata;
+    assertEquals(edgeMetadata.bfSid, org.metadata.bfGid);
+    assertEquals(edgeMetadata.bfTid, person.metadata.bfGid);
+    assertEquals(edgeMetadata.bfSClassName, "BfExampleOrg");
+    assertEquals(edgeMetadata.bfTClassName, "BfExamplePerson");
+  });
+});
+
+Deno.test("createTargetNode with custom role", async () => {
+  await withIsolatedDb(async () => {
+    const cv = makeLoggedInCv();
+
+    const org = await BfExampleOrg.__DANGEROUS__createUnattached(cv, {
+      orgName: "Custom Corp",
+      domain: "custom.com",
+    });
+
+    const person = await org.createTargetNode(BfExamplePerson, {
+      name: "Bob",
+      email: "bob@example.com",
+      age: 25,
+      isEvil: "maybe",
+    }, {
+      role: "employs",
+    });
+
+    // Verify edge has custom role
+    const edges = await BfEdge.query(
+      cv,
+      {
+        bfSid: org.metadata.bfGid,
+        bfTid: person.metadata.bfGid,
+      },
+      {},
+      [],
+    );
+
+    assertEquals(edges.length, 1);
+    assertEquals(edges[0].props.role, "employs");
+  });
+});
+
+Deno.test("createTargetNode with custom metadata", async () => {
+  await withIsolatedDb(async () => {
+    const cv = makeLoggedInCv();
+
+    const org = await BfExampleOrg.__DANGEROUS__createUnattached(cv, {
+      orgName: "Meta Corp",
+      domain: "meta.com",
+    });
+
+    const customDate = new Date("2023-01-01T00:00:00Z");
+    const person = await org.createTargetNode(BfExamplePerson, {
+      name: "Charlie",
+      email: "charlie@example.com",
+      age: 35,
+      isEvil: "definitely",
+    }, {
+      metadata: {
+        createdAt: customDate,
+      },
+    });
+
+    // Verify custom metadata was applied
+    assertEquals(person.metadata.createdAt, customDate);
   });
 });
