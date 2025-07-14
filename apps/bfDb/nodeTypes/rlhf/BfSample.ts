@@ -1,0 +1,74 @@
+import { BfNode, type InferProps } from "@bfmono/apps/bfDb/classes/BfNode.ts";
+import type { JSONValue as _JSONValue } from "@bfmono/apps/bfDb/bfDb.ts";
+
+/**
+ * Collection method for BfSample - how the sample was collected
+ */
+export type BfSampleCollectionMethod = "manual" | "telemetry";
+
+/**
+ * Completion data that combines the OpenAI ChatCompletion response with the original request parameters
+ * This interface is designed to be JSON-serializable for database storage
+ */
+export interface BfSampleCompletionData {
+  // OpenAI ChatCompletion fields
+  id: string;
+  object: string;
+  created: number;
+  model: string;
+  choices: Array<{
+    index: number;
+    message: {
+      role: string;
+      content: string;
+    };
+    finish_reason: string;
+  }>;
+  usage?: {
+    prompt_tokens: number;
+    completion_tokens: number;
+    total_tokens: number;
+  };
+
+  // Original request parameters
+  messages: Array<{
+    role: string;
+    content: string;
+  }>;
+  temperature?: number;
+  max_tokens?: number;
+  top_p?: number;
+  frequency_penalty?: number;
+  presence_penalty?: number;
+  stop?: string | Array<string>;
+  stream?: boolean;
+}
+
+/**
+ * BfSample represents a collected RLHF (Reinforcement Learning from Human Feedback) sample.
+ *
+ * This node type stores completion data and associated metadata for training and
+ * evaluation purposes. Samples can be collected manually by users or automatically
+ * via telemetry systems.
+ */
+export class BfSample extends BfNode<InferProps<typeof BfSample>> {
+  /**
+   * GraphQL specification for BfSample fields.
+   * Defines the schema and resolvers for the GraphQL API.
+   */
+  static override gqlSpec = this.defineGqlNode((node) =>
+    node
+      .json("completionData")
+      .string("collectionMethod")
+  );
+
+  /**
+   * Database field specification for BfSample.
+   * Defines the fields that are stored in the database.
+   */
+  static override bfNodeSpec = this.defineBfNode((node) =>
+    node
+      .json("completionData") // Native JSON storage
+      .string("collectionMethod") // "manual" | "telemetry"
+  );
+}
