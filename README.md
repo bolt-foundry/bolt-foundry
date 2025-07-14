@@ -1,97 +1,143 @@
-# aibff - Make Your AI Outputs Reliable
+# Bolt Foundry - Customer Success Platform for AI
 
-Most developers don't write AI evaluations because they're impossible to
-understand. aibff changes that with graders - simple markdown files that make
-your AI outputs testable, reliable, and easy to improve.
+**Make AI systems continuously improve through customer feedback, creating
+reliable, customer-centric AI that gets better every day.**
+
+Most AI systems are built and deployed without meaningful connection to customer
+feedback. Companies launch AI features, get complaints, and struggle to
+translate customer dissatisfaction into systematic improvements. Bolt Foundry
+changes that with our RLHF workflow platform.
 
 ## The Problem
 
-AI outputs are inconsistent. The same prompt gives different results, making it
-hard to:
+AI systems today are disconnected from customer success:
 
-- Build reliable features
-- Test AI behavior
-- Improve performance over time
-- Trust AI in production
+- **Disconnected systems**: AI behavior doesn't reflect actual customer needs
+- **Unmeasurable impact**: No clear connection between AI changes and customer
+  satisfaction
+- **Untestable improvements**: Can't verify if changes actually help customers
+- **Scaling challenges**: Each customer complaint requires manual investigation
+  and custom fixes
 
 ## The Solution
 
-aibff uses **graders** - markdown files that define what good AI output looks
-like. Run `aibff calibrate` to see exactly how reliable your AI is and where to
-improve.
+Bolt Foundry provides a **Customer Success Platform for AI** that turns customer
+feedback into systematic AI improvements through our RLHF workflow:
 
-## Quick Start
+- **Feedback collection**: Systematic capture of customer interactions and
+  satisfaction signals
+- **Evaluation specs**: Automated generation of evaluation criteria from
+  customer feedback patterns
+- **Response optimization**: Continuous improvement of AI responses based on
+  customer success metrics
+- **Success tracking**: Measurable outcomes connecting customer satisfaction to
+  AI improvements
 
-### 1. Try the Example
+## Why This Matters
 
-Clone this repo and try our fastpitch grader:
+### For Customer Success Teams
 
-```bash
-git clone [repo-url]
-cd bolt-foundry
-export OPENROUTER_API_KEY=your-api-key
-aibff calibrate decks/fastpitch/ai_gen_grader.deck.md
-```
+- Transform customer feedback into systematic AI improvements
+- Measure and track customer satisfaction with AI interactions
+- Identify patterns in customer needs and optimize AI responses
+- Build customer-centric AI that continuously improves
 
-You'll get a reliability report showing exactly how your AI performs.
+### For Companies
 
-### 2. Install aibff
+- AI systems that truly serve customers better over time
+- Measurable ROI from customer satisfaction improvements
+- Competitive advantage through customer-driven AI excellence
+- Predictable customer success outcomes
 
-Download for your platform:
+## How It Works
 
-- **[Download aibff releases →](https://github.com/content-foundry/content-foundry/releases?q=aibff&expanded=true)**
-
-```bash
-# Linux/macOS
-curl -L https://github.com/content-foundry/content-foundry/releases/download/aibff-vX.X.X/aibff-linux-x86_64.tar.gz | tar xz
-./aibff --help
-```
-
-## What are graders?
-
-Graders are markdown files that define reliable AI behavior:
+Our platform uses **graders** - evaluation specifications that define what good
+AI behavior looks like from a customer success perspective:
 
 ```markdown
-# Email Response Grader
+# Customer Support Response Grader
 
-Evaluate email responses for professionalism and helpfulness.
+Evaluate customer support responses for satisfaction and resolution quality.
 
 ## Evaluation Criteria
 
-- Uses professional tone
-- Addresses the customer's question directly
-- Provides clear next steps
+- Addresses customer's specific concern directly
+- Provides clear, actionable next steps
+- Maintains professional, empathetic tone
+- Resolves issue or escalates appropriately
 
 ## Scoring Guidelines
 
-- **+3**: Perfect professional response with clear solution
-- **+1**: Good response, minor improvements possible
-- **-1**: Somewhat unprofessional or unclear
-- **-3**: Rude or completely unhelpful
+- **+3**: Perfect customer experience, issue fully resolved
+- **+1**: Good response, minor customer experience improvements possible
+- **-1**: Adequate but customer could be more satisfied
+- **-3**: Poor customer experience, likely to generate complaint
 
-![samples and context](./email-grader-context-and-samples.deck.toml)
+![customer feedback samples](./customer-support-context-and-samples.deck.toml)
 ```
 
-The scoring system (-3 to +3) gives you precise control over AI reliability.
+The scoring system (-3 to +3) gives you precise control over customer
+satisfaction outcomes.
 
-## Why This Works
+## Customer Success in Action
 
-Traditional AI testing is guesswork. aibff gives you:
+**Current Implementation**: We're working with example-customer.com to implement
+a complete customer success workflow for invoice extraction AI, targeting >90%
+accuracy through systematic customer feedback integration.
 
-- **Precise measurement** of AI reliability
-- **Clear improvement targets** through calibration
-- **Testable specifications** that both humans and AI understand
-- **Reliable outputs** through structured evaluation
+**Result**: Measurable improvements in customer satisfaction and business
+outcomes through our RLHF workflow platform.
+
+## Get Started
+
+### 1. Try Customer Success Validation
+
+See how our platform works with real customer success metrics:
+
+```bash
+# Install our platform
+npm install @bolt-foundry/bolt-foundry
+
+# Run customer success calibration
+aibff calibrate your-customer-feedback-grader.deck.md
+```
+
+### 2. Build Your RLHF Workflow
+
+Create systematic customer feedback-to-AI improvement workflows:
+
+- **Customer feedback processing**: Automated analysis of customer interactions
+- **Evaluation spec generation**: Turn feedback patterns into measurable
+  criteria
+- **Response optimization**: Continuous improvement based on customer success
+  metrics
+- **Success tracking**: Monitor customer satisfaction improvements over time
+
+## Revenue Model
+
+We offer credit-based pricing for customer success services:
+
+- **Feedback Processing**: Customer feedback interactions processed through our
+  RLHF workflow
+- **Evaluation Specs**: Automated generation of evaluation specifications from
+  customer feedback
+- **Response Optimization**: Batch processing of improved AI responses based on
+  customer success metrics
+- **Performance Analytics**: Customer satisfaction tracking and success
+  optimization
 
 ## Learn More
 
-- **[Getting Started Guide](docs/getting-started.md)** - Complete setup
-  walkthrough
-- **[Calibrate Guide](docs/calibrate-guide.md)** - Understanding your
-  reliability reports
-- **[Create Graders Guide](docs/graders-guide.md)** - Build your own evaluations
+- **[Company Vision](memos/guides/company-vision.md)** - Our mission and
+  approach
+- **[Business Vision](memos/guides/business-vision.md)** - Go-to-market strategy
+  and revenue model
+- **[Customer Success Plan](memos/plans/2025-07-14-customer-success-prompt-iteration-plan.md)** -
+  Current implementation details
+- **[Project Status](memos/guides/STATUS.md)** - Current project status and
+  priorities
 
 ---
 
-**Contact**: Questions? Email us at
+**Contact**: Ready to improve your AI through customer success? Email us at
 [contact@boltfoundry.com](mailto:contact@boltfoundry.com)
