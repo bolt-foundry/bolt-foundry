@@ -59,6 +59,7 @@ export type BfMetadata = BfNodeMetadata | BfEdgeMetadata;
 
 type FieldValue<S> = S extends { kind: "string" } ? string
   : S extends { kind: "number" } ? number
+  : S extends { kind: "json" } ? JSONValue
   : never;
 
 // deno-lint-ignore no-explicit-any
@@ -340,6 +341,33 @@ export abstract class BfNode<TProps extends PropsBase = {}>
     this._savedProps = this._props;
     this._metadata = item.metadata;
     return this;
+  }
+
+  async createTargetNode<TProps extends PropsBase>(
+    TargetNodeClass: typeof BfNode<TProps>,
+    props: TProps,
+    options?: {
+      role?: string;
+      metadata?: Partial<BfMetadata>;
+    },
+  ): Promise<InstanceType<typeof TargetNodeClass>> {
+    const targetNode = await TargetNodeClass.__DANGEROUS__createUnattached(
+      this.cv,
+      props,
+      options?.metadata,
+    );
+
+    await targetNode.save();
+
+    const { BfEdge } = await import("@bfmono/apps/bfDb/nodeTypes/BfEdge.ts");
+    await BfEdge.createBetweenNodes(
+      this.cv,
+      this,
+      targetNode,
+      { role: options?.role || "" },
+    );
+
+    return targetNode;
   }
 
   protected beforeCreate(): Promise<void> | void {}

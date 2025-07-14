@@ -4,10 +4,12 @@
 
 export type FieldSpec =
   | { kind: "string" }
-  | { kind: "number" };
+  | { kind: "number" }
+  | { kind: "json" };
 
 export type FieldValue<S> = S extends { kind: "string" } ? string
   : S extends { kind: "number" } ? number
+  : S extends { kind: "json" } ? import("@bfmono/apps/bfDb/bfDb.ts").JSONValue
   : never;
 
 /* -------------------------------------------------------------------------- */
