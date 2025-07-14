@@ -41,6 +41,7 @@ export interface NexusGenScalars {
   Boolean: boolean
   ID: string
   IsoDate: any
+  JSON: any
 }
 
 export interface NexusGenObjects {
@@ -89,7 +90,7 @@ export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 
 export interface NexusGenFieldTypes {
   BfEdge: { // field return type
-    id: string; // ID!
+    role: string | null; // String
   }
   BfOrganization: { // field return type
     domain: string | null; // String
@@ -162,7 +163,7 @@ export interface NexusGenFieldTypes {
 
 export interface NexusGenFieldTypeNames {
   BfEdge: { // field return type name
-    id: 'ID'
+    role: 'String'
   }
   BfOrganization: { // field return type name
     domain: 'String'
