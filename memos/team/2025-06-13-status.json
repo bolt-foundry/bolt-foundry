@@ -722,7 +722,7 @@
         },
         {
           "prNumber": 1048,
-          "title": "Add line item extractor implementation plan for MunchInsights",
+          "title": "Add line item extractor implementation plan for ExampleCustomer",
           "description": "Create comprehensive implementation plan for restaurant invoice line item spatial extractor following Bolt Foundry's planning process",
           "category": "feature",
           "impact": "medium",

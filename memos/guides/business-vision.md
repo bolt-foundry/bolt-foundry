@@ -4,95 +4,112 @@
 
 We will charge a monthly subscription fee for credits that expire each month.
 This credit-based system enables usage-based pricing while providing predictable
-revenue:
+revenue through our core **customer feedback → evaluation specs → improved AI
+responses** workflow:
 
-- **Event Storage**: Each stored event (prompts, responses, interactions)
-  consumes credits
-- **Inference Services**: Token-based fees for services like reconciling samples
-  against persona/behavior cards
-- **Advanced Analytics**: Batch evaluations, performance analysis, and
-  optimization services
-- **Potential LLM Intermediary**: Similar to
-  [OpenRouter](https://openrouter.ai), though value proposition still being
-  evaluated
+- **Feedback Processing**: Each customer feedback interaction processed through
+  our RLHF workflow consumes credits
+- **Evaluation Specs**: Automated generation of evaluation specifications from
+  customer feedback patterns and satisfaction metrics
+- **Response Optimization**: Continuous improvement of AI responses based on
+  customer success outcomes and feedback analysis
+- **Performance Analytics**: Customer satisfaction tracking, response quality
+  analysis, and success optimization services
 
 This model follows successful precedents like [Replit](https://replit.com),
 allowing us to charge based on value delivered while giving flexibility in
-credit allocation for different customer types.
+credit allocation for different customer types and feedback volumes.
 
 ## Go-to-market strategy
 
-### Primary: developer-led growth + content marketing
+### Primary: customer-focused growth through contexteng.ai → demo → collaboration
 
-Our core strategy leverages our team's content creation background:
+Our core strategy leverages our team's content creation background to focus on
+customer transformations and collaborative success stories:
 
-- **Educational Content**: Blog posts explaining structured approaches to prompt
-  engineering
+- **Customer Transformation Content**: Blog posts and case studies showcasing
+  the contexteng.ai → demo → collaboration user journey
 - **Thought Leadership**: Podcasts, speaking engagements, and industry
-  discussions about structured prompt engineering
-- **Developer Community**: Building relationships with LLM application
-  developers through valuable insights
-- **Open Source Evangelism**: Using our open source tools as entry points for
-  deeper engagement
+  discussions about customer-centric AI development and collaborative workflows
+- **Customer Success Community**: Building relationships with companies seeking
+  to improve their AI systems through customer feedback integration and team
+  collaboration
+- **Collaborative Success Stories**: Demonstrating measurable improvements in
+  customer satisfaction, team productivity, and business outcomes through our
+  platform
 
 ### Distribution channels
 
-**Open Source + Freemium Model:**
+**Customer Success + Freemium Model:**
 
-- Core prompt restructuring CLI tool available open source
-- Basic evaluation capabilities provided free
-- Advanced features (batch evaluations, enterprise analytics) monetized
-- Natural progression from individual developer tools to team/enterprise
-  features
+- Basic contexteng.ai discovery and demo experience available free
+- Customer satisfaction tracking and basic collaboration features provided free
+- Advanced features (enterprise collaboration workflows, custom evaluation
+  specs, advanced customer success analytics) monetized
+- Natural progression from individual contexteng.ai trials to team collaboration
+  to enterprise-wide customer success optimization
 
 This aligns with our "Gradual Adoption" principle from our
-[company vision](./company-vision.md), allowing developers to experience value
-before committing to paid services.
+[company vision](./company-vision.md), allowing companies to experience the
+contexteng.ai → demo → collaboration journey before committing to paid services.
 
 ## Customer acquisition funnel
 
+Our acquisition follows the **contexteng.ai → demo → collaboration** user
+journey:
+
 1. **Awareness**: Content marketing and thought leadership establish our
-   expertise
-2. **Trial**: Developers use free CLI tool to restructure existing prompts
-3. **Value Realization**: Basic evaluations demonstrate improved prompt
-   reliability
-4. **Conversion**: Teams need batch processing, advanced analytics, or
-   collaboration features
+   customer transformation expertise through contexteng.ai → demo →
+   collaboration stories
+2. **Trial**: Companies discover contexteng.ai and experience the demo process
+   to understand customer-focused AI development
+3. **Value Realization**: Basic collaboration workflow demonstrates improved
+   customer satisfaction, team productivity, and business outcomes
+4. **Conversion**: Teams need advanced collaboration features, customer success
+   analytics, or custom evaluation frameworks
 5. **Expansion**: Enterprise customers require enhanced security, support, and
-   custom integrations
+   custom collaboration integrations
 
 ## Market strategy
 
-### Early stage: developer tools
+### Early stage: customer transformation through collaboration
 
-Focus on individual developers and small teams experiencing prompt reliability
-issues. Provide immediate value through prompt restructuring and basic
-evaluation tools.
+Focus on companies with existing AI systems experiencing customer satisfaction
+and team collaboration issues. Provide immediate value through the
+**contexteng.ai → demo → collaboration** journey, showing measurable
+improvements in customer outcomes.
 
-### Growth stage: team platforms
+### Growth stage: enterprise collaboration platforms
 
-Expand to development teams needing collaboration, version control, and shared
-prompt libraries. Add team management and advanced analytics features.
+Expand to larger organizations needing comprehensive customer feedback
+integration, advanced collaboration analytics, and custom evaluation frameworks.
+Scale the core workflow with enterprise-grade team collaboration and customer
+success tracking.
 
-### Mature stage: enterprise infrastructure
+### Mature stage: industry-standard customer-focused AI infrastructure
 
-Become the standard for mission-critical LLM applications requiring
-enterprise-grade reliability, security, and compliance.
+Become the standard for AI systems requiring continuous improvement through
+customer feedback, with our **contexteng.ai → demo → collaboration** workflow as
+the industry norm for enterprise-grade collaborative AI development systems.
 
 ## Competitive positioning
 
 Unlike existing solutions ([LangChain](https://langchain.com),
-[DSPy](https://dspy-docs.vercel.app)) that are "leaky abstractions" requiring
-deep model knowledge, we provide true abstraction similar to
-[Rails](https://rubyonrails.org) hiding SQL complexity. Our structured approach
-to prompt reliability is unique in the market.
+[DSPy](https://dspy-docs.vercel.app)) that focus on technical implementation, we
+provide customer-centric improvement workflows similar to how
+[Salesforce](https://salesforce.com) revolutionized CRM. Our structured approach
+to customer feedback integration is unique in the market.
 
 We compete on:
 
-- **Ease of use**: No deep LLM knowledge required
-- **Reliability**: Structured approaches create more consistent outputs
-- **Developer experience**: Familiar patterns and gradual adoption paths
-- **True abstraction**: Hide complexity rather than expose it
+- **Customer focus**: Direct connection between customer feedback and AI
+  improvement through contexteng.ai → demo → collaboration journey
+- **Measurable outcomes**: Clear customer satisfaction metrics and collaborative
+  success tracking
+- **Business impact**: ROI through improved customer experiences and team
+  productivity, not just technical metrics
+- **Workflow integration**: Seamless collaborative processes that fit existing
+  customer success operations and team workflows
 
 ## Financial philosophy
 
@@ -117,36 +134,41 @@ LLM applications, but not dependent on it for survival.
 
 **Product Metrics:**
 
-- CLI tool adoption and usage frequency
-- Conversion from free to paid features
-- Prompt reliability improvements measured by customers
+- Customer transformation stories and collaborative success rates
+- Conversion from contexteng.ai discovery to demo to collaboration
+- Customer satisfaction improvements measured by our clients
+- Collaborative workflow adoption and success rates
 
 **Market Metrics:**
 
-- Developer mindshare in LLM engineering communities
-- Content engagement and thought leadership recognition
-- Open source project adoption and contributions
+- Customer transformation adoption in AI companies
+- Content engagement and thought leadership recognition around collaborative AI
+  development
+- Case study impact and customer transformation story sharing
 
 ## Business risks
 
-| Risk                                      | Description                                                                                                                                    | Current Mitigation Approach                                                                                                                                                                                                                                                                                                 |
-| ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Big Tech Competition**                  | Companies like OpenAI, Anthropic, or Google building similar developer tools and bundling them with LLM services                               | Position as "Switzerland of LLM providers" - vendor-neutral tooling that helps developers avoid lock-in. Platform bundling creates counter-demand for independent solutions. Leverage focused team composition to outbuild typical big company efforts (10-vs-5 dynamic, not 200-vs-5).                                     |
-| **Incumbent Ecosystem Entrenchment**      | Existing tools like LangChain/DSPy having deep market penetration, making adoption difficult despite technical superiority                     | Focus on early adopters who love the product, then expand outward ([demand shaped like a well](https://paulgraham.com/startupideas.html)). Make our tooling "as easy to use as not use" so our baseline becomes the new "good enough." Address our inexperience with developer tooling through direct customer development. |
-| **Wrong Abstraction Level**               | Building too high-level (developers want primitives) or wrong dimension entirely (focusing on prompts when real pain is deployment/monitoring) | Direct customer development with developers experiencing active pain points. Follow complaint patterns in developer communities to validate abstraction choices early.                                                                                                                                                      |
-| **Minimum Viable Revenue Identification** | With limited runway, must quickly identify which features developers will pay for immediately vs. find intellectually interesting              | Focus validation on debug tools (heatmaps, backtesting, synthetic data generation) and advanced evaluations/A-B testing as leading candidates. Use direct customer development and following developer pain points for rapid validation.                                                                                    |
-| **Revenue Generation Timeline**           | Converting interest to paid customers fast enough to extend runway while operating with minimal resources                                      | Balance speed-to-revenue with product quality sufficient to retain early customers and build word-of-mouth growth. Target individual developers for faster sales cycles.                                                                                                                                                    |
-| **Resource Allocation Under Constraints** | Staying lean while potentially lacking expertise in developer tooling, requiring focus without capability gaps                                 | Run fast, cheap, and build great things people really need. Focus entirely on core prompt lifecycle management value proposition without getting distracted by adjacent opportunities.                                                                                                                                      |
+| Risk                                      | Description                                                                                                                                               | Current Mitigation Approach                                                                                                                                                                                                                                                                                                                              |
+| ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Big Tech Competition**                  | Companies like OpenAI, Anthropic, or Google building similar customer success tools and bundling them with LLM services                                   | Position as "Switzerland of LLM providers" - vendor-neutral customer success tooling that helps companies avoid lock-in. Platform bundling creates counter-demand for independent solutions. Leverage focused team composition to outbuild typical big company efforts (10-vs-5 dynamic, not 200-vs-5).                                                  |
+| **Incumbent Ecosystem Entrenchment**      | Existing customer success tools and manual feedback processes having deep organizational penetration, making adoption difficult despite superior outcomes | Focus on early adopters who love improved customer outcomes, then expand outward ([demand shaped like a well](https://paulgraham.com/startupideas.html)). Make our customer success workflow "as easy to use as not use" so our baseline becomes the new "good enough." Address our market positioning through direct customer success team development. |
+| **Wrong Abstraction Level**               | Building too high-level (companies want control) or wrong dimension entirely (focusing on technical metrics when real pain is customer satisfaction)      | Direct customer development with customer success teams experiencing active pain points. Follow complaint patterns in customer success communities to validate workflow choices early.                                                                                                                                                                   |
+| **Minimum Viable Revenue Identification** | With limited runway, must quickly identify which features customer success teams will pay for immediately vs. find intellectually interesting             | Focus validation on customer satisfaction tracking, automated feedback processing, and advanced RLHF workflows as leading candidates. Use direct customer development and following customer success pain points for rapid validation.                                                                                                                   |
+| **Revenue Generation Timeline**           | Converting interest to paid customers fast enough to extend runway while operating with minimal resources                                                 | Balance speed-to-revenue with product quality sufficient to retain early customers and build word-of-mouth growth. Target individual developers for faster sales cycles.                                                                                                                                                                                 |
+| **Resource Allocation Under Constraints** | Staying lean while potentially lacking expertise in customer success tooling, requiring focus without capability gaps                                     | Run fast, cheap, and build great things people really need. Focus entirely on core customer feedback-to-AI improvement value proposition without getting distracted by adjacent opportunities.                                                                                                                                                           |
 
 ## Long-term vision
 
 We see multiple paths to success:
 
-- **Large Company**: Becoming the "Microsoft for LLMs" - the standard operating
-  system for LLM development
-- **Major Open Source Project**: Driving industry standards while monetizing
-  enterprise services
-- **Strategic Acquisition**: Providing core infrastructure for larger platforms
+- **Large Company**: Becoming the "Salesforce for AI Customer Success" - the
+  standard platform for customer-driven AI improvement through collaborative
+  workflows
+- **Major Open Source Project**: Driving industry standards for customer-focused
+  AI development while monetizing enterprise collaboration services
+- **Strategic Acquisition**: Providing core customer success and collaboration
+  infrastructure for larger AI platforms
 
-Our priority is building something important that helps developers create more
-reliable LLM applications, regardless of the specific business outcome.
+Our priority is building something important that helps companies create AI
+systems that truly serve their customers better, regardless of the specific
+business outcome.
