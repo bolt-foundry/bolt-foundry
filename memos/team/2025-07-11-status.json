@@ -1038,7 +1038,7 @@
         },
         {
           "prNumber": 1372,
-          "title": "Add Extend API invoice extraction pipeline for MunchInsights",
+          "title": "Add Extend API invoice extraction pipeline for ExampleCustomer",
           "description": "Implement complete data pipeline to fetch invoice files from Extend API, extract spatial text content, and convert to JSONL format for AI training",
           "category": "feature",
           "impact": "high",
