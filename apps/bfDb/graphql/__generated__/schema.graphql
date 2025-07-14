@@ -4,7 +4,7 @@
 
 
 type BfEdge {
-  id: ID!
+  role: String
 }
 
 """Base interface for all Bolt Foundry database nodes"""
@@ -67,6 +67,9 @@ type GithubRepoStats {
 
 """ISO 8601 date string (e.g., 2025-06-10T14:30:00.000Z)"""
 scalar IsoDate
+
+"""JSON data structure (objects, arrays, primitives)"""
+scalar JSON
 
 type JoinWaitlistPayload {
   message: String
