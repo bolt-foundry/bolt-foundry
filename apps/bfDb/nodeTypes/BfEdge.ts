@@ -14,6 +14,15 @@ type BfEdgeBaseProps = PropsBase & {
 
 export class BfEdge<TProps extends BfEdgeBaseProps = BfEdgeBaseProps>
   extends BfNode<InferProps<typeof BfEdge<TProps>>> {
+  static override gqlSpec = this.defineGqlNode((f) =>
+    f
+      .string("role")
+  );
+
+  static override bfNodeSpec = this.defineBfNode((f) =>
+    f
+      .string("role")
+  );
   static generateEdgeMetadata(
     cv: CurrentViewer,
     sourceNode: BfNode,

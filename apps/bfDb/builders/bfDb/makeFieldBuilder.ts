@@ -30,6 +30,10 @@ export type FieldBuilder<
     name: N,
   ): FieldBuilder<F & { [K in N]: { kind: "number" } }, R>;
 
+  json<N extends string>(
+    name: N,
+  ): FieldBuilder<F & { [K in N]: { kind: "json" } }, R>;
+
   one: RelationAdder<"out", "one", F, R>;
 
   readonly _spec: { fields: F; relations: R };
@@ -89,6 +93,9 @@ export function makeFieldBuilder<
   const number = <N extends string>(name: N) =>
     next({ ...out, fields: { ...out.fields, [name]: { kind: "number" } } });
 
+  const json = <N extends string>(name: N) =>
+    next({ ...out, fields: { ...out.fields, [name]: { kind: "json" } } });
+
   const addRel =
     <D extends Direction, C extends Cardinality>(direction: D, card: C) =>
     <
@@ -125,6 +132,7 @@ export function makeFieldBuilder<
   return {
     string,
     number,
+    json,
     one: addRel("out", "one"),
     _spec: out,
   } as FieldBuilder<F, R>;
