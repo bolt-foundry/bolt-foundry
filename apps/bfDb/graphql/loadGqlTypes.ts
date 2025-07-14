@@ -15,6 +15,7 @@ import { loadInterfaces } from "@bfmono/apps/bfDb/graphql/graphqlInterfaces.ts";
 import type { AnyGraphqlObjectBaseCtor } from "@bfmono/apps/bfDb/builders/bfDb/types.ts";
 // Import custom scalars
 import { IsoDate } from "@bfmono/apps/bfDb/graphql/scalars/IsoDate.ts";
+import { JSON } from "@bfmono/apps/bfDb/graphql/scalars/JSON.ts";
 // Interface classes are automatically loaded via the barrel file in __generated__/interfacesList.ts
 
 const roots = Object.values(rootsModule);
@@ -31,6 +32,7 @@ export async function loadGqlTypes() {
 
   // Add custom scalars
   types.push(IsoDate);
+  types.push(JSON);
 
   // Add all defined interfaces
   types.push(...loadInterfaces());
