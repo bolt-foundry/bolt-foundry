@@ -2,6 +2,7 @@ import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { BfErrorDb } from "@bfmono/apps/bfDb/classes/BfErrorDb.ts";
 import type { BfGid } from "@bfmono/lib/types.ts";
 import type {
+  AnyBfNodeCtor,
   BfEdgeMetadata,
   BfNodeMetadata,
 } from "@bfmono/apps/bfDb/classes/BfNode.ts";
@@ -62,23 +63,28 @@ export async function bfGetItem<
 export async function bfGetItemByBfGid<
   TProps extends Props = Props,
 >(
-  bfGid: string,
-  className?: string,
+  bfGid: BfGid,
+  nodeClassOrClassName?: AnyBfNodeCtor | string,
 ): Promise<DbItem<TProps> | null> {
-  logger.trace("getItemByBfGid", { bfGid, className });
+  logger.trace("getItemByBfGid", { bfGid, nodeClassOrClassName });
   const { storage } = await import("@bfmono/apps/bfDb/storage/storage.ts");
-  return await storage.getByBfGid<TProps>(bfGid, className);
+
+  // Convert string className to undefined since storage.getByBfGid expects AnyBfNodeCtor
+  const nodeClass = typeof nodeClassOrClassName === "string"
+    ? undefined
+    : nodeClassOrClassName;
+  return await storage.getByBfGid<TProps>(bfGid, nodeClass);
 }
 
 export async function bfGetItemsByBfGid<
   TProps extends Props = Props,
 >(
-  bfGids: Array<string>,
-  className?: string,
+  bfGids: Array<BfGid>,
+  nodeClassOrClassName?: AnyBfNodeCtor | string,
 ): Promise<Array<DbItem<TProps>>> {
-  logger.trace("getItemsByBfGid", { bfGids, className });
+  logger.trace("getItemsByBfGid", { bfGids, nodeClassOrClassName });
   const { storage } = await import("@bfmono/apps/bfDb/storage/storage.ts");
-  return await storage.getByBfGids<TProps>(bfGids, className);
+  return await storage.getByBfGids<TProps>(bfGids, nodeClassOrClassName);
 }
 
 export async function bfPutItem<
@@ -86,7 +92,6 @@ export async function bfPutItem<
 >(
   itemProps: TProps,
   itemMetadata: BfNodeMetadata | BfEdgeMetadata,
-  _sortValue = Date.now(),
 ): Promise<void> {
   const { storage } = await import("@bfmono/apps/bfDb/storage/storage.ts");
   await storage.put<TProps, BfNodeMetadata | BfEdgeMetadata>(
@@ -107,8 +112,8 @@ export async function bfDeleteItem(
 export async function bfQueryAncestorsByClassName<
   TProps extends Props,
 >(
-  bfOid: string,
-  targetBfGid: string,
+  bfOid: BfGid,
+  targetBfGid: BfGid,
   sourceBfClassName: string,
   depth: number = 10,
 ): Promise<Array<DbItem<TProps>>> {
@@ -129,8 +134,8 @@ export async function bfQueryAncestorsByClassName<
 export async function bfQueryDescendantsByClassName<
   TProps extends Props = Props,
 >(
-  bfOid: string,
-  sourceBfGid: string,
+  bfOid: BfGid,
+  sourceBfGid: BfGid,
   targetBfClassName: string,
   depth: number = 10,
 ): Promise<Array<DbItem<TProps>>> {
@@ -153,7 +158,7 @@ export async function bfQueryItemsUnified<
 >(
   metadataToQuery: Partial<BfDbMetadata>,
   propsToQuery: Partial<TProps> = {},
-  bfGids?: Array<string>,
+  bfGids?: Array<BfGid>,
   orderDirection: "ASC" | "DESC" = "ASC",
   orderBy: string = "sort_value",
   options: {
@@ -226,7 +231,7 @@ export async function bfQueryItemsUnified<
     const items = await storage.query<TProps>(
       metadataToQuery,
       propsToQuery,
-      bfGids?.map(String) as Array<BfGid>,
+      bfGids,
       orderDirection,
       orderBy,
     );
@@ -242,7 +247,7 @@ export async function bfQueryItemsUnified<
     const items = await storage.query<TProps>(
       metadataToQuery,
       propsToQuery,
-      bfGids?.map(String) as Array<BfGid>,
+      bfGids,
       orderDirection,
       orderBy,
     );
@@ -252,7 +257,7 @@ export async function bfQueryItemsUnified<
   const results = await storage.query<TProps>(
     metadataToQuery,
     propsToQuery,
-    bfGids?.map(String) as Array<BfGid>,
+    bfGids,
     orderDirection,
     orderBy,
   );
@@ -275,7 +280,7 @@ export async function bfQueryItems<
 >(
   metadataToQuery: Partial<BfNodeMetadata | BfEdgeMetadata>,
   propsToQuery: Partial<TProps> = {},
-  bfGids?: Array<string>,
+  bfGids?: Array<BfGid>,
   orderDirection: "ASC" | "DESC" = "ASC",
   orderBy: string = "sort_value",
 ): Promise<Array<DbItem<TProps>>> {
@@ -293,7 +298,7 @@ export async function bfQueryItems<
   const results = await storage.query<TProps>(
     metadataToQuery,
     propsToQuery,
-    bfGids?.map(String) as Array<BfGid>,
+    bfGids,
     orderDirection,
     orderBy,
   );
@@ -314,7 +319,7 @@ export async function bfQueryItemsWithSizeLimit<
 >(
   metadataToQuery: Partial<BfNodeMetadata | BfEdgeMetadata>,
   propsToQuery: Partial<TProps> = {},
-  bfGids?: Array<string>,
+  bfGids?: Array<BfGid>,
   orderDirection: "ASC" | "DESC" = "ASC",
   orderBy: string = "sort_value",
   cursorValue?: number | string,
@@ -344,7 +349,7 @@ export async function bfQueryItemsTop<
 >(
   metadataToQuery: Partial<BfNodeMetadata | BfEdgeMetadata>,
   propsToQuery: Partial<TProps> = {},
-  bfGids?: Array<string>,
+  bfGids?: Array<BfGid>,
   orderDirection: "ASC" | "DESC" = "ASC",
   orderBy: string = "sort_value",
   topCount = 20,
@@ -354,7 +359,7 @@ export async function bfQueryItemsTop<
     const items = await storage.query<TProps>(
       metadataToQuery,
       propsToQuery,
-      bfGids?.map(String) as Array<BfGid>,
+      bfGids,
       orderDirection,
       orderBy,
     );
@@ -370,7 +375,7 @@ export async function bfQueryItem<
 >(
   metadataToQuery: Partial<BfNodeMetadata | BfEdgeMetadata>,
   propsToQuery: Partial<TProps> = {},
-  bfGid?: string,
+  bfGid?: BfGid,
   orderDirection: "ASC" | "DESC" = "ASC",
   orderBy: string = "sort_value",
 ): Promise<DbItem<TProps> | null> {
@@ -379,7 +384,7 @@ export async function bfQueryItem<
     const items = await storage.query<TProps>(
       metadataToQuery,
       propsToQuery,
-      bfGid ? [bfGid] as Array<BfGid> : undefined,
+      bfGid ? [bfGid] : undefined,
       orderDirection,
       orderBy,
     );
@@ -393,7 +398,7 @@ export async function bfQueryItem<
 export async function bfQueryItemsStream<TProps extends Props = Props>(
   metadataToQuery: Partial<BfNodeMetadata | BfEdgeMetadata>,
   propsToQuery: Partial<TProps> = {},
-  bfGids?: Array<string>,
+  bfGids?: Array<BfGid>,
   orderDirection: "ASC" | "DESC" = "ASC",
   orderBy: string = "sort_value",
 ): Promise<ReadableStream<DbItem<TProps>>> {
@@ -401,7 +406,7 @@ export async function bfQueryItemsStream<TProps extends Props = Props>(
   const items = await storage.query<TProps>(
     metadataToQuery,
     propsToQuery,
-    bfGids?.map(String) as Array<BfGid>,
+    bfGids,
     orderDirection,
     orderBy,
   );
@@ -421,7 +426,7 @@ export async function bfQueryItemsStreamWithSizeLimit<
 >(
   metadataToQuery: Partial<BfNodeMetadata | BfEdgeMetadata>,
   propsToQuery: Partial<TProps> = {},
-  bfGids?: Array<string>,
+  bfGids?: Array<BfGid>,
   orderDirection: "ASC" | "DESC" = "ASC",
   orderBy: string = "sort_value",
   cursorValue?: number | string,
@@ -457,7 +462,7 @@ export async function bfQueryItemsForGraphQLConnection<
   metadata: Partial<TMetadata>,
   props: Partial<TProps> = {},
   connectionArgs: ConnectionArguments,
-  bfGids: Array<string>,
+  bfGids: Array<BfGid>,
 ): Promise<Connection<DbItem<TProps>> & { count: number }> {
   logger.debug({ metadata, props, connectionArgs });
   const { first, last, after, before } = connectionArgs;
