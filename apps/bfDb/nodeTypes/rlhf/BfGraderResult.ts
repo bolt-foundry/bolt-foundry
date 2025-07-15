@@ -3,7 +3,7 @@ import type { BfMetadata } from "@bfmono/apps/bfDb/classes/BfNode.ts";
 import type { CurrentViewer } from "@bfmono/apps/bfDb/classes/CurrentViewer.ts";
 
 export class BfGraderResult extends BfNode<InferProps<typeof BfGraderResult>> {
-  static override gqlSpec = this.defineGqlNode((gql) => gql);
+  static override gqlSpec = this.defineGqlNode((gql) => gql.nonNull.id("id"));
 
   static override bfNodeSpec = this.defineBfNode((f) =>
     f
