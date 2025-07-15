@@ -8,28 +8,36 @@ import type { CurrentViewer } from "@bfmono/apps/bfDb/classes/CurrentViewer.ts";
 // Test node classes for graph traversal testing
 class TestPerson extends BfNode<InferProps<typeof TestPerson>> {
   static override gqlSpec = this.defineGqlNode((f) =>
-    f.string("name").string("email").int("age")
+    f.string("name")
+      .string("email")
+      .int("age")
   );
   static override bfNodeSpec = this.defineBfNode((f) =>
-    f.string("name").string("email").number("age")
+    f.string("name")
+      .string("email")
+      .number("age")
   );
 }
 
 class TestOrganization extends BfNode<InferProps<typeof TestOrganization>> {
   static override gqlSpec = this.defineGqlNode((f) =>
-    f.string("orgName").string("domain")
+    f.string("orgName")
+      .string("domain")
   );
   static override bfNodeSpec = this.defineBfNode((f) =>
-    f.string("orgName").string("domain")
+    f.string("orgName")
+      .string("domain")
   );
 }
 
 class TestProject extends BfNode<InferProps<typeof TestProject>> {
   static override gqlSpec = this.defineGqlNode((f) =>
-    f.string("title").string("status")
+    f.string("title")
+      .string("status")
   );
   static override bfNodeSpec = this.defineBfNode((f) =>
-    f.string("title").string("status")
+    f.string("title")
+      .string("status")
   );
 }
 
@@ -72,13 +80,13 @@ Deno.test("queryAncestorsByClassName - finds direct ancestors", async () => {
   });
 });
 
-// Test 2: queryDescendantsByClassName - finds direct descendants
-Deno.test("queryDescendantsByClassName - finds direct descendants", async () => {
+// Test 2: queryDescendantsByClass - finds direct descendants
+Deno.test("queryDescendantsByClass - finds direct descendants", async () => {
   await withIsolatedDb(async () => {
     const cv = makeLoggedInCv();
     const { org, person } = await setupTestGraphData(cv);
 
-    const descendants = await org.queryDescendantsByClassName(
+    const descendants = await org.queryDescendantsByClass(
       TestPerson,
     );
 
@@ -103,14 +111,14 @@ Deno.test("querySourceInstances - finds nodes that connect to this node", async 
   });
 });
 
-// Test 4: queryTargetInstances - finds nodes this node connects to
-Deno.test("queryTargetInstances - finds nodes this node connects to", async () => {
+// Test 4: queryConnectedTargets - finds nodes this node connects to
+Deno.test("queryConnectedTargets - finds nodes this node connects to", async () => {
   await withIsolatedDb(async () => {
     const cv = makeLoggedInCv();
     const { org, project } = await setupTestGraphData(cv);
 
     // Find projects that the organization connects to
-    const targets = await org.queryTargetInstances(TestProject);
+    const targets = await org.queryConnectedTargets(TestProject);
 
     assertEquals(targets.length, 1);
     assertEquals(targets[0].props.title, "Test Project");
@@ -119,7 +127,7 @@ Deno.test("queryTargetInstances - finds nodes this node connects to", async () =
 });
 
 // Test 5: Empty results when no relationships exist
-Deno.test("queryAncestorsByClassName - returns empty array when no ancestors", async () => {
+Deno.test("queryAncestorsByClass - returns empty array when no ancestors", async () => {
   await withIsolatedDb(async () => {
     const cv = makeLoggedInCv();
     const person = await TestPerson.__DANGEROUS__createUnattached(cv, {
@@ -128,7 +136,7 @@ Deno.test("queryAncestorsByClassName - returns empty array when no ancestors", a
       age: 30,
     });
 
-    const ancestors = await person.queryAncestorsByClassName(
+    const ancestors = await person.queryAncestorsByClass(
       TestOrganization,
     );
 
