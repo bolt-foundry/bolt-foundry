@@ -7,10 +7,13 @@ import type { GraphqlNode } from "@bfmono/apps/bfDb/graphql/helpers.ts";
 import type { CurrentViewer } from "@bfmono/apps/bfDb/classes/CurrentViewer.ts";
 import { BfErrorNotImplemented } from "@bfmono/lib/BfError.ts";
 import { storage } from "@bfmono/apps/bfDb/storage/storage.ts";
+import type { DbItem } from "@bfmono/apps/bfDb/bfDb.ts";
 import type { JSONValue } from "@bfmono/apps/bfDb/bfDb.ts";
 import { BfErrorNodeNotFound } from "@bfmono/apps/bfDb/classes/BfErrorsBfNode.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { generateUUID } from "@bfmono/lib/generateUUID.ts";
+import { connectionFromArray } from "graphql-relay";
+import type { Connection, ConnectionArguments } from "graphql-relay";
 import type {
   FieldSpec,
   RelationSpec,
@@ -166,6 +169,30 @@ export abstract class BfNode<TProps extends PropsBase = {}>
       cache?.set(item.metadata.bfGid, instance);
       return instance as InstanceType<TThis>;
     });
+  }
+
+  static connection<T extends BfNode>(
+    nodes: Array<T>,
+    args: ConnectionArguments,
+  ): Connection<T> {
+    // Check for pagination args
+    if (args.first || args.last || args.after || args.before) {
+      const error = new BfErrorNotImplemented();
+      error.message =
+        "Cursor-based pagination requires node traversal methods. Use static queries without pagination args for now.";
+      throw error;
+    }
+
+    // Return basic connection structure with null cursors for no pagination
+    const connection = connectionFromArray(nodes, {});
+    return {
+      ...connection,
+      pageInfo: {
+        ...connection.pageInfo,
+        startCursor: null,
+        endCursor: null,
+      },
+    };
   }
 
   static override async find<
@@ -368,6 +395,156 @@ export abstract class BfNode<TProps extends PropsBase = {}>
     );
 
     return targetNode;
+  }
+
+  async queryAncestorsByClassName<
+    TSourceClass extends typeof BfNode<TSourceProps>,
+    TSourceProps extends PropsBase = PropsBase,
+  >(
+    SourceClass: TSourceClass,
+    limit: number = 10,
+    cache?: BfNodeCache<TSourceProps>,
+  ): Promise<Array<InstanceType<TSourceClass>>> {
+    const { bfQueryAncestorsByClassName } = await import(
+      "@bfmono/apps/bfDb/bfDb.ts"
+    );
+    const results = await bfQueryAncestorsByClassName<TSourceProps>(
+      this.cv.orgBfOid,
+      this.metadata.bfGid,
+      SourceClass.name,
+      limit,
+    );
+
+    return results.map((item: DbItem<TSourceProps>) => {
+      const Ctor = SourceClass as unknown as ConcreteBfNodeBaseCtor<
+        TSourceProps
+      >;
+      const instance = new Ctor(this.cv, item.props, item.metadata);
+      cache?.set(item.metadata.bfGid, instance);
+      return instance as InstanceType<TSourceClass>;
+    });
+  }
+
+  async queryDescendantsByClassName<
+    TTargetClass extends typeof BfNode<TTargetProps>,
+    TTargetProps extends PropsBase = PropsBase,
+  >(
+    TargetClass: TTargetClass,
+    limit: number = 10,
+    cache?: BfNodeCache<TTargetProps>,
+  ): Promise<Array<InstanceType<TTargetClass>>> {
+    const { bfQueryDescendantsByClassName } = await import(
+      "@bfmono/apps/bfDb/bfDb.ts"
+    );
+    const results = await bfQueryDescendantsByClassName<TTargetProps>(
+      this.cv.orgBfOid,
+      this.metadata.bfGid,
+      TargetClass.name,
+      limit,
+    );
+
+    return results.map((item: DbItem<TTargetProps>) => {
+      const Ctor = TargetClass as unknown as ConcreteBfNodeBaseCtor<
+        TTargetProps
+      >;
+      const instance = new Ctor(this.cv, item.props, item.metadata);
+      cache?.set(item.metadata.bfGid, instance);
+      return instance as InstanceType<TTargetClass>;
+    });
+  }
+
+  async querySourceInstances<
+    TSourceClass extends typeof BfNode<TSourceProps>,
+    TSourceProps extends PropsBase = PropsBase,
+  >(
+    SourceClass: TSourceClass,
+    nodeProps: Partial<TSourceProps> = {},
+    edgeProps: Partial<PropsBase> = {},
+    cache?: BfNodeCache<TSourceProps>,
+  ): Promise<Array<InstanceType<TSourceClass>>> {
+    // Step 1: Query edges where this node is the target
+    const { BfEdge } = await import("@bfmono/apps/bfDb/nodeTypes/BfEdge.ts");
+    const edgeMetadata: Partial<BfEdgeMetadata> = {
+      bfTid: this.metadata.bfGid,
+      bfOid: this.cv.orgBfOid,
+      bfSClassName: SourceClass.name,
+    };
+
+    const edges = await BfEdge.query(
+      this.cv,
+      edgeMetadata,
+      edgeProps,
+      [],
+    );
+
+    if (edges.length === 0) {
+      return [];
+    }
+
+    // Step 2: Extract source IDs and query source nodes
+    const sourceIds = edges.map((edge) =>
+      (edge.metadata as BfEdgeMetadata).bfSid
+    );
+
+    const sourceMetadata: Partial<BfNodeMetadata> = {
+      className: SourceClass.name,
+      bfOid: this.cv.orgBfOid,
+    };
+
+    return SourceClass.query(
+      this.cv,
+      sourceMetadata,
+      nodeProps,
+      sourceIds,
+      cache,
+    );
+  }
+
+  async queryTargetInstances<
+    TTargetClass extends typeof BfNode<TTargetProps>,
+    TTargetProps extends PropsBase = PropsBase,
+  >(
+    TargetClass: TTargetClass,
+    nodeProps: Partial<TTargetProps> = {},
+    edgeProps: Partial<PropsBase> = {},
+    cache?: BfNodeCache<TTargetProps>,
+  ): Promise<Array<InstanceType<TTargetClass>>> {
+    // Step 1: Query edges where this node is the source
+    const { BfEdge } = await import("@bfmono/apps/bfDb/nodeTypes/BfEdge.ts");
+    const edgeMetadata: Partial<BfEdgeMetadata> = {
+      bfSid: this.metadata.bfGid,
+      bfOid: this.cv.orgBfOid,
+      bfTClassName: TargetClass.name,
+    };
+
+    const edges = await BfEdge.query(
+      this.cv,
+      edgeMetadata,
+      edgeProps,
+      [],
+    );
+
+    if (edges.length === 0) {
+      return [];
+    }
+
+    // Step 2: Extract target IDs and query target nodes
+    const targetIds = edges.map((edge) =>
+      (edge.metadata as BfEdgeMetadata).bfTid
+    );
+
+    const targetMetadata: Partial<BfNodeMetadata> = {
+      className: TargetClass.name,
+      bfOid: this.cv.orgBfOid,
+    };
+
+    return TargetClass.query(
+      this.cv,
+      targetMetadata,
+      nodeProps,
+      targetIds,
+      cache,
+    );
   }
 
   protected beforeCreate(): Promise<void> | void {}
