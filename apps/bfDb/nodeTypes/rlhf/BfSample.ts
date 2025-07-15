@@ -52,7 +52,11 @@ export interface BfSampleCompletionData {
  * via telemetry systems.
  */
 export class BfSample extends BfNode<InferProps<typeof BfSample>> {
-  static override gqlSpec = this.defineGqlNode((gql) => gql.nonNull.id("id"));
+  static override gqlSpec = this.defineGqlNode((gql) =>
+    gql
+      .json("completionData")
+      .string("collectionMethod")
+  );
 
   /**
    * Database field specification for BfSample.

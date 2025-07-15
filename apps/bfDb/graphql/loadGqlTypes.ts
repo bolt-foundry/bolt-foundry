@@ -43,7 +43,10 @@ export async function loadGqlTypes() {
   // Process all node types first (they can be referenced by roots)
   for (const nodeType of nodeTypes) {
     // Skip if it's not a class with gqlSpec
-    if (!nodeType.gqlSpec || typeof nodeType !== "function") continue;
+    if (
+      typeof nodeType !== "function" || !("gqlSpec" in nodeType) ||
+      !nodeType.gqlSpec
+    ) continue;
 
     const nodeSpec = nodeType.gqlSpec;
     const nodeName = nodeType.name;

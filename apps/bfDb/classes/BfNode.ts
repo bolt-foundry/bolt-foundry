@@ -425,6 +425,17 @@ export abstract class BfNode<TProps extends PropsBase = {}>
     });
   }
 
+  queryAncestorsByClass<
+    TSourceClass extends typeof BfNode<TSourceProps>,
+    TSourceProps extends PropsBase = PropsBase,
+  >(
+    SourceClass: TSourceClass,
+    limit: number = 10,
+    cache?: BfNodeCache<TSourceProps>,
+  ): Promise<Array<InstanceType<TSourceClass>>> {
+    return this.queryAncestorsByClassName(SourceClass, limit, cache);
+  }
+
   async queryDescendantsByClassName<
     TTargetClass extends typeof BfNode<TTargetProps>,
     TTargetProps extends PropsBase = PropsBase,
@@ -451,6 +462,17 @@ export abstract class BfNode<TProps extends PropsBase = {}>
       cache?.set(item.metadata.bfGid, instance);
       return instance as InstanceType<TTargetClass>;
     });
+  }
+
+  queryDescendantsByClass<
+    TTargetClass extends typeof BfNode<TTargetProps>,
+    TTargetProps extends PropsBase = PropsBase,
+  >(
+    TargetClass: TTargetClass,
+    limit: number = 10,
+    cache?: BfNodeCache<TTargetProps>,
+  ): Promise<Array<InstanceType<TTargetClass>>> {
+    return this.queryDescendantsByClassName(TargetClass, limit, cache);
   }
 
   async querySourceInstances<

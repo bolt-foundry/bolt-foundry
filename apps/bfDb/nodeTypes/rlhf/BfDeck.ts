@@ -13,7 +13,12 @@ import { BfNode, type InferProps } from "@bfmono/apps/bfDb/classes/BfNode.ts";
  * - BfSample: The samples/examples that are evaluated using this deck
  */
 export class BfDeck extends BfNode<InferProps<typeof BfDeck>> {
-  static override gqlSpec = this.defineGqlNode((gql) => gql);
+  static override gqlSpec = this.defineGqlNode((gql) =>
+    gql
+      .string("name")
+      .string("systemPrompt")
+      .string("description")
+  );
 
   /**
    * BfNode database specification for BfDeck.

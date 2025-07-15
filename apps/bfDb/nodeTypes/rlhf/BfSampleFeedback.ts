@@ -7,7 +7,11 @@ import type { CurrentViewer } from "@bfmono/apps/bfDb/classes/CurrentViewer.ts";
 
 export class BfSampleFeedback
   extends BfNode<InferProps<typeof BfSampleFeedback>> {
-  static override gqlSpec = this.defineGqlNode((gql) => gql);
+  static override gqlSpec = this.defineGqlNode((gql) =>
+    gql
+      .int("score")
+      .string("explanation")
+  );
 
   static override bfNodeSpec = this.defineBfNode((f) =>
     f
