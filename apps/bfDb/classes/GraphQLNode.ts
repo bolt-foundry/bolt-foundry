@@ -60,15 +60,23 @@ export abstract class GraphQLNode extends GraphQLObjectBase {
   constructor() {
     super();
 
-    // Ensure that get id() is implemented in subclasses
-    const proto = Object.getPrototypeOf(this);
-    const hasOwnId = Object.getOwnPropertyDescriptor(proto, "id")?.get;
-
     if (this.constructor === GraphQLNode) {
       throw new TypeError("Cannot instantiate abstract class GraphQLNode");
     }
 
-    if (!hasOwnId) {
+    // Check if get id() is implemented anywhere in the prototype chain
+    let hasIdGetter = false;
+    let proto = Object.getPrototypeOf(this);
+    while (proto && proto !== Object.prototype) {
+      const descriptor = Object.getOwnPropertyDescriptor(proto, "id");
+      if (descriptor?.get) {
+        hasIdGetter = true;
+        break;
+      }
+      proto = Object.getPrototypeOf(proto);
+    }
+
+    if (!hasIdGetter) {
       // Make the id property throw when accessed if it's not implemented
       Object.defineProperty(this, "id", {
         get() {
