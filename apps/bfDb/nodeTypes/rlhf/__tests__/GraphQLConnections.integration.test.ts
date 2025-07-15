@@ -15,8 +15,6 @@ import { BfDeck } from "@bfmono/apps/bfDb/nodeTypes/rlhf/BfDeck.ts";
 import { BfSample } from "@bfmono/apps/bfDb/nodeTypes/rlhf/BfSample.ts";
 import { BfGrader } from "@bfmono/apps/bfDb/nodeTypes/rlhf/BfGrader.ts";
 import { BfGraderResult } from "@bfmono/apps/bfDb/nodeTypes/rlhf/BfGraderResult.ts";
-import { BfEdge } from "@bfmono/apps/bfDb/nodeTypes/BfEdge.ts";
-import type { BfEdgeMetadata } from "@bfmono/apps/bfDb/classes/BfNode.ts";
 import type { ConnectionArguments } from "graphql-relay";
 
 Deno.test("GraphQL Connection Integration - BfDeck.samples connection without pagination", async () => {
@@ -66,27 +64,8 @@ Deno.test("GraphQL Connection Integration - BfDeck.samples connection without pa
       collectionMethod: "api",
     });
 
-    // Simulate GraphQL connection resolver call using proper edge traversal
-    const sampleEdges = await BfEdge.query(
-      cv,
-      {
-        bfSid: deck.metadata.bfGid, // source ID = deck
-        bfTClassName: "BfSample", // target class = samples
-      },
-      {}, // no edge props filter
-      [], // no specific edge IDs
-    );
-
-    // Extract target IDs and query the actual sample nodes
-    const sampleIds = sampleEdges.map((edge) =>
-      (edge.metadata as BfEdgeMetadata).bfTid
-    );
-    const samples = await BfSample.query(
-      cv,
-      { className: "BfSample" },
-      {},
-      sampleIds,
-    );
+    // Simulate GraphQL connection resolver call using proper traversal methods
+    const samples = await deck.queryTargetInstances(BfSample);
     const connectionArgs: ConnectionArguments = {}; // No pagination
     const connection = BfSample.connection(samples, connectionArgs);
 
@@ -138,26 +117,8 @@ Deno.test("GraphQL Connection Integration - BfDeck.samples connection with pagin
       collectionMethod: "manual",
     });
 
-    // Simulate GraphQL connection resolver call with pagination using edge traversal
-    const sampleEdges = await BfEdge.query(
-      cv,
-      {
-        bfSid: deck.metadata.bfGid, // source ID = deck
-        bfTClassName: "BfSample", // target class = samples
-      },
-      {}, // no edge props filter
-      [], // no specific edge IDs
-    );
-
-    const sampleIds = sampleEdges.map((edge) =>
-      (edge.metadata as BfEdgeMetadata).bfTid
-    );
-    const samples = await BfSample.query(
-      cv,
-      { className: "BfSample" },
-      {},
-      sampleIds,
-    );
+    // Simulate GraphQL connection resolver call with pagination using traversal methods
+    const samples = await deck.queryTargetInstances(BfSample);
     const connectionArgs: ConnectionArguments = { first: 10 }; // Pagination requested
 
     // Should throw BfErrorNotImplemented
@@ -188,8 +149,8 @@ Deno.test("GraphQL Connection Integration - BfSample.results connection without 
       description: "Deck for testing result connection resolvers",
     });
 
-    // Create sample and graders for test setup (not directly used)
-    await deck.createTargetNode(BfSample, {
+    // Create sample and graders for test setup
+    const sample = await deck.createTargetNode(BfSample, {
       completionData: {
         id: "sample-1",
         model: "gpt-4",
@@ -203,37 +164,34 @@ Deno.test("GraphQL Connection Integration - BfSample.results connection without 
       collectionMethod: "api",
     });
 
-    await deck.createTargetNode(BfGrader, {
+    const grader1 = await deck.createTargetNode(BfGrader, {
       graderText: "Quality assessment grader",
     });
 
-    await deck.createTargetNode(BfGrader, {
+    const grader2 = await deck.createTargetNode(BfGrader, {
       graderText: "Clarity assessment grader",
     });
 
-    // Create grader results
-    // TODO: For now, just create the results without edges to make tests typecheck
-    const result1 = await BfGraderResult.__DANGEROUS__createUnattached(cv, {
+    // Create grader results connected to the sample
+    const result1 = await grader1.createTargetNode(BfGraderResult, {
       score: 2,
       explanation: "Good quality analysis",
       reasoningProcess: "Analyzed structure and content",
     });
 
-    const result2 = await BfGraderResult.__DANGEROUS__createUnattached(cv, {
+    const result2 = await grader2.createTargetNode(BfGraderResult, {
       score: 1,
       explanation: "Moderate clarity",
       reasoningProcess: "Evaluated communication effectiveness",
     });
 
-    // Simulate GraphQL connection resolver call using edge traversal
-    // Note: In a real scenario, we'd query edges from sample to results
-    // For now, just query the specific results we created
-    const results = await BfGraderResult.query(
-      cv,
-      { className: "BfGraderResult" },
-      {},
-      [result1.metadata.bfGid, result2.metadata.bfGid],
-    );
+    // Create edges from sample to grader results for testing the sample.results connection
+    const { BfEdge } = await import("@bfmono/apps/bfDb/nodeTypes/BfEdge.ts");
+    await BfEdge.createBetweenNodes(cv, sample, result1, { role: "" });
+    await BfEdge.createBetweenNodes(cv, sample, result2, { role: "" });
+
+    // Simulate GraphQL connection resolver call using traversal methods
+    const results = await sample.queryTargetInstances(BfGraderResult);
     const connectionArgs: ConnectionArguments = {}; // No pagination
     const connection = BfGraderResult.connection(results, connectionArgs);
 
@@ -275,8 +233,8 @@ Deno.test("GraphQL Connection Integration - BfSample.results connection with pag
       description: "Testing pagination error handling",
     });
 
-    // Create sample for test setup (not directly used)
-    await deck.createTargetNode(BfSample, {
+    // Create sample for test setup
+    const sample = await deck.createTargetNode(BfSample, {
       completionData: {
         id: "sample-1",
         model: "gpt-4",
@@ -291,13 +249,8 @@ Deno.test("GraphQL Connection Integration - BfSample.results connection with pag
     });
 
     // Simulate GraphQL connection resolver call with pagination
-    // Query for grader results (empty in this test)
-    const results = await BfGraderResult.query(
-      cv,
-      { className: "BfGraderResult" },
-      {},
-      [],
-    );
+    // Query for grader results (empty in this test since no results were created)
+    const results = await sample.queryTargetInstances(BfGraderResult);
     const connectionArgs: ConnectionArguments = {
       last: 5,
       before: "cursor123",
@@ -331,28 +284,8 @@ Deno.test("GraphQL Connection Integration - empty connections should work correc
       description: "This deck has no samples",
     });
 
-    // Simulate GraphQL connection resolver call for empty data using edge traversal
-    const sampleEdges = await BfEdge.query(
-      cv,
-      {
-        bfSid: deck.metadata.bfGid, // source ID = deck
-        bfTClassName: "BfSample", // target class = samples
-      },
-      {}, // no edge props filter
-      [], // no specific edge IDs
-    );
-
-    const sampleIds = sampleEdges.map((edge) =>
-      (edge.metadata as BfEdgeMetadata).bfTid
-    );
-
-    // If no edges were found, we have no samples to query
-    const samples = sampleIds.length === 0 ? [] : await BfSample.query(
-      cv,
-      { className: "BfSample" },
-      {},
-      sampleIds,
-    );
+    // Simulate GraphQL connection resolver call for empty data using traversal methods
+    const samples = await deck.queryTargetInstances(BfSample);
     const connectionArgs: ConnectionArguments = {};
     const connection = BfSample.connection(samples, connectionArgs);
 
@@ -405,26 +338,8 @@ Deno.test("GraphQL Connection Integration - connection preserves node properties
       collectionMethod: "automated",
     });
 
-    // Query and create connection using edge traversal
-    const sampleEdges = await BfEdge.query(
-      cv,
-      {
-        bfSid: deck.metadata.bfGid, // source ID = deck
-        bfTClassName: "BfSample", // target class = samples
-      },
-      {}, // no edge props filter
-      [], // no specific edge IDs
-    );
-
-    const sampleIds = sampleEdges.map((edge) =>
-      (edge.metadata as BfEdgeMetadata).bfTid
-    );
-    const samples = await BfSample.query(
-      cv,
-      { className: "BfSample" },
-      {},
-      sampleIds,
-    );
+    // Query and create connection using traversal methods
+    const samples = await deck.queryTargetInstances(BfSample);
     const connection = BfSample.connection(samples, {});
 
     // Verify node properties are preserved in connection

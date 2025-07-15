@@ -7,7 +7,10 @@ import { BfNode, type InferProps } from "@bfmono/apps/bfDb/classes/BfNode.ts";
  * AI responses. Simplified to just contain the grader text/prompt.
  */
 export class BfGrader extends BfNode<InferProps<typeof BfGrader>> {
-  static override gqlSpec = this.defineGqlNode((gql) => gql);
+  static override gqlSpec = this.defineGqlNode((gql) =>
+    gql
+      .string("graderText")
+  );
 
   static override bfNodeSpec = this.defineBfNode((node) =>
     node
