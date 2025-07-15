@@ -10,6 +10,7 @@ import { registerDefaultAdapter } from "./registerDefaultAdapter.ts";
 import type { BfGid } from "@bfmono/lib/types.ts";
 import type { DbItem, Props } from "@bfmono/apps/bfDb/bfDb.ts";
 import type {
+  AnyBfNodeCtor,
   BfEdgeMetadata,
   BfNodeMetadata,
 } from "@bfmono/apps/bfDb/classes/BfNode.ts";
@@ -39,12 +40,18 @@ export const storage = {
     return adapter().getItem<T>(bfOid, bfGid);
   },
 
-  getByBfGid<T extends Props>(bfGid: string, className?: string) {
+  getByBfGid<T extends Props>(bfGid: BfGid, nodeClass?: AnyBfNodeCtor): Promise<DbItem<T> | null> {
+    const className = nodeClass?.name;
     return adapter().getItemByBfGid<T>(bfGid, className);
   },
 
-  getByBfGids<T extends Props>(bfGids: Array<string>, className?: string) {
-    return adapter().getItemsByBfGid<T>(bfGids, className);
+  getByBfGids<T extends Props>(bfGids: Array<BfGid>, nodeClass?: AnyBfNodeCtor): Promise<Array<DbItem<T>>>;
+  getByBfGids<T extends Props>(bfGids: Array<BfGid>, className?: string): Promise<Array<DbItem<T>>>;
+  getByBfGids<T extends Props>(bfGids: Array<BfGid>, nodeClassOrClassName?: AnyBfNodeCtor | string) {
+    const className = typeof nodeClassOrClassName === "string" 
+      ? nodeClassOrClassName
+      : nodeClassOrClassName?.name;
+    return adapter().getItemsByBfGid<T>(bfGids.map(String), className);
   },
 
   async put<T extends Props, M extends BfNodeMetadata | BfEdgeMetadata>(
