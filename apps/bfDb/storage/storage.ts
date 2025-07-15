@@ -39,6 +39,14 @@ export const storage = {
     return adapter().getItem<T>(bfOid, bfGid);
   },
 
+  getByBfGid<T extends Props>(bfGid: string, className?: string) {
+    return adapter().getItemByBfGid<T>(bfGid, className);
+  },
+
+  getByBfGids<T extends Props>(bfGids: Array<string>, className?: string) {
+    return adapter().getItemsByBfGid<T>(bfGids, className);
+  },
+
   async put<T extends Props, M extends BfNodeMetadata | BfEdgeMetadata>(
     props: T,
     metadata: M,
@@ -66,7 +74,58 @@ export const storage = {
     );
   },
 
+  queryWithSizeLimit<T extends Props>(
+    metadata: Record<string, unknown>,
+    props: Partial<T> = {},
+    bfGids?: Array<string>,
+    order: "ASC" | "DESC" = "ASC",
+    orderBy?: string,
+    cursorValue?: number | string,
+    maxSizeBytes?: number,
+    batchSize?: number,
+  ): Promise<Array<DbItem<T>>> {
+    return adapter().queryItemsWithSizeLimit<T>(
+      metadata,
+      props,
+      bfGids,
+      order,
+      orderBy,
+      cursorValue,
+      maxSizeBytes,
+      batchSize,
+    );
+  },
+
   async delete(bfOid: BfGid, bfGid: BfGid) {
     await adapter().deleteItem(bfOid, bfGid);
+  },
+
+  // ---- Graph traversal -------------------------------------------------
+  queryAncestorsByClassName<T extends Props>(
+    bfOid: string,
+    targetBfGid: string,
+    sourceBfClassName: string,
+    depth: number = 10,
+  ): Promise<Array<DbItem<T>>> {
+    return adapter().queryAncestorsByClassName<T>(
+      bfOid,
+      targetBfGid,
+      sourceBfClassName,
+      depth,
+    );
+  },
+
+  queryDescendantsByClassName<T extends Props>(
+    bfOid: string,
+    sourceBfGid: string,
+    targetBfClassName: string,
+    depth: number = 10,
+  ): Promise<Array<DbItem<T>>> {
+    return adapter().queryDescendantsByClassName<T>(
+      bfOid,
+      sourceBfGid,
+      targetBfClassName,
+      depth,
+    );
   },
 } as const;

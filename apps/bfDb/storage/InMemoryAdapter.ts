@@ -9,6 +9,7 @@ import type {
   DatabaseBackend,
 } from "@bfmono/apps/bfDb/backend/DatabaseBackend.ts";
 import type { DbItem, Props } from "@bfmono/apps/bfDb/bfDb.ts";
+import type { BfEdgeMetadata } from "@bfmono/apps/bfDb/classes/BfNode.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
@@ -142,6 +143,118 @@ export class InMemoryAdapter implements DatabaseBackend {
 
   // Shallow aliases for interface completeness ----------------------------
   queryItemsWithSizeLimit = this.queryItems;
-  queryAncestorsByClassName = this.queryItems as never;
-  queryDescendantsByClassName = this.queryItems as never;
+
+  queryAncestorsByClassName<TProps extends Props = Props>(
+    bfOid: string,
+    targetBfGid: string,
+    sourceBfClassName: string,
+    depth: number = 10,
+  ): Promise<Array<DbItem<TProps>>> {
+    const results: Array<DbItem<TProps>> = [];
+    const processed = new Set<string>();
+
+    // Find direct ancestors
+    let currentTargets = [targetBfGid];
+    let currentDepth = 0;
+
+    while (currentDepth < depth && currentTargets.length > 0) {
+      const nextTargets: Array<string> = [];
+
+      for (const currentTarget of currentTargets) {
+        // Find edges where current target is the target (bf_tid)
+        const edges = Array.from(this.store.values()).filter((row) =>
+          row.metadata.bfOid === bfOid &&
+          "bfTid" in row.metadata &&
+          (row.metadata as BfEdgeMetadata).bfTid === currentTarget
+        );
+
+        // Get the source nodes from these edges
+        for (const edge of edges) {
+          const sourceBfGid = (edge.metadata as BfEdgeMetadata).bfSid;
+          const edgeSourceClassName =
+            (edge.metadata as BfEdgeMetadata).bfSClassName;
+
+          if (!processed.has(sourceBfGid)) {
+            // Add to next targets for recursive search regardless of class
+            nextTargets.push(sourceBfGid);
+            processed.add(sourceBfGid);
+
+            // If this source matches our target class, add to results
+            if (edgeSourceClassName === sourceBfClassName) {
+              // Find the actual source node
+              const sourceNode = this.store.get(sourceBfGid);
+              if (
+                sourceNode &&
+                sourceNode.metadata.className === sourceBfClassName
+              ) {
+                results.push(sourceNode as DbItem<TProps>);
+              }
+            }
+          }
+        }
+      }
+
+      currentTargets = nextTargets;
+      currentDepth++;
+    }
+
+    return Promise.resolve(results);
+  }
+
+  queryDescendantsByClassName<TProps extends Props = Props>(
+    bfOid: string,
+    sourceBfGid: string,
+    targetBfClassName: string,
+    depth: number = 10,
+  ): Promise<Array<DbItem<TProps>>> {
+    const results: Array<DbItem<TProps>> = [];
+    const processed = new Set<string>();
+
+    // Find direct descendants
+    let currentSources = [sourceBfGid];
+    let currentDepth = 0;
+
+    while (currentDepth < depth && currentSources.length > 0) {
+      const nextSources: Array<string> = [];
+
+      for (const currentSource of currentSources) {
+        // Find edges where current source is the source (bf_sid)
+        const edges = Array.from(this.store.values()).filter((row) =>
+          row.metadata.bfOid === bfOid &&
+          "bfSid" in row.metadata &&
+          (row.metadata as BfEdgeMetadata).bfSid === currentSource
+        );
+
+        // Get the target nodes from these edges
+        for (const edge of edges) {
+          const targetBfGid = (edge.metadata as BfEdgeMetadata).bfTid;
+          const edgeTargetClassName =
+            (edge.metadata as BfEdgeMetadata).bfTClassName;
+
+          if (!processed.has(targetBfGid)) {
+            // Add to next sources for recursive search regardless of class
+            nextSources.push(targetBfGid);
+            processed.add(targetBfGid);
+
+            // If this target matches our target class, add to results
+            if (edgeTargetClassName === targetBfClassName) {
+              // Find the actual target node
+              const targetNode = this.store.get(targetBfGid);
+              if (
+                targetNode &&
+                targetNode.metadata.className === targetBfClassName
+              ) {
+                results.push(targetNode as DbItem<TProps>);
+              }
+            }
+          }
+        }
+      }
+
+      currentSources = nextSources;
+      currentDepth++;
+    }
+
+    return Promise.resolve(results);
+  }
 }

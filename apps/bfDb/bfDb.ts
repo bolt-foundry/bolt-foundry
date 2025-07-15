@@ -12,7 +12,6 @@ import type {
   PageInfo,
 } from "graphql-relay";
 import type { BfDbMetadata } from "@bfmono/apps/bfDb/backend/DatabaseBackend.ts";
-import { closeBackend, getBackend } from "@bfmono/apps/bfDb/bfDbBackend.ts";
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 
 const logger = getLogger(import.meta);
@@ -56,8 +55,8 @@ export async function bfGetItem<
   TProps extends Props,
 >(bfOid: BfGid, bfGid: BfGid): Promise<DbItem<TProps> | null> {
   logger.trace("getItem", bfOid, bfGid);
-  const backend = await getBackend();
-  return await backend.getItem<TProps>(bfOid, bfGid);
+  const { storage } = await import("@bfmono/apps/bfDb/storage/storage.ts");
+  return await storage.get<TProps>(bfOid, bfGid);
 }
 
 export async function bfGetItemByBfGid<
@@ -67,8 +66,8 @@ export async function bfGetItemByBfGid<
   className?: string,
 ): Promise<DbItem<TProps> | null> {
   logger.trace("getItemByBfGid", { bfGid, className });
-  const backend = await getBackend();
-  return await backend.getItemByBfGid<TProps>(bfGid, className);
+  const { storage } = await import("@bfmono/apps/bfDb/storage/storage.ts");
+  return await storage.getByBfGid<TProps>(bfGid, className);
 }
 
 export async function bfGetItemsByBfGid<
@@ -78,8 +77,8 @@ export async function bfGetItemsByBfGid<
   className?: string,
 ): Promise<Array<DbItem<TProps>>> {
   logger.trace("getItemsByBfGid", { bfGids, className });
-  const backend = await getBackend();
-  return await backend.getItemsByBfGid<TProps>(bfGids, className);
+  const { storage } = await import("@bfmono/apps/bfDb/storage/storage.ts");
+  return await storage.getByBfGids<TProps>(bfGids, className);
 }
 
 export async function bfPutItem<
@@ -87,10 +86,13 @@ export async function bfPutItem<
 >(
   itemProps: TProps,
   itemMetadata: BfNodeMetadata | BfEdgeMetadata,
-  sortValue = Date.now(),
+  _sortValue = Date.now(),
 ): Promise<void> {
-  const backend = await getBackend();
-  await backend.putItem<TProps>(itemProps, itemMetadata, sortValue);
+  const { storage } = await import("@bfmono/apps/bfDb/storage/storage.ts");
+  await storage.put<TProps, BfNodeMetadata | BfEdgeMetadata>(
+    itemProps,
+    itemMetadata,
+  );
 }
 
 export async function bfDeleteItem(
@@ -98,8 +100,8 @@ export async function bfDeleteItem(
   bfGid: BfGid,
 ): Promise<void> {
   logger.trace("deleteItem", bfOid, bfGid);
-  const backend = await getBackend();
-  await backend.deleteItem(bfOid, bfGid);
+  const { storage } = await import("@bfmono/apps/bfDb/storage/storage.ts");
+  await storage.delete(bfOid, bfGid);
 }
 
 export async function bfQueryAncestorsByClassName<
@@ -111,8 +113,8 @@ export async function bfQueryAncestorsByClassName<
   depth: number = 10,
 ): Promise<Array<DbItem<TProps>>> {
   try {
-    const backend = await getBackend();
-    return await backend.queryAncestorsByClassName<TProps>(
+    const { storage } = await import("@bfmono/apps/bfDb/storage/storage.ts");
+    return await storage.queryAncestorsByClassName<TProps>(
       bfOid,
       targetBfGid,
       sourceBfClassName,
@@ -133,8 +135,8 @@ export async function bfQueryDescendantsByClassName<
   depth: number = 10,
 ): Promise<Array<DbItem<TProps>>> {
   try {
-    const backend = await getBackend();
-    return await backend.queryDescendantsByClassName<TProps>(
+    const { storage } = await import("@bfmono/apps/bfDb/storage/storage.ts");
+    return await storage.queryDescendantsByClassName<TProps>(
       bfOid,
       sourceBfGid,
       targetBfClassName,
@@ -197,16 +199,14 @@ export async function bfQueryItemsUnified<
     );
   }
 
-  const backend = await getBackend();
-  logger.debug(
-    `Using backend type for queryItemsUnified: ${backend.constructor.name}`,
-  );
+  const { storage } = await import("@bfmono/apps/bfDb/storage/storage.ts");
+  logger.debug("Using storage facade for queryItemsUnified");
 
   if (useSizeLimit) {
     logger.debug(
       `Using size limit query with maxSizeBytes: ${maxSizeBytes}, batchSize: ${batchSize}`,
     );
-    const results = await backend.queryItemsWithSizeLimit<TProps>(
+    const results = await storage.queryWithSizeLimit<TProps>(
       metadataToQuery,
       propsToQuery,
       bfGids,
@@ -223,10 +223,10 @@ export async function bfQueryItemsUnified<
   // For count only or other special cases, we'll need more implementation
   // This is simplified for now
   if (countOnly) {
-    const items = await backend.queryItems<TProps>(
+    const items = await storage.query<TProps>(
       metadataToQuery,
       propsToQuery,
-      bfGids,
+      bfGids?.map(String) as Array<BfGid>,
       orderDirection,
       orderBy,
     );
@@ -239,20 +239,20 @@ export async function bfQueryItemsUnified<
   if (totalLimit) {
     // This would need more implementation to match the original behavior
     // For now, we'll just fetch and slice
-    const items = await backend.queryItems<TProps>(
+    const items = await storage.query<TProps>(
       metadataToQuery,
       propsToQuery,
-      bfGids,
+      bfGids?.map(String) as Array<BfGid>,
       orderDirection,
       orderBy,
     );
     return items.slice(0, totalLimit);
   }
 
-  const results = await backend.queryItems<TProps>(
+  const results = await storage.query<TProps>(
     metadataToQuery,
     propsToQuery,
-    bfGids,
+    bfGids?.map(String) as Array<BfGid>,
     orderDirection,
     orderBy,
   );
@@ -287,13 +287,13 @@ export async function bfQueryItems<
     orderBy,
   });
 
-  const backend = await getBackend();
-  logger.debug(`Using backend type: ${backend.constructor.name}`);
+  const { storage } = await import("@bfmono/apps/bfDb/storage/storage.ts");
+  logger.debug("Using storage facade for bfQueryItems");
 
-  const results = await backend.queryItems<TProps>(
+  const results = await storage.query<TProps>(
     metadataToQuery,
     propsToQuery,
-    bfGids,
+    bfGids?.map(String) as Array<BfGid>,
     orderDirection,
     orderBy,
   );
@@ -322,8 +322,8 @@ export async function bfQueryItemsWithSizeLimit<
   batchSize: number = 4,
 ): Promise<Array<DbItem<TProps>>> {
   try {
-    const backend = await getBackend();
-    return await backend.queryItemsWithSizeLimit<TProps>(
+    const { storage } = await import("@bfmono/apps/bfDb/storage/storage.ts");
+    return await storage.queryWithSizeLimit<TProps>(
       metadataToQuery,
       propsToQuery,
       bfGids,
@@ -350,11 +350,11 @@ export async function bfQueryItemsTop<
   topCount = 20,
 ): Promise<Array<DbItem<TProps>>> {
   try {
-    const backend = await getBackend();
-    const items = await backend.queryItems<TProps>(
+    const { storage } = await import("@bfmono/apps/bfDb/storage/storage.ts");
+    const items = await storage.query<TProps>(
       metadataToQuery,
       propsToQuery,
-      bfGids,
+      bfGids?.map(String) as Array<BfGid>,
       orderDirection,
       orderBy,
     );
@@ -375,11 +375,11 @@ export async function bfQueryItem<
   orderBy: string = "sort_value",
 ): Promise<DbItem<TProps> | null> {
   try {
-    const backend = await getBackend();
-    const items = await backend.queryItems<TProps>(
+    const { storage } = await import("@bfmono/apps/bfDb/storage/storage.ts");
+    const items = await storage.query<TProps>(
       metadataToQuery,
       propsToQuery,
-      bfGid ? [bfGid] : undefined,
+      bfGid ? [bfGid] as Array<BfGid> : undefined,
       orderDirection,
       orderBy,
     );
@@ -397,11 +397,11 @@ export async function bfQueryItemsStream<TProps extends Props = Props>(
   orderDirection: "ASC" | "DESC" = "ASC",
   orderBy: string = "sort_value",
 ): Promise<ReadableStream<DbItem<TProps>>> {
-  const backend = await getBackend();
-  const items = await backend.queryItems<TProps>(
+  const { storage } = await import("@bfmono/apps/bfDb/storage/storage.ts");
+  const items = await storage.query<TProps>(
     metadataToQuery,
     propsToQuery,
-    bfGids,
+    bfGids?.map(String) as Array<BfGid>,
     orderDirection,
     orderBy,
   );
@@ -428,8 +428,8 @@ export async function bfQueryItemsStreamWithSizeLimit<
   maxSizeBytes = 10 * 1024 * 1024, // 10MB in bytes
   batchSize = 4,
 ): Promise<ReadableStream<DbItem<TProps>>> {
-  const backend = await getBackend();
-  const items = await backend.queryItemsWithSizeLimit<TProps>(
+  const { storage } = await import("@bfmono/apps/bfDb/storage/storage.ts");
+  const items = await storage.queryWithSizeLimit<TProps>(
     metadataToQuery,
     propsToQuery,
     bfGids,
@@ -573,7 +573,8 @@ export async function CLEAR_FOR_DEBUGGING() {
  */
 export async function bfCloseConnection(): Promise<void> {
   logger.debug("Closing database connection");
-  await closeBackend();
+  const { storage } = await import("@bfmono/apps/bfDb/storage/storage.ts");
+  await storage.close();
 }
 
 // This function ensures database operations are properly isolated,
@@ -601,6 +602,23 @@ export async function withIsolatedDb<T>(
 
     // Make sure any existing connection is closed
     await bfCloseConnection();
+
+    // Clear adapter registry to force re-registration with new settings
+    const { AdapterRegistry } = await import("./storage/AdapterRegistry.ts");
+    const { resetRegistration, registerDefaultAdapter } = await import(
+      "./storage/registerDefaultAdapter.ts"
+    );
+    AdapterRegistry.clear();
+    resetRegistration();
+
+    // Register the adapter after setting environment variables
+    // so that registerDefaultAdapter picks up the new backend type
+    registerDefaultAdapter();
+
+    // Additional safety: ensure the adapter is properly initialized
+    const adapter = AdapterRegistry.get();
+    await adapter.initialize();
+    logger.debug(`Initialized adapter: ${adapter.constructor.name}`);
 
     // For tests, prefer using SQLite as the default backend
     // if not explicitly specified otherwise
