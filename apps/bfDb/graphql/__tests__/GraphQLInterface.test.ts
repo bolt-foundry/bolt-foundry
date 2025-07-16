@@ -6,12 +6,15 @@
  * and that child classes inherit from their parent interfaces.
  */
 
-import { assert } from "@std/assert";
+import { assert, assertThrows } from "@std/assert";
 import { interfaceType, objectType } from "nexus";
 import { makeSchema } from "nexus";
 import { GraphQLNode } from "../GraphQLNode.ts";
 import { TestGraphQLNode } from "./__fixtures__/TestGraphQLNode.ts";
-import { loadInterfaces } from "../graphqlInterfaces.ts";
+import {
+  createInterfaceFromClass,
+  loadInterfaces,
+} from "../graphqlInterfaces.ts";
 import {
   getGraphQLInterfaceMetadata,
   GraphQLInterface,
@@ -146,4 +149,41 @@ Deno.test("determineInterface detects parent classes with @GraphQLInterface", as
 
   const schema = makeSchema({ types });
   assert(schema, "Schema should be created with interface implementations");
+});
+
+Deno.test("GraphQLInterface validation prevents mutations (footgun prevention)", () => {
+  // Create a test interface that incorrectly defines mutations
+  @GraphQLInterface({
+    name: "BadInterface",
+    description: "Interface that incorrectly tries to define mutations",
+  })
+  class BadInterfaceWithMutations {
+    static gqlSpec = {
+      fields: {
+        id: {
+          type: "ID",
+          nonNull: true,
+        },
+      },
+      relations: {},
+      mutations: {
+        badMutation: {
+          args: {},
+          returns: "String",
+          resolve: () => "should not work",
+        },
+      },
+    };
+  }
+
+  // Test the validation directly by calling the internal function
+  // This should throw when processing the bad interface
+  assertThrows(
+    () => {
+      createInterfaceFromClass(BadInterfaceWithMutations);
+    },
+    Error,
+    "cannot define mutations",
+    "Should throw error when GraphQL interface defines mutations",
+  );
 });

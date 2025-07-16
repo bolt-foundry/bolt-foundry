@@ -1,4 +1,5 @@
 import { GraphQLObjectBase } from "@bfmono/apps/bfDb/graphql/GraphQLObjectBase.ts";
+import { GraphQLInterface } from "@bfmono/apps/bfDb/graphql/decorators.ts";
 import { claimsFromRequest } from "@bfmono/apps/bfDb/graphql/utils/graphqlContextUtils.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import type { BfGid } from "@bfmono/lib/types.ts";
@@ -21,7 +22,11 @@ export type CurrentViewerTypenames =
 /*  Core CurrentViewer model                                                  */
 /* -------------------------------------------------------------------------- */
 
-export class CurrentViewer extends GraphQLObjectBase {
+@GraphQLInterface({
+  name: "CurrentViewer",
+  description: "Interface for current viewer authentication state",
+})
+export abstract class CurrentViewer extends GraphQLObjectBase {
   override toString() {
     return `${this.constructor.name}(${this.personBfGid}, ${this.orgBfOid})`;
   }
@@ -34,16 +39,6 @@ export class CurrentViewer extends GraphQLObjectBase {
       .id("id")
       .string("personBfGid")
       .string("orgBfOid")
-      .mutation("loginWithGoogle", {
-        args: (a) => a.nonNull.string("idToken"),
-        returns: "CurrentViewer", // ← new API
-        resolve: async (_src, args, ctx) => {
-          const idToken = args.idToken as string;
-          const currentViewer = await ctx.loginWithGoogleToken(idToken);
-          return { currentViewer };
-        },
-      })
-      .object("currentViewer", () => Promise.resolve(CurrentViewer)) // ← expose the payload object
   );
 
   /* ----------------------------------------------------------------------
@@ -210,5 +205,16 @@ export class CurrentViewerLoggedIn extends CurrentViewer {
   static override gqlSpec = this.defineGqlNode((gql) => gql);
 }
 export class CurrentViewerLoggedOut extends CurrentViewer {
-  static override gqlSpec = this.defineGqlNode((gql) => gql);
+  static override gqlSpec = this.defineGqlNode((gql) =>
+    gql
+      .mutation("loginWithGoogle", {
+        args: (a) => a.nonNull.string("idToken"),
+        returns: "CurrentViewer",
+        resolve: async (_src, args, ctx) => {
+          const idToken = args.idToken as string;
+          const currentViewer = await ctx.loginWithGoogleToken(idToken);
+          return currentViewer.toGraphql();
+        },
+      })
+  );
 }

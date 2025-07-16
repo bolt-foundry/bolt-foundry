@@ -20,6 +20,7 @@ import {
   isGraphQLInterface,
 } from "./decorators.ts";
 import * as interfaceClasses from "./__generated__/interfacesList.ts";
+import { BfError } from "@bfmono/lib/BfError.ts";
 
 const logger = getLogger(import.meta);
 
@@ -56,7 +57,7 @@ function standardResolveType(obj: unknown) {
 /**
  * Create an interface definition from a class decorated with @GraphQLInterface
  */
-function createInterfaceFromClass(classConstructor: unknown) {
+export function createInterfaceFromClass(classConstructor: unknown) {
   if (!isGraphQLInterface(classConstructor)) {
     logger.warn(
       `Class ${
@@ -79,6 +80,17 @@ function createInterfaceFromClass(classConstructor: unknown) {
   if (!spec || !spec.fields) {
     logger.warn(`No gqlSpec found for interface ${metadata.name}`);
     return null;
+  }
+
+  // Validate that interfaces don't define mutations (prevent footgun)
+  if (spec.mutations && Object.keys(spec.mutations).length > 0) {
+    const mutationNames = Object.keys(spec.mutations).join(", ");
+    const error = new BfError(
+      `GraphQL interface '${metadata.name}' cannot define mutations: ${mutationNames}. ` +
+        `Mutations should be defined on concrete implementing types, not interfaces. ` +
+        `This prevents inheritance issues where all implementing types inherit unwanted mutations.`,
+    );
+    throw error;
   }
 
   return interfaceType({

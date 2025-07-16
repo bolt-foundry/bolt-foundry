@@ -45,9 +45,14 @@ export interface NexusGenScalars {
 }
 
 export interface NexusGenObjects {
+  BfDeck: {};
   BfEdge: {};
+  BfGrader: {};
+  BfGraderResult: {};
   BfOrganization: {};
   BfPerson: {};
+  BfSample: {};
+  BfSampleFeedback: {};
   BlogPost: {};
   BlogPostConnection: { // root type
     count?: number | null; // Int
@@ -78,6 +83,7 @@ export interface NexusGenObjects {
 
 export interface NexusGenInterfaces {
   BfNode: any;
+  CurrentViewer: any;
   Node: any;
 }
 
@@ -89,8 +95,21 @@ export type NexusGenRootTypes = NexusGenInterfaces & NexusGenObjects
 export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 
 export interface NexusGenFieldTypes {
+  BfDeck: { // field return type
+    description: string | null; // String
+    name: string | null; // String
+    systemPrompt: string | null; // String
+  }
   BfEdge: { // field return type
     role: string | null; // String
+  }
+  BfGrader: { // field return type
+    graderText: string | null; // String
+  }
+  BfGraderResult: { // field return type
+    explanation: string | null; // String
+    reasoningProcess: string | null; // String
+    score: number | null; // Int
   }
   BfOrganization: { // field return type
     domain: string | null; // String
@@ -100,6 +119,14 @@ export interface NexusGenFieldTypes {
     email: string | null; // String
     memberOf: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
     name: string | null; // String
+  }
+  BfSample: { // field return type
+    collectionMethod: string | null; // String
+    completionData: NexusGenScalars['JSON'] | null; // JSON
+  }
+  BfSampleFeedback: { // field return type
+    explanation: string | null; // String
+    score: number | null; // Int
   }
   BlogPost: { // field return type
     author: string | null; // String
@@ -146,6 +173,7 @@ export interface NexusGenFieldTypes {
   Query: { // field return type
     blogPost: NexusGenRootTypes['BlogPost'] | null; // BlogPost
     blogPosts: NexusGenRootTypes['BlogPostConnection'] | null; // BlogPostConnection
+    currentViewer: NexusGenRootTypes['CurrentViewer'] | null; // CurrentViewer
     documentsBySlug: NexusGenRootTypes['PublishedDocument'] | null; // PublishedDocument
     githubRepoStats: NexusGenRootTypes['GithubRepoStats'] | null; // GithubRepoStats
     ok: boolean | null; // Boolean
@@ -156,14 +184,32 @@ export interface NexusGenFieldTypes {
   BfNode: { // field return type
     id: string; // ID!
   }
+  CurrentViewer: { // field return type
+    id: string | null; // ID
+    orgBfOid: string | null; // String
+    personBfGid: string | null; // String
+  }
   Node: { // field return type
     id: string; // ID!
   }
 }
 
 export interface NexusGenFieldTypeNames {
+  BfDeck: { // field return type name
+    description: 'String'
+    name: 'String'
+    systemPrompt: 'String'
+  }
   BfEdge: { // field return type name
     role: 'String'
+  }
+  BfGrader: { // field return type name
+    graderText: 'String'
+  }
+  BfGraderResult: { // field return type name
+    explanation: 'String'
+    reasoningProcess: 'String'
+    score: 'Int'
   }
   BfOrganization: { // field return type name
     domain: 'String'
@@ -173,6 +219,14 @@ export interface NexusGenFieldTypeNames {
     email: 'String'
     memberOf: 'BfOrganization'
     name: 'String'
+  }
+  BfSample: { // field return type name
+    collectionMethod: 'String'
+    completionData: 'JSON'
+  }
+  BfSampleFeedback: { // field return type name
+    explanation: 'String'
+    score: 'Int'
   }
   BlogPost: { // field return type name
     author: 'String'
@@ -219,6 +273,7 @@ export interface NexusGenFieldTypeNames {
   Query: { // field return type name
     blogPost: 'BlogPost'
     blogPosts: 'BlogPostConnection'
+    currentViewer: 'CurrentViewer'
     documentsBySlug: 'PublishedDocument'
     githubRepoStats: 'GithubRepoStats'
     ok: 'Boolean'
@@ -228,6 +283,11 @@ export interface NexusGenFieldTypeNames {
   }
   BfNode: { // field return type name
     id: 'ID'
+  }
+  CurrentViewer: { // field return type name
+    id: 'ID'
+    orgBfOid: 'String'
+    personBfGid: 'String'
   }
   Node: { // field return type name
     id: 'ID'
@@ -280,7 +340,7 @@ export type NexusGenUnionNames = never;
 
 export type NexusGenObjectsUsingAbstractStrategyIsTypeOf = never;
 
-export type NexusGenAbstractsUsingStrategyResolveType = "BfNode" | "Node";
+export type NexusGenAbstractsUsingStrategyResolveType = "BfNode" | "CurrentViewer" | "Node";
 
 export type NexusGenFeaturesConfig = {
   abstractTypeStrategies: {

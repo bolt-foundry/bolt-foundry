@@ -3,8 +3,24 @@
 ### Do not make changes to this file directly
 
 
+type BfDeck {
+  description: String
+  name: String
+  systemPrompt: String
+}
+
 type BfEdge {
   role: String
+}
+
+type BfGrader {
+  graderText: String
+}
+
+type BfGraderResult {
+  explanation: String
+  reasoningProcess: String
+  score: Int
 }
 
 """Base interface for all Bolt Foundry database nodes"""
@@ -21,6 +37,16 @@ type BfPerson {
   email: String
   memberOf: BfOrganization
   name: String
+}
+
+type BfSample {
+  collectionMethod: String
+  completionData: JSON
+}
+
+type BfSampleFeedback {
+  explanation: String
+  score: Int
 }
 
 type BlogPost {
@@ -58,6 +84,13 @@ type BlogPostEdge {
 
   """https://facebook.github.io/relay/graphql/connections.htm#sec-Node"""
   node: BlogPost
+}
+
+"""Interface for current viewer authentication state"""
+interface CurrentViewer {
+  id: ID
+  orgBfOid: String
+  personBfGid: String
 }
 
 type GithubRepoStats {
@@ -132,6 +165,7 @@ type Query {
     last: Int
     sortDirection: String
   ): BlogPostConnection
+  currentViewer: CurrentViewer
   documentsBySlug(slug: String): PublishedDocument
   githubRepoStats: GithubRepoStats
   ok: Boolean
