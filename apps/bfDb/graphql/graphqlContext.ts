@@ -18,6 +18,7 @@ export type BfGraphqlContext = {
     __typename: CurrentViewerTypenames;
     id: string;
   };
+  getCurrentViewer(): CurrentViewer;
   loginWithGoogleToken(idToken: string): Promise<CurrentViewerLoggedIn>;
   /**
    * Loads nodes by their GIDs and className
@@ -92,6 +93,10 @@ export async function createContext(
 
     getCvForGraphql() {
       return currentViewer.toGraphql();
+    },
+
+    getCurrentViewer() {
+      return currentViewer;
     },
 
     async loginWithGoogleToken(idToken) {

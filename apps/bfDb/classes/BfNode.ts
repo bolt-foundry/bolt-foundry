@@ -338,7 +338,8 @@ export abstract class BfNode<TProps extends PropsBase = {}>
       // deno-lint-ignore no-explicit-any
       ...(this as any).props,
       ...Object.fromEntries(getters),
-      // id is already provided via the getter
+      // Explicitly include id since it's an inherited getter
+      id: this.id,
       __typename: this.__typename,
     };
   }
