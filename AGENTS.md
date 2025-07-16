@@ -89,8 +89,8 @@ improvement through customer feedback using RLHF workflows.
 
 - Custom task runner at `infra/bft/`
 - Tasks defined in `.bft.ts` files and `.bft.deck.md` files
-- AI-safe commands by default, use `bft unsafe <command>` for unrestricted
-  access
+- AI-safe commands by default, use `bft requestApproval <command>` for
+  unrestricted access
 - Automatically loads tasks from `infra/bft/tasks/` directory
 
 ### Package Management

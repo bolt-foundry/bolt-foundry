@@ -97,14 +97,14 @@ async function main(): Promise<number> {
     return 0;
   }
 
-  // Handle "unsafe" subcommand
+  // Handle "requestApproval" subcommand
   let commandName: string;
   let commandArgs: Array<string>;
 
-  if (args[0] === "unsafe") {
+  if (args[0] === "requestApproval") {
     if (args.length < 2) {
-      ui.error("Usage: bft unsafe <command> [arguments...]");
-      ui.error("The unsafe flag allows running AI-unsafe commands");
+      ui.error("Usage: bft requestApproval <command> [arguments...]");
+      ui.error("The requestApproval flag allows running AI-unsafe commands");
       return 1;
     }
     commandName = args[1];
@@ -119,7 +119,7 @@ async function main(): Promise<number> {
 
   if (!task) {
     ui.error(`Unknown command: ${commandName}`);
-    ui.error(`Run 'bft --help' for available commands`);
+    ui.error(`Run 'bft help' for available commands`);
     return 1;
   }
 
