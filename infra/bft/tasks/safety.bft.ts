@@ -113,8 +113,10 @@ function parseBftCommand(
 ): { command: string; subcommand?: string; args: Array<string> } {
   const parts = command.trim().split(/\s+/);
 
-  // Handle "bft unsafe ..." commands
-  if (parts.length >= 3 && parts[0] === "bft" && parts[1] === "unsafe") {
+  // Handle "bft requestApproval ..." commands
+  if (
+    parts.length >= 3 && parts[0] === "bft" && parts[1] === "requestApproval"
+  ) {
     return {
       command: parts[2],
       subcommand: parts[3],
@@ -197,8 +199,8 @@ async function safety(): Promise<number> {
 
     const parsed = parseBftCommand(command);
 
-    // If it's already marked unsafe (bft unsafe ...), let the normal permission system handle it
-    if (command.includes("bft unsafe ")) {
+    // If it's already marked requestApproval (bft requestApproval ...), let the normal permission system handle it
+    if (command.includes("bft requestApproval ")) {
       return 0;
     }
 
@@ -230,7 +232,7 @@ async function safety(): Promise<number> {
         decision: "block",
         reason: `bft ${parsed.command}${
           parsed.subcommand ? ` ${parsed.subcommand}` : ""
-        } requires manual approval. LLM agents should retry running the command with "bft unsafe" so the user can opt in.`,
+        } requires manual approval. LLM agents should retry running the command with "bft requestApproval" so the user can opt in.`,
       };
       ui.output(JSON.stringify(output));
     }
