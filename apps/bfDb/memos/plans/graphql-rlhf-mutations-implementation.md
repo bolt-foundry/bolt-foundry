@@ -17,6 +17,11 @@ submission to decks.
 
 ## Context and Current State
 
+**⚠️ Key Dependency:** This implementation assumes user authentication and
+organization context are working. If `ctx.getCvForGraphql()` and
+`CurrentViewerLoggedIn` are not implemented, authentication setup must be
+completed first.
+
 ### What Exists
 
 - ✅ Complete RLHF data model (5 BfNode types: BfDeck, BfGrader, BfSample,
@@ -29,6 +34,7 @@ submission to decks.
 
 ### What's Missing
 
+- ❌ **User authentication system (CurrentViewer/organization context)**
 - ❌ GraphQL mutations for creating and managing RLHF entities
 - ❌ API endpoints for deck creation and sample submission
 - ❌ End-to-end workflow testing via GraphQL
@@ -66,13 +72,26 @@ mutation CreateDeck($name: String!, $systemPrompt: String!, $description: String
     .string("description"),
   returns: "BfDeck",
   resolve: async (_src, args, ctx) => {
-    // 1. Get current viewer and organization context
-    // 2. Analyze system prompt using mock analyzer
-    // 3. Create BfDeck with provided arguments
-    // 4. Create BfGrader nodes from analysis results
-    // 5. Return created BfDeck
+    const cv = ctx.getCvForGraphql();
+    const org = await BfOrganization.findX(cv, cv.orgBfOid);
+    return await org.createTargetNode(BfDeck, cv, args);
   }
 })
+```
+
+**Model Method Implementation:**
+
+```typescript
+// In BfDeck class
+async afterCreate(cv: CurrentViewerLoggedIn): Promise<void> {
+  // 1. Analyze system prompt using mock analyzer
+  // 2. Create BfGrader nodes from analysis results
+  await this.createGraders(cv);
+}
+
+async createGraders(cv: CurrentViewerLoggedIn): Promise<void> {
+  // Generate graders based on systemPrompt analysis
+}
 ```
 
 **Business Logic:**
@@ -82,8 +101,6 @@ mutation CreateDeck($name: String!, $systemPrompt: String!, $description: String
    `mockPromptAnalyzer.analyzeSystemPrompt()`
 3. **Grader Generation:** Creates 2-4 BfGrader nodes based on analysis
    (helpfulness, clarity, code quality, accuracy, creativity)
-4. **Organization Scoping:** All nodes automatically scoped to
-   `CurrentViewer.orgBfOid`
 
 #### 1.2 BfSample.submitSample Mutation
 
@@ -113,11 +130,12 @@ mutation SubmitSample($deckId: String!, $completionData: JSON!, $collectionMetho
     .string("collectionMethod"),
   returns: "BfSample",
   resolve: async (_src, args, ctx) => {
-    // 1. Get current viewer and organization context
-    // 2. Find BfDeck by ID (with organization scoping)
-    // 3. Validate deck exists and user has access
-    // 4. Create BfSample linked to deck
-    // 5. Return created BfSample
+    const cv = ctx.getCvForGraphql();
+    const deck = await BfDeck.findX(cv, args.deckId);
+    return await deck.createTargetNode(BfSample, cv, {
+      completionData: args.completionData,
+      collectionMethod: args.collectionMethod
+    });
   }
 })
 ```
@@ -125,9 +143,8 @@ mutation SubmitSample($deckId: String!, $completionData: JSON!, $collectionMetho
 **Business Logic:**
 
 1. **Authentication:** Requires logged-in user with organization context
-2. **Deck Validation:** Verify deck exists and belongs to user's organization
-3. **Sample Creation:** Create BfSample with completion data and metadata
-4. **Default Values:** `collectionMethod` defaults to "manual" if not provided
+2. **Sample Creation:** Create BfSample with completion data and metadata
+3. **Default Values:** `collectionMethod` defaults to "manual" if not provided
 
 ## Technical Architecture
 
@@ -141,24 +158,23 @@ mutation SubmitSample($deckId: String!, $completionData: JSON!, $collectionMetho
 
 **Error Handling:**
 
-- Return GraphQL errors for unauthenticated requests
-- Return structured errors for validation failures
-- Handle organization scoping violations gracefully
+- Standard GraphQL error handling for auth and validation failures
 
 ### Data Flow Patterns
 
 **createDeck Flow:**
 
 ```
-User Request → Authentication → System Prompt Analysis → 
-BfDeck Creation → BfGrader Generation → Response
+User Request → GraphQL Resolver → BfOrganization.findX() → 
+org.createTargetNode(BfDeck) → BfDeck Creation → deck.afterCreate() → 
+deck.createGraders() → System Prompt Analysis → BfGrader Generation → Response
 ```
 
 **submitSample Flow:**
 
 ```
-User Request → Authentication → Deck Validation → 
-BfSample Creation → Response
+User Request → GraphQL Resolver → BfDeck.findX() → 
+deck.createTargetNode(BfSample) → BfSample Creation → Response
 ```
 
 ### Integration Points
@@ -173,36 +189,9 @@ BfSample Creation → Response
 
 **BfNode Creation Patterns:**
 
-- Use existing organization-scoped creation methods
 - Follow `createTargetNode()` pattern for relationships
-- Maintain consistent metadata and indexing
 
 ## Testing Strategy
-
-### Unit Tests
-
-**BfDeck Mutation Test:** `apps/bfDb/nodeTypes/rlhf/__tests__/BfDeck.test.ts`
-
-```typescript
-Deno.test("createDeck mutation creates deck with graders", async () => {
-  await withIsolatedDb(async () => {
-    const cv = makeLoggedInCv({ orgSlug: "test-org" });
-    // Test deck creation with grader generation
-  });
-});
-```
-
-**BfSample Mutation Test:**
-`apps/bfDb/nodeTypes/rlhf/__tests__/BfSample.test.ts`
-
-```typescript
-Deno.test("submitSample mutation creates sample linked to deck", async () => {
-  await withIsolatedDb(async () => {
-    const cv = makeLoggedInCv({ orgSlug: "test-org" });
-    // Test sample submission to existing deck
-  });
-});
-```
 
 ### Integration Tests
 
@@ -228,21 +217,8 @@ Deno.test("GraphQL RLHF workflow", async () => {
 
 ## Error Handling and Edge Cases
 
-### Authentication Errors
-
-- **Unauthenticated requests:** Return GraphQL authentication error
-- **Invalid organization:** Return authorization error
-
-### Validation Errors
-
-- **Missing required fields:** Return field validation errors
-- **Invalid deck ID:** Return "Deck not found" error
-- **Organization mismatch:** Return authorization error
-
-### System Failures
-
-- **Mock analyzer failure:** Return creation error with details
-- **Database failures:** Return internal error (logged for debugging)
+Standard GraphQL and BfNode error handling applies. No custom error handling
+needed.
 
 ## Future Considerations
 
@@ -271,19 +247,22 @@ Deno.test("GraphQL RLHF workflow", async () => {
 
 - [x] Verify RLHF node types are in GraphQL schema
 - [x] Confirm mock analyzer interface and functionality
-- [x] Review authentication and organization scoping patterns
+- [ ] **Verify user authentication and CurrentViewer system is working**
+- [ ] **Confirm GraphQL context provides authenticated user access**
+- [ ] Review authentication and organization scoping patterns
 
 ### Implementation Tasks
 
-- [ ] Add `createDeck` mutation to BfDeck class
-- [ ] Add `submitSample` mutation to BfSample class
-- [ ] Implement mutation resolvers with proper error handling
-- [ ] Add comprehensive test suite for both mutations
+- [ ] Add `createDeck` GraphQL mutation that finds org and calls
+      `org.createTargetNode(BfDeck)`
+- [ ] Add `submitSample` GraphQL mutation that finds deck and calls
+      `deck.createTargetNode(BfSample)`
+- [ ] Implement `BfDeck.afterCreate()` lifecycle method
+- [ ] Add integration tests for both mutations
 
 ### Validation
 
 - [ ] Test mutations via GraphQL playground/client
-- [ ] Verify organization scoping works correctly
 - [ ] Confirm grader generation from system prompts
 - [ ] Test end-to-end deck creation → sample submission workflow
 
@@ -291,45 +270,23 @@ Deno.test("GraphQL RLHF workflow", async () => {
 
 - [ ] Run full test suite with `bft test`
 - [ ] Verify build passes with `bft build`
-- [ ] Document API usage patterns for consumers
 
 ## Success Criteria
 
 1. **Functional Requirements:**
    - Users can create decks with auto-generated graders
    - Users can submit samples to existing decks
-   - All operations respect organization boundaries
 
-2. **Technical Requirements:**
-   - Mutations follow existing GraphQL patterns
-   - Proper authentication and authorization
-   - Comprehensive test coverage
-   - Error handling for all edge cases
-
-3. **Integration Requirements:**
+2. **Integration Requirements:**
    - Works with existing RLHF data model
-   - Compatible with current authentication system
-   - Maintains database consistency and relationships
 
-## Appendix: Reference Implementation Files
+## Implementation Guide
 
-### Core Implementation
-
-- **BfDeck:** `apps/bfDb/nodeTypes/rlhf/BfDeck.ts`
-- **BfSample:** `apps/bfDb/nodeTypes/rlhf/BfSample.ts`
-- **Mock Analyzer:** `apps/bfDb/services/mockPromptAnalyzer.ts`
-
-### Reference Patterns
-
-- **Authentication:** `apps/bfDb/classes/CurrentViewer.ts`
-- **Mutation Examples:** `apps/bfDb/graphql/roots/Waitlist.ts`
-- **Testing Patterns:** `apps/bfDb/nodeTypes/rlhf/__tests__/*.test.ts`
-
-### Testing Utilities
-
-- **Test Helpers:** `apps/bfDb/utils/testUtils.ts`
-- **GraphQL Testing:** `apps/bfDb/graphql/__tests__/TestHelpers.test.ts`
-- **Isolation:** Search for `withIsolatedDb` usage patterns
-
-This implementation provides the foundation for the RLHF GraphQL API while
-maintaining simplicity and following established codebase patterns.
+1. **Write test first** - Create GraphQL integration test for `createDeck`
+   mutation
+2. **Implement BfDeck.ts** - Add `createDeck` mutation and `afterCreate`
+   lifecycle
+3. **Write test for samples** - Create GraphQL integration test for
+   `submitSample` mutation
+4. **Implement BfSample.ts** - Add `submitSample` mutation
+5. **Run validation** - Use `bft test`, `bft lint`, `bft build` to verify
