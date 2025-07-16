@@ -2,6 +2,7 @@ import { GraphQLObjectBase } from "../GraphQLObjectBase.ts";
 import { PublishedDocument } from "@bfmono/apps/bfDb/nodeTypes/PublishedDocument.ts";
 import { BlogPost } from "@bfmono/apps/bfDb/nodeTypes/BlogPost.ts";
 import { GithubRepoStats } from "@bfmono/apps/bfDb/nodeTypes/GithubRepoStats.ts";
+import { CurrentViewer } from "@bfmono/apps/bfDb/classes/CurrentViewer.ts";
 
 export class Query extends GraphQLObjectBase {
   static override gqlSpec = this.defineGqlNode((field) =>
@@ -45,6 +46,11 @@ export class Query extends GraphQLObjectBase {
       .object("githubRepoStats", () => GithubRepoStats, {
         resolve: async () => {
           return await GithubRepoStats.findX();
+        },
+      })
+      .nonNull.object("currentViewer", () => CurrentViewer, {
+        resolve: (_root, _args, ctx) => {
+          return ctx.getCvForGraphql();
         },
       })
   );
