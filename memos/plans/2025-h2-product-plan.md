@@ -32,48 +32,67 @@ to improve their LLMs
 
 **Goal**: Complete RLHF data model and authentication
 
-- [ ] Extend [bfdb](../apps/bfDb/memos/guides/data-model.md) with
+- [x] Extend [bfdb](../apps/bfDb/memos/guides/data-model.md) with
       [BfSample, BfDeck, BfGrader, BfGraderResult nodes](../apps/boltfoundry-com/memos/plans/rlhf-pipeline-data-model-implementation.md)
-- [ ] [GraphQL schema extensions](../apps/bfDb/builders/graphql/README.md)
+      _Status: 65% complete - all 5 BfNode types implemented with comprehensive
+      test coverage_
+- [ ] GraphQL schema extensions _Status: DELETED - removed from requirements_
 - [ ] [Google OAuth authentication](../apps/boltFoundry/components/CurrentViewer/LoginWithGoogleButton.tsx)
+      _Status: In progress - authentication infrastructure being developed_
 - [ ] [Organization/person management](../apps/bfDb/classes/CurrentViewer.ts)
+      _Status: In progress - organization scoping patterns implemented_
 
 ### Phase 2: API Integration
 
 **Goal**: Sample ingestion pipeline working
 
 - [ ] [bolt-foundry library](../packages/bolt-foundry/README.md) extension for
-      sample collection
-- [ ] Sample storage endpoints
-- [ ] Organization-scoped data access
-- [ ] Basic web interface scaffolding
+      sample collection _Status: In progress - sample collection patterns
+      defined_
+- [ ] Sample storage endpoints _Status: In progress - implementing REST API in
+      collector app_
+- [x] Organization-scoped data access _Status: Complete - CurrentViewer and
+      cv.orgBfOid patterns implemented_
+- [ ] Basic web interface scaffolding _Status: In progress - boltFoundry app
+      foundation exists_
 
 ### Phase 3: Core UI
 
 **Goal**: Customer-facing dashboard operational
 
-- [ ] Sample management interface
-- [ ] Deck/grader configuration UI
-- [ ] Evaluation workflow
-- [ ] Grader result visualization
+- [ ] Sample management interface _Status: Planned - awaiting sample storage
+      endpoints_
+- [ ] Deck/grader configuration UI _Status: Planned - AIBFF GUI provides
+      foundation patterns_
+- [ ] Evaluation workflow _Status: In progress - moving from AIBFF GUI to
+      boltfoundry-com web app_
+- [ ] Grader result visualization _Status: In progress - grader result patterns
+      defined in AIBFF_
 
 ### Phase 4: Customer Success
 
 **Goal**: Pilot customer actively using feedback loop
 
-- [ ] Deploy to pilot customer
-- [ ] Train their team on the workflow
-- [ ] Collect usage data and iterate
-- [ ] Document replicable customer onboarding process
+- [ ] Deploy to pilot customer _Status: In progress - example-customer.com
+      pipeline in development, not yet deployed_
+- [ ] Train their team on the workflow _Status: In progress - targeting >90%
+      accuracy milestone_
+- [ ] Collect usage data and iterate _Status: In progress - usage analytics via
+      collector app_
+- [ ] Document replicable customer onboarding process _Status: Planned -
+      awaiting pilot customer success validation_
 
 ## Success Metrics
 
 ### 30-Day Success Criteria
 
 - [ ] [Pilot customer](../customers/example-customer.com/) team regularly using
-      feedback loop
-- [ ] Working RLHF pipeline ready for replication
-- [ ] Clear customer onboarding process documented
+      feedback loop _Status: Planned - needs deployment and inbox implementation
+      first_
+- [ ] Working RLHF pipeline ready for replication _Status: 65% complete - data
+      model complete, GraphQL mutations needed_
+- [ ] Clear customer onboarding process documented _Status: Planned - awaiting
+      pilot customer validation_
 
 ### 90-Day Success Criteria
 
@@ -97,10 +116,12 @@ guidance
 
 ## Next Actions
 
-1. Begin Phase 1 foundation work
-2. Focus on [pilot customer](../customers/example-customer.com/) success case
-3. Build replicable customer onboarding process
-4. Prepare for additional customer implementations
+1. **Complete REST API endpoints in collector app** for sample storage
+2. **Build inbox system** for example-customer.com
+3. **Deploy** example-customer.com pipeline and achieve >90% accuracy
+4. **Migrate evaluation workflow** from AIBFF GUI to boltfoundry-com
+5. **Redefine success metrics** based on actual deployment requirements
+6. Build replicable customer onboarding process
 
 _This plan prioritizes customer success and real usage over feature
 completeness._
