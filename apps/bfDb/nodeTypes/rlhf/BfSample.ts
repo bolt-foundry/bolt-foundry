@@ -1,5 +1,6 @@
 import { BfNode, type InferProps } from "@bfmono/apps/bfDb/classes/BfNode.ts";
-import type { JSONValue as _JSONValue } from "@bfmono/apps/bfDb/bfDb.ts";
+import { BfDeck } from "./BfDeck.ts";
+import { type BfGid } from "@bfmono/lib/types.ts";
 
 /**
  * Collection method for BfSample - how the sample was collected
@@ -56,6 +57,24 @@ export class BfSample extends BfNode<InferProps<typeof BfSample>> {
     gql
       .json("completionData")
       .string("collectionMethod")
+      .mutation("submitSample", {
+        args: (a) =>
+          a
+            .nonNull.string("deckId")
+            .nonNull.string("completionData")
+            .string("collectionMethod"),
+        returns: "BfSample",
+        resolve: async (_src, args, ctx) => {
+          const cv = ctx.getCurrentViewer();
+          const deck = await BfDeck.findX(cv, args.deckId as BfGid);
+          const sample = await deck.createTargetNode(BfSample, {
+            completionData: JSON.parse(args.completionData as string),
+            collectionMethod: (args.collectionMethod as string ||
+              "manual") as BfSampleCollectionMethod,
+          });
+          return sample.toGraphql();
+        },
+      })
   );
 
   /**
