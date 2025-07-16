@@ -28,7 +28,7 @@ const nodeTypes = Object.values(nodeTypesModule);
 export async function loadGqlTypes() {
   const types = [];
   const payloadTypeObjects: Record<string, unknown> = {};
-  const mutationTypes = [];
+  const allMutations: Record<string, unknown> = {};
 
   // Add custom scalars
   types.push(IsoDate);
@@ -40,7 +40,24 @@ export async function loadGqlTypes() {
   // The decorator-based approach for interface implementation will
   // automatically detect classes that extend a decorated parent class
 
-  // Process all node types first (they can be referenced by roots)
+  // FIRST PASS: Collect all mutations from all classes
+  const allClasses = [...nodeTypes, ...roots];
+  for (const classType of allClasses) {
+    // Skip if it's not a class with gqlSpec
+    if (
+      typeof classType !== "function" || !("gqlSpec" in classType) ||
+      !classType.gqlSpec
+    ) continue;
+
+    const spec = classType.gqlSpec;
+
+    // Collect mutations from this class
+    if (spec.mutations && Object.keys(spec.mutations).length > 0) {
+      Object.assign(allMutations, spec.mutations);
+    }
+  }
+
+  // SECOND PASS: Process all node types (they can be referenced by roots)
   for (const nodeType of nodeTypes) {
     // Skip if it's not a class with gqlSpec
     if (
@@ -71,13 +88,7 @@ export async function loadGqlTypes() {
       }
     }
 
-    // Create the mutation type if it exists
-    if (nexusTypes.mutationType) {
-      const mutationType = extendType(
-        nexusTypes.mutationType as Parameters<typeof extendType>[0],
-      );
-      mutationTypes.push(mutationType);
-    }
+    // Note: We skip mutationType here since we're handling all mutations centrally
   }
 
   // Process each root object
@@ -111,12 +122,44 @@ export async function loadGqlTypes() {
       }
     }
 
-    // Create the mutation type if it exists
+    // Note: We skip mutationType here since we're handling all mutations centrally
+  }
+
+  // THIRD PASS: Create a single consolidated Mutation type if there are any mutations
+  const finalMutationTypes = [];
+  if (Object.keys(allMutations).length > 0) {
+    // Create a fake spec with all mutations to reuse existing gqlSpecToNexus logic
+    const consolidatedSpec = {
+      fields: {},
+      relations: {},
+      connections: {},
+      mutations: allMutations,
+    };
+
+    const nexusTypes = await gqlSpecToNexus(
+      consolidatedSpec,
+      "ConsolidatedMutations",
+      {},
+    );
+
     if (nexusTypes.mutationType) {
-      const mutationType = extendType(
+      const consolidatedMutationType = extendType(
         nexusTypes.mutationType as Parameters<typeof extendType>[0],
       );
-      mutationTypes.push(mutationType);
+      finalMutationTypes.push(consolidatedMutationType);
+    }
+
+    // Also add any additional payload types from mutations
+    if (nexusTypes.payloadTypes) {
+      for (
+        const [typeName, typeDef] of Object.entries(
+          nexusTypes.payloadTypes,
+        )
+      ) {
+        payloadTypeObjects[typeName] = objectType(
+          typeDef as Parameters<typeof objectType>[0],
+        );
+      }
     }
   }
 
@@ -125,6 +168,6 @@ export async function loadGqlTypes() {
   return [
     ...types,
     ...Object.values(payloadTypeObjects),
-    ...mutationTypes,
+    ...finalMutationTypes,
   ];
 }
