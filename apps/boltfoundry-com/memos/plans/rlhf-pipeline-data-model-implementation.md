@@ -287,7 +287,7 @@ packages/system-prompt-analyzer/
 
 ### Database Schema
 
-```typescript
+````typescript
 // BfDeck Node - Container for system prompt and evaluation setup
 interface BfDeck extends BfNode {
   organizationId: string;
@@ -382,20 +382,131 @@ interface BfSampleFeedback extends BfNode {
 - [ ] Create performance metrics and improvement tracking
 - [ ] End-to-end testing with realistic datasets
 
-## Next Steps
+## Implementation Status Update - Phase 1 Deep Dive (Current)
 
-### Immediate Actions - UPDATED
+### Major Discoveries and Architecture Updates
 
-1. ✅ Finalize four-phase workflow and data model validation **DONE**
-2. ✅ Set up development environment with bfdb extensions **DONE**
-3. ✅ Create initial BfNode implementations (BfDeck, BfSample, BfGrader,
-   BfGraderResult, BfSampleFeedback) **DONE**
-4. [ ] Build LLM prompt for system prompt analysis and grader generation **NEXT**
-5. [ ] Register RLHF node types in GraphQL schema **NEXT**
-6. [ ] Create GraphQL mutations for deck creation **NEXT**
-7. [ ] Build system prompt analyzer package **NEXT**
+**Date**: 2025-07-15
+**Status**: Ready for GraphQL Mutation Implementation
 
-### Sprint 1 Goals (Phase 1 - Deck Creation) - UPDATED
+#### ✅ **CONFIRMED: GraphQL Fluent Builder Fully Supports Mutations**
+
+Through comprehensive codebase analysis, we discovered:
+
+1. **Fluent Builder System**: The existing GraphQL fluent builder fully supports mutations with `.mutation()` calls
+2. **Model-Centric Approach**: Mutations should be defined directly on BfNode classes, not in separate root files
+3. **Production Usage**: Already used for `joinWaitlist` and authentication mutations
+4. **Type Safety**: Full TypeScript support with automatic payload generation
+
+**Corrected Implementation Pattern**:
+```typescript
+// In BfDeck.ts
+static override gqlSpec = this.defineGqlNode((gql) =>
+  gql
+    .string("name")
+    .string("systemPrompt") 
+    .string("description")
+    .mutation("createDeck", {
+      args: (a) => a.nonNull.string("name").nonNull.string("systemPrompt"),
+      returns: (r) => r.nonNull.string("deckId").nonNull.boolean("success"),
+      resolve: async (_src, args, ctx) => {
+        // Call model methods here
+      }
+    })
+);
+````
+
+#### ✅ **IMPLEMENTED: Mock System Prompt Analyzer**
+
+**Location**: `apps/bfDb/services/mockPromptAnalyzer.ts`
+
+- **Pattern-Based Grader Generation**: Detects code, accuracy, creativity
+  patterns in system prompts
+- **Realistic Output**: Generates 2-4 graders with detailed -3 to +3 scoring
+  rubrics
+- **Ready for Replacement**: Simple interface for future LLM integration
+- **Fast Iteration**: Enables immediate GraphQL testing without external
+  dependencies
+
+**Sample Output**:
+
+- Always includes: Helpfulness, Clarity graders
+- Conditional: Code Quality, Accuracy, Creativity based on prompt content
+- Format matches existing BfGrader `graderText` field structure
+
+#### ✅ **VERIFIED: RLHF Node Types in GraphQL Schema**
+
+All five RLHF node types are properly registered and exposed:
+
+- BfDeck, BfGrader, BfSample, BfGraderResult, BfSampleFeedback
+- Automatic schema generation working
+- Type relationships and connections functional
+- Ready for mutation addition
+
+#### 🔄 **IN PROGRESS: GraphQL Mutation Implementation**
+
+**Current Approach**:
+
+1. **Model-Centric Mutations**: Add `.mutation()` calls directly to BfDeck,
+   BfSample classes
+2. **Thin Controllers**: Mutation resolvers call simple model methods
+3. **Mock Integration**: Use mock analyzer for immediate testing
+4. **Incremental Replacement**: Replace mock with real LLM service later
+
+**Updated Phase 1 Tasks**:
+
+- [x] ✅ Data model implementation (all 5 node types)
+- [x] ✅ GraphQL schema registration
+- [x] ✅ Mock system prompt analyzer
+- [ ] 🔄 Add mutations to BfDeck class for deck creation
+- [ ] 📋 Add mutations to BfSample class for sample submission
+- [ ] 📋 Test end-to-end workflow via GraphQL
+- [ ] 📋 Setup hardcoded authentication for testing
+
+### Technical Architecture Corrections
+
+#### **GraphQL Mutation Strategy** (Updated)
+
+**❌ Original Plan**: Separate `RlhfMutations.ts` root file **✅ Current
+Approach**: Mutations on individual model classes
+
+**Benefits**:
+
+- Co-location of mutations with related business logic
+- Easier maintenance and discoverability
+- Follows existing codebase patterns
+- Better separation of concerns
+
+#### **Node Creation Methods** (Clarified)
+
+**Investigation Needed**: Verify correct BfNode creation method
+
+- Original plan assumed `createAndSave()`
+- Actual method may be `.create()` or similar
+- Need to check existing BfNode implementations
+
+#### **Authentication Patterns** (Confirmed)
+
+**Current System**:
+
+- JWT-based with dual tokens (access + refresh)
+- Google OAuth integration for organization creation
+- `CurrentViewer` class with organization scoping
+- Testing utilities: `makeLoggedInCv()` for test authentication
+
+## Next Steps - UPDATED
+
+### Immediate Actions (Current Sprint)
+
+1. ✅ Mock system prompt analyzer implementation **DONE**
+2. ✅ Verify GraphQL fluent builder mutation support **DONE**
+3. 🔄 Add createDeck mutation to BfDeck class **IN PROGRESS**
+4. [ ] Verify correct BfNode creation method (`.create()` vs `.createAndSave()`)
+5. [ ] Add submitSample mutation to BfSample class
+6. [ ] Setup test authentication with hardcoded credentials
+7. [ ] Test complete deck creation workflow via GraphQL
+
+### Sprint 1 Goals (Phase 1 - Deck Creation) - FINAL UPDATE
 
 1. ✅ Complete all five BfNode implementations **DONE**
 2. ✅ Implement core database patterns and relationships **DONE**
@@ -404,7 +515,8 @@ interface BfSampleFeedback extends BfNode {
 5. [ ] Register RLHF node types in GraphQL schema **NEXT**
 6. [ ] Create API endpoints for deck creation from system prompts **NEXT**
 7. [ ] Test manual deck creation via API calls **NEXT**
-8. [ ] Implement hardcoded authentication for organization/person access **NEXT**
+8. [ ] Implement hardcoded authentication for organization/person access
+       **NEXT**
 9. [ ] Test end-to-end deck creation workflow via API calls **NEXT**
 
 ## Anti-Goals (Future Considerations)
@@ -505,4 +617,6 @@ automatic suggestions later
 - **Version Control**: `decks/cards/version-control.card.md:1` - Sapling SCM
   workflow
 - **Architecture Docs**: `memos/guides/` - Technical architecture patterns
+
+```
 ```
