@@ -9,11 +9,6 @@ import {
 } from "graphql";
 
 /**
- * Helper type for nonNull versions of the builder
- */
-type OmitNonNull<T> = Omit<T, "nonNull">;
-
-/**
  * Maps string names to GraphQL scalar types for type inference
  */
 export interface ArgMap {
@@ -21,16 +16,44 @@ export interface ArgMap {
 }
 
 /**
- * Type for GraphQL argument builder with strong typing
+ * Type-safe GraphQL argument builder with full type inference
  */
-export interface ArgsBuilder {
-  string(name: string): ArgsBuilder;
-  int(name: string): ArgsBuilder;
-  float(name: string): ArgsBuilder;
-  boolean(name: string): ArgsBuilder;
-  id(name: string): ArgsBuilder;
-  nonNull: OmitNonNull<ArgsBuilder>;
+export interface ArgsBuilder<
+  T extends Record<string, unknown> = Record<string, unknown>,
+> {
+  string<N extends string>(
+    name: N,
+  ): ArgsBuilder<T & { [K in N]: string | undefined }>;
+  int<N extends string>(
+    name: N,
+  ): ArgsBuilder<T & { [K in N]: number | undefined }>;
+  float<N extends string>(
+    name: N,
+  ): ArgsBuilder<T & { [K in N]: number | undefined }>;
+  boolean<N extends string>(
+    name: N,
+  ): ArgsBuilder<T & { [K in N]: boolean | undefined }>;
+  id<N extends string>(
+    name: N,
+  ): ArgsBuilder<T & { [K in N]: string | undefined }>;
+  nonNull: NonNullArgsBuilder<T>;
   _args: ArgMap;
+  _inferredTypes: T;
+}
+
+/**
+ * NonNull version of ArgsBuilder that makes fields required
+ */
+export interface NonNullArgsBuilder<
+  T extends Record<string, unknown> = Record<string, unknown>,
+> {
+  string<N extends string>(name: N): ArgsBuilder<T & { [K in N]: string }>;
+  int<N extends string>(name: N): ArgsBuilder<T & { [K in N]: number }>;
+  float<N extends string>(name: N): ArgsBuilder<T & { [K in N]: number }>;
+  boolean<N extends string>(name: N): ArgsBuilder<T & { [K in N]: boolean }>;
+  id<N extends string>(name: N): ArgsBuilder<T & { [K in N]: string }>;
+  _args: ArgMap;
+  _inferredTypes: T;
 }
 
 /**
@@ -51,6 +74,22 @@ export function makeArgBuilder(): (
 }
 
 /**
+ * Type-safe version of makeArgBuilder that infers argument types
+ */
+export function makeTypedArgBuilder<T extends Record<string, unknown>>(): (
+  fn: (a: ArgsBuilder<Record<string, unknown>>) => ArgsBuilder<T>,
+) => { args: ArgMap; inferredTypes: T } {
+  return (fn: (a: ArgsBuilder<Record<string, unknown>>) => ArgsBuilder<T>) => {
+    const builder = createArgsBuilder();
+    const result = fn(builder);
+    return {
+      args: result._args,
+      inferredTypes: result._inferredTypes,
+    };
+  };
+}
+
+/**
  * Creates an ArgsBuilder instance that collects GraphQL arguments
  */
 export function createArgsBuilder(): ArgsBuilder {
@@ -64,19 +103,22 @@ export function createArgsBuilder(): ArgsBuilder {
         ? new GraphQLNonNull(GraphQLString)
         : GraphQLString;
       isNonNull = false; // Reset after use
-      return argsBuilder;
+      // deno-lint-ignore no-explicit-any
+      return argsBuilder as any; // Type cast needed for generic return
     },
 
     int(name: string) {
       args[name] = isNonNull ? new GraphQLNonNull(GraphQLInt) : GraphQLInt;
       isNonNull = false; // Reset after use
-      return argsBuilder;
+      // deno-lint-ignore no-explicit-any
+      return argsBuilder as any; // Type cast needed for generic return
     },
 
     float(name: string) {
       args[name] = isNonNull ? new GraphQLNonNull(GraphQLFloat) : GraphQLFloat;
       isNonNull = false; // Reset after use
-      return argsBuilder;
+      // deno-lint-ignore no-explicit-any
+      return argsBuilder as any; // Type cast needed for generic return
     },
 
     boolean(name: string) {
@@ -84,13 +126,15 @@ export function createArgsBuilder(): ArgsBuilder {
         ? new GraphQLNonNull(GraphQLBoolean)
         : GraphQLBoolean;
       isNonNull = false; // Reset after use
-      return argsBuilder;
+      // deno-lint-ignore no-explicit-any
+      return argsBuilder as any; // Type cast needed for generic return
     },
 
     id(name: string) {
       args[name] = isNonNull ? new GraphQLNonNull(GraphQLID) : GraphQLID;
       isNonNull = false; // Reset after use
-      return argsBuilder;
+      // deno-lint-ignore no-explicit-any
+      return argsBuilder as any; // Type cast needed for generic return
     },
 
     get nonNull() {
@@ -98,13 +142,40 @@ export function createArgsBuilder(): ArgsBuilder {
       isNonNull = true;
 
       // Create a nonNull version that doesn't have the nonNull property
-      const nonNullBuilder: OmitNonNull<ArgsBuilder> = {
-        string: argsBuilder.string,
-        int: argsBuilder.int,
-        float: argsBuilder.float,
-        boolean: argsBuilder.boolean,
-        id: argsBuilder.id,
-        _args: argsBuilder._args,
+      const nonNullBuilder: NonNullArgsBuilder = {
+        string: (name: string) => {
+          args[name] = new GraphQLNonNull(GraphQLString);
+          isNonNull = false; // Reset after use
+          // deno-lint-ignore no-explicit-any
+          return argsBuilder as any;
+        },
+        int: (name: string) => {
+          args[name] = new GraphQLNonNull(GraphQLInt);
+          isNonNull = false; // Reset after use
+          // deno-lint-ignore no-explicit-any
+          return argsBuilder as any;
+        },
+        float: (name: string) => {
+          args[name] = new GraphQLNonNull(GraphQLFloat);
+          isNonNull = false; // Reset after use
+          // deno-lint-ignore no-explicit-any
+          return argsBuilder as any;
+        },
+        boolean: (name: string) => {
+          args[name] = new GraphQLNonNull(GraphQLBoolean);
+          isNonNull = false; // Reset after use
+          // deno-lint-ignore no-explicit-any
+          return argsBuilder as any;
+        },
+        id: (name: string) => {
+          args[name] = new GraphQLNonNull(GraphQLID);
+          isNonNull = false; // Reset after use
+          // deno-lint-ignore no-explicit-any
+          return argsBuilder as any;
+        },
+        _args: args,
+        // deno-lint-ignore no-explicit-any
+        _inferredTypes: {} as any,
       };
 
       return nonNullBuilder;
@@ -112,7 +183,14 @@ export function createArgsBuilder(): ArgsBuilder {
 
     // Store collected arguments
     _args: args,
+    // deno-lint-ignore no-explicit-any
+    _inferredTypes: {} as any, // This will be properly typed at compile time
   };
 
   return argsBuilder;
 }
+
+/**
+ * Type helper to extract argument types from an ArgsBuilder
+ */
+export type InferArgTypes<T> = T extends ArgsBuilder<infer U> ? U : never;

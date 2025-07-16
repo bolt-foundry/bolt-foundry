@@ -210,6 +210,39 @@ export interface GqlBuilder<
   ): GqlBuilder<R>;
 
   /**
+   * Type-safe mutation with inferred argument types
+   *
+   * @example
+   * .typedMutation("createDeck", {
+   *   args: (a) => a.nonNull.string("name").nonNull.string("systemPrompt").string("description"),
+   *   returns: "BfDeck",
+   *   resolve: async (_root, args, ctx) => {
+   *     // args.name is typed as string
+   *     // args.systemPrompt is typed as string
+   *     // args.description is typed as string | undefined
+   *     return createDeck(args.name, args.systemPrompt, args.description);
+   *   }
+   * })
+   */
+  typedMutation<
+    N extends string,
+    ArgsType extends Record<string, unknown>,
+    ReturnType extends Record<string, unknown> = Record<string, unknown>,
+  >(
+    name: N,
+    opts: {
+      args?: (ab: ArgsBuilder) => ArgsBuilder<ArgsType>;
+      returns: string | ((rb: ReturnsBuilder) => ReturnsBuilder<ReturnType>);
+      resolve?: (
+        root: ThisNode,
+        args: ArgsType,
+        ctx: BfGraphqlContext,
+        info: GraphQLResolveInfo,
+      ) => MaybePromise<ReturnType>;
+    },
+  ): GqlBuilder<R>;
+
+  /**
    * Define a connection field for Relay-style pagination.
    * Connections always require a resolver that returns a Connection type.
    *
@@ -407,6 +440,37 @@ export function makeGqlBuilder<
       return builder;
     },
 
+    typedMutation(name, opts) {
+      // Create the argument builder function
+      const argFn = makeArgBuilder();
+
+      // Create and collect arguments if provided
+      const args = opts.args ? argFn(opts.args) : {};
+
+      // Handle returns - can be either a string or a builder function
+      let returnsSpec = null;
+      let returnsType = null;
+
+      if (typeof opts.returns === "string") {
+        // Direct string type reference
+        returnsType = opts.returns;
+      } else if (opts.returns) {
+        // Builder function
+        const returnsBuilder = makeReturnsBuilder();
+        opts.returns(returnsBuilder);
+        returnsSpec = returnsBuilder._spec;
+      }
+
+      // Store the mutation definition - same as regular mutation
+      spec.mutations[name] = {
+        returnsSpec: returnsSpec,
+        returnsType: returnsType,
+        args: args,
+        resolve: opts.resolve,
+      };
+      return builder;
+    },
+
     connection(name, targetThunk, opts) {
       // Ensure resolver is provided
       if (!opts || !opts.resolve) {
@@ -521,6 +585,7 @@ export function makeGqlBuilder<
 
         object: builder.object,
         mutation: builder.mutation,
+        typedMutation: builder.typedMutation,
         connection: builder.connection, // Connections can't be nonNull
         _spec: builder._spec,
       };
