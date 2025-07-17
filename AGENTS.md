@@ -18,21 +18,15 @@ improvement through customer feedback using RLHF workflows.
 ### Core Commands
 
 - `bft help` - List all available commands
-- `bft build` - Build the entire monorepo
-- `bft test` - Run all tests across the monorepo
-- `bft lint` - Lint TypeScript files
-- `bft format` - Format TypeScript files
+- Use `bft help` to see the complete list of available commands
+- **Prefer `bft` commands over `deno run` whenever possible**
 
 ### Testing
 
 - Individual package tests: `deno test packages/<package-name>/`
 - App-specific tests: `deno test apps/<app-name>/`
 - Integration tests: Look for `*.integration.test.ts` files
-- E2E tests: Look for `*.e2e.ts` files
-
-### Build Process
-
-- In transition. Each app in apps is likely to have a build process.
+- E2E tests: Look for `*.test.e2e.ts` files in `__tests__/e2e/` directories
 
 ## Architecture
 
@@ -44,19 +38,29 @@ improvement through customer feedback using RLHF workflows.
   - `bfDs/` - Design system components
   - `boltFoundry/` - Main web application
   - `boltfoundry-com/` - Marketing website
+  - Additional deprecated/experimental apps exist but are not actively
+    maintained
 - `packages/` - Reusable TypeScript packages
   - `bolt-foundry/` - Core library and client
   - `logger/` - Logging utilities
   - `get-configuration-var/` - Configuration management
+  - `aibff/` - AI feedback package
+  - `cli-ui/` - CLI user interface utilities
+  - Additional packages exist in various stages of development
 - `infra/` - Build tools and infrastructure
   - `bft/` - Bolt Foundry Task runner implementation
+  - `bff/` - Bolt Foundry Friend tools (targeted for removal)
+  - `jupyter/` - Jupyter notebook support (targeted for removal)
+  - `appBuild/` - Application build utilities (targeted for removal)
+  - Additional infrastructure components exist as part of ongoing monorepo
+    consolidation
 - `decks/` - Behavior specifications and evaluation cards
 
 ### Key Technologies
 
-- **Deno 2.x** - Runtime with TypeScript support
+- **Deno** - Runtime with TypeScript support
 - **Isograph** - GraphQL client framework (used in web apps)
-- **React 19** - UI framework for web applications
+- **React** - UI framework for web applications
 - **SQLite/PostgreSQL** - Database backends via bfDb
 - **Lexical** - Rich text editor framework
 - **Vite** - Frontend build tool for web apps
@@ -76,19 +80,13 @@ improvement through customer feedback using RLHF workflows.
 - Workspace configuration for multiple apps/packages
 - Custom lint rules in `infra/lint/bolt-foundry.ts`
 
-### Testing Strategy
-
-- Unit tests co-located with source files (`__tests__/` directories)
-- Integration tests for database and API layers
-- E2E tests for web applications using test helpers
-- Test databases use SQLite with temporary files in `tmp/`
-
 ## Important Notes
 
 ### BFT Task Runner
 
 - Custom task runner at `infra/bft/`
-- Tasks defined in `.bft.ts` files and `.bft.deck.md` files
+- Tasks defined in `.bft.ts` files and `.bft.deck.md` files in
+  `infra/bft/tasks/`
 - AI-safe commands by default, use `bft requestApproval <command>` for
   unrestricted access
 - Automatically loads tasks from `infra/bft/tasks/` directory
@@ -99,11 +97,10 @@ improvement through customer feedback using RLHF workflows.
 - **JSR dependencies**: `@std/*`, `@deno/*` packages from jsr.io
 - **npm dependencies**: Direct `npm:package-name` imports
 - **Local imports**: `@bfmono/` prefix for monorepo modules
-- **Manual node_modules**: Configured for compatibility when needed
 
 ### Database Layer (bfDb)
 
 - All entities extend BfNode base class
 - Automatic GraphQL schema generation via decorators
-- Multiple backend support (SQLite, PostgreSQL, Neon)
+- Multiple backend support
 - Connection-based pagination and traversal patterns
