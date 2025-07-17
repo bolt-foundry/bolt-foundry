@@ -1,0 +1,15 @@
+import { iso } from "../__generated__/__isograph/iso.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
+
+const logger = getLogger(import.meta);
+
+export const EntrypointRlhfTesting = iso(`
+  field Query.EntrypointRlhfTesting {
+    RlhfTesting
+  }
+`)(function EntrypointRlhfTesting({ data }) {
+  const Body = data.RlhfTesting;
+  logger.debug("RLHF Testing data", data);
+  const title = "RLHF Testing - Bolt Foundry";
+  return { Body, title };
+});

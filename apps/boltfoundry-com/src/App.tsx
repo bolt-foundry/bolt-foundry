@@ -6,7 +6,7 @@ import {
 import { appRoutes, isographAppRoutes } from "../routes.ts";
 import { IsographEnvironmentProvider, useLazyReference } from "@isograph/react";
 import { BfIsographFragmentReader } from "../lib/BfIsographFragmentReader.tsx";
-import { getEnvironment } from "../isographEnvironment.ts";
+import type { IsographEnvironment } from "@isograph/react";
 
 function AppRoot() {
   const routerProps = useRouter();
@@ -47,10 +47,16 @@ function AppRoot() {
   return <div>404 - Page not found</div>;
 }
 
-function App({ initialPath }: { initialPath?: string }) {
+function App({ 
+  initialPath, 
+  isographEnvironment 
+}: { 
+  initialPath?: string;
+  isographEnvironment: IsographEnvironment;
+}) {
   return (
     <div className="app">
-      <IsographEnvironmentProvider environment={getEnvironment()}>
+      <IsographEnvironmentProvider environment={isographEnvironment}>
         <RouterProvider initialPath={initialPath}>
           <AppRoot />
         </RouterProvider>

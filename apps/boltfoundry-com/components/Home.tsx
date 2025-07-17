@@ -5,8 +5,9 @@ import { useRouter } from "../contexts/RouterContext.tsx";
 export const Home = iso(`
   field Query.Home @component {
     __typename
+    LoginButton
   }
-`)(function Home() {
+`)(function Home({ data }) {
   const { navigate } = useRouter();
 
   return (
@@ -19,6 +20,10 @@ export const Home = iso(`
           This is the Phase 1 implementation of the Bolt Foundry landing page.
         </p>
         <p>Architecture foundation established with Vite + Deno + React.</p>
+
+        <div style={{ marginTop: "2rem" }}>
+          <data.LoginButton />
+        </div>
 
         <div style={{ marginTop: "2rem" }}>
           <BfDsButton
