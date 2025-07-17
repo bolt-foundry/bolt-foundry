@@ -5,6 +5,8 @@ import { getLogger } from "@bolt-foundry/logger";
 import { renderToReadableStream } from "react-dom/server";
 import { ServerRenderedPage } from "./server/components/ServerRenderedPage.tsx";
 import App from "./src/App.tsx";
+import { appRoutes, isographAppRoutes } from "./routes.ts";
+import { createApiRoutes } from "./apiRoutes.ts";
 
 const logger = getLogger(import.meta);
 
@@ -53,6 +55,28 @@ function loadAssetPaths(): { cssPath?: string; jsPath: string } {
 // Load asset paths at startup
 const assetPaths = loadAssetPaths();
 
+// Check if a path should be handled by React routing
+function shouldHandleWithReact(pathname: string): boolean {
+  // Check exact matches first
+  if (isographAppRoutes.has(pathname) || appRoutes.has(pathname)) {
+    return true;
+  }
+
+  // Check for parameterized routes (basic implementation)
+  for (const [routePath] of [...isographAppRoutes, ...appRoutes]) {
+    if (routePath.includes(":")) {
+      // Simple parameterized route matching
+      const routePattern = routePath.replace(/:[^/]+/g, "[^/]+");
+      const regex = new RegExp(`^${routePattern}$`);
+      if (regex.test(pathname)) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
 // Parse command line arguments
 const flags = parseArgs(Deno.args, {
   string: ["port", "mode", "vite-port"],
@@ -71,37 +95,46 @@ if (isNaN(port)) {
 const isDev = flags.mode === "development";
 const vitePort = flags["vite-port"] ? parseInt(flags["vite-port"]) : undefined;
 
-// Define routes using URLPattern
-const routes = [
-  {
-    pattern: new URLPattern({ pathname: "/health" }),
-    handler: () => {
-      const healthInfo = {
-        status: "OK",
-        timestamp: new Date().toISOString(),
-        mode: isDev ? "development" : "production",
-        port: port,
-        uptime: Math.floor(performance.now() / 1000) + " seconds",
-      };
-      return new Response(JSON.stringify(healthInfo, null, 2), {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-      });
-    },
-  },
-];
+// Create API routes
+const apiRoutes = createApiRoutes({ isDev, port });
 
 const handler = async (request: Request): Promise<Response> => {
   const url = new URL(request.url);
 
-  // Try to match against defined routes
-  for (const route of routes) {
+  // Try to match against API routes
+  for (const route of apiRoutes) {
     if (route.pattern.test(url)) {
-      return await route.handler();
+      return await route.handler(request);
     }
   }
 
-  // In dev mode, proxy to Vite for frontend assets
+  // Check if this should be handled by React routing
+  if (shouldHandleWithReact(url.pathname)) {
+    // Handle with React SSR
+    const environment = {
+      mode: isDev ? "development" : "production",
+      port: port,
+      currentPath: url.pathname,
+    };
+
+    const element = (
+      <ServerRenderedPage environment={environment} assetPaths={assetPaths}>
+        <App initialPath={url.pathname} />
+      </ServerRenderedPage>
+    );
+
+    try {
+      const stream = await renderToReadableStream(element);
+      return new Response(stream, {
+        headers: { "content-type": "text/html; charset=utf-8" },
+      });
+    } catch (error) {
+      logger.error("Error rendering React app:", error);
+      return new Response("Internal Server Error", { status: 500 });
+    }
+  }
+
+  // In dev mode, proxy to Vite for frontend assets (but not React routes)
   if (isDev && vitePort) {
     try {
       const viteUrl =
@@ -178,28 +211,8 @@ const handler = async (request: Request): Promise<Response> => {
     return new Response("Not Found", { status: 404 });
   }
 
-  // For all other routes, render the React app with SSR
-  const environment = {
-    mode: isDev ? "development" : "production",
-    port: port,
-    currentPath: url.pathname,
-  };
-
-  const element = (
-    <ServerRenderedPage environment={environment} assetPaths={assetPaths}>
-      <App initialPath={url.pathname} />
-    </ServerRenderedPage>
-  );
-
-  try {
-    const stream = await renderToReadableStream(element);
-    return new Response(stream, {
-      headers: { "content-type": "text/html; charset=utf-8" },
-    });
-  } catch (error) {
-    logger.error("Error rendering React app:", error);
-    return new Response("Internal Server Error", { status: 500 });
-  }
+  // For all other unknown routes, return 404
+  return new Response("Not Found", { status: 404 });
 };
 
 // Start the server
