@@ -161,30 +161,17 @@ DELETE /api/users/:id`}
   ];
 
   return (
-    <div
-      style={{
-        padding: "24px",
-        backgroundColor: "var(--bfds-background)",
-        color: "var(--bfds-text)",
-        fontFamily: "system-ui, -apple-system, sans-serif",
-      }}
-    >
+    <div className="bfds-example">
       <h2>BfDsTabs Examples</h2>
 
-      <div style={{ marginBottom: "32px" }}>
+      <div className="bfds-example__section">
         <h3>Basic Tabs</h3>
         <BfDsTabs tabs={basicTabs} defaultActiveTab="tab1" />
       </div>
 
-      <div style={{ marginBottom: "32px" }}>
+      <div className="bfds-example__section">
         <h3>Controlled Tabs</h3>
-        <p
-          style={{
-            marginBottom: "16px",
-            fontSize: "14px",
-            color: "var(--bfds-text-secondary)",
-          }}
-        >
+        <p className="bfds-example__label">
           Active tab: {controlledActiveTab}
         </p>
         <BfDsTabs
@@ -194,14 +181,14 @@ DELETE /api/users/:id`}
         />
       </div>
 
-      <div style={{ marginBottom: "32px" }}>
+      <div className="bfds-example__section">
         <h3>Tabs with Subtabs</h3>
         <BfDsTabs tabs={tabsWithSubtabs} defaultActiveTab="docs" />
       </div>
 
-      <div style={{ marginBottom: "32px" }}>
+      <div className="bfds-example__section">
         <h3>Size Variants</h3>
-        <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+        <div className="bfds-example__group">
           <div>
             <h4>Small</h4>
             <BfDsTabs
@@ -229,9 +216,9 @@ DELETE /api/users/:id`}
         </div>
       </div>
 
-      <div style={{ marginBottom: "32px" }}>
+      <div className="bfds-example__section">
         <h3>Variant Styles</h3>
-        <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+        <div className="bfds-example__group">
           <div>
             <h4>Primary (Default)</h4>
             <BfDsTabs

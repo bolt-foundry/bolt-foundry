@@ -234,23 +234,12 @@ export function BfDsSelectExample() {
   ];
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: "32px",
-        padding: "24px",
-        backgroundColor: "var(--bfds-background)",
-        color: "var(--bfds-text)",
-        fontFamily: "system-ui, -apple-system, sans-serif",
-        maxWidth: "600px",
-      }}
-    >
+    <div className="bfds-example">
       <h2>BfDsSelect Examples</h2>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>Standalone Select</h3>
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        <div className="bfds-example__group">
           <BfDsSelect
             label="Country"
             options={countryOptions}
@@ -262,9 +251,9 @@ export function BfDsSelectExample() {
         </div>
       </div>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>Typeahead Select</h3>
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        <div className="bfds-example__group">
           <BfDsSelect
             label="Country (with Typeahead)"
             options={largeDatasetOptions}
@@ -279,15 +268,7 @@ export function BfDsSelectExample() {
                 ?.label
               : "None"}
           </p>
-          <div
-            style={{
-              padding: "12px",
-              backgroundColor: "var(--bfds-surface)",
-              borderRadius: "4px",
-              fontSize: "14px",
-              color: "var(--bfds-text-muted)",
-            }}
-          >
+          <div className="bfds-example__item">
             <strong>Typeahead Features:</strong>
             <ul style={{ margin: "8px 0", paddingLeft: "20px" }}>
               <li>Type to filter options in real-time</li>
@@ -300,7 +281,7 @@ export function BfDsSelectExample() {
         </div>
       </div>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>With BfDsForm Integration</h3>
         <BfDsForm
           initialData={formData}
@@ -313,9 +294,7 @@ export function BfDsSelectExample() {
             setFormData(data as typeof formData);
           }}
         >
-          <div
-            style={{ display: "flex", flexDirection: "column", gap: "16px" }}
-          >
+          <div className="bfds-example__group">
             <BfDsSelect
               name="country"
               label="Country"
@@ -361,9 +340,9 @@ export function BfDsSelectExample() {
         </BfDsCallout>
       </div>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>States</h3>
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        <div className="bfds-example__group">
           <BfDsSelect
             label="Disabled"
             options={countryOptions}
@@ -386,9 +365,9 @@ export function BfDsSelectExample() {
         </div>
       </div>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>Typeahead States</h3>
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        <div className="bfds-example__group">
           <BfDsSelect
             label="Typeahead Required"
             options={countryOptions}
