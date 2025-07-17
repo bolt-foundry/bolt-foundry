@@ -21,12 +21,14 @@ export class BfDeck extends BfNode<InferProps<typeof BfDeck>> {
       .string("name")
       .string("systemPrompt")
       .string("description")
+      .nonNull.string("slug")
       .typedMutation("createDeck", {
         args: (a) =>
           a
             .nonNull.string("name")
             .nonNull.string("systemPrompt")
-            .string("description"),
+            .string("description")
+            .nonNull.string("slug"),
         returns: "BfDeck",
         resolve: async (_src, args, ctx) => {
           const cv = ctx.getCurrentViewer();
@@ -45,6 +47,7 @@ export class BfDeck extends BfNode<InferProps<typeof BfDeck>> {
             name: args.name, // No casting needed! TypeScript knows this is string
             systemPrompt: args.systemPrompt, // No casting needed! TypeScript knows this is string
             description: args.description || "", // No casting needed! TypeScript knows this is string | undefined
+            slug: args.slug, // No casting needed! TypeScript knows this is string
           }) as BfDeck;
           await deck.afterCreate();
           const result = deck.toGraphql();
@@ -62,6 +65,7 @@ export class BfDeck extends BfNode<InferProps<typeof BfDeck>> {
       .string("name")
       .string("systemPrompt")
       .string("description")
+      .string("slug")
   );
 
   /**
