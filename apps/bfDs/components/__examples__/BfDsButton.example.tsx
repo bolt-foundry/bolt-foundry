@@ -5,22 +5,12 @@ export function BfDsButtonExample() {
   const [clickCount, setClickCount] = useState(0);
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: "24px",
-        padding: "24px",
-        backgroundColor: "var(--bfds-background)",
-        color: "var(--bfds-text)",
-        fontFamily: "system-ui, -apple-system, sans-serif",
-      }}
-    >
+    <div className="bfds-example">
       <h2>BfDsButton Examples</h2>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>Variants</h3>
-        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+        <div className="bfds-example__group">
           <BfDsButton
             variant="primary"
             onClick={() => setClickCount((c) => c + 1)}
@@ -33,25 +23,18 @@ export function BfDsButtonExample() {
         </div>
       </div>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>Sizes</h3>
-        <div
-          style={{
-            display: "flex",
-            gap: "12px",
-            alignItems: "center",
-            flexWrap: "wrap",
-          }}
-        >
+        <div className="bfds-example__group bfds-example__group--align-center">
           <BfDsButton size="small">Small</BfDsButton>
           <BfDsButton size="medium">Medium</BfDsButton>
           <BfDsButton size="large">Large</BfDsButton>
         </div>
       </div>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>States</h3>
-        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+        <div className="bfds-example__group">
           <BfDsButton disabled>Disabled</BfDsButton>
           <BfDsButton variant="outline" disabled>
             Disabled Outline
@@ -59,9 +42,9 @@ export function BfDsButtonExample() {
         </div>
       </div>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>Icons</h3>
-        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+        <div className="bfds-example__group">
           <BfDsButton icon="arrowRight">Next</BfDsButton>
           <BfDsButton icon="arrowLeft" iconPosition="left">
             Previous
@@ -75,9 +58,9 @@ export function BfDsButtonExample() {
         </div>
       </div>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>Icon Positions</h3>
-        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+        <div className="bfds-example__group">
           <BfDsButton icon="arrowRight" iconPosition="left">
             Left Icon
           </BfDsButton>
@@ -87,16 +70,9 @@ export function BfDsButtonExample() {
         </div>
       </div>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>Icon-Only Buttons</h3>
-        <div
-          style={{
-            display: "flex",
-            gap: "12px",
-            alignItems: "center",
-            flexWrap: "wrap",
-          }}
-        >
+        <div className="bfds-example__group bfds-example__group--align-center">
           <BfDsButton icon="arrowLeft" iconOnly size="small" />
           <BfDsButton icon="burgerMenu" iconOnly />
           <BfDsButton icon="arrowRight" iconOnly size="large" />
@@ -161,6 +137,98 @@ export function BfDsButtonExample() {
           Note: Router links currently render as regular anchor tags until React
           Router integration is implemented.
         </p>
+      </div>
+
+      <div>
+        <h3>Buttons with Spinners</h3>
+        <div
+          style={{
+            display: "flex",
+            gap: 12,
+            flexWrap: "wrap",
+            alignItems: "center",
+            marginBottom: 12,
+          }}
+        >
+          <BfDsButton variant="primary" spinner size="small">
+            Loading Small...
+          </BfDsButton>
+          <BfDsButton variant="primary" spinner size="medium">
+            Loading Medium...
+          </BfDsButton>
+          <BfDsButton variant="primary" spinner size="large">
+            Loading Large...
+          </BfDsButton>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            gap: 12,
+            flexWrap: "wrap",
+            alignItems: "center",
+            marginBottom: 12,
+          }}
+        >
+          <BfDsButton variant="secondary" spinner size="small">
+            Saving Changes Small
+          </BfDsButton>
+          <BfDsButton variant="secondary" spinner size="medium">
+            Saving Changes Medium
+          </BfDsButton>
+          <BfDsButton variant="secondary" spinner size="large">
+            Saving Changes Large
+          </BfDsButton>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            gap: 12,
+            flexWrap: "wrap",
+            alignItems: "center",
+            marginBottom: 12,
+          }}
+        >
+          <BfDsButton variant="outline" spinner icon="arrowRight" size="small">
+            Processing Small
+          </BfDsButton>
+          <BfDsButton variant="outline" spinner icon="arrowRight" size="medium">
+            Processing Medium
+          </BfDsButton>
+          <BfDsButton variant="outline" spinner icon="arrowRight" size="large">
+            Processing Large
+          </BfDsButton>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            gap: 12,
+            flexWrap: "wrap",
+            alignItems: "center",
+            marginBottom: 12,
+          }}
+        >
+          <BfDsButton
+            variant="outline"
+            spinner
+            iconOnly
+            icon="exclamationCircle"
+            size="small"
+          />
+          <BfDsButton
+            variant="outline"
+            spinner
+            iconOnly
+            icon="exclamationCircle"
+            size="medium"
+          />
+          <BfDsButton
+            variant="outline"
+            spinner
+            iconOnly
+            icon="exclamationCircle"
+            size="large"
+          />
+        </div>
       </div>
     </div>
   );

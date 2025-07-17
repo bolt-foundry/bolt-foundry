@@ -1,14 +1,14 @@
 import { useRef, useState } from "react";
 import { iso } from "@bfmono/apps/boltFoundry/__generated__/__isograph/iso.ts";
-import { CfDsButton } from "@bfmono/apps/cfDs/components/CfDsButton.tsx";
-import { CfDsCopyButton } from "@bfmono/apps/cfDs/components/CfDsCopyButton.tsx";
+import { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
+import { BfDsCopyButton } from "@bfmono/apps/bfDs/components/BfDsCopyButton.tsx";
 import { useMutation } from "@bfmono/apps/boltFoundry/hooks/isographPrototypes/useMutation.tsx";
 import joinWaitlistMutation from "@bfmono/apps/boltFoundry/__generated__/__isograph/Mutation/JoinWaitlist/entrypoint.ts";
 
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
-import { CfDsForm } from "@bfmono/apps/cfDs/components/CfDsForm/CfDsForm.tsx";
-import { CfDsFormTextInput } from "@bfmono/apps/cfDs/components/CfDsForm/CfDsFormTextInput.tsx";
-import { CfDsFormSubmitButton } from "@bfmono/apps/cfDs/components/CfDsForm/CfDsFormSubmitButton.tsx";
+import { BfDsForm } from "@bfmono/apps/bfDs/components/BfDsForm.tsx";
+import { BfDsInput } from "@bfmono/apps/bfDs/components/BfDsInput.tsx";
+import { BfDsFormSubmitButton } from "@bfmono/apps/bfDs/components/BfDsFormSubmitButton.tsx";
 import { Nav } from "@bfmono/apps/boltFoundry/components/Nav.tsx";
 
 const logger = getLogger(import.meta);
@@ -98,13 +98,14 @@ field Query.Home @component {
         <div className="landing-content">
           <div className="hero-content">
             {/* Github button */}
-            <CfDsButton
-              kind="dan"
-              iconLeft="brand-github"
-              text={data?.githubRepoStats?.stars.toString() ?? "--"}
+            <BfDsButton
+              variant="ghost"
+              icon="brand-github"
               href="https://github.com/bolt-foundry/bolt-foundry"
-              hrefTarget="_blank"
-            />
+              target="_blank"
+            >
+              {data?.githubRepoStats?.stars.toString() ?? "--"}
+            </BfDsButton>
             <h1 className="hero-headline">
               Structured prompts, reliable output
             </h1>
@@ -119,7 +120,7 @@ field Query.Home @component {
                 <code className="npm-command">
                   {bfCode}
                 </code>
-                <CfDsCopyButton
+                <BfDsCopyButton
                   aria-label="Copy npm command"
                   textToCopy={bfCode}
                 />
@@ -128,7 +129,12 @@ field Query.Home @component {
           </div>
         </div>
         <div className="more-content flexCenter flexColumn mobile-hide">
-          <CfDsButton iconLeft="arrowDown" onClick={scrollToSubstack} />
+          <BfDsButton
+            variant="ghost"
+            icon="arrowDown"
+            iconOnly
+            onClick={scrollToSubstack}
+          />
         </div>
       </main>
 
@@ -147,37 +153,33 @@ field Query.Home @component {
                     <h3>Thanks for joining the waitlist!</h3>
                     We'll be in touch soon.
                     <div style={{ marginTop: 12 }}>
-                      <CfDsButton
-                        kind="dan"
-                        iconLeft="arrowUp"
-                        text="Back to top"
+                      <BfDsButton
+                        variant="primary"
+                        icon="arrowUp"
                         onClick={scrollToTop}
-                      />
+                      >
+                        Back to top
+                      </BfDsButton>
                     </div>
                   </div>
                 )
                 : (
-                  <CfDsForm
+                  <BfDsForm
                     testId="waitlist-form"
                     initialData={initialFormData}
                     onSubmit={submitWaitlistForm}
-                    xstyle={{
-                      display: "flex",
-                      gap: 8,
-                      flexDirection: "column",
-                    }}
+                    className="waitlist-form-container"
                   >
-                    <CfDsFormTextInput id="name" title="What is your name?" />
-                    <CfDsFormTextInput id="email" title="What is your email?" />
-                    <CfDsFormTextInput
-                      id="company"
-                      title="Where do you work?"
+                    <BfDsInput name="name" label="What is your name?" />
+                    <BfDsInput name="email" label="What is your email?" />
+                    <BfDsInput
+                      name="company"
+                      label="Where do you work?"
                     />
-                    <CfDsFormSubmitButton
-                      testId="waitlist-submit"
+                    <BfDsFormSubmitButton
                       disabled={formSubmitting}
                       text="Submit"
-                      showSpinner={formSubmitting}
+                      spinner={formSubmitting}
                     />
                     {error && (
                       <div>
@@ -187,7 +189,7 @@ field Query.Home @component {
                         and we'll get in touch.
                       </div>
                     )}
-                  </CfDsForm>
+                  </BfDsForm>
                 )}
             </div>
           </div>
@@ -197,19 +199,21 @@ field Query.Home @component {
             <div className="flex1">
               &copy; 2025 Bolt Foundry. All rights reserved.
             </div>
-            <CfDsButton
+            <BfDsButton
               size="medium"
-              kind="danDim"
-              iconLeft="brand-discord"
+              variant="ghost"
+              icon="brand-discord"
+              iconOnly
               href="https://discord.gg/tU5ksTBfEj"
-              hrefTarget="_blank"
+              target="_blank"
             />
-            <CfDsButton
+            <BfDsButton
               size="medium"
-              kind="danDim"
-              iconLeft="brand-github"
+              variant="ghost"
+              icon="brand-github"
+              iconOnly
               href="https://github.com/bolt-foundry/bolt-foundry"
-              hrefTarget="_blank"
+              target="_blank"
             />
           </div>
         </div>

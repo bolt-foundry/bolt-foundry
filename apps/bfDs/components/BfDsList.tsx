@@ -14,6 +14,8 @@ type BfDsListProps = {
   className?: string;
   /** When true, only one item can be expanded at a time */
   accordion?: boolean;
+  /** Optional header text to display above the list */
+  header?: string;
 };
 
 type BfDsListContextType = {
@@ -26,7 +28,7 @@ type BfDsListContextType = {
 const BfDsListContext = createContext<BfDsListContextType | null>(null);
 
 export function BfDsList(
-  { children, className, accordion = false }: BfDsListProps,
+  { children, className, accordion = false, header }: BfDsListProps,
 ) {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const listRef = useRef<HTMLUListElement>(null);
@@ -58,6 +60,7 @@ export function BfDsList(
   return (
     <BfDsListContext.Provider value={contextValue}>
       <ul ref={listRef} className={listClasses}>
+        {header && <h3 className="bfds-list-header">{header}</h3>}
         {children}
       </ul>
     </BfDsListContext.Provider>

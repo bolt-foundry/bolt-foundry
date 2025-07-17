@@ -37,23 +37,12 @@ export function BfDsRadioExample() {
   ];
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: "32px",
-        padding: "24px",
-        backgroundColor: "var(--bfds-background)",
-        color: "var(--bfds-text)",
-        fontFamily: "system-ui, -apple-system, sans-serif",
-        maxWidth: "600px",
-      }}
-    >
+    <div className="bfds-example">
       <h2>BfDsRadio Examples</h2>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>Standalone Radio Group</h3>
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        <div className="bfds-example__group">
           <BfDsRadio
             name="standalone-size"
             label="Size Selection"
@@ -66,7 +55,7 @@ export function BfDsRadioExample() {
         </div>
       </div>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>With BfDsForm Integration</h3>
         <BfDsForm
           initialData={formData}
@@ -79,9 +68,7 @@ export function BfDsRadioExample() {
             setFormData(data as typeof formData);
           }}
         >
-          <div
-            style={{ display: "flex", flexDirection: "column", gap: "16px" }}
-          >
+          <div className="bfds-example__group">
             <BfDsRadio
               name="size"
               label="Size"
@@ -117,9 +104,9 @@ export function BfDsRadioExample() {
         </BfDsCallout>
       </div>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>Orientations</h3>
-        <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+        <div className="bfds-example__group">
           <BfDsRadio
             name="vertical-example"
             label="Vertical Layout (default)"
@@ -136,9 +123,9 @@ export function BfDsRadioExample() {
         </div>
       </div>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>Sizes</h3>
-        <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+        <div className="bfds-example__group">
           <BfDsRadio
             name="small-example"
             label="Small Size"
@@ -160,9 +147,9 @@ export function BfDsRadioExample() {
         </div>
       </div>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>States</h3>
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        <div className="bfds-example__group">
           <BfDsRadio
             name="disabled-example"
             label="Disabled Group"

@@ -18,23 +18,12 @@ export function BfDsToggleExample() {
   });
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: "32px",
-        padding: "24px",
-        backgroundColor: "var(--bfds-background)",
-        color: "var(--bfds-text)",
-        fontFamily: "system-ui, -apple-system, sans-serif",
-        maxWidth: "600px",
-      }}
-    >
+    <div className="bfds-example">
       <h2>BfDsToggle Examples</h2>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>Standalone Toggle</h3>
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        <div className="bfds-example__group">
           <BfDsToggle
             label="Enable feature"
             checked={standaloneChecked}
@@ -44,7 +33,7 @@ export function BfDsToggleExample() {
         </div>
       </div>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>With BfDsForm Integration</h3>
         <BfDsForm
           initialData={formData}
@@ -57,9 +46,7 @@ export function BfDsToggleExample() {
             setFormData(data as typeof formData);
           }}
         >
-          <div
-            style={{ display: "flex", flexDirection: "column", gap: "16px" }}
-          >
+          <div className="bfds-example__group">
             <BfDsToggle
               name="darkMode"
               label="Dark mode"
@@ -90,9 +77,9 @@ export function BfDsToggleExample() {
         </BfDsCallout>
       </div>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>Sizes</h3>
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        <div className="bfds-example__group">
           <BfDsToggle
             label="Small toggle"
             size="small"
@@ -116,9 +103,9 @@ export function BfDsToggleExample() {
         </div>
       </div>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>States</h3>
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        <div className="bfds-example__group">
           <BfDsToggle
             label="Unchecked"
             checked={false}

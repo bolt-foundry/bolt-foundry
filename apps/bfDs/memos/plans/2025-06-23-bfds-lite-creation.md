@@ -106,7 +106,7 @@ as part of the 2025-06-25 design system migration.
       success, focus)
 - [x] Separate example files pattern (`Component.example.tsx`)
 - [x] Demo page setup with Button, Icon, Tabs, Form, List, Select, Checkbox,
-      Radio, and Toggle examples
+      Radio, Toggle, Callout, and Pill examples
 - [x] CSS moved to static folder (per system requirements)
 - [x] Main index.ts exports with all components
 - [x] Icon library moved to `lib/icons.ts`
@@ -128,7 +128,8 @@ as part of the 2025-06-25 design system migration.
   - [x] ~~Radio~~ ✅ **Completed** (BfDsRadio with flexible layouts)
   - [x] ~~Toggle~~ ✅ **Completed** (BfDsToggle with smooth animations)
   - [x] ~~Toast/Notification~~ ✅ **Completed** (BfDsCallout with variants and
-        auto-dismiss, plus BfDsToast system with portal rendering)
+        auto-dismiss, plus BfDsToast system with portal rendering) auto-dismiss)
+  - [x] ~~Pill~~ ✅ **Completed** (BfDsPill with labels, icons, and actions)
   - [ ] Modal
 - [x] **Enhanced List components**:
   - [x] ~~Expandable/collapsible list sections~~ ✅ **Completed** (BfDsListItem
@@ -178,6 +179,7 @@ apps/bfDs/
 │   ├── BfDsCallout.tsx (notification variants)
 │   ├── BfDsToast.tsx (portal-based toast notifications)
 │   ├── BfDsToastProvider.tsx (toast context provider)
+│   ├── BfDsPill.tsx (compact pills with labels, icons, actions)
 │   └── __examples__/
 │       ├── BfDsButton.example.tsx
 │       ├── BfDsIcon.example.tsx
@@ -193,7 +195,9 @@ apps/bfDs/
 │       ├── BfDsRadio.example.tsx
 │       ├── BfDsToggle.example.tsx
 │       ├── BfDsCallout.example.tsx
-│       └── BfDsToast.example.tsx
+│       ├── BfDsToast.example.tsx
+│       ├── BfDsCallout.example.tsx
+│       └── BfDsPill.example.tsx
 ├── lib/
 │   └── icons.ts (80+ icon definitions)
 ├── demo/
@@ -245,6 +249,9 @@ CSS: static/bfDsStyle.css (comprehensive styling with form states and notificati
     - **Form integration tests**: Dual-mode operation and context detection
     - **TypeScript safety**: Proper type checking and prop validation
     - **Production readiness**: Ensuring reliability and maintainability
+13. **Automatic demo integration**: New components are automatically added to
+    the demo page to ensure comprehensive showcasing and testing of all
+    components
 
 ## Next Steps
 

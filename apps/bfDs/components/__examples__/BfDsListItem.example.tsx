@@ -8,21 +8,10 @@ export function BfDsListItemExample() {
     visible: false,
   });
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: "32px",
-        padding: "24px",
-        backgroundColor: "var(--bfds-background)",
-        color: "var(--bfds-text)",
-        fontFamily: "system-ui, -apple-system, sans-serif",
-        maxWidth: "600px",
-      }}
-    >
+    <div className="bfds-example">
       <h2>BfDsListItem Examples</h2>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>Item States</h3>
         <ul className="bfds-list">
           <BfDsListItem>Normal Item</BfDsListItem>
@@ -31,7 +20,7 @@ export function BfDsListItemExample() {
         </ul>
       </div>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>Clickable Items</h3>
         <ul className="bfds-list">
           <BfDsListItem
@@ -56,7 +45,7 @@ export function BfDsListItemExample() {
         </ul>
       </div>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>Mixed Usage</h3>
         <ul className="bfds-list">
           <BfDsListItem>Static Item</BfDsListItem>
@@ -80,7 +69,7 @@ export function BfDsListItemExample() {
         </ul>
       </div>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>Expandable Items</h3>
         <p>
           Items with expandContents show an arrow icon and can be expanded to
@@ -149,7 +138,7 @@ export function BfDsListItemExample() {
         </ul>
       </div>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>Rich Expandable Content</h3>
         <ul className="bfds-list">
           <BfDsListItem
