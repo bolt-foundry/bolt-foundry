@@ -2,6 +2,7 @@ import { hydrateRoot } from "react-dom/client";
 import { getLogger } from "@bolt-foundry/logger";
 import App from "./src/App.tsx";
 import "./src/index.css";
+import "../../static/bfDsStyle.css";
 
 const logger = getLogger(import.meta);
 

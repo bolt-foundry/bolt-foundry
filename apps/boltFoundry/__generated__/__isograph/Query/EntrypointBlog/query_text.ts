@@ -1,4 +1,5 @@
 export default 'query EntrypointBlog ($slug: String) {\
+  id,\
   blogPost____slug___v_slug: blogPost(slug: $slug) {\
     id,\
     author,\
