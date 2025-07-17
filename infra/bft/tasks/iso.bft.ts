@@ -24,7 +24,7 @@ export async function isoCommand(options: Array<string>): Promise<number> {
 
     try {
       const result = await runShellCommand(
-        ["deno", "run", "-A", "npm:@isograph/compiler", ...options],
+        ["deno", "run", "-A", "npm:@isograph/compiler", "compile", ...options],
         workingDir,
       );
 

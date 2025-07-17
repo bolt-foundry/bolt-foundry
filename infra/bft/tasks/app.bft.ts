@@ -30,7 +30,7 @@ async function app(args: Array<string>): Promise<number> {
     boolean: ["dev", "build", "no-open", "help"],
     string: ["port"],
     default: {
-      port: "3000",
+      port: "8000",
     },
   });
 
@@ -42,7 +42,7 @@ Launch the Bolt Foundry landing page
 Options:
   --dev              Run in development mode with Vite HMR
   --build            Build assets without starting server
-  --port             Specify server port (default: 3000)
+  --port             Specify server port (default: 8000)
   --no-open          Don't auto-open browser on startup
   --help             Show this help message
 
@@ -88,10 +88,27 @@ Examples:
   // Start Vite dev server if in dev mode
   let viteProcess: Deno.ChildProcess | undefined;
   let vitePort: number | undefined;
+  let isoProcess: Deno.ChildProcess | undefined;
 
   if (flags.dev) {
-    // Use a port offset from the main port for Vite (e.g., 3000 -> 5000)
-    vitePort = port + 2000;
+    // Start isograph watcher
+    ui.output("Starting isograph watcher...");
+
+    const isoCommand = new Deno.Command("deno", {
+      args: [
+        "run",
+        "-A",
+        new URL(import.meta.resolve("../../../infra/bft/bft.ts")).pathname,
+        "iso",
+        "--watch",
+      ],
+      stdout: "inherit",
+      stderr: "inherit",
+    });
+
+    isoProcess = isoCommand.spawn();
+    // Use a port offset from the main port for Vite (e.g., 8000 -> 8080)
+    vitePort = port + 80;
 
     ui.output(`Starting Vite dev server on port ${vitePort}...`);
 
@@ -195,6 +212,9 @@ Examples:
 
   // Handle cleanup on exit
   const cleanup = () => {
+    if (isoProcess) {
+      isoProcess.kill();
+    }
     if (viteProcess) {
       viteProcess.kill();
     }
@@ -209,7 +229,10 @@ Examples:
   // Wait for server process to exit
   const serverResult = await serverProcess.status;
 
-  // Clean up Vite process
+  // Clean up processes
+  if (isoProcess) {
+    isoProcess.kill();
+  }
   if (viteProcess) {
     viteProcess.kill();
   }
