@@ -34,6 +34,7 @@ Deno.test("GraphQL Connection Integration - BfDeck.samples connection without pa
       name: "Integration Test Deck",
       systemPrompt: "Test GraphQL connections",
       description: "Deck for testing connection resolvers",
+      slug: "integration-test-deck",
     });
 
     const sample1 = await deck.createTargetNode(BfSample, {
@@ -101,6 +102,7 @@ Deno.test("GraphQL Connection Integration - BfDeck.samples connection with pagin
       name: "Pagination Test Deck",
       systemPrompt: "Test pagination errors",
       description: "Deck for testing pagination error handling",
+      slug: "pagination-test-deck",
     });
 
     await deck.createTargetNode(BfSample, {
@@ -147,6 +149,7 @@ Deno.test("GraphQL Connection Integration - BfSample.results connection without 
       name: "Results Test Deck",
       systemPrompt: "Test result connections",
       description: "Deck for testing result connection resolvers",
+      slug: "results-test-deck",
     });
 
     // Create sample and graders for test setup
@@ -231,6 +234,7 @@ Deno.test("GraphQL Connection Integration - BfSample.results connection with pag
       name: "Pagination Error Test Deck",
       systemPrompt: "Test pagination errors in results",
       description: "Testing pagination error handling",
+      slug: "pagination-error-test-deck",
     });
 
     // Create sample for test setup
@@ -282,6 +286,7 @@ Deno.test("GraphQL Connection Integration - empty connections should work correc
       name: "Empty Deck",
       systemPrompt: "Empty deck for testing",
       description: "This deck has no samples",
+      slug: "empty-deck",
     });
 
     // Simulate GraphQL connection resolver call for empty data using traversal methods
@@ -315,6 +320,7 @@ Deno.test("GraphQL Connection Integration - connection preserves node properties
       name: "Property Preservation Deck",
       systemPrompt: "Testing property preservation",
       description: "Verify all properties are maintained",
+      slug: "property-preservation-deck",
     });
 
     const sample = await deck.createTargetNode(BfSample, {

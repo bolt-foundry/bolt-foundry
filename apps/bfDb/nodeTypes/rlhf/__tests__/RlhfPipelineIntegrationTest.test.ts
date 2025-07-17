@@ -38,6 +38,7 @@ Deno.test("RLHF Pipeline Integration - Complete end-to-end workflow", async () =
         "Evaluate code review responses for clarity, accuracy, and helpfulness. Rate on a scale of -3 to +3.",
       description:
         "A comprehensive deck for evaluating the quality of code review responses in software development teams.",
+      slug: "code-review-quality-deck",
     });
 
     // Verify deck creation

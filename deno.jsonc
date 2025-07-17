@@ -119,6 +119,7 @@
     "**/node_modules/**",
     "examples/**",
     "**/dist/**",
+    "**/.vite/**",
     "packages/aibff",
     "apps/contacts/**"
   ],

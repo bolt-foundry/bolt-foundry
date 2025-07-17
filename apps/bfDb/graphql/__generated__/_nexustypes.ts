@@ -99,6 +99,7 @@ export interface NexusGenFieldTypes {
     description: string | null; // String
     id: string; // ID!
     name: string | null; // String
+    slug: string; // String!
     systemPrompt: string | null; // String
   }
   BfEdge: { // field return type
@@ -184,6 +185,7 @@ export interface NexusGenFieldTypes {
     blogPost: NexusGenRootTypes['BlogPost'] | null; // BlogPost
     blogPosts: NexusGenRootTypes['BlogPostConnection'] | null; // BlogPostConnection
     currentViewer: NexusGenRootTypes['CurrentViewer'] | null; // CurrentViewer
+    deck: NexusGenRootTypes['BfDeck'] | null; // BfDeck
     documentsBySlug: NexusGenRootTypes['PublishedDocument'] | null; // PublishedDocument
     githubRepoStats: NexusGenRootTypes['GithubRepoStats'] | null; // GithubRepoStats
     id: string | null; // ID
@@ -210,6 +212,7 @@ export interface NexusGenFieldTypeNames {
     description: 'String'
     id: 'ID'
     name: 'String'
+    slug: 'String'
     systemPrompt: 'String'
   }
   BfEdge: { // field return type name
@@ -295,6 +298,7 @@ export interface NexusGenFieldTypeNames {
     blogPost: 'BlogPost'
     blogPosts: 'BlogPostConnection'
     currentViewer: 'CurrentViewer'
+    deck: 'BfDeck'
     documentsBySlug: 'PublishedDocument'
     githubRepoStats: 'GithubRepoStats'
     id: 'ID'
@@ -321,6 +325,7 @@ export interface NexusGenArgTypes {
     createDeck: { // args
       description?: string | null; // String
       name: string; // String!
+      slug: string; // String!
       systemPrompt: string; // String!
     }
     joinWaitlist: { // args
@@ -345,6 +350,9 @@ export interface NexusGenArgTypes {
       first?: number | null; // Int
       last?: number | null; // Int
       sortDirection?: string | null; // String
+    }
+    deck: { // args
+      slug?: string | null; // String
     }
     documentsBySlug: { // args
       slug?: string | null; // String
