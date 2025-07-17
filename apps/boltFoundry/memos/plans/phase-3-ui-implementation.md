@@ -85,21 +85,31 @@ components (80% foundation ready).
 - BfSample has `submitSample` mutation for API integration
 - GraphQL mutations functional for deck and sample management
 
-### ❌ **MISSING COMPONENTS (20% of Phase 3)**
+### ✅ **UPDATED STATUS (July 2025)**
 
-**Deck Slug System (10% of Phase 3)**
+**Deck Slug System (COMPLETED)**
 
-- `slug` field in BfDeck for stable API identifiers
-- `orgslug_deckslug` format for external API integration
-- Lookup mechanism for finding decks by slug
+- ✅ `slug` field in BfDeck with `orgslug_deckslug` format
+- ✅ Deck lookup by slug query in GraphQL
+- ✅ Auto-generated slugs for stable API identifiers
+- ✅ Telemetry endpoint with deck deduplication via slug
+
+**Sample Collection System (COMPLETED)**
+
+- ✅ MVP telemetry endpoint at `/api/telemetry`
+- ✅ Automatic deck creation from telemetry metadata
+- ✅ Sample submission via `connectBoltFoundry` wrapper (in progress)
+- ✅ Authentication via `bf+{orgId}` API key format
+
+### ❌ **MISSING COMPONENTS (15% of Phase 3)**
 
 **Auto-Evaluation Service (5% of Phase 3)**
 
 - Service to automatically evaluate samples on submission
-- Integration with `submitSample` mutation to trigger AI evaluation
+- Integration with telemetry endpoint to trigger AI evaluation
 - Adaptation of existing aibff evaluation logic
 
-**Chat + Cards UI (5% of Phase 3)**
+**Chat + Cards UI (10% of Phase 3)**
 
 - Navigation sidebar with collapsible behavior
 - Conversation view with AI assistant
@@ -110,12 +120,31 @@ components (80% foundation ready).
 
 ### Backend Dependencies
 
-**Prerequisites**: Backend services detailed in
-`/apps/boltfoundry-com/memos/plans/markdown-deck-sample-collection.md`
+**Status Update**: Most backend services are now implemented via telemetry
+endpoint in `apps/boltfoundry-com/handlers/telemetry.ts`
 
-- **Deck Slug System**: Auto-generated slugs for stable API identifiers
-- **Auto-Evaluation Service**: AI evaluation on sample submission
-- **Disagreement Detection**: Threshold-based AI/human disagreement queries
+- ✅ **Deck Slug System**: Implemented with auto-generated slugs for stable API
+  identifiers
+- ✅ **Sample Collection**: Telemetry endpoint creates BfSample records
+  automatically
+- ❌ **Auto-Evaluation Service**: Still needs AI evaluation on sample submission
+- ❌ **Disagreement Detection**: Still needs threshold-based AI/human
+  disagreement queries
+
+### Revised Architecture - Telemetry-First Approach
+
+**Key Insight**: Decks are created automatically via telemetry, not manually via
+UI. The UI should focus on reviewing and providing feedback on existing samples.
+
+**Production Flow**:
+
+1. **Deck Creation**: Automatic via `connectBoltFoundry` telemetry
+2. **Sample Collection**: Automatic via telemetry endpoint
+3. **AI Evaluation**: Triggered on sample submission (planned)
+4. **Human Review**: Via UI for feedback and disagreement resolution
+
+**Testing UI Focus**: Build minimal isograph-based interface to test the human
+feedback loop on samples created via telemetry.
 
 ### Frontend Components
 
@@ -426,11 +455,6 @@ export const appRoutes: RouteMap = new Map([
   queries
 
 ## Implementation Timeline
-
-**Total Estimated Time**: 3-4 days
-
-**Sprint 1** (Days 1-3): Chat + cards UI components and layout **Sprint 2**
-(Days 4): Integration and testing
 
 **Backend Prerequisites**: Implemented via
 `/apps/boltfoundry-com/memos/plans/markdown-deck-sample-collection.md`
