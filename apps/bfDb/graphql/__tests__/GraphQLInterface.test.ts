@@ -137,10 +137,20 @@ Deno.test("determineInterface detects parent classes with @GraphQLInterface", as
     resolveType: () => null,
   });
 
+  // Also need the Node interface since TestGraphQLNode implements it
+  const nodeInterface = interfaceType({
+    name: "Node",
+    definition(t) {
+      t.nonNull.id("id");
+    },
+    resolveType: () => null,
+  });
+
   // Build schema with all types - we create our own list to avoid
   // duplicating any interface definitions
   const types = [
-    // Add only our custom interface for this test
+    // Add our interfaces
+    nodeInterface,
     customInterface,
     // Then add our object types that implement these interfaces
     objectType(testNodeNexusTypes.mainType),

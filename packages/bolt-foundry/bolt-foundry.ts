@@ -60,6 +60,11 @@ export type TelemetryData = {
     headers: Record<string, string>;
     body: OpenAIResponseBody;
   };
+  bfMetadata?: {
+    deckName: string;
+    deckContent: string;
+    contextVariables: Record<string, unknown>;
+  };
 };
 
 /**
@@ -113,8 +118,32 @@ export function connectBoltFoundry(
       // Clone the request to analyze later
       const clonedReq = new Request(input, init);
 
-      // Send the original request to the API
-      const response = await fetch(input, init);
+      // Extract bfMetadata from request body if present, and create a clean request for the API
+      let cleanedInit = init;
+      let bfMetadata: TelemetryData["bfMetadata"] | undefined;
+
+      if (init?.body && typeof init.body === "string") {
+        try {
+          const parsedBody = JSON.parse(init.body);
+          if (parsedBody.bfMetadata) {
+            bfMetadata = parsedBody.bfMetadata;
+            // Create a new request body without bfMetadata
+            delete parsedBody.bfMetadata;
+            cleanedInit = {
+              ...init,
+              body: JSON.stringify(parsedBody),
+            };
+          }
+        } catch (e) {
+          logger.debug(
+            "Could not parse request body for bfMetadata extraction",
+            e,
+          );
+        }
+      }
+
+      // Send the cleaned request to the API (without bfMetadata)
+      const response = await fetch(input, cleanedInit);
       const clonedRes = response.clone();
 
       // Process telemetry in a non-blocking way
@@ -178,6 +207,7 @@ export function connectBoltFoundry(
               headers: responseHeaders,
               body: responseBody,
             },
+            ...(bfMetadata && { bfMetadata }),
           };
 
           // Send to collector

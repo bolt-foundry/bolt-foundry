@@ -1,46 +1,45 @@
 import { iso } from "@iso-bfc";
-import { BfDsButton } from "@bfmono/apps/bfDs/index.ts";
-import { useRouter } from "../contexts/RouterContext.tsx";
 
 export const Home = iso(`
   field Query.Home @component {
     __typename
   }
-`)(function Home() {
-  const { navigate } = useRouter();
-
+`)(function Home({ data }) {
   return (
-    <div style={{ padding: "2rem", maxWidth: "800px", margin: "0 auto" }}>
-      <h1>Bolt Foundry</h1>
-      <p>Coming Soon</p>
-
-      <div style={{ marginTop: "2rem" }}>
-        <p>
-          This is the Phase 1 implementation of the Bolt Foundry landing page.
-        </p>
-        <p>Architecture foundation established with Vite + Deno + React.</p>
-
-        <div style={{ marginTop: "2rem" }}>
-          <BfDsButton
-            onClick={() => navigate("/ui")}
-            variant="primary"
-            size="medium"
-          >
-            View UI Demo
-          </BfDsButton>
-        </div>
-      </div>
-
-      <footer
+    <div 
+      style={{
+        backgroundColor: 'var(--background)',
+        color: 'var(--text)',
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        textAlign: 'center',
+        padding: '20px'
+      }}
+    >
+      <h1 
         style={{
-          marginTop: "4rem",
-          textAlign: "center",
-          fontSize: "0.9rem",
-          color: "#666",
+          fontSize: '3em',
+          fontFamily: 'var(--marketingFontFamily)',
+          color: 'var(--text)',
+          marginBottom: '24px',
+          lineHeight: '1.1'
         }}
       >
-        © 2025 Bolt Foundry. All rights reserved.
-      </footer>
+        Do something with your feedback.
+      </h1>
+      <p 
+        style={{
+          fontSize: '1.5em',
+          color: 'var(--text)',
+          fontFamily: 'var(--fontFamily)',
+          opacity: 0.8
+        }}
+      >
+        Coming soon.
+      </p>
     </div>
   );
 });

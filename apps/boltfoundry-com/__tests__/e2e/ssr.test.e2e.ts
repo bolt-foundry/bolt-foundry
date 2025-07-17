@@ -224,8 +224,13 @@ Deno.test("SSR serves correct response headers", async () => {
     );
 
     assert(
-      html?.includes("Coming Soon"),
-      "HTML should contain server-rendered subtitle",
+      html?.includes("Structured prompts, reliable output"),
+      "HTML should contain server-rendered hero headline",
+    );
+
+    assert(
+      html?.includes("Open source tooling to turn prompt engineering"),
+      "HTML should contain server-rendered hero subheadline",
     );
 
     // Verify that the rehydration script is included

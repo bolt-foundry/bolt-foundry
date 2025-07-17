@@ -5,7 +5,9 @@ import { getLogger } from "@bolt-foundry/logger";
 import { renderToReadableStream } from "react-dom/server";
 import { ServerRenderedPage } from "./server/components/ServerRenderedPage.tsx";
 import App from "./src/App.tsx";
+import { ClientRoot } from "./ClientRoot.tsx";
 import { appRoutes, isographAppRoutes } from "./routes.ts";
+import { getIsographEnvironment } from "./server/isographEnvironment.ts";
 import { createApiRoutes } from "./apiRoutes.ts";
 
 const logger = getLogger(import.meta);
@@ -110,16 +112,34 @@ const handler = async (request: Request): Promise<Response> => {
 
   // Check if this should be handled by React routing
   if (shouldHandleWithReact(url.pathname)) {
-    // Handle with React SSR
-    const environment = {
+    // Handle with React SSR using AppEnvironmentProvider pattern
+    const queryParams = Object.fromEntries(url.searchParams.entries());
+    const routeParams = {}; // TODO: Extract route params from URL
+    
+    const clientEnvironment = {
+      initialPath: url.pathname,
+      queryParams,
+      routeParams,
+      path: url.pathname,
+    };
+
+    const serverEnvironment = {
+      ...clientEnvironment,
+      IS_SERVER_RENDERING: true,
+      isographServerEnvironment: getIsographEnvironment(request),
+    };
+
+    const legacyEnvironment = {
       mode: isDev ? "development" : "production",
       port: port,
       currentPath: url.pathname,
     };
 
     const element = (
-      <ServerRenderedPage environment={environment} assetPaths={assetPaths}>
-        <App initialPath={url.pathname} />
+      <ServerRenderedPage environment={legacyEnvironment} assetPaths={assetPaths} serverEnvironment={serverEnvironment}>
+        <ClientRoot {...serverEnvironment}>
+          <App />
+        </ClientRoot>
       </ServerRenderedPage>
     );
 
