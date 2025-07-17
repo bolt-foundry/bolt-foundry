@@ -49,12 +49,8 @@ export function ServerRenderedPage(
         >
         </script>
 
-        <link rel="stylesheet" href="/static/marketingpagestyle.css" />
-        <link rel="stylesheet" href="/static/cfDsStyle.css" />
         <link rel="stylesheet" href="/static/bfDsStyle.css" />
         <link rel="stylesheet" href="/static/blogStyle.css" />
-        <link rel="stylesheet" href="/static/formatterStyle.css" />
-        <link rel="stylesheet" href="/static/appStyle.css" />
         <link rel="stylesheet" href="/static/landingStyle.css" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         {

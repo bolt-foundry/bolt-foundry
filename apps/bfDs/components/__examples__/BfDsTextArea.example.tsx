@@ -11,23 +11,12 @@ export function BfDsTextAreaExample() {
   );
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: "24px",
-        padding: "24px",
-        backgroundColor: "var(--bfds-background)",
-        color: "var(--bfds-text)",
-        fontFamily: "system-ui, -apple-system, sans-serif",
-        maxWidth: "600px",
-      }}
-    >
+    <div className="bfds-example">
       <h2>BfDsTextArea Examples</h2>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>Standalone Mode</h3>
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        <div className="bfds-example__group">
           <BfDsTextArea
             label="Your Message"
             placeholder="Enter your message here..."
@@ -47,9 +36,9 @@ export function BfDsTextAreaExample() {
         </div>
       </div>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>TextArea States</h3>
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        <div className="bfds-example__group">
           <BfDsTextArea
             label="Error State"
             placeholder="Enter some content"
@@ -79,9 +68,9 @@ export function BfDsTextAreaExample() {
         </div>
       </div>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>Resize Options</h3>
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        <div className="bfds-example__group">
           <BfDsTextArea
             label="No Resize"
             placeholder="Cannot be resized"
@@ -117,9 +106,9 @@ export function BfDsTextAreaExample() {
         </div>
       </div>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>Different Sizes</h3>
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        <div className="bfds-example__group">
           <BfDsTextArea
             label="Small (2 rows)"
             placeholder="Small textarea"
@@ -144,7 +133,7 @@ export function BfDsTextAreaExample() {
         </div>
       </div>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>Without Label</h3>
         <BfDsTextArea
           placeholder="Just a placeholder with help text"

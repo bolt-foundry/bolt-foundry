@@ -1,12 +1,14 @@
 import type * as React from "react";
 import { BfDsIcon, type BfDsIconName } from "./BfDsIcon.tsx";
+import { BfDsSpinner } from "./BfDsSpinner.tsx";
 
 export type BfDsButtonSize = "small" | "medium" | "large";
 export type BfDsButtonVariant =
   | "primary"
   | "secondary"
   | "outline"
-  | "ghost";
+  | "ghost"
+  | "ghost-primary";
 
 export type BfDsButtonProps = {
   /** Button content text or elements */
@@ -37,6 +39,8 @@ export type BfDsButtonProps = {
   target?: "_blank" | "_self" | "_parent" | "_top" | string;
   /** React Router link path (not implemented yet, falls back to anchor tag) */
   link?: string;
+  /** When true, shows spinner animation */
+  spinner?: boolean;
 } & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 export function BfDsButton({
@@ -54,6 +58,7 @@ export function BfDsButton({
   href,
   target = "_blank",
   link,
+  spinner = false,
   ...props
 }: BfDsButtonProps) {
   const handleClick = (
@@ -80,6 +85,12 @@ export function BfDsButton({
     ? "large"
     : "medium";
 
+  // Determine spinner size based on button size
+  let spinnerSize = size === "small" ? 16 : size === "large" ? 32 : 24;
+  if (iconOnly) {
+    spinnerSize = size === "small" ? 24 : size === "large" ? 40 : 32;
+  }
+
   // Render icon element
   const iconElement = icon
     ? (
@@ -98,6 +109,11 @@ export function BfDsButton({
         onClick={handleClick}
         target="_self"
       >
+        {spinner && (
+          <div className="bfds-button-spinner">
+            <BfDsSpinner size={spinnerSize} />
+          </div>
+        )}
         {iconPosition === "left" && iconElement}
         {!iconOnly && children}
         {iconPosition === "right" && iconElement}
@@ -113,6 +129,11 @@ export function BfDsButton({
         onClick={handleClick}
         target={target}
       >
+        {spinner && (
+          <div className="bfds-button-spinner">
+            <BfDsSpinner size={spinnerSize} />
+          </div>
+        )}
         {iconPosition === "left" && iconElement}
         {!iconOnly && children}
         {iconPosition === "right" && iconElement}
@@ -128,6 +149,11 @@ export function BfDsButton({
       disabled={disabled}
       onClick={handleClick}
     >
+      {spinner && (
+        <div className="bfds-button-spinner">
+          <BfDsSpinner size={spinnerSize} />
+        </div>
+      )}
       {iconPosition === "left" && iconElement}
       {!iconOnly && children}
       {iconPosition === "right" && iconElement}

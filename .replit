@@ -29,7 +29,7 @@ pattern = "examples/**/*.{ts,tsx,js,jsx}"
 start = ["typescript-language-server", "--stdio"]
 
 [workflows]
-runButton = "Run for development"
+runButton = "BFF build and run"
 
 [[workflows.workflow]]
 name = "BFF build and run"
@@ -106,7 +106,6 @@ mode = "sequential"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "bff e2e"
-
 
 [[workflows.workflow]]
 name = "Run internalbf.com"

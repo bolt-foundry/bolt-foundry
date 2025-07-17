@@ -2,7 +2,7 @@ import { iso } from "@bfmono/apps/boltFoundry/__generated__/__isograph/iso.ts";
 import { RouterLink } from "@bfmono/apps/boltFoundry/components/Router/RouterLink.tsx";
 import { CfDsButton } from "@bfmono/apps/cfDs/components/CfDsButton.tsx";
 import { blogMetadata } from "@bfmono/apps/boltFoundry/lib/blogHelper.ts";
-import { CfDsPill } from "@bfmono/apps/cfDs/components/CfDsPill.tsx";
+import { BfDsPill } from "@bfmono/apps/bfDs/components/BfDsPill.tsx";
 
 // Blog list component for BlogPostConnection
 export const BlogList = iso(`
@@ -55,10 +55,9 @@ export const BlogList = iso(`
             const previewImage = heroImage;
             const tagsArray = tags ? JSON.parse(tags) : [];
             const renderTags = tagsArray.map((tag: string) => (
-              <CfDsPill
-                color="primaryColor"
-                labelColor="textSecondary"
-                label={tag}
+              <BfDsPill
+                variant="primary"
+                text={tag}
                 key={tag}
               />
             ));
