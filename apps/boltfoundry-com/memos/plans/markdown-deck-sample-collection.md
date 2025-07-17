@@ -14,6 +14,57 @@ automatically collect samples when AI APIs are called.
 (`readLocalDeck()`) and remote deck retrieval (`fetchDeck()`). The MVP focuses
 on local markdown files, with remote deck management as a future enhancement.
 
+## Implementation Status
+
+### ✅ **MVP Telemetry Endpoint Complete** (July 2025)
+
+**What's Built:**
+
+- **Telemetry Handler** (`apps/boltfoundry-com/handlers/telemetry.ts`) -
+  Processes telemetry data and creates BfDeck/BfSample records
+- **API Routes Structure** (`apps/boltfoundry-com/apiRoutes.ts`) - Clean
+  separation of API routes from React routes
+- **Integration Tests**
+  (`apps/boltfoundry-com/__tests__/telemetry.integration.test.ts`) - Full test
+  suite with 7 passing tests
+- **Server Integration** - Added `/api/telemetry` endpoint to boltfoundry-com
+  server
+
+**What's Working:**
+
+- ✅ API key authentication (`bf+{orgId}` format)
+- ✅ JSON parsing and validation
+- ✅ Error handling (missing API key, invalid JSON, wrong HTTP method)
+- ✅ Deck creation from telemetry metadata (simplified - creates new deck each
+  time)
+- ✅ Sample creation with telemetry data stored as JSON
+- ✅ Proper HTTP responses and status codes
+- ✅ Database integration with BfOrganization, BfDeck, and BfSample nodes
+
+**Simplified for MVP:**
+
+- **No content-addressable hashing** - Skipped positional hash generation for
+  now
+- **No BfDeckVersion entity** - Using simplified deck creation pattern
+- **No deck deduplication** - Creates new deck for each telemetry request
+- **Basic authentication** - Simple `bf+{orgId}` API key format
+
+**Current Limitations:**
+
+- Organizations must exist in database (normal for production, but requires
+  setup for testing)
+- No deck versioning or content-addressable identification
+- No deck deduplication or conflict resolution
+
+### 🔄 **Next Steps for Full Implementation:**
+
+1. **Enhanced Telemetry Integration** - Update
+   `packages/bolt-foundry/bolt-foundry.ts` to support `bfMetadata`
+2. **Deck Loading Functions** - Implement `readLocalDeck()` and `fetchDeck()`
+3. **Content-Addressable Hashing** - Add positional hash generation system
+4. **BfDeckVersion Entity** - Implement proper versioning system
+5. **Provider Updates** - Remove Mistral, add OpenRouter support
+
 ## Architecture Overview
 
 ### Markdown-First Approach
