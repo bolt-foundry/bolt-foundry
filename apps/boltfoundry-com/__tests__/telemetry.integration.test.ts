@@ -162,6 +162,55 @@ Deno.test("Telemetry endpoint - creates deck if not exists", async () => {
   });
 });
 
+Deno.test("Telemetry endpoint - deduplicates decks by slug", async () => {
+  await withIsolatedDb(async () => {
+    const { cv } = await setupTestData();
+
+    const telemetryData = createMockTelemetryData({
+      bfMetadata: {
+        deckName: "customer-service",
+        deckContent:
+          "# Customer Service\n\nYou are a helpful customer service agent.",
+        contextVariables: { feature: "chat" },
+      },
+    });
+
+    const mockRequest = new Request("http://localhost:3000/api/telemetry", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-bf-api-key": `bf+${cv.orgBfOid}`,
+      },
+      body: JSON.stringify(telemetryData),
+    });
+
+    // First request - should create deck
+    const response1 = await handleTelemetryRequest(mockRequest);
+    assertEquals(response1.status, 200);
+    const responseData1 = await response1.json();
+    assertEquals(responseData1.success, true);
+    const firstDeckId = responseData1.deckId;
+
+    // Second request with same deck name - should reuse existing deck
+    const mockRequest2 = new Request("http://localhost:3000/api/telemetry", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-bf-api-key": `bf+${cv.orgBfOid}`,
+      },
+      body: JSON.stringify(telemetryData),
+    });
+    const response2 = await handleTelemetryRequest(mockRequest2);
+    assertEquals(response2.status, 200);
+    const responseData2 = await response2.json();
+    assertEquals(responseData2.success, true);
+    const secondDeckId = responseData2.deckId;
+
+    // Should be the same deck
+    assertEquals(firstDeckId, secondDeckId);
+  });
+});
+
 Deno.test("Telemetry endpoint - handles missing bfMetadata", async () => {
   await withIsolatedDb(async () => {
     const cv = await makeLoggedInCv();
