@@ -64,6 +64,8 @@ export interface NexusGenObjects {
     cursor: string; // String!
     node?: NexusGenRootTypes['BlogPost'] | null; // BlogPost
   }
+  CurrentViewerLoggedIn: {};
+  CurrentViewerLoggedOut: {};
   GithubRepoStats: {};
   JoinWaitlistPayload: { // root type
     message?: string | null; // String
@@ -82,9 +84,9 @@ export interface NexusGenObjects {
 }
 
 export interface NexusGenInterfaces {
-  BfNode: any;
-  CurrentViewer: any;
-  Node: any;
+  BfNode: core.Discriminate<'BfDeck', 'optional'> | core.Discriminate<'BfEdge', 'optional'> | core.Discriminate<'BfGrader', 'optional'> | core.Discriminate<'BfGraderResult', 'optional'> | core.Discriminate<'BfOrganization', 'optional'> | core.Discriminate<'BfPerson', 'optional'> | core.Discriminate<'BfSample', 'optional'> | core.Discriminate<'BfSampleFeedback', 'optional'>;
+  CurrentViewer: core.Discriminate<'CurrentViewerLoggedIn', 'optional'> | core.Discriminate<'CurrentViewerLoggedOut', 'optional'>;
+  Node: core.Discriminate<'BlogPost', 'optional'> | core.Discriminate<'GithubRepoStats', 'optional'> | core.Discriminate<'PublishedDocument', 'optional'>;
 }
 
 export interface NexusGenUnions {
@@ -99,6 +101,7 @@ export interface NexusGenFieldTypes {
     description: string | null; // String
     id: string; // ID!
     name: string | null; // String
+    slug: string; // String!
     systemPrompt: string | null; // String
   }
   BfEdge: { // field return type
@@ -157,6 +160,16 @@ export interface NexusGenFieldTypes {
     cursor: string; // String!
     node: NexusGenRootTypes['BlogPost'] | null; // BlogPost
   }
+  CurrentViewerLoggedIn: { // field return type
+    id: string | null; // ID
+    orgBfOid: string | null; // String
+    personBfGid: string | null; // String
+  }
+  CurrentViewerLoggedOut: { // field return type
+    id: string | null; // ID
+    orgBfOid: string | null; // String
+    personBfGid: string | null; // String
+  }
   GithubRepoStats: { // field return type
     id: string; // ID!
     stars: number; // Int!
@@ -168,6 +181,7 @@ export interface NexusGenFieldTypes {
   Mutation: { // field return type
     createDeck: NexusGenRootTypes['BfDeck'] | null; // BfDeck
     joinWaitlist: NexusGenRootTypes['JoinWaitlistPayload'] | null; // JoinWaitlistPayload
+    loginWithGoogle: NexusGenRootTypes['CurrentViewer'] | null; // CurrentViewer
     submitSample: NexusGenRootTypes['BfSample'] | null; // BfSample
   }
   PageInfo: { // field return type
@@ -184,6 +198,7 @@ export interface NexusGenFieldTypes {
     blogPost: NexusGenRootTypes['BlogPost'] | null; // BlogPost
     blogPosts: NexusGenRootTypes['BlogPostConnection'] | null; // BlogPostConnection
     currentViewer: NexusGenRootTypes['CurrentViewer'] | null; // CurrentViewer
+    deck: NexusGenRootTypes['BfDeck'] | null; // BfDeck
     documentsBySlug: NexusGenRootTypes['PublishedDocument'] | null; // PublishedDocument
     githubRepoStats: NexusGenRootTypes['GithubRepoStats'] | null; // GithubRepoStats
     id: string | null; // ID
@@ -210,6 +225,7 @@ export interface NexusGenFieldTypeNames {
     description: 'String'
     id: 'ID'
     name: 'String'
+    slug: 'String'
     systemPrompt: 'String'
   }
   BfEdge: { // field return type name
@@ -268,6 +284,16 @@ export interface NexusGenFieldTypeNames {
     cursor: 'String'
     node: 'BlogPost'
   }
+  CurrentViewerLoggedIn: { // field return type name
+    id: 'ID'
+    orgBfOid: 'String'
+    personBfGid: 'String'
+  }
+  CurrentViewerLoggedOut: { // field return type name
+    id: 'ID'
+    orgBfOid: 'String'
+    personBfGid: 'String'
+  }
   GithubRepoStats: { // field return type name
     id: 'ID'
     stars: 'Int'
@@ -279,6 +305,7 @@ export interface NexusGenFieldTypeNames {
   Mutation: { // field return type name
     createDeck: 'BfDeck'
     joinWaitlist: 'JoinWaitlistPayload'
+    loginWithGoogle: 'CurrentViewer'
     submitSample: 'BfSample'
   }
   PageInfo: { // field return type name
@@ -295,6 +322,7 @@ export interface NexusGenFieldTypeNames {
     blogPost: 'BlogPost'
     blogPosts: 'BlogPostConnection'
     currentViewer: 'CurrentViewer'
+    deck: 'BfDeck'
     documentsBySlug: 'PublishedDocument'
     githubRepoStats: 'GithubRepoStats'
     id: 'ID'
@@ -321,12 +349,16 @@ export interface NexusGenArgTypes {
     createDeck: { // args
       description?: string | null; // String
       name: string; // String!
+      slug: string; // String!
       systemPrompt: string; // String!
     }
     joinWaitlist: { // args
       company?: string | null; // String
       email: string; // String!
       name: string; // String!
+    }
+    loginWithGoogle: { // args
+      idToken: string; // String!
     }
     submitSample: { // args
       collectionMethod?: string | null; // String
@@ -346,6 +378,9 @@ export interface NexusGenArgTypes {
       last?: number | null; // Int
       sortDirection?: string | null; // String
     }
+    deck: { // args
+      slug?: string | null; // String
+    }
     documentsBySlug: { // args
       slug?: string | null; // String
     }
@@ -353,9 +388,25 @@ export interface NexusGenArgTypes {
 }
 
 export interface NexusGenAbstractTypeMembers {
+  BfNode: "BfDeck" | "BfEdge" | "BfGrader" | "BfGraderResult" | "BfOrganization" | "BfPerson" | "BfSample" | "BfSampleFeedback"
+  CurrentViewer: "CurrentViewerLoggedIn" | "CurrentViewerLoggedOut"
+  Node: "BlogPost" | "GithubRepoStats" | "PublishedDocument"
 }
 
 export interface NexusGenTypeInterfaces {
+  BfDeck: "BfNode"
+  BfEdge: "BfNode"
+  BfGrader: "BfNode"
+  BfGraderResult: "BfNode"
+  BfOrganization: "BfNode"
+  BfPerson: "BfNode"
+  BfSample: "BfNode"
+  BfSampleFeedback: "BfNode"
+  BlogPost: "Node"
+  CurrentViewerLoggedIn: "CurrentViewer"
+  CurrentViewerLoggedOut: "CurrentViewer"
+  GithubRepoStats: "Node"
+  PublishedDocument: "Node"
 }
 
 export type NexusGenObjectNames = keyof NexusGenObjects;

@@ -47,6 +47,9 @@ function makeMockedNetworkRequest<T>(
       EntrypointHome: {
         Home: {
           __typename: "HomeComponent",
+          githubRepoStats: {
+            stars: 42,
+          },
         },
       },
     },

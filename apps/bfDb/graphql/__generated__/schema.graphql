@@ -3,24 +3,25 @@
 ### Do not make changes to this file directly
 
 
-type BfDeck {
+type BfDeck implements BfNode {
   description: String
   id: ID!
   name: String
+  slug: String!
   systemPrompt: String
 }
 
-type BfEdge {
+type BfEdge implements BfNode {
   id: ID!
   role: String
 }
 
-type BfGrader {
+type BfGrader implements BfNode {
   graderText: String
   id: ID!
 }
 
-type BfGraderResult {
+type BfGraderResult implements BfNode {
   explanation: String
   id: ID!
   reasoningProcess: String
@@ -32,32 +33,32 @@ interface BfNode {
   id: ID!
 }
 
-type BfOrganization {
+type BfOrganization implements BfNode {
   domain: String
   id: ID!
   name: String
 }
 
-type BfPerson {
+type BfPerson implements BfNode {
   email: String
   id: ID!
   memberOf: BfOrganization
   name: String
 }
 
-type BfSample {
+type BfSample implements BfNode {
   collectionMethod: String
   completionData: JSON
   id: ID!
 }
 
-type BfSampleFeedback {
+type BfSampleFeedback implements BfNode {
   explanation: String
   id: ID!
   score: Int
 }
 
-type BlogPost {
+type BlogPost implements Node {
   author: String
   content: String!
   excerpt: String!
@@ -101,7 +102,19 @@ interface CurrentViewer {
   personBfGid: String
 }
 
-type GithubRepoStats {
+type CurrentViewerLoggedIn implements CurrentViewer {
+  id: ID
+  orgBfOid: String
+  personBfGid: String
+}
+
+type CurrentViewerLoggedOut implements CurrentViewer {
+  id: ID
+  orgBfOid: String
+  personBfGid: String
+}
+
+type GithubRepoStats implements Node {
   id: ID!
   stars: Int!
 }
@@ -118,8 +131,9 @@ type JoinWaitlistPayload {
 }
 
 type Mutation {
-  createDeck(description: String, name: String!, systemPrompt: String!): BfDeck
+  createDeck(description: String, name: String!, slug: String!, systemPrompt: String!): BfDeck
   joinWaitlist(company: String, email: String!, name: String!): JoinWaitlistPayload
+  loginWithGoogle(idToken: String!): CurrentViewer
   submitSample(collectionMethod: String, completionData: String!, deckId: String!): BfSample
 }
 
@@ -153,7 +167,7 @@ type PageInfo {
   startCursor: String
 }
 
-type PublishedDocument {
+type PublishedDocument implements Node {
   content: String!
   id: ID!
 }
@@ -176,6 +190,7 @@ type Query {
     sortDirection: String
   ): BlogPostConnection
   currentViewer: CurrentViewer
+  deck(slug: String): BfDeck
   documentsBySlug(slug: String): PublishedDocument
   githubRepoStats: GithubRepoStats
   id: ID

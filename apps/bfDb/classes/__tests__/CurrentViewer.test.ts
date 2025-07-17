@@ -138,7 +138,7 @@ Deno.test("loginWithGoogleToken verifies token and returns LoggedIn viewer", asy
   });
 });
 
-Deno.test.ignore(
+Deno.test(
   "GraphQL mutation loginWithGoogle issues cookies + returns LoggedIn",
   async () => {
     await withIsolatedDb(async () => {
@@ -168,7 +168,7 @@ Deno.test.ignore(
       try {
         const body = {
           query:
-            `mutation Login($token:String!){\n  loginWithGoogleCurrentViewer (idToken:$token){ currentViewer { __typename } }\n}`,
+            `mutation Login($token:String!){\n  loginWithGoogle (idToken:$token){ __typename }\n}`,
           variables: { token: "fake_graph_token" },
         };
         const gqlReq = new Request("https://bolt.test/graphql", {
@@ -189,7 +189,7 @@ Deno.test.ignore(
         assertEquals(errors, undefined, "Expected no errors");
 
         assertEquals(
-          data.loginWithGoogleCurrentViewer.currentViewer.__typename,
+          data.loginWithGoogle.__typename,
           "CurrentViewerLoggedIn",
         );
 

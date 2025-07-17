@@ -488,11 +488,16 @@ export async function gqlSpecToNexus(
   // Create the main object type definition
   const mainType = {
     name: typeName,
-    // Add implements if there's an interface to implement
+    // Keep backwards compatibility by including implements property
+    // even though the actual implementation is done via t.implements()
     ...(interfaceName ? { implements: interfaceName } : {}),
     // Keep the parameter as any to maintain compatibility with Nexus types
     // deno-lint-ignore no-explicit-any
     definition(t: any) {
+      // Add interface implementation if there's an interface to implement
+      if (interfaceName) {
+        t.implements(interfaceName);
+      }
       // Process fields
       for (const [fieldName, fieldDef] of Object.entries(spec.fields)) {
         const field = fieldDef as GqlFieldDef;

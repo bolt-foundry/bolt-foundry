@@ -9,6 +9,7 @@ import { extendType, objectType } from "nexus";
 import { gqlSpecToNexus } from "@bfmono/apps/bfDb/builders/graphql/gqlSpecToNexus.ts";
 import * as rootsModule from "@bfmono/apps/bfDb/graphql/roots/__generated__/rootObjectsList.ts";
 import * as nodeTypesModule from "@bfmono/apps/bfDb/models/__generated__/nodeTypesList.ts";
+import * as classesModule from "@bfmono/apps/bfDb/classes/__generated__/classesList.ts";
 // Import the loadInterfaces function to register GraphQL interfaces
 import { loadInterfaces } from "@bfmono/apps/bfDb/graphql/graphqlInterfaces.ts";
 // Import the correct type for GraphQL object constructors
@@ -20,6 +21,7 @@ import { JSON } from "@bfmono/apps/bfDb/graphql/scalars/JSON.ts";
 
 const roots = Object.values(rootsModule);
 const nodeTypes = Object.values(nodeTypesModule);
+const classes = Object.values(classesModule);
 
 /**
  * Loads GraphQL types using our new builder pattern.
@@ -41,7 +43,13 @@ export async function loadGqlTypes() {
   // automatically detect classes that extend a decorated parent class
 
   // FIRST PASS: Collect all mutations from all classes
-  const allClasses = [...nodeTypes, ...roots];
+  // Filter out base classes that shouldn't be in GraphQL schema
+  const filteredClasses = classes.filter((cls) =>
+    cls.name !== "BfNode" && cls.name !== "GraphQLNode" &&
+    cls.name !== "BfErrorDb" && cls.name !== "BfErrorsBfNode" &&
+    cls.name !== "CurrentViewer"
+  );
+  const allClasses = [...nodeTypes, ...roots, ...filteredClasses];
   for (const classType of allClasses) {
     // Skip if it's not a class with gqlSpec
     if (
@@ -57,8 +65,8 @@ export async function loadGqlTypes() {
     }
   }
 
-  // SECOND PASS: Process all node types (they can be referenced by roots)
-  for (const nodeType of nodeTypes) {
+  // SECOND PASS: Process all node types and classes (they can be referenced by roots)
+  for (const nodeType of [...nodeTypes, ...filteredClasses]) {
     // Skip if it's not a class with gqlSpec
     if (
       typeof nodeType !== "function" || !("gqlSpec" in nodeType) ||

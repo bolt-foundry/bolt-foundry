@@ -1,12 +1,11 @@
 import {
   matchRouteWithParams,
-  RouterProvider,
   useRouter,
 } from "../contexts/RouterContext.tsx";
 import { appRoutes, isographAppRoutes } from "../routes.ts";
-import { IsographEnvironmentProvider, useLazyReference } from "@isograph/react";
+import { useLazyReference } from "@isograph/react";
 import { BfIsographFragmentReader } from "../lib/BfIsographFragmentReader.tsx";
-import { getEnvironment } from "../isographEnvironment.ts";
+import type { AppEnvironmentProvider } from "../contexts/AppEnvironmentContext.tsx";
 
 function AppRoot() {
   const routerProps = useRouter();
@@ -47,16 +46,8 @@ function AppRoot() {
   return <div>404 - Page not found</div>;
 }
 
-function App({ initialPath }: { initialPath?: string }) {
-  return (
-    <div className="app">
-      <IsographEnvironmentProvider environment={getEnvironment()}>
-        <RouterProvider initialPath={initialPath}>
-          <AppRoot />
-        </RouterProvider>
-      </IsographEnvironmentProvider>
-    </div>
-  );
+function App() {
+  return <AppRoot />;
 }
 
 export default App;

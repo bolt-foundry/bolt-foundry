@@ -89,3 +89,195 @@ Deno.test("createOpenAIFetch should properly integrate with OpenAI client", asyn
   // Clean up the stub to prevent resource leaks
   fetchStub.restore();
 });
+
+Deno.test("connectBoltFoundry should extract bfMetadata and send to telemetry", async () => {
+  const mockResponse = {
+    id: "mock-id",
+    object: "chat.completion",
+    created: Date.now(),
+    model: "gpt-3.5-turbo",
+    choices: [
+      {
+        index: 0,
+        message: {
+          role: "assistant",
+          content: "Mock response text",
+        },
+        finish_reason: "stop",
+      },
+    ],
+  };
+
+  let openaiRequestBody: JSONValue | null = null;
+  let telemetryRequestBody: JSONValue | null = null;
+
+  // Create a stub for global fetch that captures request bodies
+  const fetchStub = stub(
+    globalThis,
+    "fetch",
+    (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = input.toString();
+
+      // For telemetry endpoint, capture the request body
+      if (url.includes("i.bltfdy.co")) {
+        telemetryRequestBody = init?.body
+          ? JSON.parse(init.body as string)
+          : null;
+        return Promise.resolve(new Response("OK", { status: 200 }));
+      }
+
+      // For OpenAI API, capture the request body and return mock response
+      if (url.includes("api.openai.com")) {
+        openaiRequestBody = init?.body ? JSON.parse(init.body as string) : null;
+        return Promise.resolve(
+          new Response(
+            JSON.stringify(mockResponse),
+            { status: 200, headers: { "Content-Type": "application/json" } },
+          ),
+        );
+      }
+
+      return Promise.resolve(new Response("Not Found", { status: 404 }));
+    },
+  );
+
+  // Create an OpenAI client with our custom fetch function
+  const openai = new OpenAI({
+    apiKey: "test-api-key",
+    fetch: connectBoltFoundry("test-bf-key"),
+  });
+
+  // Make a request with bfMetadata
+  const completion = await openai.chat.completions.create({
+    model: "gpt-4",
+    messages: [
+      {
+        role: "user",
+        content: "Hello, world!",
+      },
+    ],
+    // @ts-expect-error - Adding bfMetadata to the request
+    bfMetadata: {
+      deckName: "test-deck",
+      deckContent: "# Test Deck\n\nThis is a test deck.",
+      contextVariables: { userId: "test-user", feature: "chat" },
+    },
+  });
+
+  // Verify response
+  assertEquals(completion.choices[0].message.role, "assistant");
+  assertExists(completion.choices[0].message.content);
+
+  // Wait for async operations to settle
+  await new Promise<void>((resolve) => queueMicrotask(() => resolve()));
+
+  // Verify bfMetadata was stripped from OpenAI request
+  assert(openaiRequestBody, "OpenAI request body should exist");
+  assert(
+    !openaiRequestBody.bfMetadata,
+    "bfMetadata should be stripped from OpenAI request",
+  );
+
+  // Verify bfMetadata was sent to telemetry
+  assert(telemetryRequestBody, "Telemetry request body should exist");
+  assert(
+    telemetryRequestBody.bfMetadata,
+    "bfMetadata should be present in telemetry",
+  );
+  assertEquals(telemetryRequestBody.bfMetadata.deckName, "test-deck");
+  assertEquals(
+    telemetryRequestBody.bfMetadata.deckContent,
+    "# Test Deck\n\nThis is a test deck.",
+  );
+  assertEquals(
+    telemetryRequestBody.bfMetadata.contextVariables.userId,
+    "test-user",
+  );
+
+  // Clean up the stub
+  fetchStub.restore();
+});
+
+Deno.test("connectBoltFoundry should work normally without bfMetadata", async () => {
+  const mockResponse = {
+    id: "mock-id",
+    object: "chat.completion",
+    created: Date.now(),
+    model: "gpt-3.5-turbo",
+    choices: [
+      {
+        index: 0,
+        message: {
+          role: "assistant",
+          content: "Mock response text",
+        },
+        finish_reason: "stop",
+      },
+    ],
+  };
+
+  let telemetryRequestBody: JSONValue | null = null;
+
+  // Create a stub for global fetch
+  const fetchStub = stub(
+    globalThis,
+    "fetch",
+    (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = input.toString();
+
+      // For telemetry endpoint, capture the request body
+      if (url.includes("i.bltfdy.co")) {
+        telemetryRequestBody = init?.body
+          ? JSON.parse(init.body as string)
+          : null;
+        return Promise.resolve(new Response("OK", { status: 200 }));
+      }
+
+      // For OpenAI API, return mock response
+      if (url.includes("api.openai.com")) {
+        return Promise.resolve(
+          new Response(
+            JSON.stringify(mockResponse),
+            { status: 200, headers: { "Content-Type": "application/json" } },
+          ),
+        );
+      }
+
+      return Promise.resolve(new Response("Not Found", { status: 404 }));
+    },
+  );
+
+  // Create an OpenAI client with our custom fetch function
+  const openai = new OpenAI({
+    apiKey: "test-api-key",
+    fetch: connectBoltFoundry("test-bf-key"),
+  });
+
+  // Make a normal request without bfMetadata
+  const completion = await openai.chat.completions.create({
+    model: "gpt-4",
+    messages: [
+      {
+        role: "user",
+        content: "Hello, world!",
+      },
+    ],
+  });
+
+  // Verify response
+  assertEquals(completion.choices[0].message.role, "assistant");
+  assertExists(completion.choices[0].message.content);
+
+  // Wait for async operations to settle
+  await new Promise<void>((resolve) => queueMicrotask(() => resolve()));
+
+  // Verify telemetry was sent without bfMetadata
+  assert(telemetryRequestBody, "Telemetry request body should exist");
+  assert(
+    !telemetryRequestBody.bfMetadata,
+    "bfMetadata should not be present in telemetry",
+  );
+
+  // Clean up the stub
+  fetchStub.restore();
+});
