@@ -3,6 +3,7 @@ import { BfDeck } from "@bfmono/apps/bfDb/nodeTypes/rlhf/BfDeck.ts";
 import { BfSample } from "@bfmono/apps/bfDb/nodeTypes/rlhf/BfSample.ts";
 import { BfOrganization } from "@bfmono/apps/bfDb/nodeTypes/BfOrganization.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import { generateDeckSlug } from "@bfmono/apps/bfDb/utils/slugUtils.ts";
 
 const logger = getLogger(import.meta);
 
@@ -117,14 +118,32 @@ export async function handleTelemetryRequest(
       currentViewer.orgBfOid,
     );
 
-    // For MVP, let's just create a new deck each time
-    // TODO: Query for existing deck by name
-    const deck = await org.createTargetNode(BfDeck, {
-      name: deckName,
-      systemPrompt: deckContent,
-      description: `Auto-created from telemetry for ${deckName}`,
-    });
-    logger.info(`Created new deck: ${deckName}`);
+    // Generate slug and query for existing deck by slug to avoid duplicates
+    const slug = generateDeckSlug(deckName, currentViewer.orgBfOid);
+
+    const existingDecks = await BfDeck.query(
+      currentViewer,
+      {}, // Metadata - bfOid and className auto-injected
+      { slug }, // Match by slug
+      [], // No specific bfGids
+    );
+
+    let deck: BfDeck;
+    if (existingDecks.length > 0) {
+      // Found existing deck, use it
+      deck = existingDecks[0] as BfDeck;
+      logger.info(`Found existing deck: ${deckName} (slug: ${slug})`);
+    } else {
+      // Create new deck
+      deck = await org.createTargetNode(BfDeck, {
+        name: deckName,
+        systemPrompt: deckContent,
+        description: `Auto-created from telemetry for ${deckName}`,
+        slug,
+      }) as BfDeck;
+      await deck.afterCreate();
+      logger.info(`Created new deck: ${deckName} (slug: ${slug})`);
+    }
 
     // Create the sample
     const completionData = {
