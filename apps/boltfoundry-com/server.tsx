@@ -23,7 +23,21 @@ interface ViteManifest {
 }
 
 // Read Vite manifest to get asset paths
-function loadAssetPaths(): { cssPath?: string; jsPath: string } {
+function loadAssetPaths(
+  isDev: boolean,
+  vitePort?: number,
+): { cssPath?: string; jsPath: string } {
+  // In development mode, use Vite dev server
+  if (isDev && vitePort) {
+    const jsPath = `http://localhost:${vitePort}/ClientRoot.tsx`;
+    logger.info(`Using Vite dev server: JS=${jsPath}`);
+    return {
+      cssPath: undefined,
+      jsPath,
+    };
+  }
+
+  // In production mode, read from manifest
   try {
     const manifestPath =
       new URL(import.meta.resolve("./static/build/.vite/manifest.json"))
@@ -54,8 +68,7 @@ function loadAssetPaths(): { cssPath?: string; jsPath: string } {
   return fallback;
 }
 
-// Load asset paths at startup
-const assetPaths = loadAssetPaths();
+// Asset paths will be loaded per request to handle dev/prod modes
 
 // Check if a path should be handled by React routing
 function shouldHandleWithReact(pathname: string): boolean {
@@ -115,7 +128,7 @@ const handler = async (request: Request): Promise<Response> => {
     // Handle with React SSR using AppEnvironmentProvider pattern
     const queryParams = Object.fromEntries(url.searchParams.entries());
     const routeParams = {}; // TODO: Extract route params from URL
-    
+
     const clientEnvironment = {
       initialPath: url.pathname,
       queryParams,
@@ -135,8 +148,14 @@ const handler = async (request: Request): Promise<Response> => {
       currentPath: url.pathname,
     };
 
+    const assetPaths = loadAssetPaths(isDev, vitePort);
+
     const element = (
-      <ServerRenderedPage environment={legacyEnvironment} assetPaths={assetPaths} serverEnvironment={serverEnvironment}>
+      <ServerRenderedPage
+        environment={legacyEnvironment}
+        assetPaths={assetPaths}
+        serverEnvironment={serverEnvironment}
+      >
         <ClientRoot {...serverEnvironment}>
           <App />
         </ClientRoot>

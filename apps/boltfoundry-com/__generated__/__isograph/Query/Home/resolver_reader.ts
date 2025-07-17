@@ -10,23 +10,6 @@ const readerAst: ReaderAst<Query__Home__param> = [
     arguments: null,
     isUpdatable: false,
   },
-  {
-    kind: "Linked",
-    fieldName: "githubRepoStats",
-    alias: null,
-    arguments: null,
-    condition: null,
-    isUpdatable: false,
-    selections: [
-      {
-        kind: "Scalar",
-        fieldName: "stars",
-        alias: null,
-        arguments: null,
-        isUpdatable: false,
-      },
-    ],
-  },
 ];
 
 const artifact: ComponentReaderArtifact<

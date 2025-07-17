@@ -28,3 +28,20 @@ export type NonUndefined<T> = T extends undefined ? never : T;
 export type StrictPartialJson<T> = {
   [K in keyof T]?: NonUndefined<T[K]>;
 };
+
+/**
+ * Common JSON value type used across the Bolt Foundry monorepo.
+ * This type represents any valid JSON value.
+ */
+export type JSONValue =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: JSONValue }
+  | Array<JSONValue>;
+
+/**
+ * Properties object with string keys and JSON values.
+ */
+export type Props = Record<string, JSONValue>;

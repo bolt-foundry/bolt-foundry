@@ -58,7 +58,8 @@ export function RouterProvider({
     if (typeof window === "undefined") {
       return initialPath || "/";
     }
-    return globalThis.location.pathname;
+    // During hydration, use initialPath to match server
+    return initialPath || globalThis.location.pathname;
   });
 
   const [routeParams] = useState<Record<string, string>>({});

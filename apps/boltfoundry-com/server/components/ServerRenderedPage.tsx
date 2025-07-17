@@ -51,7 +51,7 @@ export function ServerRenderedPage(
             __html: cssVarsString + cssVarsDarkString,
           }}
         />
-        
+
         {/* Body reset */}
         <style
           dangerouslySetInnerHTML={{
@@ -100,23 +100,22 @@ export function ServerRenderedPage(
           defer
           dangerouslySetInnerHTML={{
             __html: `
-          console.log("🔧 Client-side hydration temporarily disabled");
-          // Temporarily disable hydration to test server-side rendering
-          // globalThis.__ENVIRONMENT__ = ${
+          console.log("🔧 Client-side hydration enabled");
+          globalThis.__ENVIRONMENT__ = ${
               JSON.stringify(serverEnvironment ?? {})
             };
 
-          // if (globalThis.__REHYDRATE__) {
-          //   console.log("🔧 Calling __REHYDRATE__");
-          //   try {
-          //     await globalThis.__REHYDRATE__(globalThis.__ENVIRONMENT__);
-          //     console.log("🔧 __REHYDRATE__ call completed");
-          //   } catch (error) {
-          //     console.error("🔧 __REHYDRATE__ call failed:", error);
-          //   }
-          // } else {
-          //   console.warn("🔧 Rehydration fail - __REHYDRATE__ not found");
-          // }
+          if (globalThis.__REHYDRATE__) {
+            console.log("🔧 Calling __REHYDRATE__");
+            try {
+              await globalThis.__REHYDRATE__(globalThis.__ENVIRONMENT__);
+              console.log("🔧 __REHYDRATE__ call completed");
+            } catch (error) {
+              console.error("🔧 __REHYDRATE__ call failed:", error);
+            }
+          } else {
+            console.warn("🔧 Rehydration fail - __REHYDRATE__ not found");
+          }
           `,
           }}
         />
