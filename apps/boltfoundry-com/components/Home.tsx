@@ -6,36 +6,36 @@ export const Home = iso(`
   }
 `)(function Home({ data }) {
   return (
-    <div 
+    <div
       style={{
-        backgroundColor: 'var(--background)',
-        color: 'var(--text)',
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        textAlign: 'center',
-        padding: '20px'
+        backgroundColor: "var(--background)",
+        color: "var(--text)",
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        textAlign: "center",
+        padding: "20px",
       }}
     >
-      <h1 
+      <h1
         style={{
-          fontSize: '3em',
-          fontFamily: 'var(--marketingFontFamily)',
-          color: 'var(--text)',
-          marginBottom: '24px',
-          lineHeight: '1.1'
+          fontSize: "3em",
+          fontFamily: "var(--marketingFontFamily)",
+          color: "var(--text)",
+          marginBottom: "24px",
+          lineHeight: "1.1",
         }}
       >
         Do something with your feedback.
       </h1>
-      <p 
+      <p
         style={{
-          fontSize: '1.5em',
-          color: 'var(--text)',
-          fontFamily: 'var(--fontFamily)',
-          opacity: 0.8
+          fontSize: "1.5em",
+          color: "var(--text)",
+          fontFamily: "var(--fontFamily)",
+          opacity: 0.8,
         }}
       >
         Coming soon.
