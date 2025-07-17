@@ -5,20 +5,24 @@
 
 type BfDeck {
   description: String
+  id: ID!
   name: String
   systemPrompt: String
 }
 
 type BfEdge {
+  id: ID!
   role: String
 }
 
 type BfGrader {
   graderText: String
+  id: ID!
 }
 
 type BfGraderResult {
   explanation: String
+  id: ID!
   reasoningProcess: String
   score: Int
 }
@@ -30,11 +34,13 @@ interface BfNode {
 
 type BfOrganization {
   domain: String
+  id: ID!
   name: String
 }
 
 type BfPerson {
   email: String
+  id: ID!
   memberOf: BfOrganization
   name: String
 }
@@ -42,10 +48,12 @@ type BfPerson {
 type BfSample {
   collectionMethod: String
   completionData: JSON
+  id: ID!
 }
 
 type BfSampleFeedback {
   explanation: String
+  id: ID!
   score: Int
 }
 
@@ -110,7 +118,9 @@ type JoinWaitlistPayload {
 }
 
 type Mutation {
+  createDeck(description: String, name: String!, systemPrompt: String!): BfDeck
   joinWaitlist(company: String, email: String!, name: String!): JoinWaitlistPayload
+  submitSample(collectionMethod: String, completionData: String!, deckId: String!): BfSample
 }
 
 """An object with a unique identifier"""
@@ -168,6 +178,7 @@ type Query {
   currentViewer: CurrentViewer
   documentsBySlug(slug: String): PublishedDocument
   githubRepoStats: GithubRepoStats
+  id: ID
   ok: Boolean
 }
 
