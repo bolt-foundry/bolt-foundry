@@ -2,7 +2,10 @@
 
 import { assert, assertEquals, assertExists } from "@std/assert";
 import { assertSpyCalls, stub } from "@std/testing/mock";
-import { connectBoltFoundry } from "@bolt-foundry/bolt-foundry";
+import {
+  connectBoltFoundry,
+  type TelemetryData,
+} from "@bolt-foundry/bolt-foundry";
 import { OpenAI } from "@openai/openai";
 
 Deno.test("createOpenAIFetch should properly integrate with OpenAI client", async () => {
@@ -108,8 +111,13 @@ Deno.test("connectBoltFoundry should extract bfMetadata and send to telemetry", 
     ],
   };
 
-  let openaiRequestBody: JSONValue | null = null;
-  let telemetryRequestBody: JSONValue | null = null;
+  // Type for OpenAI request with optional bfMetadata
+  type OpenAIRequestWithBfMetadata = OpenAI.ChatCompletionCreateParams & {
+    bfMetadata?: TelemetryData["bfMetadata"];
+  };
+
+  let openaiRequestBody: OpenAIRequestWithBfMetadata | null = null;
+  let telemetryRequestBody: TelemetryData | null = null;
 
   // Create a stub for global fetch that captures request bodies
   const fetchStub = stub(
@@ -121,14 +129,16 @@ Deno.test("connectBoltFoundry should extract bfMetadata and send to telemetry", 
       // For telemetry endpoint, capture the request body
       if (url.includes("i.bltfdy.co")) {
         telemetryRequestBody = init?.body
-          ? JSON.parse(init.body as string)
+          ? (JSON.parse(init.body as string) as TelemetryData)
           : null;
         return Promise.resolve(new Response("OK", { status: 200 }));
       }
 
       // For OpenAI API, capture the request body and return mock response
       if (url.includes("api.openai.com")) {
-        openaiRequestBody = init?.body ? JSON.parse(init.body as string) : null;
+        openaiRequestBody = init?.body
+          ? (JSON.parse(init.body as string) as OpenAIRequestWithBfMetadata)
+          : null;
         return Promise.resolve(
           new Response(
             JSON.stringify(mockResponse),
@@ -172,25 +182,23 @@ Deno.test("connectBoltFoundry should extract bfMetadata and send to telemetry", 
   await new Promise<void>((resolve) => queueMicrotask(() => resolve()));
 
   // Verify bfMetadata was stripped from OpenAI request
-  assert(openaiRequestBody, "OpenAI request body should exist");
   assert(
-    !openaiRequestBody.bfMetadata,
+    !openaiRequestBody!.bfMetadata,
     "bfMetadata should be stripped from OpenAI request",
   );
 
   // Verify bfMetadata was sent to telemetry
-  assert(telemetryRequestBody, "Telemetry request body should exist");
   assert(
-    telemetryRequestBody.bfMetadata,
+    telemetryRequestBody!.bfMetadata,
     "bfMetadata should be present in telemetry",
   );
-  assertEquals(telemetryRequestBody.bfMetadata.deckName, "test-deck");
+  assertEquals(telemetryRequestBody!.bfMetadata!.deckName, "test-deck");
   assertEquals(
-    telemetryRequestBody.bfMetadata.deckContent,
+    telemetryRequestBody!.bfMetadata!.deckContent,
     "# Test Deck\n\nThis is a test deck.",
   );
   assertEquals(
-    telemetryRequestBody.bfMetadata.contextVariables.userId,
+    telemetryRequestBody!.bfMetadata!.contextVariables.userId,
     "test-user",
   );
 
@@ -216,7 +224,7 @@ Deno.test("connectBoltFoundry should work normally without bfMetadata", async ()
     ],
   };
 
-  let telemetryRequestBody: JSONValue | null = null;
+  let telemetryRequestBody: TelemetryData | null = null;
 
   // Create a stub for global fetch
   const fetchStub = stub(
@@ -228,7 +236,7 @@ Deno.test("connectBoltFoundry should work normally without bfMetadata", async ()
       // For telemetry endpoint, capture the request body
       if (url.includes("i.bltfdy.co")) {
         telemetryRequestBody = init?.body
-          ? JSON.parse(init.body as string)
+          ? (JSON.parse(init.body as string) as TelemetryData)
           : null;
         return Promise.resolve(new Response("OK", { status: 200 }));
       }
@@ -272,9 +280,8 @@ Deno.test("connectBoltFoundry should work normally without bfMetadata", async ()
   await new Promise<void>((resolve) => queueMicrotask(() => resolve()));
 
   // Verify telemetry was sent without bfMetadata
-  assert(telemetryRequestBody, "Telemetry request body should exist");
   assert(
-    !telemetryRequestBody.bfMetadata,
+    !telemetryRequestBody!.bfMetadata,
     "bfMetadata should not be present in telemetry",
   );
 
