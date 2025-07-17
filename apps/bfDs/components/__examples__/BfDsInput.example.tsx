@@ -7,23 +7,12 @@ export function BfDsInputExample() {
   const [value3, setValue3] = useState("Valid input");
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: "24px",
-        padding: "24px",
-        backgroundColor: "var(--bfds-background)",
-        color: "var(--bfds-text)",
-        fontFamily: "system-ui, -apple-system, sans-serif",
-        maxWidth: "600px",
-      }}
-    >
+    <div className="bfds-example">
       <h2>BfDsInput Examples</h2>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>Standalone Mode</h3>
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        <div className="bfds-example__group">
           <BfDsInput
             label="Your Name"
             placeholder="Enter your name"
@@ -42,9 +31,9 @@ export function BfDsInputExample() {
         </div>
       </div>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>Input States</h3>
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        <div className="bfds-example__group">
           <BfDsInput
             label="Error State"
             placeholder="Enter something"
@@ -71,9 +60,9 @@ export function BfDsInputExample() {
         </div>
       </div>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>Input Types</h3>
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        <div className="bfds-example__group">
           <BfDsInput
             label="Password"
             type="password"
@@ -97,9 +86,9 @@ export function BfDsInputExample() {
         </div>
       </div>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>Without Labels</h3>
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        <div className="bfds-example__group">
           <BfDsInput
             placeholder="Just a placeholder"
             value=""

@@ -54,23 +54,12 @@ export function BfDsFormExample() {
   }
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: "24px",
-        padding: "24px",
-        backgroundColor: "var(--bfds-background)",
-        color: "var(--bfds-text)",
-        fontFamily: "system-ui, -apple-system, sans-serif",
-        maxWidth: "600px",
-      }}
-    >
+    <div className="bfds-example">
       <h2>BfDsForm Examples</h2>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>Complete Form with Context Integration</h3>
-        <p style={{ margin: "0 0 16px 0", color: "var(--bfds-text-muted)" }}>
+        <p className="bfds-example__label">
           All form fields automatically sync with centralized form state without
           individual value/onChange props.
         </p>
@@ -79,9 +68,7 @@ export function BfDsFormExample() {
           onChange={exampleOnChange}
           initialData={exampleInitialFormData}
         >
-          <div
-            style={{ display: "flex", flexDirection: "column", gap: "16px" }}
-          >
+          <div className="bfds-example__group">
             <BfDsInput
               name="name"
               label="Your Name"
@@ -143,9 +130,9 @@ export function BfDsFormExample() {
         </BfDsCallout>
       </div>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>Form Context Benefits</h3>
-        <ul style={{ margin: "16px 0", paddingLeft: "24px" }}>
+        <ul className="bfds-example__group">
           <li>Components automatically sync with form state</li>
           <li>No need to pass value/onChange to each field</li>
           <li>Form-level validation and error handling</li>

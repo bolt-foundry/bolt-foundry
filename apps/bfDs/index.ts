@@ -5,6 +5,9 @@ export type {
   BfDsButtonVariant,
 } from "./components/BfDsButton.tsx";
 
+export { BfDsCopyButton } from "./components/BfDsCopyButton.tsx";
+export type { BfDsCopyButtonProps } from "./components/BfDsCopyButton.tsx";
+
 export { BfDsCallout } from "./components/BfDsCallout.tsx";
 export type {
   BfDsCalloutProps,
@@ -84,3 +87,12 @@ export {
   BfDsToastProvider,
   useBfDsToast,
 } from "./components/BfDsToastProvider.tsx";
+
+export { BfDsPill } from "./components/BfDsPill.tsx";
+export type { BfDsPillProps, BfDsPillVariant } from "./components/BfDsPill.tsx";
+
+export { BfDsFullPageSpinner, BfDsSpinner } from "./components/BfDsSpinner.tsx";
+export type {
+  BfDsFullPageSpinnerProps,
+  BfDsSpinnerProps,
+} from "./components/BfDsSpinner.tsx";

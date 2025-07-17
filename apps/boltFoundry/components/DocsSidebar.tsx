@@ -1,6 +1,6 @@
 import { useRouter } from "@bfmono/apps/boltFoundry/contexts/RouterContext.tsx";
-import { CfDsList } from "@bfmono/apps/cfDs/components/CfDsList.tsx";
-import { CfDsListItem } from "@bfmono/apps/cfDs/components/CfDsListItem.tsx";
+import { BfDsList } from "@bfmono/apps/bfDs/components/BfDsList.tsx";
+import { BfDsListItem } from "@bfmono/apps/bfDs/components/BfDsListItem.tsx";
 
 interface DocSection {
   title: string;
@@ -52,21 +52,22 @@ export function DocsSidebar(
 
   return (
     <div className={`docs-sidebar ${xClassName}`}>
-      <nav className=" flexColumn gapLarge">
+      <nav className=" flexColumn">
         {docSections.map((section) => (
-          <CfDsList key={section.title} header={section.title}>
+          <BfDsList key={section.title} header={section.title}>
             {section.items.map((item) => (
-              <CfDsListItem
+              <BfDsListItem
                 key={item.slug}
-                content={item.title}
-                isHighlighted={currentSlug === item.slug}
+                active={currentSlug === item.slug}
                 onClick={() => {
                   navigate(`/docs/${item.slug}`);
                   setShowSidebar(false);
                 }}
-              />
+              >
+                {item.title}
+              </BfDsListItem>
             ))}
-          </CfDsList>
+          </BfDsList>
         ))}
       </nav>
     </div>
