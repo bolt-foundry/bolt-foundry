@@ -7,6 +7,7 @@ import { ServerRenderedPage } from "./server/components/ServerRenderedPage.tsx";
 import App from "./src/App.tsx";
 import { appRoutes, isographAppRoutes } from "./routes.ts";
 import { createApiRoutes } from "./apiRoutes.ts";
+import { createServerEnvironment } from "./serverIsographEnvironment.ts";
 
 const logger = getLogger(import.meta);
 
@@ -117,9 +118,11 @@ const handler = async (request: Request): Promise<Response> => {
       currentPath: url.pathname,
     };
 
+    const serverIsographEnvironment = createServerEnvironment();
+    
     const element = (
       <ServerRenderedPage environment={environment} assetPaths={assetPaths}>
-        <App initialPath={url.pathname} />
+        <App initialPath={url.pathname} isographEnvironment={serverIsographEnvironment} />
       </ServerRenderedPage>
     );
 

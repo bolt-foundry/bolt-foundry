@@ -1,6 +1,7 @@
 import { BfNode, type InferProps } from "@bfmono/apps/bfDb/classes/BfNode.ts";
 import { BfDeck } from "./BfDeck.ts";
 import type { BfGid } from "@bfmono/lib/types.ts";
+import { BfErrorNotImplemented } from "@bfmono/lib/BfError.ts";
 
 /**
  * Collection method for BfSample - how the sample was collected
@@ -87,4 +88,31 @@ export class BfSample extends BfNode<InferProps<typeof BfSample>> {
       .json("completionData") // Native JSON storage
       .string("collectionMethod") // "manual" | "telemetry"
   );
+
+  /**
+   * Called after sample creation - triggers grading by parent deck
+   */
+  override async afterCreate(): Promise<void> {
+    // Find parent deck and ask it to grade this sample
+    const parentDeck = await this.getParentDeck();
+    if (parentDeck) {
+      await parentDeck.gradeSample(this);
+    }
+  }
+
+  /**
+   * Get the parent deck for this sample
+   */
+  private async getParentDeck(): Promise<BfDeck | null> {
+    // For now, just return null - proper parent lookup not implemented
+    return null;
+  }
+
+  /**
+   * Automatically evaluate this sample against all graders in its deck
+   * Creates BfGraderResult entries for each grader
+   */
+  async evaluateWithAI(): Promise<void> {
+    throw new BfErrorNotImplemented("Auto-evaluation not implemented yet");
+  }
 }

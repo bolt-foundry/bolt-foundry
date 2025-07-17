@@ -2,6 +2,8 @@ import { BfNode, type InferProps } from "@bfmono/apps/bfDb/classes/BfNode.ts";
 import { BfOrganization } from "@bfmono/apps/bfDb/nodeTypes/BfOrganization.ts";
 import { BfGrader } from "./BfGrader.ts";
 import { analyzeSystemPrompt } from "@bfmono/apps/bfDb/services/mockPromptAnalyzer.ts";
+import type { BfSample } from "./BfSample.ts";
+import { BfErrorNotImplemented } from "@bfmono/lib/BfError.ts";
 
 /**
  * BfDeck represents a deck of cards/prompts used for RLHF evaluation.
@@ -80,5 +82,12 @@ export class BfDeck extends BfNode<InferProps<typeof BfDeck>> {
         graderText: graderSuggestion.graderText,
       });
     }
+  }
+
+  /**
+   * Grade a sample using all graders in this deck
+   */
+  async gradeSample(sample: BfSample): Promise<void> {
+    throw new BfErrorNotImplemented("Automatic grading not implemented yet");
   }
 }

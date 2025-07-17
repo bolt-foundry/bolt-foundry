@@ -1,6 +1,7 @@
 import type { IsographEntrypoint } from '@isograph/react';
 import { type Query__EntrypointHome__param } from './Query/EntrypointHome/param_type.ts';
 import { type Query__Home__param } from './Query/Home/param_type.ts';
+import { type Query__LoginButton__param } from './Query/LoginButton/param_type.ts';
 import entrypoint_Query__EntrypointHome from '../__isograph/Query/EntrypointHome/entrypoint.ts';
 
 // This is the type given to regular client fields.
@@ -58,6 +59,10 @@ export function iso<T>(
 export function iso<T>(
   param: T & MatchesWhitespaceAndString<'field Query.Home', T>
 ): IdentityWithParamComponent<Query__Home__param>;
+
+export function iso<T>(
+  param: T & MatchesWhitespaceAndString<'field Query.LoginButton', T>
+): IdentityWithParamComponent<Query__LoginButton__param>;
 
 export function iso<T>(
   param: T & MatchesWhitespaceAndString<'entrypoint Query.EntrypointHome', T>

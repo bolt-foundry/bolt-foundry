@@ -3,6 +3,7 @@ import { getLogger } from "@bolt-foundry/logger";
 import App from "./src/App.tsx";
 import "./src/index.css";
 import "../../static/bfDsStyle.css";
+import { createClientEnvironment } from "./clientIsographEnvironment.ts";
 
 const logger = getLogger(import.meta);
 
@@ -11,7 +12,8 @@ export interface ClientRootProps {
 }
 
 export function ClientRoot({ environment }: ClientRootProps) {
-  return <App initialPath={environment.currentPath as string} />;
+  const clientIsographEnvironment = createClientEnvironment();
+  return <App initialPath={environment.currentPath as string} isographEnvironment={clientIsographEnvironment} />;
 }
 
 export function rehydrate(environment: Record<string, unknown>) {
