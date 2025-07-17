@@ -75,9 +75,11 @@ Deno.test("createDeck mutation creates deck and auto-generates graders", async (
           name: "Test Code Review Deck"
           systemPrompt: "Evaluate code review responses for accuracy and helpfulness."
           description: "A test deck for code review evaluation"
+          slug: "test-org_test-code-review-deck"
         ) {
           id
           name
+          slug
         }
       }
     `;
@@ -99,10 +101,12 @@ Deno.test("createDeck mutation creates deck and auto-generates graders", async (
     const deck = result.data?.createDeck as {
       id: string;
       name: string;
+      slug: string;
     };
 
     // Verify deck properties
     assertEquals(deck.name, "Test Code Review Deck");
+    assertEquals(deck.slug, "test-org_test-code-review-deck");
     assertExists(deck.id);
 
     // TODO: Verify graders were auto-generated
@@ -132,9 +136,11 @@ Deno.test("submitSample mutation creates sample linked to deck", async () => {
           name: "Test Sample Deck"
           systemPrompt: "Evaluate responses for quality."
           description: "A test deck for sample submission"
+          slug: "test-org_test-sample-deck"
         ) {
           id
           name
+          slug
         }
       }
     `;
@@ -151,7 +157,11 @@ Deno.test("submitSample mutation creates sample linked to deck", async () => {
         JSON.stringify(deckResult.errors)
       }`,
     );
-    const deck = deckResult.data?.createDeck as { id: string; name: string };
+    const deck = deckResult.data?.createDeck as {
+      id: string;
+      name: string;
+      slug: string;
+    };
 
     // Now submit a sample to the deck
     const submitSampleMutation = `
