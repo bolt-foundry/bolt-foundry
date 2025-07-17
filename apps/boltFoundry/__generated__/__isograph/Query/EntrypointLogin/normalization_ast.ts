@@ -4,6 +4,11 @@ const normalizationAst: NormalizationAst = {
   selections: [
     {
       kind: "Scalar",
+      fieldName: "id",
+      arguments: null,
+    },
+    {
+      kind: "Scalar",
       fieldName: "__typename",
       arguments: null,
     },

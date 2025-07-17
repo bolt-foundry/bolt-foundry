@@ -97,35 +97,43 @@ export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 export interface NexusGenFieldTypes {
   BfDeck: { // field return type
     description: string | null; // String
+    id: string; // ID!
     name: string | null; // String
     systemPrompt: string | null; // String
   }
   BfEdge: { // field return type
+    id: string; // ID!
     role: string | null; // String
   }
   BfGrader: { // field return type
     graderText: string | null; // String
+    id: string; // ID!
   }
   BfGraderResult: { // field return type
     explanation: string | null; // String
+    id: string; // ID!
     reasoningProcess: string | null; // String
     score: number | null; // Int
   }
   BfOrganization: { // field return type
     domain: string | null; // String
+    id: string; // ID!
     name: string | null; // String
   }
   BfPerson: { // field return type
     email: string | null; // String
+    id: string; // ID!
     memberOf: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
     name: string | null; // String
   }
   BfSample: { // field return type
     collectionMethod: string | null; // String
     completionData: NexusGenScalars['JSON'] | null; // JSON
+    id: string; // ID!
   }
   BfSampleFeedback: { // field return type
     explanation: string | null; // String
+    id: string; // ID!
     score: number | null; // Int
   }
   BlogPost: { // field return type
@@ -158,7 +166,9 @@ export interface NexusGenFieldTypes {
     success: boolean; // Boolean!
   }
   Mutation: { // field return type
+    createDeck: NexusGenRootTypes['BfDeck'] | null; // BfDeck
     joinWaitlist: NexusGenRootTypes['JoinWaitlistPayload'] | null; // JoinWaitlistPayload
+    submitSample: NexusGenRootTypes['BfSample'] | null; // BfSample
   }
   PageInfo: { // field return type
     endCursor: string | null; // String
@@ -176,6 +186,7 @@ export interface NexusGenFieldTypes {
     currentViewer: NexusGenRootTypes['CurrentViewer'] | null; // CurrentViewer
     documentsBySlug: NexusGenRootTypes['PublishedDocument'] | null; // PublishedDocument
     githubRepoStats: NexusGenRootTypes['GithubRepoStats'] | null; // GithubRepoStats
+    id: string | null; // ID
     ok: boolean | null; // Boolean
   }
   Waitlist: { // field return type
@@ -197,35 +208,43 @@ export interface NexusGenFieldTypes {
 export interface NexusGenFieldTypeNames {
   BfDeck: { // field return type name
     description: 'String'
+    id: 'ID'
     name: 'String'
     systemPrompt: 'String'
   }
   BfEdge: { // field return type name
+    id: 'ID'
     role: 'String'
   }
   BfGrader: { // field return type name
     graderText: 'String'
+    id: 'ID'
   }
   BfGraderResult: { // field return type name
     explanation: 'String'
+    id: 'ID'
     reasoningProcess: 'String'
     score: 'Int'
   }
   BfOrganization: { // field return type name
     domain: 'String'
+    id: 'ID'
     name: 'String'
   }
   BfPerson: { // field return type name
     email: 'String'
+    id: 'ID'
     memberOf: 'BfOrganization'
     name: 'String'
   }
   BfSample: { // field return type name
     collectionMethod: 'String'
     completionData: 'JSON'
+    id: 'ID'
   }
   BfSampleFeedback: { // field return type name
     explanation: 'String'
+    id: 'ID'
     score: 'Int'
   }
   BlogPost: { // field return type name
@@ -258,7 +277,9 @@ export interface NexusGenFieldTypeNames {
     success: 'Boolean'
   }
   Mutation: { // field return type name
+    createDeck: 'BfDeck'
     joinWaitlist: 'JoinWaitlistPayload'
+    submitSample: 'BfSample'
   }
   PageInfo: { // field return type name
     endCursor: 'String'
@@ -276,6 +297,7 @@ export interface NexusGenFieldTypeNames {
     currentViewer: 'CurrentViewer'
     documentsBySlug: 'PublishedDocument'
     githubRepoStats: 'GithubRepoStats'
+    id: 'ID'
     ok: 'Boolean'
   }
   Waitlist: { // field return type name
@@ -296,10 +318,20 @@ export interface NexusGenFieldTypeNames {
 
 export interface NexusGenArgTypes {
   Mutation: {
+    createDeck: { // args
+      description?: string | null; // String
+      name: string; // String!
+      systemPrompt: string; // String!
+    }
     joinWaitlist: { // args
       company?: string | null; // String
       email: string; // String!
       name: string; // String!
+    }
+    submitSample: { // args
+      collectionMethod?: string | null; // String
+      completionData: string; // String!
+      deckId: string; // String!
     }
   }
   Query: {
