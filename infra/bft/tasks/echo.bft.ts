@@ -4,7 +4,12 @@ import type { TaskDefinition } from "../bft.ts";
 import { ui } from "@bfmono/packages/cli-ui/cli-ui.ts";
 
 function echo(args: Array<string>): number {
-  ui.output(args.join(" "));
+  const aiContext = Deno.env.get("BFT_AI_CONTEXT");
+  if (aiContext) {
+    ui.output(`[AI_CONTEXT=${aiContext}] ${args.join(" ")}`);
+  } else {
+    ui.output(args.join(" "));
+  }
   return 0;
 }
 
