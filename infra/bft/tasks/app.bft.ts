@@ -91,6 +91,16 @@ Examples:
   let isoProcess: Deno.ChildProcess | undefined;
 
   if (flags.dev) {
+    // Clean build directory in dev mode
+    try {
+      await Deno.remove(`${appPath}/static/build`, { recursive: true });
+      ui.output("Cleaned build directory for dev mode");
+    } catch (error) {
+      if (!(error instanceof Deno.errors.NotFound)) {
+        ui.warn("Failed to clean build directory:", error.message);
+      }
+    }
+
     // Start isograph watcher
     ui.output("Starting isograph watcher...");
 
