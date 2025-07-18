@@ -37,7 +37,7 @@ function makeMockedNetworkRequest<T>(
   queryText: string,
   variables: unknown,
 ): Promise<T> {
-  logger.debug("Mock GraphQL request:", { queryText, variables });
+  logger.debug("Mock GraphQL request (client):", { queryText, variables });
 
   // Mock GraphQL response for now
   const mockResponse = {
@@ -49,21 +49,14 @@ function makeMockedNetworkRequest<T>(
           __typename: "HomeComponent",
         },
       },
-      // Mock currentViewer data for testing authentication UI
-      currentViewer: {
-        __typename: "CurrentViewerLoggedOut",
-        id: "mock-viewer",
-        orgBfOid: null,
-        personBfGid: null,
-      },
     },
   };
 
-  logger.debug("Mock GraphQL response:", mockResponse);
+  logger.debug("Mock GraphQL response (client):", mockResponse);
   return Promise.resolve(mockResponse as T);
 }
 
-export function getEnvironment() {
+export function createClientEnvironment() {
   // @ts-expect-error Not typed on the window yet
   if (globalThis.__ISOGRAPH_ENVIRONMENT__) {
     // @ts-expect-error Not typed on the window yet
@@ -73,16 +66,20 @@ export function getEnvironment() {
   // @ts-expect-error Not typed on the window yet
   globalThis.__ISOGRAPH_STORE__ ??= createIsographStore();
   // @ts-expect-error Not typed on the window yet
-  return globalThis.__ISOGRAPH_ENVIRONMENT__ ??= createIsographEnvironment(
-    // @ts-expect-error Not typed on the window yet
-    globalThis.__ISOGRAPH_STORE__,
-    makeRealNetworkRequest, // Use real GraphQL server
-    null,
-    logger.debug,
-  );
+  const environment = globalThis.__ISOGRAPH_ENVIRONMENT__ ??=
+    createIsographEnvironment(
+      // @ts-expect-error Not typed on the window yet
+      globalThis.__ISOGRAPH_STORE__,
+      makeMockedNetworkRequest, // Using mocked version for now
+      null,
+      logger.debug,
+    );
+
+  console.log("Created client isograph environment:", environment);
+  return environment;
 }
 
-export function getRealEnvironment() {
+export function createRealClientEnvironment() {
   // @ts-expect-error Not typed on the window yet
   if (globalThis.__ISOGRAPH_ENVIRONMENT__) {
     // @ts-expect-error Not typed on the window yet

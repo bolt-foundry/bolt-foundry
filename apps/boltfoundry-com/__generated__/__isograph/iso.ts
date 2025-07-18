@@ -1,4 +1,5 @@
 import type { IsographEntrypoint } from '@isograph/react';
+import { type CurrentViewer__LogInOrOutButton__param } from './CurrentViewer/LogInOrOutButton/param_type.ts';
 import { type Query__EntrypointHome__param } from './Query/EntrypointHome/param_type.ts';
 import { type Query__Home__param } from './Query/Home/param_type.ts';
 import entrypoint_Query__EntrypointHome from '../__isograph/Query/EntrypointHome/entrypoint.ts';
@@ -50,6 +51,10 @@ type MatchesWhitespaceAndString<
   TString extends string,
   T
 > = Whitespace<T> extends `${TString}${string}` ? T : never;
+
+export function iso<T>(
+  param: T & MatchesWhitespaceAndString<'field CurrentViewer.LogInOrOutButton', T>
+): IdentityWithParamComponent<CurrentViewer__LogInOrOutButton__param>;
 
 export function iso<T>(
   param: T & MatchesWhitespaceAndString<'field Query.EntrypointHome', T>

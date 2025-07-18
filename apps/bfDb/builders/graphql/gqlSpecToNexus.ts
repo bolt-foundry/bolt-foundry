@@ -72,6 +72,11 @@ function createDefaultFieldResolver(fieldName: string) {
     ctx: BfGraphqlContext,
     info: GraphQLResolveInfo,
   ) {
+    // Check if root is defined before accessing its properties
+    if (!root) {
+      return null;
+    }
+
     // Try props first (BfNode standard pattern)
     if (root.props && fieldName in root.props) {
       return root.props[fieldName];
@@ -104,6 +109,11 @@ function createDefaultRelationResolver(relationName: string) {
     ctx: BfGraphqlContext,
     info: GraphQLResolveInfo,
   ) {
+    // Check if root is defined before accessing its properties
+    if (!root) {
+      return null;
+    }
+
     // Try from relations first
     if (root.relations && relationName in root.relations) {
       return root.relations[relationName];
@@ -303,6 +313,11 @@ function createDefaultMutationResolver(mutationName: string) {
     ctx: BfGraphqlContext,
     info: GraphQLResolveInfo,
   ) {
+    // Check if root is defined before accessing its properties
+    if (!root) {
+      return null;
+    }
+
     // Mutations should be methods on the root object
     if (typeof root[mutationName] === "function") {
       return root[mutationName](args, ctx, info);
