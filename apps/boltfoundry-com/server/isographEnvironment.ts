@@ -54,6 +54,13 @@ function makeMockedNetworkRequest<T>(
           __typename: "HomeComponent",
         },
       },
+      // Mock currentViewer data for testing authentication UI
+      currentViewer: {
+        __typename: "CurrentViewerLoggedOut",
+        id: "mock-viewer",
+        orgBfOid: null,
+        personBfGid: null,
+      },
     },
   };
 
@@ -64,11 +71,11 @@ function makeMockedNetworkRequest<T>(
 export function getIsographEnvironment(request: Request) {
   const store = createIsographStore();
 
-  function networkRequestWrapper<T>(
+  async function networkRequestWrapper<T>(
     queryText: string,
     variables: unknown,
   ): Promise<T> {
-    return makeMockedNetworkRequest(request, queryText, variables); // Using mocked version for now
+    return await makeRealNetworkRequest(request, queryText, variables); // Use real GraphQL server
   }
 
   return createIsographEnvironment(
