@@ -277,18 +277,12 @@ Do not include any text before or after the JSON. Start with { and end with }.`,
       companyContext,
     );
 
-    // Generate summary following the deck format: "[Name] worked on [project/area]. They [implemented/fixed/improved] [specific thing] which [company connection if clear]."
-    let summary = `${name} worked on ${mainTheme}. `;
-
-    if (significantWork) {
-      const action = this.determineAction(significantWork);
-      summary += `They ${action} ${significantWork.title.toLowerCase()}`;
-
-      if (companyConnection) {
-        summary += ` which ${companyConnection}`;
-      }
-      summary += ".";
-    }
+    const summary = this.generateSummaryFromTemplate(
+      name,
+      mainTheme,
+      significantWork,
+      companyConnection,
+    );
 
     // Add context about additional work if relevant
     const additionalContext = this.generateAdditionalContext(
@@ -661,5 +655,30 @@ Do not include any text before or after the JSON. Start with { and end with }.`,
       categories[item.category] = (categories[item.category] || 0) + 1;
     });
     return categories;
+  }
+
+  /**
+   * Generate summary following the deck format template
+   * Format: "[Name] worked on [project/area]. They [implemented/fixed/improved] [specific thing] which [company connection if clear]."
+   */
+  private generateSummaryFromTemplate(
+    name: string,
+    mainTheme: string,
+    significantWork: WorkItem | null,
+    companyConnection: string | null,
+  ): string {
+    let summary = `${name} worked on ${mainTheme}. `;
+
+    if (significantWork) {
+      const action = this.determineAction(significantWork);
+      summary += `They ${action} ${significantWork.title.toLowerCase()}`;
+
+      if (companyConnection) {
+        summary += ` which ${companyConnection}`;
+      }
+      summary += ".";
+    }
+
+    return summary;
   }
 }
