@@ -163,7 +163,7 @@ const handler = async (request: Request): Promise<Response> => {
         <AppEnvironmentProvider
           initialPath={url.pathname}
           isographServerEnvironment={serverIsographEnvironment}
-          IS_SERVER_RENDERING={true}
+          IS_SERVER_RENDERING
         >
           <AppRoot />
         </AppEnvironmentProvider>

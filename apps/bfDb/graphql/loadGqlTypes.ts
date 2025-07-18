@@ -17,7 +17,10 @@ import type { AnyGraphqlObjectBaseCtor } from "@bfmono/apps/bfDb/builders/bfDb/t
 import { IsoDate } from "@bfmono/apps/bfDb/graphql/scalars/IsoDate.ts";
 import { JSON } from "@bfmono/apps/bfDb/graphql/scalars/JSON.ts";
 // Import interface detection utilities
-import { isGraphQLInterface, getGraphQLInterfaceMetadata } from "@bfmono/apps/bfDb/graphql/decorators.ts";
+import {
+  getGraphQLInterfaceMetadata,
+  isGraphQLInterface,
+} from "@bfmono/apps/bfDb/graphql/decorators.ts";
 // Interface classes are automatically loaded via the barrel file in __generated__/interfacesList.ts
 // Import concrete CurrentViewer types that implement the interface
 import {
@@ -36,12 +39,12 @@ const allNodeTypes = [...nodeTypes, ...currentViewerTypes];
  * Automatically detect which GraphQL interfaces a class implements
  * by walking up the prototype chain and checking for @GraphQLInterface decorators
  */
-function getImplementedInterfaces(classType: any): string[] {
-  const interfaces: string[] = [];
+function getImplementedInterfaces(classType: any): Array<string> {
+  const interfaces: Array<string> = [];
   let currentClass = Object.getPrototypeOf(classType);
-  
+
   // Walk up the prototype chain looking for interfaces
-  while (currentClass && currentClass.name !== 'Object') {
+  while (currentClass && currentClass.name !== "Object") {
     if (isGraphQLInterface(currentClass)) {
       const metadata = getGraphQLInterfaceMetadata(currentClass);
       if (metadata?.name) {
@@ -50,7 +53,7 @@ function getImplementedInterfaces(classType: any): string[] {
     }
     currentClass = Object.getPrototypeOf(currentClass);
   }
-  
+
   return interfaces;
 }
 
@@ -107,20 +110,23 @@ export async function loadGqlTypes() {
 
     // Automatically detect implemented interfaces
     const implementedInterfaces = getImplementedInterfaces(nodeType);
-    
+
     // Debug logging for CurrentViewer types
-    if (nodeName === "CurrentViewerLoggedIn" || nodeName === "CurrentViewerLoggedOut") {
+    if (
+      nodeName === "CurrentViewerLoggedIn" ||
+      nodeName === "CurrentViewerLoggedOut"
+    ) {
       console.log(`${nodeName} implements interfaces:`, implementedInterfaces);
     }
-    
-    const mainType = implementedInterfaces.length > 0 
+
+    const mainType = implementedInterfaces.length > 0
       ? objectType({
-          ...nexusTypes.mainType,
-          definition(t) {
-            nexusTypes.mainType.definition(t);
-          },
-          interfaces: implementedInterfaces,
-        })
+        ...nexusTypes.mainType,
+        definition(t) {
+          nexusTypes.mainType.definition(t);
+        },
+        interfaces: implementedInterfaces,
+      })
       : objectType(nexusTypes.mainType);
     types.push(mainType);
 

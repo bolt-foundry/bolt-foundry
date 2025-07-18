@@ -35,11 +35,9 @@ export const Home = iso(`
 
         <div style={{ marginTop: "2rem" }}>
           <h3>Authentication</h3>
-          {data.currentViewer ? (
-            <data.currentViewer.LogInOrOutButton />
-          ) : (
-            <p>Loading authentication state...</p>
-          )}
+          {data.currentViewer
+            ? <data.currentViewer.LogInOrOutButton />
+            : <p>Loading authentication state...</p>}
         </div>
       </div>
 
