@@ -72,6 +72,11 @@ function createDefaultFieldResolver(fieldName: string) {
     ctx: BfGraphqlContext,
     info: GraphQLResolveInfo,
   ) {
+    // Handle cases where root is undefined or null
+    if (!root) {
+      return null;
+    }
+
     // Try props first (BfNode standard pattern)
     if (root.props && fieldName in root.props) {
       return root.props[fieldName];

@@ -19,68 +19,30 @@ export function BfDsIconExample() {
   );
 
   return (
-    <div
-      style={{
-        padding: "24px",
-        backgroundColor: "var(--bfds-background)",
-        color: "var(--bfds-text)",
-        fontFamily: "system-ui, -apple-system, sans-serif",
-      }}
-    >
+    <div className="bfds-example">
       <h2>BfDsIcon Examples</h2>
 
-      <div style={{ marginBottom: "24px" }}>
+      <div className="bfds-example__section">
         <h3>Size Comparison</h3>
-        <div style={{ display: "flex", gap: "16px", alignItems: "flex-end" }}>
-          <div style={{ textAlign: "center" }}>
+        <div className="bfds-example__group bfds-example__group--align-end">
+          <div className="bfds-example__item">
             <BfDsIcon name="arrowRight" size="small" />
-            <div
-              style={{
-                fontSize: "12px",
-                marginTop: "4px",
-                color: "var(--bfds-text-secondary)",
-              }}
-            >
-              Small
-            </div>
+            <div className="bfds-example__label">Small</div>
           </div>
-          <div style={{ textAlign: "center" }}>
+          <div className="bfds-example__item">
             <BfDsIcon name="arrowRight" size="medium" />
-            <div
-              style={{
-                fontSize: "12px",
-                marginTop: "4px",
-                color: "var(--bfds-text-secondary)",
-              }}
-            >
-              Medium
-            </div>
+            <div className="bfds-example__label">Medium</div>
           </div>
-          <div style={{ textAlign: "center" }}>
+          <div className="bfds-example__item">
             <BfDsIcon name="arrowRight" size="large" />
-            <div
-              style={{
-                fontSize: "12px",
-                marginTop: "4px",
-                color: "var(--bfds-text-secondary)",
-              }}
-            >
-              Large
-            </div>
+            <div className="bfds-example__label">Large</div>
           </div>
         </div>
       </div>
 
-      <div style={{ marginBottom: "24px" }}>
+      <div className="bfds-example__section">
         <h3>Color Examples</h3>
-        <div
-          style={{
-            display: "flex",
-            gap: "16px",
-            alignItems: "center",
-            flexWrap: "wrap",
-          }}
-        >
+        <div className="bfds-example__group bfds-example__group--align-center">
           <BfDsIcon name="brand-github" size="large" />
           <BfDsIcon
             name="brand-github"
@@ -96,24 +58,13 @@ export function BfDsIconExample() {
         </div>
       </div>
 
-      <div style={{ marginBottom: "24px" }}>
+      <div className="bfds-example__section">
         <h3>Controls</h3>
-        <div
-          style={{
-            display: "flex",
-            gap: "16px",
-            alignItems: "center",
-            flexWrap: "wrap",
-          }}
-        >
-          <div>
+        <div className="bfds-example__controls">
+          <div className="bfds-example__control">
             <label
               htmlFor="icon-search"
-              style={{
-                display: "block",
-                marginBottom: "4px",
-                fontSize: "14px",
-              }}
+              className="bfds-example__control-label"
             >
               Search Icons:
             </label>
@@ -123,28 +74,15 @@ export function BfDsIconExample() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Type to search..."
-              style={{
-                padding: "8px 12px",
-                borderRadius: "4px",
-                border: "1px solid var(--bfds-border)",
-                backgroundColor: "var(--bfds-background)",
-                color: "var(--bfds-text)",
-                fontSize: "14px",
-              }}
+              className="bfds-example__input"
             />
           </div>
 
-          <div>
-            <label
-              style={{
-                display: "block",
-                marginBottom: "4px",
-                fontSize: "14px",
-              }}
-            >
+          <div className="bfds-example__control">
+            <label className="bfds-example__control-label">
               Size:
             </label>
-            <div style={{ display: "flex", gap: "8px" }}>
+            <div className="bfds-example__group">
               {(["small", "medium", "large"] as const).map((size) => (
                 <BfDsButton
                   key={size}
@@ -159,39 +97,13 @@ export function BfDsIconExample() {
         </div>
       </div>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>All Icons ({filteredIcons.length} found)</h3>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))",
-            gap: "16px",
-            marginTop: "16px",
-          }}
-        >
+        <div className="bfds-example__grid">
           {filteredIcons.map((iconName) => (
-            <div
-              key={iconName}
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                padding: "12px",
-                border: "1px solid var(--bfds-border)",
-                borderRadius: "6px",
-                backgroundColor: "var(--bfds-background-hover)",
-                textAlign: "center",
-              }}
-            >
+            <div key={iconName} className="bfds-example__grid-item">
               <BfDsIcon name={iconName} size={selectedSize} />
-              <div
-                style={{
-                  fontSize: "11px",
-                  marginTop: "8px",
-                  color: "var(--bfds-text-secondary)",
-                  wordBreak: "break-word",
-                }}
-              >
+              <div className="bfds-example__grid-item-label">
                 {iconName}
               </div>
             </div>

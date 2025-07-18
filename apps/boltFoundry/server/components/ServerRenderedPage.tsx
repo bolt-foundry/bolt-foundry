@@ -1,24 +1,5 @@
-import { colors, colorsDark, fonts } from "@bfmono/apps/cfDs/const.tsx";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 const _logger = getLogger(import.meta);
-
-const varsString = Object.entries({ ...colors, ...fonts }).reduce(
-  (acc, [key, value]) => {
-    acc += `--${key}: ${value};\n`;
-    return acc;
-  },
-  "",
-);
-const varsDarkString = Object.entries({ ...colorsDark }).reduce(
-  (acc, [key, value]) => {
-    acc += `--${key}: ${value};\n`;
-    return acc;
-  },
-  "",
-);
-
-const cssVarsString = `:root {\n${varsString}}\n`;
-const cssVarsDarkString = `:root[data-theme=dark] {\n${varsDarkString}}\n`;
 
 type Props = React.PropsWithChildren<{
   environment: Record<string, unknown>;
@@ -31,36 +12,15 @@ type Props = React.PropsWithChildren<{
 export function ServerRenderedPage(
   { children, environment, headerElement }: Props,
 ) {
-  // logger.info(cssVarsString, cssVarsDarkString)
   return (
     <html lang="en">
       <head>
         {headerElement}
-        <style
-          dangerouslySetInnerHTML={{
-            __html: cssVarsString + cssVarsDarkString,
-          }}
-        />
-        <script
-          dangerouslySetInnerHTML={{
-            __html:
-              `document.documentElement.setAttribute("data-theme", "dark");`,
-          }}
-        >
-        </script>
 
-        <link rel="stylesheet" href="/static/marketingpagestyle.css" />
-        <link rel="stylesheet" href="/static/cfDsStyle.css" />
         <link rel="stylesheet" href="/static/bfDsStyle.css" />
-        <link rel="stylesheet" href="/static/blogStyle.css" />
-        <link rel="stylesheet" href="/static/formatterStyle.css" />
-        <link rel="stylesheet" href="/static/appStyle.css" />
         <link rel="stylesheet" href="/static/landingStyle.css" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        {
-          /* <link rel="stylesheet" href="/static/toolsStyle.css" />
-        <link rel="stylesheet" href="/static/lexicalStyle.css" /> */
-        }
+
         <link
           href="https://fonts.googleapis.com/css2?family=DM+Mono&family=DM+Sans:wght@200;400;500;700&family=Bebas+Neue&display=swap&family=Roboto:wght@300&display=swap"
           rel="stylesheet"
