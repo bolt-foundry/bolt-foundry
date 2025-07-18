@@ -16,10 +16,43 @@ import type { AnyGraphqlObjectBaseCtor } from "@bfmono/apps/bfDb/builders/bfDb/t
 // Import custom scalars
 import { IsoDate } from "@bfmono/apps/bfDb/graphql/scalars/IsoDate.ts";
 import { JSON } from "@bfmono/apps/bfDb/graphql/scalars/JSON.ts";
+// Import interface detection utilities
+import { isGraphQLInterface, getGraphQLInterfaceMetadata } from "@bfmono/apps/bfDb/graphql/decorators.ts";
 // Interface classes are automatically loaded via the barrel file in __generated__/interfacesList.ts
+// Import concrete CurrentViewer types that implement the interface
+import {
+  CurrentViewerLoggedIn,
+  CurrentViewerLoggedOut,
+} from "@bfmono/apps/bfDb/classes/CurrentViewer.ts";
 
 const roots = Object.values(rootsModule);
 const nodeTypes = Object.values(nodeTypesModule);
+
+// Add concrete CurrentViewer types to the nodeTypes array
+const currentViewerTypes = [CurrentViewerLoggedIn, CurrentViewerLoggedOut];
+const allNodeTypes = [...nodeTypes, ...currentViewerTypes];
+
+/**
+ * Automatically detect which GraphQL interfaces a class implements
+ * by walking up the prototype chain and checking for @GraphQLInterface decorators
+ */
+function getImplementedInterfaces(classType: any): string[] {
+  const interfaces: string[] = [];
+  let currentClass = Object.getPrototypeOf(classType);
+  
+  // Walk up the prototype chain looking for interfaces
+  while (currentClass && currentClass.name !== 'Object') {
+    if (isGraphQLInterface(currentClass)) {
+      const metadata = getGraphQLInterfaceMetadata(currentClass);
+      if (metadata?.name) {
+        interfaces.push(metadata.name);
+      }
+    }
+    currentClass = Object.getPrototypeOf(currentClass);
+  }
+  
+  return interfaces;
+}
 
 /**
  * Loads GraphQL types using our new builder pattern.
@@ -41,7 +74,7 @@ export async function loadGqlTypes() {
   // automatically detect classes that extend a decorated parent class
 
   // FIRST PASS: Collect all mutations from all classes
-  const allClasses = [...nodeTypes, ...roots];
+  const allClasses = [...allNodeTypes, ...roots];
   for (const classType of allClasses) {
     // Skip if it's not a class with gqlSpec
     if (
@@ -58,7 +91,7 @@ export async function loadGqlTypes() {
   }
 
   // SECOND PASS: Process all node types (they can be referenced by roots)
-  for (const nodeType of nodeTypes) {
+  for (const nodeType of allNodeTypes) {
     // Skip if it's not a class with gqlSpec
     if (
       typeof nodeType !== "function" || !("gqlSpec" in nodeType) ||
@@ -72,7 +105,23 @@ export async function loadGqlTypes() {
       classType: nodeType as AnyGraphqlObjectBaseCtor,
     });
 
-    const mainType = objectType(nexusTypes.mainType);
+    // Automatically detect implemented interfaces
+    const implementedInterfaces = getImplementedInterfaces(nodeType);
+    
+    // Debug logging for CurrentViewer types
+    if (nodeName === "CurrentViewerLoggedIn" || nodeName === "CurrentViewerLoggedOut") {
+      console.log(`${nodeName} implements interfaces:`, implementedInterfaces);
+    }
+    
+    const mainType = implementedInterfaces.length > 0 
+      ? objectType({
+          ...nexusTypes.mainType,
+          definition(t) {
+            nexusTypes.mainType.definition(t);
+          },
+          interfaces: implementedInterfaces,
+        })
+      : objectType(nexusTypes.mainType);
     types.push(mainType);
 
     // Process payload types if they exist

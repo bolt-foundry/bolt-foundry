@@ -5,8 +5,11 @@ import { useRouter } from "../contexts/RouterContext.tsx";
 export const Home = iso(`
   field Query.Home @component {
     __typename
+    currentViewer {
+      LogInOrOutButton
+    }
   }
-`)(function Home() {
+`)(function Home({ data }) {
   const { navigate } = useRouter();
 
   return (
@@ -28,6 +31,15 @@ export const Home = iso(`
           >
             View UI Demo
           </BfDsButton>
+        </div>
+
+        <div style={{ marginTop: "2rem" }}>
+          <h3>Authentication</h3>
+          {data.currentViewer ? (
+            <data.currentViewer.LogInOrOutButton />
+          ) : (
+            <p>Loading authentication state...</p>
+          )}
         </div>
       </div>
 
