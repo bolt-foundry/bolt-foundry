@@ -105,22 +105,28 @@ export async function loadGqlTypes() {
       classType: nodeType as AnyGraphqlObjectBaseCtor,
     });
 
-<<<<<<< dest:   dd55e4ee48c4 - randall: cleanup: remove deprecated examples a...
     // Automatically detect implemented interfaces
     const implementedInterfaces = getImplementedInterfaces(nodeType);
     
-    // Debug logging for CurrentViewer types
+    
+    // If we found interfaces via decorator inspection, merge them with any existing interfaces
+    const allInterfaces = [
+      ...(nexusTypes.mainType.interfaces || []),
+      ...implementedInterfaces
+    ].filter((v, i, a) => a.indexOf(v) === i); // Remove duplicates
+    
+    // Debug log for CurrentViewer types
     if (nodeName === "CurrentViewerLoggedIn" || nodeName === "CurrentViewerLoggedOut") {
-      console.log(`${nodeName} implements interfaces:`, implementedInterfaces);
+      console.log(`Creating ${nodeName} with interfaces:`, allInterfaces);
     }
     
-    const mainType = implementedInterfaces.length > 0 
+    const mainType = allInterfaces.length > 0 
       ? objectType({
           ...nexusTypes.mainType,
           definition(t) {
             nexusTypes.mainType.definition(t);
           },
-          interfaces: implementedInterfaces,
+          interfaces: allInterfaces,
         })
       : objectType(nexusTypes.mainType);
     types.push(mainType);
