@@ -10,7 +10,8 @@ function spinner(
   let messageIndex = 0;
   let messageChangeCounter = 0;
   const frameDuration = 80;
-  const messageChangeDuration = 25; // Change message every ~2 seconds (25 * 80ms)
+  const messageChangeIntervalMs = 2000;
+  const messageChangeDuration = messageChangeIntervalMs / frameDuration;
 
   // Normalize messages to array
   const messageArray = messages

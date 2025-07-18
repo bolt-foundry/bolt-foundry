@@ -4,9 +4,11 @@ import { parseArgs } from "@std/cli";
 import { getLogger } from "@bolt-foundry/logger";
 import { renderToReadableStream } from "react-dom/server";
 import { ServerRenderedPage } from "./server/components/ServerRenderedPage.tsx";
-import App from "./src/App.tsx";
+import { AppEnvironmentProvider } from "./contexts/AppEnvironmentContext.tsx";
+import { AppRoot } from "./src/AppRoot.tsx";
 import { appRoutes, isographAppRoutes } from "./routes.ts";
 import { createApiRoutes } from "./apiRoutes.ts";
+import { getIsographEnvironment } from "./server/isographEnvironment.ts";
 
 const logger = getLogger(import.meta);
 
@@ -108,32 +110,6 @@ const handler = async (request: Request): Promise<Response> => {
     }
   }
 
-  // Check if this should be handled by React routing
-  if (shouldHandleWithReact(url.pathname)) {
-    // Handle with React SSR
-    const environment = {
-      mode: isDev ? "development" : "production",
-      port: port,
-      currentPath: url.pathname,
-    };
-
-    const element = (
-      <ServerRenderedPage environment={environment} assetPaths={assetPaths}>
-        <App initialPath={url.pathname} />
-      </ServerRenderedPage>
-    );
-
-    try {
-      const stream = await renderToReadableStream(element);
-      return new Response(stream, {
-        headers: { "content-type": "text/html; charset=utf-8" },
-      });
-    } catch (error) {
-      logger.error("Error rendering React app:", error);
-      return new Response("Internal Server Error", { status: 500 });
-    }
-  }
-
   // In dev mode, proxy to Vite for frontend assets (but not React routes)
   if (isDev && vitePort) {
     try {
@@ -168,6 +144,40 @@ const handler = async (request: Request): Promise<Response> => {
       return new Response("Error proxying to Vite dev server", {
         status: 502,
       });
+    }
+  }
+
+  // Check if this should be handled by React routing
+  if (shouldHandleWithReact(url.pathname)) {
+    // Handle with React SSR
+    const environment = {
+      mode: isDev ? "development" : "production",
+      port: port,
+      currentPath: url.pathname,
+    };
+
+    const serverIsographEnvironment = getIsographEnvironment(request);
+
+    const element = (
+      <ServerRenderedPage environment={environment} assetPaths={assetPaths}>
+        <AppEnvironmentProvider
+          initialPath={url.pathname}
+          isographServerEnvironment={serverIsographEnvironment}
+          IS_SERVER_RENDERING={true}
+        >
+          <AppRoot />
+        </AppEnvironmentProvider>
+      </ServerRenderedPage>
+    );
+
+    try {
+      const stream = await renderToReadableStream(element);
+      return new Response(stream, {
+        headers: { "content-type": "text/html; charset=utf-8" },
+      });
+    } catch (error) {
+      logger.error("Error rendering React app:", error);
+      return new Response("Internal Server Error", { status: 500 });
     }
   }
 

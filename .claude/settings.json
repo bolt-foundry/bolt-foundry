@@ -23,7 +23,8 @@
     ],
     "deny": [
       "Bash(git:*)",
-      "Bash(deno test:*)"
+      "Bash(deno test:*)",
+      "Bash(deno task:*)"
     ]
   },
   "hooks": {

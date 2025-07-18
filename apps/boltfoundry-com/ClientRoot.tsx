@@ -1,30 +1,39 @@
 import { hydrateRoot } from "react-dom/client";
 import { getLogger } from "@bolt-foundry/logger";
-import App from "./src/App.tsx";
+import {
+  AppEnvironmentProvider,
+  type ServerProps,
+} from "./contexts/AppEnvironmentContext.tsx";
+import { AppRoot } from "./src/AppRoot.tsx";
 import "./src/index.css";
 import "../../static/bfDsStyle.css";
 
 const logger = getLogger(import.meta);
 
-export interface ClientRootProps {
-  environment: Record<string, unknown>;
+export interface ClientRootProps extends ServerProps {
+  children?: React.ReactNode;
 }
 
-export function ClientRoot({ environment }: ClientRootProps) {
-  return <App initialPath={environment.currentPath as string} />;
+export function ClientRoot({ children, ...props }: ClientRootProps) {
+  return (
+    <AppEnvironmentProvider {...props}>
+      {children}
+    </AppEnvironmentProvider>
+  );
 }
 
-export function rehydrate(environment: Record<string, unknown>) {
-  logger.debug("🔧 rehydrate() called with environment:", environment);
+export function rehydrate(props: ServerProps) {
   const root = document.querySelector("#root");
   if (root) {
-    logger.debug("🔧 Found #root element, calling hydrateRoot");
+    logger.debug("🔧 rehydrating root", root, props);
     try {
       hydrateRoot(
         root,
-        <ClientRoot environment={environment} />,
+        <ClientRoot {...props}>
+          <AppRoot />
+        </ClientRoot>,
       );
-      logger.debug("🔧 hydrateRoot completed successfully");
+      logger.debug("🔧 rehydrated root successfully");
     } catch (error) {
       logger.error("🔧 hydrateRoot failed:", error);
     }
@@ -33,11 +42,14 @@ export function rehydrate(environment: Record<string, unknown>) {
   }
 }
 
+logger.debug("ClientRoot loaded");
 // @ts-expect-error Not typed on the window yet
 if (globalThis.__ENVIRONMENT__) {
+  logger.debug("found environment, rehydrating root");
   // @ts-expect-error Not typed on the window yet
   rehydrate(globalThis.__ENVIRONMENT__);
 } else {
+  logger.debug("Setting rehydration callback");
   // @ts-expect-error Not typed on the window yet
   globalThis.__REHYDRATE__ = rehydrate;
 }

@@ -7,6 +7,26 @@ import * as path from "@std/path";
 import { parse as parseFlags } from "@std/flags";
 import { ui } from "@bfmono/packages/cli-ui/cli-ui.ts";
 
+function formatAsMarkdown(openAiRequest: OpenAICompletionRequest): string {
+  let markdown = "";
+
+  for (const message of openAiRequest.messages) {
+    if (message.role === "system") {
+      markdown += message.content + "\n\n";
+    } else if (message.role === "assistant") {
+      // Skip assistant messages as they're typically prompts/questions
+      continue;
+    } else if (message.role === "user") {
+      // Skip empty user messages
+      if (message.content.trim()) {
+        markdown += message.content + "\n\n";
+      }
+    }
+  }
+
+  return markdown.trim();
+}
+
 interface ContextDefinition {
   assistantQuestion: string; // Required field
   default?: unknown;
@@ -520,7 +540,7 @@ export const renderCommand: Command = {
   run: async (args: Array<string>) => {
     // Parse arguments using Deno's standard library
     const flags = parseFlags(args, {
-      string: ["context-file"],
+      string: ["context-file", "format"],
       boolean: ["help"],
       stopEarly: false,
       "--": true,
@@ -534,15 +554,26 @@ export const renderCommand: Command = {
       ui.info(
         "  --context-file <path>  Path to TOML file with context values",
       );
+      ui.info(
+        "  --format <format>      Output format: 'json' or 'markdown' (default: json)",
+      );
       ui.info("  --help                 Show this help message");
       ui.info("");
       ui.info("Examples:");
       ui.info("  aibff render deck.md");
       ui.info("  aibff render deck.md --context-file context.toml");
+      ui.info("  aibff render deck.md --format markdown");
       Deno.exit(1);
     }
 
     const deckPath = String(flags._[0]);
+    const format = (flags.format as string) || "json";
+
+    // Validate format
+    if (format !== "json" && format !== "markdown") {
+      ui.error("Error: Format must be 'json' or 'markdown'");
+      Deno.exit(1);
+    }
 
     try {
       const deckContent = await Deno.readTextFile(deckPath);
@@ -595,7 +626,11 @@ export const renderCommand: Command = {
       // Render the deck with context injection
       const openAiRequest = renderDeck(deckPath, contextValues, {});
 
-      ui.output(JSON.stringify(openAiRequest, null, 2));
+      if (format === "markdown") {
+        ui.output(formatAsMarkdown(openAiRequest));
+      } else {
+        ui.output(JSON.stringify(openAiRequest, null, 2));
+      }
     } catch (error) {
       if (error instanceof Deno.errors.NotFound) {
         ui.error(`File not found: ${deckPath}`);

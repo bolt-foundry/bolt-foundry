@@ -1,4 +1,5 @@
 import { handleTelemetryRequest } from "./handlers/telemetry.ts";
+import { graphQLHandler } from "@bfmono/apps/bfDb/graphql/graphqlServer.ts";
 
 export interface ApiRoute {
   pattern: URLPattern;
@@ -28,6 +29,10 @@ export function createApiRoutes(
     {
       pattern: new URLPattern({ pathname: "/api/telemetry" }),
       handler: handleTelemetryRequest,
+    },
+    {
+      pattern: new URLPattern({ pathname: "/graphql" }),
+      handler: graphQLHandler,
     },
   ];
 }
