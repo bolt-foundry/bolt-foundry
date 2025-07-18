@@ -56,15 +56,15 @@ export async function fork(): Promise<number> {
     "user",
   ]);
   const username = JSON.parse(userInfo).login;
-  const forkRepoUrl = `https://github.com/${username}/content-foundry.git`;
+  const forkRepoUrl = `https://github.com/${username}/bolt-foundry.git`;
 
   // 3. Check if the fork already exists
-  //    “gh api repos/<username>/content-foundry” returns exit code 0 if it exists
+  //    "gh api repos/<username>/bolt-foundry" returns exit code 0 if it exists
   let repoAlreadyForked = false;
   const checkForkExitCode = await runShellCommand([
     "gh",
     "api",
-    `repos/${username}/content-foundry`,
+    `repos/${username}/bolt-foundry`,
   ]);
 
   if (checkForkExitCode === 0) {
@@ -83,7 +83,7 @@ export async function fork(): Promise<number> {
       "gh",
       "repo",
       "fork",
-      "content-foundry/content-foundry",
+      "bolt-foundry/bolt-foundry",
       "--clone=false",
     ]);
     if (forkResult !== 0) {
