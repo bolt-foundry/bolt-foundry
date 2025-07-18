@@ -192,6 +192,7 @@ export async function setupE2ETest(options: {
             const command = new Deno.Command("which", {
               args: [browser.name],
               stdout: "piped",
+              stderr: "null",
             });
             const output = await command.output();
             if (output.success) {
