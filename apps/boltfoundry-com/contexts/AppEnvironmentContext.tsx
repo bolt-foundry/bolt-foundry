@@ -3,9 +3,7 @@ import {
   type IsographEnvironment,
   IsographEnvironmentProvider,
 } from "@isograph/react";
-import {
-  RouterProvider,
-} from "../contexts/RouterContext.tsx";
+import { RouterProvider } from "../contexts/RouterContext.tsx";
 import { getEnvironment, getRealEnvironment } from "../isographEnvironment.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
@@ -15,7 +13,7 @@ export type AppEnvironmentProps = {
   // Add any app-specific environment props here
 };
 
-export type ServerProps = 
+export type ServerProps =
   & AppEnvironmentProps
   & {
     initialPath?: string;
@@ -36,11 +34,11 @@ export function AppEnvironmentProvider({
   ...appEnvironment
 }: React.PropsWithChildren<ServerProps>) {
   // Use real environment in production, mock in development
-  const isProduction = typeof window !== "undefined" && 
+  const isProduction = typeof window !== "undefined" &&
     // @ts-expect-error - accessing global environment
     globalThis.__ENVIRONMENT__?.mode === "production";
-  
-  const isographEnvironment = isographServerEnvironment ?? 
+
+  const isographEnvironment = isographServerEnvironment ??
     (isProduction ? getRealEnvironment() : getEnvironment());
 
   logger.debug("AppEnvironmentProvider: props", initialPath);
