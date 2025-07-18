@@ -59,7 +59,7 @@ export async function ciStatus(args: Array<string>): Promise<number> {
 
   logger.info(`Fetching check status for commit: ${targetCommit}`);
 
-  // Use hardcoded repo for now since we're in content-foundry/content-foundry
+  // Use hardcoded repo for now since we're in bolt-foundry/bolt-foundry
   const owner = "bolt-foundry";
   const repoName = "bolt-foundry";
 

@@ -87,6 +87,10 @@ const prompt =
 
 ### After (Bolt Foundry Approach)
 
+> **Note**: This code example is outdated and does not reflect the current API.
+> See the [current SDK documentation](../../packages/bolt-foundry/README.md) for
+> up-to-date examples.
+
 ```tsx
 import { BfClient } from "@bolt-foundry/sdk";
 
