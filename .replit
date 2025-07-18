@@ -127,12 +127,17 @@ task = "shell.exec"
 args = "bff run apps/collector"
 
 [[ports]]
+localPort = 3011
+externalPort = 3001
+
+[[ports]]
 localPort = 8000
 externalPort = 8000
 
 [[ports]]
 localPort = 8080
-externalPort = 8080
+externalPort = 80
+exposeLocalhost = true
 
 [[ports]]
 localPort = 8081

@@ -12,6 +12,13 @@ export default defineConfig({
     hmr: {
       port: 8081, // Dynamic port will be set by CLI
     },
+    allowedHosts: [
+      // Allow Replit dev domain
+      ...(Deno.env.get("REPLIT_DEV_DOMAIN") ? [Deno.env.get("REPLIT_DEV_DOMAIN")] : []),
+      // Allow localhost for local development
+      "localhost",
+      "127.0.0.1",
+    ],
   },
   build: {
     manifest: true,
@@ -26,8 +33,8 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "@bfmono/": "../../..",
-      "@bfmono/static/": "../../static/",
+      "@bfmono/": new URL(import.meta.resolve("@bfmono/")).pathname,
+      "@bfmono/static/": new URL(import.meta.resolve("@bfmono/static")).pathname,
     },
   },
   publicDir: new URL(import.meta.resolve("../../static")).pathname,

@@ -110,6 +110,39 @@ const handler = async (request: Request): Promise<Response> => {
     }
   }
 
+  // Check if this should be handled by React routing
+  if (shouldHandleWithReact(url.pathname)) {
+    // Handle with React SSR
+    const environment = {
+      mode: isDev ? "development" : "production",
+      port: port,
+      currentPath: url.pathname,
+    };
+
+    const serverIsographEnvironment = getIsographEnvironment(request);
+
+    const element = (
+      <ServerRenderedPage environment={environment} assetPaths={assetPaths}>
+        <AppEnvironmentProvider
+          initialPath={url.pathname}
+          isographServerEnvironment={serverIsographEnvironment}
+          IS_SERVER_RENDERING
+        >
+          <AppRoot />
+        </AppEnvironmentProvider>
+      </ServerRenderedPage>
+    );
+
+    try {
+      const stream = await renderToReadableStream(element);
+      return new Response(stream, {
+        headers: { "content-type": "text/html; charset=utf-8" },
+      });
+    } catch (error) {
+      logger.error("Error rendering React app:", error);
+      return new Response("Internal Server Error", { status: 500 });
+    }
+  }
   // In dev mode, proxy to Vite for frontend assets (but not React routes)
   if (isDev && vitePort) {
     try {
@@ -146,41 +179,6 @@ const handler = async (request: Request): Promise<Response> => {
       });
     }
   }
-
-  // Check if this should be handled by React routing
-  if (shouldHandleWithReact(url.pathname)) {
-    // Handle with React SSR
-    const environment = {
-      mode: isDev ? "development" : "production",
-      port: port,
-      currentPath: url.pathname,
-    };
-
-    const serverIsographEnvironment = getIsographEnvironment(request);
-
-    const element = (
-      <ServerRenderedPage environment={environment} assetPaths={assetPaths}>
-        <AppEnvironmentProvider
-          initialPath={url.pathname}
-          isographServerEnvironment={serverIsographEnvironment}
-          IS_SERVER_RENDERING={true}
-        >
-          <AppRoot />
-        </AppEnvironmentProvider>
-      </ServerRenderedPage>
-    );
-
-    try {
-      const stream = await renderToReadableStream(element);
-      return new Response(stream, {
-        headers: { "content-type": "text/html; charset=utf-8" },
-      });
-    } catch (error) {
-      logger.error("Error rendering React app:", error);
-      return new Response("Internal Server Error", { status: 500 });
-    }
-  }
-
   // Handle static assets first
   if (url.pathname.startsWith("/static/")) {
     const staticPath = new URL(import.meta.resolve("./static")).pathname;

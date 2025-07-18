@@ -10,20 +10,25 @@ const ENABLE_STRICT_MODE = false; // Set to true to enable StrictMode
 
 // For development mode when not doing SSR hydration
 const environment = {
-  currentPath: window.location.pathname,
+  currentPath: globalThis.location.pathname,
   IS_SERVER_RENDERING: false,
 };
-
 const AppWrapper = ENABLE_STRICT_MODE
   ? (
     <StrictMode>
-      <ClientRoot initialPath={environment.currentPath} IS_SERVER_RENDERING={false}>
+      <ClientRoot
+        initialPath={environment.currentPath}
+        IS_SERVER_RENDERING={false}
+      >
         <AppRoot />
       </ClientRoot>
     </StrictMode>
   )
   : (
-    <ClientRoot initialPath={environment.currentPath} IS_SERVER_RENDERING={false}>
+    <ClientRoot
+      initialPath={environment.currentPath}
+      IS_SERVER_RENDERING={false}
+    >
       <AppRoot />
     </ClientRoot>
   );

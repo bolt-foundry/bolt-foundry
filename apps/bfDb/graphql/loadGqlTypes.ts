@@ -16,6 +16,7 @@ import type { AnyGraphqlObjectBaseCtor } from "@bfmono/apps/bfDb/builders/bfDb/t
 // Import custom scalars
 import { IsoDate } from "@bfmono/apps/bfDb/graphql/scalars/IsoDate.ts";
 import { JSON } from "@bfmono/apps/bfDb/graphql/scalars/JSON.ts";
+<<<<<<< dest:   dd55e4ee48c4 - randall: cleanup: remove deprecated examples a...
 // Import interface detection utilities
 import { isGraphQLInterface, getGraphQLInterfaceMetadata } from "@bfmono/apps/bfDb/graphql/decorators.ts";
 // Interface classes are automatically loaded via the barrel file in __generated__/interfacesList.ts
@@ -53,7 +54,6 @@ function getImplementedInterfaces(classType: any): string[] {
   
   return interfaces;
 }
-
 /**
  * Loads GraphQL types using our new builder pattern.
  * This will eventually load all node types in the system.
@@ -105,6 +105,7 @@ export async function loadGqlTypes() {
       classType: nodeType as AnyGraphqlObjectBaseCtor,
     });
 
+<<<<<<< dest:   dd55e4ee48c4 - randall: cleanup: remove deprecated examples a...
     // Automatically detect implemented interfaces
     const implementedInterfaces = getImplementedInterfaces(nodeType);
     

@@ -1,7 +1,4 @@
-import {
-  matchRouteWithParams,
-  useRouter,
-} from "../contexts/RouterContext.tsx";
+import { matchRouteWithParams, useRouter } from "../contexts/RouterContext.tsx";
 import { appRoutes, isographAppRoutes } from "../routes.ts";
 import { useLazyReference } from "@isograph/react";
 import { BfIsographFragmentReader } from "../lib/BfIsographFragmentReader.tsx";
