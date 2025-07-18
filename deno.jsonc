@@ -1,6 +1,6 @@
 {
   "unstable": ["temporal", "webgpu"],
-  "nodeModulesDir": "manual",
+  "nodeModulesDir": "auto",
   "imports": {
     "@anthropic-ai/claude-code": "npm:@anthropic-ai/claude-code@^1.0.53",
     "@bfmono/": "./",
