@@ -14,7 +14,7 @@ import {
   type RouteGuts,
 } from "@bfmono/apps/boltFoundry/routes.ts";
 import { createPortal } from "react-dom";
-import { CfDsFullPageSpinner } from "@bfmono/apps/cfDs/components/CfDsSpinner.tsx";
+import { BfDsFullPageSpinner } from "@bfmono/apps/bfDs/components/BfDsSpinner.tsx";
 
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 const logger = getLogger(import.meta);
@@ -363,7 +363,7 @@ export function RouterProvider(
         createPortal(<NextHeader />, portalElement)}
       {children}
       {isPending && (
-        <CfDsFullPageSpinner
+        <BfDsFullPageSpinner
           xstyle={{
             backgroundColor: "transparent",
             position: "absolute",

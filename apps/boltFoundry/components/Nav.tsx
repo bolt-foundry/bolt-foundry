@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import { BfLogo } from "@bfmono/apps/cfDs/static/BfLogo.tsx";
-import { CfDsButton } from "@bfmono/apps/cfDs/components/CfDsButton.tsx";
+import { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
 
 import { useRouter } from "@bfmono/apps/boltFoundry/contexts/RouterContext.tsx";
 
@@ -17,26 +17,31 @@ export function Nav({ page }: Props) {
   const NavButtons = () => {
     return (
       <>
-        <CfDsButton
-          kind={page === "blog" ? "danSelected" : "dan"}
+        <BfDsButton
+          variant={page === "blog" ? "primary" : "ghost-primary"}
           href="/blog"
-          text="Blog"
-        />
-        <CfDsButton
-          kind={page === "docs" ? "danSelected" : "dan"}
+          target="_top"
+        >
+          Blog
+        </BfDsButton>
+        <BfDsButton
+          variant={page === "docs" ? "primary" : "ghost-primary"}
           href="/docs"
-          text="Docs"
-        />
-        <CfDsButton
-          kind="dan"
+          target="_top"
+        >
+          Docs
+        </BfDsButton>
+        <BfDsButton
+          variant="ghost-primary"
           href="https://discord.gg/tU5ksTBfEj"
-          hrefTarget="_blank"
+          target="_blank"
           rel="noopener noreferrer"
-          text="Discord"
-        />
+        >
+          Discord
+        </BfDsButton>
         {
-          /* <CfDsButton
-        kind="outline"
+          /* <BfDsButton
+        variant="outline"
         text="Login"
         link="/login"
         /> */
@@ -56,8 +61,10 @@ export function Nav({ page }: Props) {
             onMouseLeave={() => setHoverLogo(false)}
           >
             <BfLogo
-              boltColor={hoverLogo ? "var(--primaryColor)" : "var(--text)"}
-              foundryColor={hoverLogo ? "var(--primaryColor)" : "var(--text)"}
+              boltColor={hoverLogo ? "var(--bfds-primary)" : "var(--bfds-text)"}
+              foundryColor={hoverLogo
+                ? "var(--bfds-primary)"
+                : "var(--bfds-text)"}
               height={24}
             />
           </div>
@@ -68,9 +75,9 @@ export function Nav({ page }: Props) {
           </nav>
         </div>
         <nav className="mobile-show">
-          <CfDsButton
-            kind="dan"
-            iconLeft="menu"
+          <BfDsButton
+            variant="ghost"
+            icon="menu"
             onClick={() => {
               setShowMenu(true);
             }}
@@ -80,9 +87,9 @@ export function Nav({ page }: Props) {
           <div className="mobile-show">
             <div className="flexColumn gapLarge sidebar-nav">
               <div className="selfAlignEnd">
-                <CfDsButton
-                  kind="dan"
-                  iconLeft="cross"
+                <BfDsButton
+                  variant="ghost"
+                  icon="cross"
                   onClick={() => {
                     setShowMenu(false);
                   }}
