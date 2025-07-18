@@ -44,23 +44,12 @@ export function BfDsCalloutExample() {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: "24px",
-        padding: "24px",
-        backgroundColor: "var(--bfds-background)",
-        color: "var(--bfds-text)",
-        fontFamily: "system-ui, -apple-system, sans-serif",
-        maxWidth: "600px",
-      }}
-    >
+    <div className="bfds-example">
       <h2>BfDsCallout Examples</h2>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>Static Examples</h3>
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        <div className="bfds-example__group">
           <BfDsCallout variant="info">
             This is an informational message
           </BfDsCallout>
@@ -76,7 +65,7 @@ export function BfDsCalloutExample() {
         </div>
       </div>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>With Details</h3>
         <BfDsCallout
           variant="success"
@@ -102,41 +91,20 @@ export function BfDsCalloutExample() {
         </BfDsCallout>
       </div>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>Dynamic Notifications</h3>
-        <div
-          style={{
-            display: "flex",
-            gap: "12px",
-            flexWrap: "wrap",
-            marginBottom: "16px",
-          }}
-        >
+        <div className="bfds-example__controls">
           <button
             type="button"
             onClick={() => addNotification("Info notification", "info")}
-            style={{
-              padding: "8px 16px",
-              backgroundColor: "var(--bfds-primary)",
-              color: "var(--bfds-background)",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-            }}
+            className="bfds-example__control"
           >
             Add Info
           </button>
           <button
             type="button"
             onClick={() => addNotification("Success!", "success")}
-            style={{
-              padding: "8px 16px",
-              backgroundColor: "var(--bfds-success)",
-              color: "var(--bfds-background)",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-            }}
+            className="bfds-example__control"
           >
             Add Success
           </button>
@@ -148,14 +116,7 @@ export function BfDsCalloutExample() {
                 "success",
                 JSON.stringify(sampleData, null, 2),
               )}
-            style={{
-              padding: "8px 16px",
-              backgroundColor: "var(--bfds-success)",
-              color: "var(--bfds-background)",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-            }}
+            className="bfds-example__control"
           >
             Add with Details
           </button>
@@ -181,7 +142,7 @@ export function BfDsCalloutExample() {
           </button>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+        <div className="bfds-example__group">
           {notifications.map((notification) => (
             <BfDsCallout
               key={notification.id}

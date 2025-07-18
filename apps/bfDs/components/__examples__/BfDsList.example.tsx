@@ -10,21 +10,10 @@ export function BfDsListExample() {
   });
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: "32px",
-        padding: "24px",
-        backgroundColor: "var(--bfds-background)",
-        color: "var(--bfds-text)",
-        fontFamily: "system-ui, -apple-system, sans-serif",
-        maxWidth: "600px",
-      }}
-    >
+    <div className="bfds-example">
       <h2>BfDsList Examples</h2>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>Simple List</h3>
         <BfDsList>
           <BfDsListItem>Home</BfDsListItem>
@@ -34,7 +23,7 @@ export function BfDsListExample() {
         </BfDsList>
       </div>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>Navigation List</h3>
         <BfDsList>
           <BfDsListItem active>Dashboard</BfDsListItem>
@@ -44,7 +33,7 @@ export function BfDsListExample() {
         </BfDsList>
       </div>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>Clickable List</h3>
         <BfDsList>
           <BfDsListItem
@@ -76,7 +65,7 @@ export function BfDsListExample() {
         </BfDsCallout>
       </div>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>Expandable List (Independent)</h3>
         <p>Each item can be expanded independently of others.</p>
         <BfDsList>
@@ -140,7 +129,7 @@ export function BfDsListExample() {
         </BfDsList>
       </div>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>Accordion List</h3>
         <p>
           Only one item can be expanded at a time. Opening a new item closes the
