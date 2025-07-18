@@ -29,6 +29,7 @@ const MAX_WAIT_TIME = 30000; // Wait up to 30 seconds
  */
 async function acquireE2ELock(): Promise<void> {
   const startTime = Date.now();
+  let waitCount = 0;
 
   while (Date.now() - startTime < MAX_WAIT_TIME) {
     try {
@@ -45,9 +46,22 @@ async function acquireE2ELock(): Promise<void> {
           // Try to kill with signal 0 (no-op) to test if process exists
           Deno.kill(lockData.pid, "SIGTERM");
           // If we get here, process exists, so wait
-          logger.info(
-            `⏳ E2E tests already running (PID: ${lockData.pid}). Waiting...`,
+          waitCount++;
+          const elapsed = Math.floor((Date.now() - startTime) / 1000);
+          const remaining = Math.floor(
+            (MAX_WAIT_TIME - (Date.now() - startTime)) / 1000,
           );
+
+          if (waitCount === 1) {
+            logger.info(
+              `⏳ E2E tests already running (PID: ${lockData.pid}). Waiting...`,
+            );
+          } else if (waitCount % 10 === 0) {
+            logger.info(
+              `⏳ Still waiting for E2E lock (${elapsed}s elapsed, ${remaining}s remaining)...`,
+            );
+          }
+
           await new Promise((resolve) =>
             setTimeout(resolve, LOCK_CHECK_INTERVAL)
           );
@@ -87,7 +101,7 @@ async function acquireE2ELock(): Promise<void> {
   }
 
   throw new Error(
-    `Failed to acquire E2E lock after ${MAX_WAIT_TIME}ms. Another E2E test may be running.`,
+    `Failed to acquire E2E lock after ${MAX_WAIT_TIME}ms. Another E2E test may be running. 💡 Tip: Try rerunning it in 15 seconds.`,
   );
 }
 
@@ -303,19 +317,6 @@ export async function e2eCommand(options: Array<string>): Promise<number> {
     );
   }
 
-  // Set up cleanup handler
-  let cleanupCalled = false;
-  const cleanup = async () => {
-    if (cleanupCalled) return;
-    cleanupCalled = true;
-    await stopAllServers(verbose);
-    await releaseE2ELock();
-  };
-
-  // Handle cleanup on exit
-  Deno.addSignalListener("SIGINT", cleanup);
-  Deno.addSignalListener("SIGTERM", cleanup);
-
   let testResult = 1;
 
   try {
@@ -417,6 +418,7 @@ export async function e2eCommand(options: Array<string>): Promise<number> {
     // Add resolved test files
     testArgs.push(...testFiles);
 
+    // Run the tests
     testResult = await runShellCommand(
       testArgs,
       Deno.cwd(),
@@ -434,8 +436,9 @@ export async function e2eCommand(options: Array<string>): Promise<number> {
     logger.error("❌ E2E test setup failed:", error);
     testResult = 1;
   } finally {
-    // Cleanup servers
-    await cleanup();
+    // Cleanup servers and release lock
+    await stopAllServers(verbose);
+    await releaseE2ELock();
   }
 
   return testResult;
