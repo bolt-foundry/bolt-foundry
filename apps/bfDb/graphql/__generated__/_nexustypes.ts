@@ -64,6 +64,8 @@ export interface NexusGenObjects {
     cursor: string; // String!
     node?: NexusGenRootTypes['BlogPost'] | null; // BlogPost
   }
+  CurrentViewerLoggedIn: {};
+  CurrentViewerLoggedOut: {};
   GithubRepoStats: {};
   JoinWaitlistPayload: { // root type
     message?: string | null; // String
@@ -158,6 +160,16 @@ export interface NexusGenFieldTypes {
     cursor: string; // String!
     node: NexusGenRootTypes['BlogPost'] | null; // BlogPost
   }
+  CurrentViewerLoggedIn: { // field return type
+    id: string | null; // ID
+    orgBfOid: string | null; // String
+    personBfGid: string | null; // String
+  }
+  CurrentViewerLoggedOut: { // field return type
+    id: string | null; // ID
+    orgBfOid: string | null; // String
+    personBfGid: string | null; // String
+  }
   GithubRepoStats: { // field return type
     id: string; // ID!
     stars: number; // Int!
@@ -169,6 +181,7 @@ export interface NexusGenFieldTypes {
   Mutation: { // field return type
     createDeck: NexusGenRootTypes['BfDeck'] | null; // BfDeck
     joinWaitlist: NexusGenRootTypes['JoinWaitlistPayload'] | null; // JoinWaitlistPayload
+    loginWithGoogle: NexusGenRootTypes['CurrentViewer'] | null; // CurrentViewer
     submitSample: NexusGenRootTypes['BfSample'] | null; // BfSample
   }
   PageInfo: { // field return type
@@ -271,6 +284,16 @@ export interface NexusGenFieldTypeNames {
     cursor: 'String'
     node: 'BlogPost'
   }
+  CurrentViewerLoggedIn: { // field return type name
+    id: 'ID'
+    orgBfOid: 'String'
+    personBfGid: 'String'
+  }
+  CurrentViewerLoggedOut: { // field return type name
+    id: 'ID'
+    orgBfOid: 'String'
+    personBfGid: 'String'
+  }
   GithubRepoStats: { // field return type name
     id: 'ID'
     stars: 'Int'
@@ -282,6 +305,7 @@ export interface NexusGenFieldTypeNames {
   Mutation: { // field return type name
     createDeck: 'BfDeck'
     joinWaitlist: 'JoinWaitlistPayload'
+    loginWithGoogle: 'CurrentViewer'
     submitSample: 'BfSample'
   }
   PageInfo: { // field return type name
@@ -332,6 +356,9 @@ export interface NexusGenArgTypes {
       company?: string | null; // String
       email: string; // String!
       name: string; // String!
+    }
+    loginWithGoogle: { // args
+      idToken: string; // String!
     }
     submitSample: { // args
       collectionMethod?: string | null; // String
