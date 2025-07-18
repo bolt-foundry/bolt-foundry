@@ -199,11 +199,6 @@ async function safety(): Promise<number> {
 
     const parsed = parseBftCommand(command);
 
-    // If it's already marked requestApproval (bft requestApproval ...), let the normal permission system handle it
-    if (command.includes("bft requestApproval ")) {
-      return 0;
-    }
-
     // Check if the command exists and is safe
     const { exists, safe } = await isBftCommandSafe(
       parsed.command,

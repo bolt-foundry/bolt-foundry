@@ -167,19 +167,33 @@ async function shouldBlockFile(filePath: string): Promise<string | null> {
   return null;
 }
 
+function matchesSimpleDirectoryPattern(
+  filePath: string,
+  pattern: string,
+): boolean {
+  if (!pattern.startsWith("**/") || !pattern.endsWith("/**")) {
+    return false;
+  }
+
+  const dirName = pattern.slice(3, -3); // Remove **/ and /**
+  const normalizedPath = filePath.replace(/^\.\//, "");
+  const matches = normalizedPath.includes(`/${dirName}/`) ||
+    normalizedPath.startsWith(`${dirName}/`);
+
+  logger.debug(
+    `Simple pattern '${pattern}' -> Directory: '${dirName}' -> FilePath: '${normalizedPath}' -> Match: ${matches}`,
+  );
+
+  return matches;
+}
+
 function matchesPattern(filePath: string, pattern: string): boolean {
   // Normalize the file path (remove leading ./ if present)
   const normalizedPath = filePath.replace(/^\.\//, "");
 
   // For simple directory patterns like **/node_modules/**, just check if the path contains the directory
-  if (pattern.startsWith("**/") && pattern.endsWith("/**")) {
-    const dirName = pattern.slice(3, -3); // Remove **/ and /**
-    const matches = normalizedPath.includes(`/${dirName}/`) ||
-      normalizedPath.startsWith(`${dirName}/`);
-    logger.debug(
-      `Simple pattern '${pattern}' -> Directory: '${dirName}' -> FilePath: '${normalizedPath}' -> Match: ${matches}`,
-    );
-    return matches;
+  if (matchesSimpleDirectoryPattern(filePath, pattern)) {
+    return true;
   }
 
   // For file extension patterns like **/*.min.js, check if the path ends with the extension

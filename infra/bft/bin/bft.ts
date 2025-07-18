@@ -11,6 +11,13 @@ import { createPrefixedUI } from "@bfmono/packages/cli-ui/cli-ui.ts";
 
 const ui = createPrefixedUI("bft");
 
+const BFT_EXTENSION = ".bft.ts";
+const BFT_DECK_EXTENSION = ".bft.deck.md";
+
+function removeExtension(filename: string, extension: string): string {
+  return filename.slice(0, -extension.length);
+}
+
 // Load all .bft.ts and .bft.deck.md files from the tasks directory
 async function loadBftTasks(): Promise<void> {
   const bftTasksDir = join(
@@ -23,8 +30,8 @@ async function loadBftTasks(): Promise<void> {
     for await (const entry of Deno.readDir(bftTasksDir)) {
       if (entry.isFile) {
         // Handle .bft.ts files
-        if (entry.name.endsWith(".bft.ts")) {
-          const taskName = entry.name.slice(0, -7); // Remove .bft.ts extension
+        if (entry.name.endsWith(BFT_EXTENSION)) {
+          const taskName = removeExtension(entry.name, BFT_EXTENSION);
 
           try {
             // Import the task module
@@ -47,8 +54,8 @@ async function loadBftTasks(): Promise<void> {
             ui.error(`Failed to load task ${entry.name}: ${error}`);
           }
         } // Handle .bft.deck.md files
-        else if (entry.name.endsWith(".bft.deck.md")) {
-          const taskName = entry.name.slice(0, -12); // Remove .bft.deck.md extension
+        else if (entry.name.endsWith(BFT_DECK_EXTENSION)) {
+          const taskName = removeExtension(entry.name, BFT_DECK_EXTENSION);
           const deckPath = join(bftTasksDir, entry.name);
 
           // Create a task that runs the deck
