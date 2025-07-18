@@ -16,6 +16,8 @@ import { BfDsRadioExample } from "../components/__examples__/BfDsRadio.example.t
 import { BfDsToggleExample } from "../components/__examples__/BfDsToggle.example.tsx";
 import { BfDsCalloutExample } from "../components/__examples__/BfDsCallout.example.tsx";
 import { BfDsToastExample } from "../components/__examples__/BfDsToast.example.tsx";
+import { BfDsPillExample } from "../components/__examples__/BfDsPill.example.tsx";
+import { BfDsSpinnerExample } from "../components/__examples__/BfDsSpinner.example.tsx";
 
 type ComponentSection = {
   id: string;
@@ -131,6 +133,20 @@ const componentSections: Array<ComponentSection> = [
     component: BfDsToastExample,
     category: "Core",
   },
+  {
+    id: "pill",
+    name: "Pill",
+    description: "Compact pill components with labels, icons, and actions",
+    component: BfDsPillExample,
+    category: "Core",
+  },
+  {
+    id: "spinner",
+    name: "Spinner",
+    description: "Loading spinners with customizable sizes and colors",
+    component: BfDsSpinnerExample,
+    category: "Core",
+  },
 ];
 
 export function BfDsDemo() {
@@ -156,7 +172,6 @@ export function BfDsDemo() {
         minHeight: "100vh",
         backgroundColor: "var(--bfds-background)",
         color: "var(--bfds-text)",
-        fontFamily: "system-ui, -apple-system, sans-serif",
       }}
     >
       {/* Sidebar */}
@@ -190,21 +205,8 @@ export function BfDsDemo() {
         </div>
 
         {Array.from(categories.entries()).map(([categoryName, sections]) => (
-          <div key={categoryName} style={{ marginBottom: "24px" }}>
-            <h3
-              style={{
-                margin: "0 0 12px 0",
-                padding: "0 24px",
-                fontSize: "12px",
-                fontWeight: "600",
-                textTransform: "uppercase",
-                letterSpacing: "0.05em",
-                color: "var(--bfds-text-muted)",
-              }}
-            >
-              {categoryName}
-            </h3>
-            <BfDsList>
+          <div key={categoryName}>
+            <BfDsList header={categoryName}>
               {sections.map((section) => (
                 <BfDsListItem
                   key={section.id}

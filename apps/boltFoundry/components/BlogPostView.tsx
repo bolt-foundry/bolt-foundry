@@ -3,7 +3,7 @@ import { iso } from "@bfmono/apps/boltFoundry/__generated__/__isograph/iso.ts";
 import { PageError } from "@bfmono/apps/boltFoundry/pages/PageError.tsx";
 import { marked, Renderer } from "marked";
 import { blogMetadata } from "@bfmono/apps/boltFoundry/lib/blogHelper.ts";
-import { CfDsPill } from "@bfmono/apps/cfDs/components/CfDsPill.tsx";
+import { BfDsPill } from "@bfmono/apps/bfDs/components/BfDsPill.tsx";
 
 // Single blog post view component
 export const BlogPostView = iso(`
@@ -149,11 +149,10 @@ export const BlogPostView = iso(`
           >
             {metadata ?? ""}
             {tagsArray.map((tag: string) => (
-              <CfDsPill
+              <BfDsPill
                 key={tag}
-                color="primaryColor"
-                labelColor="textSecondary"
-                label={tag}
+                variant="primary"
+                text={tag}
               />
             ))}
           </div>

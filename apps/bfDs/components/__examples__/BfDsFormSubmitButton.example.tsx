@@ -13,23 +13,12 @@ export function BfDsFormSubmitButtonExample() {
   });
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: "24px",
-        padding: "24px",
-        backgroundColor: "var(--bfds-background)",
-        color: "var(--bfds-text)",
-        fontFamily: "system-ui, -apple-system, sans-serif",
-        maxWidth: "600px",
-      }}
-    >
+    <div className="bfds-example">
       <h2>BfDsFormSubmitButton Examples</h2>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>Form Integration</h3>
-        <p style={{ margin: "0 0 16px 0", color: "var(--bfds-text-muted)" }}>
+        <p className="bfds-example__label">
           Submit button automatically integrates with form context for
           submission handling.
         </p>
@@ -44,9 +33,7 @@ export function BfDsFormSubmitButtonExample() {
             setFormData(data as typeof formData);
           }}
         >
-          <div
-            style={{ display: "flex", flexDirection: "column", gap: "16px" }}
-          >
+          <div className="bfds-example__group">
             <BfDsInput
               name="name"
               label="Your Name"

@@ -18,23 +18,12 @@ export function BfDsCheckboxExample() {
   });
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: "32px",
-        padding: "24px",
-        backgroundColor: "var(--bfds-background)",
-        color: "var(--bfds-text)",
-        fontFamily: "system-ui, -apple-system, sans-serif",
-        maxWidth: "600px",
-      }}
-    >
+    <div className="bfds-example">
       <h2>BfDsCheckbox Examples</h2>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>Standalone Checkbox</h3>
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        <div className="bfds-example__group">
           <BfDsCheckbox
             label="I agree to the terms and conditions"
             checked={standaloneChecked}
@@ -44,7 +33,7 @@ export function BfDsCheckboxExample() {
         </div>
       </div>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>With BfDsForm Integration</h3>
         <BfDsForm
           initialData={formData}
@@ -57,9 +46,7 @@ export function BfDsCheckboxExample() {
             setFormData(data as typeof formData);
           }}
         >
-          <div
-            style={{ display: "flex", flexDirection: "column", gap: "16px" }}
-          >
+          <div className="bfds-example__group">
             <BfDsCheckbox
               name="terms"
               label="I agree to the terms and conditions"
@@ -91,9 +78,9 @@ export function BfDsCheckboxExample() {
         </BfDsCallout>
       </div>
 
-      <div>
+      <div className="bfds-example__section">
         <h3>States</h3>
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        <div className="bfds-example__group">
           <BfDsCheckbox
             label="Unchecked"
             checked={false}
