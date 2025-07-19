@@ -1,6 +1,6 @@
 import { UIDemo } from "./src/components/UIDemo.tsx";
 import type { BfIsographEntrypoint } from "./lib/BfIsographEntrypoint.ts";
-import { entrypointHome } from "./__generated__/builtRoutes.ts";
+import { entrypointHome, entrypointRlhf } from "./__generated__/builtRoutes.ts";
 
 export type ComponentWithHeader = React.ComponentType<unknown> & {
   HeaderComponent?: React.ComponentType<unknown>;
@@ -21,4 +21,5 @@ export const appRoutes = new Map<string, RouteGuts>([
 // Isograph-powered routes
 export const isographAppRoutes = new Map<string, IsographRoute>([
   ["/", entrypointHome],
+  ["/rlhf", entrypointRlhf],
 ]);
