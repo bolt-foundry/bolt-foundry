@@ -4,7 +4,7 @@
  */
 
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
-import { renderDeck } from "@bfmono/apps/aibff/index.ts";
+import { readLocalDeck } from "@bfmono/packages/bolt-foundry/bolt-foundry.ts";
 import type { CompanyContext, WorkItem } from "./types.ts";
 import { getSecret } from "@bfmono/packages/get-configuration-var/get-configuration-var.ts";
 
@@ -161,14 +161,15 @@ CRITICAL: Your response must be ONLY valid JSON in exactly this format:
 Do not include any text before or after the JSON. Start with { and end with }.`,
       };
 
-      // Render the deck with work context
-      const chatCompletionParams = renderDeck(
-        this.deckPath,
-        contextWithInstructions,
-        {
-          model: "gpt-4o-mini", // Fast model for summarization
-        },
-      );
+      // Render the deck with work context using the new deck system
+      const deck = await readLocalDeck(this.deckPath);
+      const result = deck.render({}, { context: contextWithInstructions });
+
+      // Convert to the expected format
+      const chatCompletionParams = {
+        messages: result.messages,
+        model: "gpt-4o-mini", // Fast model for summarization
+      };
 
       // Log the rendered deck for debugging
       logger.debug("Deck rendered for AI summarization:", {

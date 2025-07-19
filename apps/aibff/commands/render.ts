@@ -6,6 +6,7 @@ import { extractToml as extractFrontmatter } from "@std/front-matter";
 import * as path from "@std/path";
 import { parse as parseFlags } from "@std/flags";
 import { ui } from "@bfmono/packages/cli-ui/cli-ui.ts";
+import { readLocalDeck } from "@bfmono/packages/bolt-foundry/bolt-foundry.ts";
 
 interface ContextDefinition {
   assistantQuestion: string; // Required field
@@ -391,67 +392,25 @@ function extractToolsFromMarkdown(markdown: string): Array<OpenAITool> {
   return tools;
 }
 
-function renderDeck(
+async function renderDeck(
   deckFileSystemPath: string,
   context: Record<string, unknown>,
   openAiCompletionOptions: Record<string, unknown> = {},
-): OpenAICompletionRequest {
-  // Read the deck file content
-  const deckMarkdown = Deno.readTextFileSync(deckFileSystemPath);
+): Promise<OpenAICompletionRequest> {
+  // Use the new deck system
+  const deck = await readLocalDeck(deckFileSystemPath);
+  const result = deck.render({}, { context });
 
-  // Process markdown includes to build the full content first and extract tools
-  const processed = processMarkdownIncludes(deckMarkdown, deckFileSystemPath);
-
-  // Extract context definitions from the fully assembled markdown with proper path resolution
-  const extractedContext = extractContextFromMarkdown(
-    processed.content,
-    deckFileSystemPath,
-    processed.tomlReferences,
+  // Extract context definitions from the deck to check for unrequested variables
+  const { contextDefs } = deck.processMarkdownIncludes(
+    deck.markdownContent,
+    deck.deckPath,
   );
 
-  // Remove frontmatter and ![alt](file) embeds from markdown to get clean system message
-  let systemContent: string;
-  try {
-    const { body } = extractFrontmatter(processed.content);
-    systemContent = body;
-  } catch (_error) {
-    // No frontmatter, use content as-is
-    systemContent = processed.content;
-  }
-
-  // Remove markdown embeds and clean up
-  systemContent = systemContent
-    .replace(/!\[.*?\]\(.*?\)/g, "") // Remove markdown embeds
-    .trim();
-
-  // Build messages array starting with system message
-  const messages: Array<OpenAIMessage> = [
-    { role: "system", content: systemContent },
-  ];
-
-  // Track which context variables were provided but not requested
+  // Check for unrequested context variables and warn
+  const usedVars = new Set<string>(Object.keys(contextDefs));
   const unrequestedVars: Array<string> = [];
-  const usedVars = new Set<string>();
 
-  // Add context Q&A pairs in the order they were defined in the deck
-  for (const [key, definition] of Object.entries(extractedContext)) {
-    if (key in context && definition.assistantQuestion) {
-      // Handle array/object values by JSON stringifying them
-      const contextValue = context[key];
-      const valueString =
-        typeof contextValue === "object" && contextValue !== null
-          ? JSON.stringify(contextValue)
-          : String(contextValue);
-
-      messages.push(
-        { role: "assistant", content: definition.assistantQuestion },
-        { role: "user", content: valueString },
-      );
-      usedVars.add(key);
-    }
-  }
-
-  // Check for unrequested variables
   for (const key of Object.keys(context)) {
     if (!usedVars.has(key)) {
       unrequestedVars.push(key);
@@ -467,34 +426,24 @@ function renderDeck(
     );
   }
 
-  // Extract tools from the main deck file
-  const mainFileTools = extractToolsFromMarkdown(deckMarkdown);
+  // Convert our deck system output to the expected OpenAI format
+  const messages: Array<OpenAIMessage> = result.messages.map((msg) => ({
+    role: msg.role as "system" | "assistant" | "user",
+    content: msg.content,
+  }));
 
-  // Combine tools from main file and embedded files, checking for collisions
-  const allTools: Array<OpenAITool> = [];
-  const toolNames = new Set<string>();
-
-  // Add main file tools first
-  for (const tool of mainFileTools) {
-    if (toolNames.has(tool.function.name)) {
-      throw new Error(
-        `Tool name collision: '${tool.function.name}' is defined multiple times`,
-      );
-    }
-    toolNames.add(tool.function.name);
-    allTools.push(tool);
-  }
-
-  // Add embedded tools, checking for collisions
-  for (const tool of processed.tools) {
-    if (toolNames.has(tool.function.name)) {
-      throw new Error(
-        `Tool name collision: '${tool.function.name}' is defined multiple times`,
-      );
-    }
-    toolNames.add(tool.function.name);
-    allTools.push(tool);
-  }
+  // Convert tools to OpenAI format if any exist
+  const tools: Array<OpenAITool> = result.tools.map((tool) => ({
+    type: "function",
+    function: {
+      name: tool.name,
+      description: tool.description,
+      parameters: {
+        type: "object",
+        properties: {},
+      },
+    },
+  }));
 
   // Return complete OpenAI request with options spread last
   const request: OpenAICompletionRequest = {
@@ -503,8 +452,8 @@ function renderDeck(
   };
 
   // Add tools if any were found
-  if (allTools.length > 0) {
-    request.tools = allTools;
+  if (tools.length > 0) {
+    request.tools = tools;
   }
 
   return request;
@@ -593,7 +542,7 @@ export const renderCommand: Command = {
       }
 
       // Render the deck with context injection
-      const openAiRequest = renderDeck(deckPath, contextValues, {});
+      const openAiRequest = await renderDeck(deckPath, contextValues, {});
 
       ui.output(JSON.stringify(openAiRequest, null, 2));
     } catch (error) {

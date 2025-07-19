@@ -272,7 +272,7 @@ const routes = [
 
       try {
         // Get the OpenAI request from renderDeck to get the system message
-        const baseRequest = renderDeck(deckPath, {}, {
+        const baseRequest = await renderDeck(deckPath, {}, {
           model: "openai/gpt-4o",
           stream: true,
         });

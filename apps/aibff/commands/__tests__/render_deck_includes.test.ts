@@ -1,4 +1,4 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { assertEquals, assertRejects } from "@std/assert";
 import { renderDeck } from "../render.ts";
 
 Deno.test("processMarkdownIncludes - should include basic markdown deck file", async () => {
@@ -19,7 +19,7 @@ This is included content.`;
   await Deno.writeTextFile(includedDeckPath, includedContent);
 
   try {
-    const result = renderDeck(mainDeckPath, {}, {});
+    const result = await renderDeck(mainDeckPath, {}, {});
 
     // The system message should contain both contents combined
     const expectedContent = `# Main Deck
@@ -58,7 +58,7 @@ This is the deepest level.`;
   await Deno.writeTextFile(deckCPath, deckC);
 
   try {
-    const result = renderDeck(deckAPath, {}, {});
+    const result = await renderDeck(deckAPath, {}, {});
 
     const expectedContent = `# Deck A
 # Deck B
@@ -92,7 +92,7 @@ Deno.test("processMarkdownIncludes - should resolve relative paths correctly in 
   await Deno.writeTextFile(includedDeckPath, includedContent);
 
   try {
-    const result = renderDeck(mainDeckPath, {}, {});
+    const result = await renderDeck(mainDeckPath, {}, {});
 
     const expectedContent = `# Main
 # Included from dirB`;
@@ -128,12 +128,11 @@ default = "Alice"`;
   await Deno.writeTextFile(configPath, configContent);
 
   try {
-    const result = renderDeck(mainDeckPath, { userName: "Bob" }, {});
+    const result = await renderDeck(mainDeckPath, { userName: "Bob" }, {});
 
     // System message should have markdown content but no file references
     const expectedSystemContent = `# Main Deck
 # Base Deck
-
 
 Base content here.
 
@@ -160,8 +159,8 @@ Deno.test("processMarkdownIncludes - should throw error for missing deck include
   await Deno.writeTextFile(mainDeckPath, mainContent);
 
   try {
-    assertThrows(
-      () => renderDeck(mainDeckPath, {}, {}),
+    await assertRejects(
+      async () => await renderDeck(mainDeckPath, {}, {}),
       Error,
       "File not found",
     );
@@ -186,7 +185,7 @@ This should be included`;
   await Deno.writeTextFile(readmePath, readmeContent);
 
   try {
-    const result = renderDeck(mainDeckPath, {}, {});
+    const result = await renderDeck(mainDeckPath, {}, {});
 
     // Should include readme.md content
     assertEquals(
@@ -224,7 +223,7 @@ default = "value"`;
   await Deno.writeTextFile(configPath, configContent);
 
   try {
-    const result = renderDeck(mainDeckPath, { test: "custom" }, {});
+    const result = await renderDeck(mainDeckPath, { test: "custom" }, {});
 
     // Should successfully load config.toml relative to base.deck.md
     assertEquals(result.messages.length, 3);
@@ -277,7 +276,7 @@ assistantQuestion = "What is your API key?"`;
       apiKey: "sk-123",
     };
 
-    const result = renderDeck(appDeckPath, context, {});
+    const result = await renderDeck(appDeckPath, context, {});
 
     // Should have all three context variables
     assertEquals(result.messages.length, 7); // system + 3 Q&A pairs
