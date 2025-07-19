@@ -7,6 +7,7 @@ import { ServerRenderedPage } from "./server/components/ServerRenderedPage.tsx";
 import App from "./src/App.tsx";
 import { appRoutes, isographAppRoutes } from "./routes.ts";
 import { createApiRoutes } from "./apiRoutes.ts";
+import { getIsographEnvironment } from "./server/isographEnvironment.ts";
 
 const logger = getLogger(import.meta);
 
@@ -21,7 +22,17 @@ interface ViteManifest {
 }
 
 // Read Vite manifest to get asset paths
-function loadAssetPaths(): { cssPath?: string; jsPath: string } {
+function loadAssetPaths(isDev: boolean): { cssPath?: string; jsPath: string } {
+  if (isDev) {
+    // In dev mode, use Vite's entry point directly
+    const devPaths = {
+      cssPath: undefined,
+      jsPath: "/ClientRoot.tsx", // Vite will handle this
+    };
+    logger.info("Using dev asset paths (Vite will handle)");
+    return devPaths;
+  }
+
   try {
     const manifestPath =
       new URL(import.meta.resolve("./static/build/.vite/manifest.json"))
@@ -51,9 +62,6 @@ function loadAssetPaths(): { cssPath?: string; jsPath: string } {
   logger.info("Using fallback asset paths");
   return fallback;
 }
-
-// Load asset paths at startup
-const assetPaths = loadAssetPaths();
 
 // Check if a path should be handled by React routing
 function shouldHandleWithReact(pathname: string): boolean {
@@ -95,6 +103,9 @@ if (isNaN(port)) {
 const isDev = flags.mode === "development";
 const vitePort = flags["vite-port"] ? parseInt(flags["vite-port"]) : undefined;
 
+// Load asset paths at startup
+const assetPaths = loadAssetPaths(isDev);
+
 // Create API routes
 const apiRoutes = createApiRoutes({ isDev, port });
 
@@ -117,9 +128,19 @@ const handler = async (request: Request): Promise<Response> => {
       currentPath: url.pathname,
     };
 
+    // Create server-side Isograph environment
+    const isographServerEnvironment = getIsographEnvironment(request);
+
     const element = (
       <ServerRenderedPage environment={environment} assetPaths={assetPaths}>
-        <App initialPath={url.pathname} />
+        <App
+          initialPath={url.pathname}
+          IS_SERVER_RENDERING
+          isographServerEnvironment={isographServerEnvironment}
+          mode={environment.mode}
+          port={environment.port}
+          currentPath={environment.currentPath}
+        />
       </ServerRenderedPage>
     );
 

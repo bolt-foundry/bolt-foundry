@@ -22,7 +22,8 @@
       "Bash(rg:*)"
     ],
     "deny": [
-      "Bash(git:*)"
+      "Bash(git:*)",
+      "Bash(deno test:*)"
     ]
   },
   "hooks": {

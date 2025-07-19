@@ -151,6 +151,23 @@ Examples:
     return 1;
   }
 
+  // Clean up static assets since they're now embedded in the binary
+  try {
+    await Deno.remove(staticBuildPath, { recursive: true });
+    if (!flags.quiet) {
+      ui.output("🧹 Cleaned up static build assets (embedded in binary)");
+    }
+  } catch (error) {
+    if (!(error instanceof Deno.errors.NotFound)) {
+      ui.error(
+        `Warning: Failed to clean up static assets: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+      );
+      // Don't fail the compilation for cleanup issues
+    }
+  }
+
   if (!flags.quiet) {
     ui.output(`✅ Successfully compiled to: ${binaryPath}`);
     ui.output("");
