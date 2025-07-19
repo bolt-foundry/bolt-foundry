@@ -7,6 +7,7 @@ import { ServerRenderedPage } from "./server/components/ServerRenderedPage.tsx";
 import App from "./src/App.tsx";
 import { appRoutes, isographAppRoutes } from "./routes.ts";
 import { createApiRoutes } from "./apiRoutes.ts";
+import { getIsographEnvironment } from "./server/isographEnvironment.ts";
 
 const logger = getLogger(import.meta);
 
@@ -21,7 +22,17 @@ interface ViteManifest {
 }
 
 // Read Vite manifest to get asset paths
-function loadAssetPaths(): { cssPath?: string; jsPath: string } {
+function loadAssetPaths(isDev: boolean): { cssPath?: string; jsPath: string } {
+  if (isDev) {
+    // In dev mode, these paths aren't used since Vite handles everything
+    const devPaths = {
+      cssPath: undefined,
+      jsPath: "/dev-not-used", // Vite handles all assets in dev mode
+    };
+    logger.info("Using dev asset paths (not used - Vite handles everything)");
+    return devPaths;
+  }
+
   try {
     const manifestPath =
       new URL(import.meta.resolve("./static/build/.vite/manifest.json"))
@@ -51,9 +62,6 @@ function loadAssetPaths(): { cssPath?: string; jsPath: string } {
   logger.info("Using fallback asset paths");
   return fallback;
 }
-
-// Load asset paths at startup
-const assetPaths = loadAssetPaths();
 
 // Check if a path should be handled by React routing
 function shouldHandleWithReact(pathname: string): boolean {
@@ -95,6 +103,9 @@ if (isNaN(port)) {
 const isDev = flags.mode === "development";
 const vitePort = flags["vite-port"] ? parseInt(flags["vite-port"]) : undefined;
 
+// Load asset paths at startup
+const assetPaths = loadAssetPaths(isDev);
+
 // Create API routes
 const apiRoutes = createApiRoutes({ isDev, port });
 
@@ -110,16 +121,63 @@ const handler = async (request: Request): Promise<Response> => {
 
   // Check if this should be handled by React routing
   if (shouldHandleWithReact(url.pathname)) {
-    // Handle with React SSR
+    // In dev mode, let Vite handle all UI routes
+    if (isDev && vitePort) {
+      try {
+        const viteUrl =
+          `http://localhost:${vitePort}${url.pathname}${url.search}`;
+        const viteResponse = await fetch(viteUrl, {
+          method: request.method,
+          headers: request.headers,
+          body: request.body,
+        });
+
+        // Create new headers to avoid immutable headers issue
+        const headers = new Headers();
+        viteResponse.headers.forEach((value, key) => {
+          // Skip hop-by-hop headers
+          if (
+            !["connection", "keep-alive", "transfer-encoding"].includes(
+              key.toLowerCase(),
+            )
+          ) {
+            headers.set(key, value);
+          }
+        });
+
+        return new Response(viteResponse.body, {
+          status: viteResponse.status,
+          statusText: viteResponse.statusText,
+          headers,
+        });
+      } catch (error) {
+        logger.error("Error proxying to Vite:", error);
+        return new Response("Error proxying to Vite dev server", {
+          status: 502,
+        });
+      }
+    }
+
+    // Production mode: Handle with React SSR
     const environment = {
       mode: isDev ? "development" : "production",
       port: port,
       currentPath: url.pathname,
     };
 
+    // Create server-side Isograph environment
+    const isographServerEnvironment = getIsographEnvironment(request);
+
     const element = (
       <ServerRenderedPage environment={environment} assetPaths={assetPaths}>
-        <App initialPath={url.pathname} />
+        <App
+          initialPath={url.pathname}
+          IS_SERVER_RENDERING
+          isographServerEnvironment={isographServerEnvironment}
+          mode={environment.mode}
+          port={environment.port}
+          currentPath={environment.currentPath}
+        />
       </ServerRenderedPage>
     );
 

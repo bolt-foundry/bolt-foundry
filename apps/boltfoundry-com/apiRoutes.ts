@@ -1,4 +1,5 @@
 import { handleTelemetryRequest } from "./handlers/telemetry.ts";
+import { handleGraphQLRequest } from "./handlers/graphql.ts";
 
 export interface ApiRoute {
   pattern: URLPattern;
@@ -28,6 +29,10 @@ export function createApiRoutes(
     {
       pattern: new URLPattern({ pathname: "/api/telemetry" }),
       handler: handleTelemetryRequest,
+    },
+    {
+      pattern: new URLPattern({ pathname: "/graphql" }),
+      handler: handleGraphQLRequest,
     },
   ];
 }

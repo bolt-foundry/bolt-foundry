@@ -1,7 +1,10 @@
 import type { IsographEntrypoint } from '@isograph/react';
 import { type Query__EntrypointHome__param } from './Query/EntrypointHome/param_type.ts';
+import { type Query__EntrypointRlhf__param } from './Query/EntrypointRlhf/param_type.ts';
 import { type Query__Home__param } from './Query/Home/param_type.ts';
+import { type Query__RlhfInterface__param } from './Query/RlhfInterface/param_type.ts';
 import entrypoint_Query__EntrypointHome from '../__isograph/Query/EntrypointHome/entrypoint.ts';
+import entrypoint_Query__EntrypointRlhf from '../__isograph/Query/EntrypointRlhf/entrypoint.ts';
 
 // This is the type given to regular client fields.
 // This means that the type of the exported iso literal is exactly
@@ -56,12 +59,24 @@ export function iso<T>(
 ): IdentityWithParam<Query__EntrypointHome__param>;
 
 export function iso<T>(
+  param: T & MatchesWhitespaceAndString<'field Query.EntrypointRlhf', T>
+): IdentityWithParam<Query__EntrypointRlhf__param>;
+
+export function iso<T>(
   param: T & MatchesWhitespaceAndString<'field Query.Home', T>
 ): IdentityWithParamComponent<Query__Home__param>;
 
 export function iso<T>(
+  param: T & MatchesWhitespaceAndString<'field Query.RlhfInterface', T>
+): IdentityWithParamComponent<Query__RlhfInterface__param>;
+
+export function iso<T>(
   param: T & MatchesWhitespaceAndString<'entrypoint Query.EntrypointHome', T>
 ): typeof entrypoint_Query__EntrypointHome;
+
+export function iso<T>(
+  param: T & MatchesWhitespaceAndString<'entrypoint Query.EntrypointRlhf', T>
+): typeof entrypoint_Query__EntrypointRlhf;
 
 export function iso(isographLiteralText: string):
   | IdentityWithParam<any>
@@ -71,6 +86,8 @@ export function iso(isographLiteralText: string):
   switch (isographLiteralText) {
     case 'entrypoint Query.EntrypointHome':
       return entrypoint_Query__EntrypointHome;
+    case 'entrypoint Query.EntrypointRlhf':
+      return entrypoint_Query__EntrypointRlhf;
   } 
   return (clientFieldResolver: any) => clientFieldResolver;
 }

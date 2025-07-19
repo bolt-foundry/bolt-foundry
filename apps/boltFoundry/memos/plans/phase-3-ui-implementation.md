@@ -101,7 +101,14 @@ components (80% foundation ready).
 - ✅ Sample submission via `connectBoltFoundry` wrapper (in progress)
 - ✅ Authentication via `bf+{orgId}` API key format
 
-### ❌ **MISSING COMPONENTS (15% of Phase 3)**
+**GraphQL Schema (COMPLETED)**
+
+- ✅ All RLHF types exposed in GraphQL with proper `id: ID!` fields
+- ✅ `createDeck` and `submitSample` mutations available
+- ✅ `deck(slug: String)` query for slug-based lookups
+- ✅ Generated Isograph types ready for component development
+
+### ❌ **MISSING COMPONENTS (10% of Phase 3)**
 
 **Auto-Evaluation Service (5% of Phase 3)**
 
@@ -109,7 +116,7 @@ components (80% foundation ready).
 - Integration with telemetry endpoint to trigger AI evaluation
 - Adaptation of existing aibff evaluation logic
 
-**Chat + Cards UI (10% of Phase 3)**
+**Chat + Cards UI (5% of Phase 3)**
 
 - Navigation sidebar with collapsible behavior
 - Conversation view with AI assistant

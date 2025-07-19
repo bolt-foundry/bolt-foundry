@@ -26,9 +26,10 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "@bfmono/": "../../..",
-      "@bfmono/static/": "../../static/",
+      "@bfmono/": new URL(import.meta.resolve("@bfmono/")).pathname,
+      "@bfmono/static/":
+        new URL(import.meta.resolve("@bfmono/static/")).pathname,
     },
   },
-  publicDir: new URL(import.meta.resolve("../../static")).pathname,
+  publicDir: new URL(import.meta.resolve("@bfmono/static/")).pathname,
 });

@@ -33,29 +33,6 @@ function makeRealNetworkRequest<T>(
   return promise;
 }
 
-function makeMockedNetworkRequest<T>(
-  queryText: string,
-  variables: unknown,
-): Promise<T> {
-  logger.debug("Mock GraphQL request:", { queryText, variables });
-
-  // Mock GraphQL response for now
-  const mockResponse = {
-    data: {
-      __typename: "Query",
-      // Mock data for EntrypointHome
-      EntrypointHome: {
-        Home: {
-          __typename: "HomeComponent",
-        },
-      },
-    },
-  };
-
-  logger.debug("Mock GraphQL response:", mockResponse);
-  return Promise.resolve(mockResponse as T);
-}
-
 export function getEnvironment() {
   // @ts-expect-error Not typed on the window yet
   if (globalThis.__ISOGRAPH_ENVIRONMENT__) {
@@ -69,26 +46,7 @@ export function getEnvironment() {
   return globalThis.__ISOGRAPH_ENVIRONMENT__ ??= createIsographEnvironment(
     // @ts-expect-error Not typed on the window yet
     globalThis.__ISOGRAPH_STORE__,
-    makeMockedNetworkRequest, // Using mocked version for now
-    null,
-    logger.debug,
-  );
-}
-
-export function getRealEnvironment() {
-  // @ts-expect-error Not typed on the window yet
-  if (globalThis.__ISOGRAPH_ENVIRONMENT__) {
-    // @ts-expect-error Not typed on the window yet
-    return globalThis.__ISOGRAPH_ENVIRONMENT__;
-  }
-
-  // @ts-expect-error Not typed on the window yet
-  globalThis.__ISOGRAPH_STORE__ ??= createIsographStore();
-  // @ts-expect-error Not typed on the window yet
-  return globalThis.__ISOGRAPH_ENVIRONMENT__ ??= createIsographEnvironment(
-    // @ts-expect-error Not typed on the window yet
-    globalThis.__ISOGRAPH_STORE__,
-    makeRealNetworkRequest, // Real GraphQL requests
+    makeRealNetworkRequest, // Using real GraphQL requests
     null,
     logger.debug,
   );
