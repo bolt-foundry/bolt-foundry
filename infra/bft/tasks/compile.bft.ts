@@ -89,7 +89,7 @@ Examples:
       ui.output("Assets not found, building frontend first...");
     }
 
-    // Run Vite build directly (same as bft app --build)
+    // Run Vite build directly (same as bft dev --build)
     const buildCommand = new Deno.Command("deno", {
       args: ["run", "-A", "--node-modules-dir", "npm:vite", "build"],
       cwd: appPath,
