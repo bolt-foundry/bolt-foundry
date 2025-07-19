@@ -1,60 +1,18 @@
 import {
-  matchRouteWithParams,
-  RouterProvider,
-  useRouter,
-} from "../contexts/RouterContext.tsx";
-import { appRoutes, isographAppRoutes } from "../routes.ts";
-import { IsographEnvironmentProvider, useLazyReference } from "@isograph/react";
-import { BfIsographFragmentReader } from "../lib/BfIsographFragmentReader.tsx";
-import { getEnvironment } from "../isographEnvironment.ts";
+  AppEnvironmentProvider,
+  type ServerProps,
+} from "../contexts/AppEnvironmentContext.tsx";
+import { AppRoot } from "../AppRoot.tsx";
 
-function AppRoot() {
-  const routerProps = useRouter();
-  const params = { ...routerProps.routeParams, ...routerProps.queryParams };
-  const { currentPath } = routerProps;
-
-  const matchingRoute = Array.from(appRoutes).find(([path]) => {
-    const pathMatch = matchRouteWithParams(currentPath, path);
-    return pathMatch.match === true;
-  });
-
-  const isographMatchingRoute = Array.from(isographAppRoutes).find(
-    ([path]) => {
-      const pathMatch = matchRouteWithParams(currentPath, path);
-      return pathMatch.match === true;
-    },
-  );
-
-  if (isographMatchingRoute) {
-    const [_, entrypoint] = isographMatchingRoute;
-    const { fragmentReference } = useLazyReference(entrypoint, {
-      ...params,
-    });
-
-    return (
-      <BfIsographFragmentReader
-        fragmentReference={fragmentReference}
-      />
-    );
-  }
-
-  if (matchingRoute) {
-    const [_, routeGuts] = matchingRoute;
-    const Component = routeGuts.Component;
-    return <Component />;
-  }
-
-  return <div>404 - Page not found</div>;
-}
-
-function App({ initialPath }: { initialPath?: string }) {
+function App(props: Partial<ServerProps>) {
   return (
     <div className="app">
-      <IsographEnvironmentProvider environment={getEnvironment()}>
-        <RouterProvider initialPath={initialPath}>
-          <AppRoot />
-        </RouterProvider>
-      </IsographEnvironmentProvider>
+      <AppEnvironmentProvider
+        IS_SERVER_RENDERING={false}
+        {...props}
+      >
+        <AppRoot />
+      </AppEnvironmentProvider>
     </div>
   );
 }
