@@ -24,12 +24,12 @@ interface ViteManifest {
 // Read Vite manifest to get asset paths
 function loadAssetPaths(isDev: boolean): { cssPath?: string; jsPath: string } {
   if (isDev) {
-    // In dev mode, use Vite's entry point directly
+    // In dev mode, these paths aren't used since Vite handles everything
     const devPaths = {
       cssPath: undefined,
-      jsPath: "/ClientRoot.tsx", // Vite will handle this
+      jsPath: "/dev-not-used", // Vite handles all assets in dev mode
     };
-    logger.info("Using dev asset paths (Vite will handle)");
+    logger.info("Using dev asset paths (not used - Vite handles everything)");
     return devPaths;
   }
 
@@ -121,7 +121,44 @@ const handler = async (request: Request): Promise<Response> => {
 
   // Check if this should be handled by React routing
   if (shouldHandleWithReact(url.pathname)) {
-    // Handle with React SSR
+    // In dev mode, let Vite handle all UI routes
+    if (isDev && vitePort) {
+      try {
+        const viteUrl =
+          `http://localhost:${vitePort}${url.pathname}${url.search}`;
+        const viteResponse = await fetch(viteUrl, {
+          method: request.method,
+          headers: request.headers,
+          body: request.body,
+        });
+
+        // Create new headers to avoid immutable headers issue
+        const headers = new Headers();
+        viteResponse.headers.forEach((value, key) => {
+          // Skip hop-by-hop headers
+          if (
+            !["connection", "keep-alive", "transfer-encoding"].includes(
+              key.toLowerCase(),
+            )
+          ) {
+            headers.set(key, value);
+          }
+        });
+
+        return new Response(viteResponse.body, {
+          status: viteResponse.status,
+          statusText: viteResponse.statusText,
+          headers,
+        });
+      } catch (error) {
+        logger.error("Error proxying to Vite:", error);
+        return new Response("Error proxying to Vite dev server", {
+          status: 502,
+        });
+      }
+    }
+
+    // Production mode: Handle with React SSR
     const environment = {
       mode: isDev ? "development" : "production",
       port: port,
