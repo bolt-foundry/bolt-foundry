@@ -37,38 +37,36 @@ async function makeRealNetworkRequest<T>(
   }
 }
 
-function makeMockedNetworkRequest<T>(
-  _request: Request,
-  queryText: string,
-  variables: unknown,
-): Promise<T> {
-  logger.debug("Mock GraphQL request (server):", { queryText, variables });
-
-  // Mock GraphQL response for now - same as client
-  const mockResponse = {
-    data: {
-      __typename: "Query",
-      // Mock data for EntrypointHome
-      EntrypointHome: {
-        Home: {
-          __typename: "HomeComponent",
-        },
-      },
-    },
-  };
-
-  logger.debug("Mock GraphQL response (server):", mockResponse);
-  return Promise.resolve(mockResponse as T);
-}
-
 export function getIsographEnvironment(request: Request) {
   const store = createIsographStore();
 
-  function networkRequestWrapper<T>(
+  async function networkRequestWrapper<T>(
     queryText: string,
     variables: unknown,
   ): Promise<T> {
-    return makeMockedNetworkRequest(request, queryText, variables); // Using mocked version for now
+    // Use yoga directly for server-side rendering instead of HTTP requests
+    using ctx = await createContext(request);
+
+    const response = await yoga.fetch(
+      new Request("http://localhost/graphql", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ query: queryText, variables }),
+      }),
+      ctx,
+    );
+
+    const json = await response.json();
+
+    if (response.ok) {
+      return json;
+    } else {
+      throw new Error("NetworkError", {
+        cause: json,
+      });
+    }
   }
 
   return createIsographEnvironment(

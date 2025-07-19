@@ -401,17 +401,18 @@ logic
 
 **Priority 1: Test-Driven Cleanroom Implementation**
 
-##### 1.1 Implement Clean Deck Package
+##### 1.1 Implement Clean Deck Package ✅ COMPLETED
 
-- [ ] Create `packages/bolt-foundry/deck.ts` with clean object-oriented
+- [x] Create `packages/bolt-foundry/deck.ts` with clean object-oriented
       implementation
-- [ ] Implement `Deck` class using test-driven approach:
-  - [ ] Internal markdown processing with caching (includes, context, tools)
-  - [ ] `render()` method for OpenAI request generation
-  - [ ] Properties: `versionHash`, `deckId`, `markdownContent`, `metadata`
-- [ ] Implement `readLocalDeck()` function that returns `Deck` instances
-- [ ] Ensure all tests pass before proceeding
-- [ ] Add TypeScript types and proper error handling
+- [x] Implement `Deck` class using test-driven approach:
+  - [x] Internal markdown processing with caching (includes, context, tools)
+  - [x] `render()` method for OpenAI request generation
+  - [x] Properties: `deckId`, `markdownContent`, `deckPath` (versionHash
+        pending)
+- [x] Implement `readLocalDeck()` function that returns `Deck` instances
+- [x] Ensure all tests pass before proceeding
+- [x] Add TypeScript types and proper error handling
 
 ##### 1.2 Replace Existing Usage
 
@@ -443,8 +444,8 @@ logic
 
 **Priority 1 Complete:**
 
-- [ ] Comprehensive test suite covers all existing aibff deck behavior
-- [ ] Clean implementation in `packages/bolt-foundry/deck.ts` passes all tests
+- [x] Comprehensive test suite covers all existing aibff deck behavior
+- [x] Clean implementation in `packages/bolt-foundry/deck.ts` passes all tests
 - [ ] `packages/team-status-analyzer` no longer imports from aibff app
 - [ ] All existing deck functionality works from shared package
 - [ ] Aibff tests pass with new implementation
