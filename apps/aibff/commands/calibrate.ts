@@ -226,7 +226,7 @@ async function runEvaluationWithConcurrency(
             );
 
             // Render the deck with the sample context
-            const sampleRequest = renderDeck(
+            const sampleRequest = await renderDeck(
               deckPath,
               sampleContext,
               openAiCompletionOptions,

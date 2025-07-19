@@ -1,6 +1,7 @@
 /**
  * Deck class - minimal implementation for testing
  */
+import * as path from "@std/path";
 class Deck {
   deckId: string;
   markdownContent: string;
@@ -58,7 +59,7 @@ class Deck {
     return { messages, tools: contextDefs.tools || [] };
   }
 
-  private processMarkdownIncludes(content: string, basePath: string): {
+  processMarkdownIncludes(content: string, basePath: string): {
     processedContent: string;
     contextDefs: Record<string, { assistantQuestion: string }> & {
       tools?: Array<{ name: string; description: string }>;
@@ -77,9 +78,11 @@ class Deck {
         /!\[.*?\]\((.*?)\)/g,
         (_match, filePath) => {
           try {
-            // Resolve path relative to the base file's directory
-            const baseDir = basePath.substring(0, basePath.lastIndexOf("/"));
-            const fullPath = `${baseDir}/${filePath}`;
+            // Resolve path relative to the base file's directory using proper path utilities
+            const baseDir = path.dirname(basePath);
+            const fullPath = path.isAbsolute(filePath)
+              ? filePath
+              : path.join(baseDir, filePath);
             const fileContent = Deno.readTextFileSync(fullPath);
 
             // Check if this is a TOML file
@@ -94,11 +97,18 @@ class Deck {
                   tomlData.tools,
                 );
               }
-              // Remove TOML reference from content (return empty, whitespace will be cleaned up)
+              // Remove TOML reference completely
               return "";
             } else {
-              // Regular markdown include
-              return fileContent;
+              // Regular markdown include - recursively process it with correct base path
+              const { processedContent, contextDefs: nestedContext } = this
+                .processMarkdownIncludes(
+                  fileContent,
+                  fullPath,
+                );
+              // Merge nested context definitions
+              Object.assign(contextDefs, nestedContext);
+              return processedContent;
             }
           } catch (_error) {
             throw new Error(`File not found: ${filePath}`);
@@ -108,8 +118,9 @@ class Deck {
       hasIncludes = processed !== beforeReplace;
     }
 
-    // Clean up extra whitespace from removed TOML references
-    const cleanedContent = processed.replace(/\n\s*\n\s*\n/g, "\n\n");
+    // Clean up extra whitespace from TOML removals while preserving structure
+    const cleanedContent = processed
+      .replace(/\n\s*\n\s*\n/g, "\n\n"); // Multiple empty lines -> double newlines
 
     return { processedContent: cleanedContent, contextDefs };
   }
