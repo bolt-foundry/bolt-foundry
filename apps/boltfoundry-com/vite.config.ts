@@ -9,9 +9,13 @@ export default defineConfig({
     react({ babel: { babelrc: true } }),
   ],
   server: {
+    port: 8080,
     hmr: {
       port: 5001, // Dynamic port will be set by CLI
     },
+  },
+  preview: {
+    port: 8081,
   },
   build: {
     manifest: true,
