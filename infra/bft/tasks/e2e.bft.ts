@@ -152,8 +152,8 @@ async function startServer(
     command = new Deno.Command(server.serverPath, {
       args: ["--port", port.toString()],
       env: { ...Deno.env.toObject(), ...server.env },
-      stdout: "piped",
-      stderr: "piped",
+      stdout: server.name === "boltfoundry-com" ? "inherit" : "piped",
+      stderr: server.name === "boltfoundry-com" ? "inherit" : "piped",
     });
   } else {
     // Use production mode for boltfoundry-com to serve built assets
