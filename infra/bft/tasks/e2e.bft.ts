@@ -1,3 +1,4 @@
+import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 import { runShellCommand } from "@bfmono/infra/bff/shellBase.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import type { TaskDefinition } from "@bfmono/infra/bft/bft.ts";
@@ -334,27 +335,47 @@ export async function e2eCommand(options: Array<string>): Promise<number> {
     const requiredServers = getRequiredServers(testFiles);
 
     if (requiredServers.length > 0) {
-      logger.info(
-        `📡 Starting ${requiredServers.length} required server${
-          requiredServers.length === 1 ? "" : "s"
-        }: ${requiredServers.map((s) => s.name).join(", ")}`,
+      // Check which servers need to be started vs using existing ones
+      const serversToStart = requiredServers.filter((server) =>
+        !getConfigurationVariable(server.envVar)
+      );
+      const existingServers = requiredServers.filter((server) =>
+        getConfigurationVariable(server.envVar)
       );
 
-      // Compile boltfoundry-com before starting servers
-      logger.info("🔨 Compiling boltfoundry-com...");
-      const buildResult = await runShellCommand(
-        ["bft", "compile", "boltfoundry-com", "--quiet"],
-        Deno.cwd(),
-        {},
-        true,
-        true, // Always suppress output for cleaner logs
-      );
-      if (buildResult !== 0) {
-        throw new Error(
-          "boltfoundry-com compilation failed - cannot start servers",
+      if (existingServers.length > 0) {
+        logger.info(
+          `🔗 Using existing server${
+            existingServers.length === 1 ? "" : "s"
+          }: ${existingServers.map((s) => s.name).join(", ")}`,
         );
       }
-      logger.info("✅ boltfoundry-com compiled");
+
+      if (serversToStart.length > 0) {
+        logger.info(
+          `📡 Starting ${serversToStart.length} required server${
+            serversToStart.length === 1 ? "" : "s"
+          }: ${serversToStart.map((s) => s.name).join(", ")}`,
+        );
+
+        // Only compile if we need to start boltfoundry-com
+        if (serversToStart.some((s) => s.name === "boltfoundry-com")) {
+          logger.info("🔨 Compiling boltfoundry-com...");
+          const buildResult = await runShellCommand(
+            ["bft", "compile", "boltfoundry-com", "--quiet"],
+            Deno.cwd(),
+            {},
+            true,
+            true, // Always suppress output for cleaner logs
+          );
+          if (buildResult !== 0) {
+            throw new Error(
+              "boltfoundry-com compilation failed - cannot start servers",
+            );
+          }
+          logger.info("✅ boltfoundry-com compiled");
+        }
+      }
 
       // Check if any required servers need their binaries compiled
       for (const server of requiredServers) {
@@ -388,12 +409,20 @@ export async function e2eCommand(options: Array<string>): Promise<number> {
         }
       }
 
-      // Start all required servers
+      // Start all required servers (unless already specified via environment)
       for (const server of requiredServers) {
-        const serverUrl = await startServer(server, verbose);
-        // Set environment variable for the server
-        Deno.env.set(server.envVar, serverUrl);
-        logger.debug(`✅ ${server.name} ready at ${serverUrl}`);
+        const existingUrl = getConfigurationVariable(server.envVar);
+        if (existingUrl) {
+          logger.info(
+            `🔗 Using existing ${server.name} server at ${existingUrl}`,
+          );
+          logger.debug(`✅ ${server.name} ready at ${existingUrl}`);
+        } else {
+          const serverUrl = await startServer(server, verbose);
+          // Set environment variable for the server
+          Deno.env.set(server.envVar, serverUrl);
+          logger.debug(`✅ ${server.name} ready at ${serverUrl}`);
+        }
       }
     } else {
       logger.info("🎯 No servers required for these tests");
