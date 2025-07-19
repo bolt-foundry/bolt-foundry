@@ -10,60 +10,9 @@ markdown-based decks through telemetry interception. The system will parse local
 markdown deck files, generate content-addressable version hashes, and
 automatically collect samples when AI APIs are called.
 
-**Deck Sources**: The system supports both local markdown files
-(`readLocalDeck()`) and remote deck retrieval (`fetchDeck()`). The MVP focuses
-on local markdown files, with remote deck management as a future enhancement.
-
-## Implementation Status
-
-### ✅ **MVP Telemetry Endpoint Complete** (July 2025)
-
-**What's Built:**
-
-- **Telemetry Handler** (`apps/boltfoundry-com/handlers/telemetry.ts`) -
-  Processes telemetry data and creates BfDeck/BfSample records
-- **API Routes Structure** (`apps/boltfoundry-com/apiRoutes.ts`) - Clean
-  separation of API routes from React routes
-- **Integration Tests**
-  (`apps/boltfoundry-com/__tests__/telemetry.integration.test.ts`) - Full test
-  suite with 7 passing tests
-- **Server Integration** - Added `/api/telemetry` endpoint to boltfoundry-com
-  server
-
-**What's Working:**
-
-- ✅ API key authentication (`bf+{orgId}` format)
-- ✅ JSON parsing and validation
-- ✅ Error handling (missing API key, invalid JSON, wrong HTTP method)
-- ✅ Deck creation from telemetry metadata (simplified - creates new deck each
-  time)
-- ✅ Sample creation with telemetry data stored as JSON
-- ✅ Proper HTTP responses and status codes
-- ✅ Database integration with BfOrganization, BfDeck, and BfSample nodes
-
-**Simplified for MVP:**
-
-- **No content-addressable hashing** - Skipped positional hash generation for
-  now
-- **No BfDeckVersion entity** - Using simplified deck creation pattern
-- **No deck deduplication** - Creates new deck for each telemetry request
-- **Basic authentication** - Simple `bf+{orgId}` API key format
-
-**Current Limitations:**
-
-- Organizations must exist in database (normal for production, but requires
-  setup for testing)
-- No deck versioning or content-addressable identification
-- No deck deduplication or conflict resolution
-
-### 🔄 **Next Steps for Full Implementation:**
-
-1. **Enhanced Telemetry Integration** - Update
-   `packages/bolt-foundry/bolt-foundry.ts` to support `bfMetadata`
-2. **Deck Loading Functions** - Implement `readLocalDeck()` and `fetchDeck()`
-3. **Content-Addressable Hashing** - Add positional hash generation system
-4. **BfDeckVersion Entity** - Implement proper versioning system
-5. **Provider Updates** - Remove Mistral, add OpenRouter support
+**Deck Sources**: The MVP focuses exclusively on local markdown files using
+`readLocalDeck()`. Remote deck retrieval is explicitly out of scope for this
+implementation.
 
 ## Architecture Overview
 
@@ -78,6 +27,16 @@ The system treats markdown files as the source of truth for deck definitions:
    telemetry
 4. **Sample Association**: Samples are linked to specific deck versions
 
+### Refactoring from aibff
+
+This implementation builds on the existing deck rendering system in aibff:
+
+- **Source**: Refactor core logic from `apps/aibff/commands/render.ts`
+- **Target**: Move to shared `packages/bolt-foundry/deck.ts` library
+- **Benefits**: Reusable across monorepo, enables new hashing and telemetry
+  features
+- **Consumers**: Update aibff, team-status-analyzer, and other existing users
+
 ### Entity Relationships
 
 ```
@@ -90,48 +49,7 @@ BfDeckVersion: immutable snapshot (markdown + version hash)
 BfSample: tied to specific deck version
 ```
 
-## Technical Specifications
-
-### 1. Deck Version Hashing
-
-**Positional Hash Generation**:
-
-- Parse markdown into elements (cards, leads, embeds)
-- Generate positional hashes: `hash(element_content + previous_position_hash)`
-- Derive deck version hash from all positional hashes
-- Changes cascade through subsequent elements
-
-**Content Addressability**:
-
-- Same markdown content always produces same hash
-- Different versions create different hashes
-- Efficient change detection and diffing
-
-### 2. Database Schema
-
-**BfDeck**:
-
-```typescript
-interface BfDeckProps {
-  name: string; // Human-readable name
-  systemPrompt: string; // Evaluation criteria for graders
-  description: string; // Detailed description
-  deckId: string; // Logical identifier (e.g., filename without extension)
-  slug: string; // URL-friendly identifier for API (orgslug_deckslug format)
-}
-```
-
-**BfDeckVersion**:
-
-```typescript
-interface BfDeckVersionProps {
-  versionHash: string; // Content-derived hash
-  markdownContent: string; // Original markdown
-  parsedElements: ParsedElement[]; // Cards/leads/embeds with hashes
-}
-```
-
-### 3. Developer Experience Flow
+### Developer Experience Flow
 
 **Local Development**:
 
@@ -146,7 +64,106 @@ interface BfDeckVersionProps {
 6. **Automatic sample collection**: Sample saved to deck version via telemetry
    interception
 
-### 4. Rendering and Metadata
+**Object-Based API Design**:
+
+The `Deck` class provides an object-oriented interface with built-in caching:
+
+- **Instance Creation**: `readLocalDeck()` returns a `Deck` instance
+- **Parsed Content Cache**: Markdown parsing and element extraction cached on
+  first access
+- **Hash Computation Cache**: Version hash computed once and cached for reuse
+- **Metadata Preservation**: `deck.versionHash`, `deck.deckId`, and
+  `deck.markdownContent` available as properties
+- **Rendering**: `deck.render(params, context)` generates OpenAI-compatible
+  requests with `bfMetadata`
+
+## MVP Scope and Anti-Goals
+
+### In Scope for MVP
+
+- **Local markdown files only** - `readLocalDeck()` for filesystem-based deck
+  loading
+- **Positional hashing** - Content-addressable version identification
+- **Telemetry-based discovery** - Automatic deck version creation from API usage
+- **Sample collection** - Link API interactions to specific deck versions
+
+### Explicitly Out of Scope
+
+- **Remote deck retrieval** - No database-hosted deck loading (`fetchDeck()`)
+- **Deck editing UI** - Web-based markdown editing interfaces
+- **Real-time collaboration** - Multi-user deck editing workflows
+- **Version management UI** - Visual diff and history interfaces
+
+## Implementation Files
+
+### Core Implementation
+
+- `packages/bolt-foundry/deck.ts` - Main Deck class with parsing, hashing, and
+  rendering (refactored from aibff)
+- `packages/bolt-foundry/bolt-foundry.ts` - Enhanced fetch wrapper
+- `apps/bfDb/nodeTypes/rlhf/BfDeck.ts` - Deck node type
+- `apps/bfDb/nodeTypes/rlhf/BfDeckVersion.ts` - Deck version node type
+- `apps/boltfoundry-com/handlers/telemetry.ts` - Telemetry endpoint
+
+### Test Files
+
+- `packages/bolt-foundry/__tests__/deck.test.ts` - Deck class tests (parsing,
+  hashing, rendering)
+- `packages/bolt-foundry/__tests__/bolt-foundry.test.ts` - Fetch wrapper tests
+- `apps/bfDb/nodeTypes/rlhf/__tests__/BfDeck.test.ts` - Deck tests
+- `apps/bfDb/nodeTypes/rlhf/__tests__/BfDeckVersion.test.ts` - Version tests
+- `apps/boltfoundry-com/__tests__/telemetry.test.ts` - Integration tests
+
+### Supporting Files
+
+- `apps/boltfoundry-com/services/telemetryTransformer.ts` - Data transformation
+- `packages/bolt-foundry/types/deck.ts` - TypeScript type definitions
+
+### Existing Files Referenced
+
+- `packages/bolt-foundry/bolt-foundry.ts:92-210` - Current fetch wrapper
+- `packages/bolt-foundry/bolt-foundry.ts:45-63` - TelemetryData type
+- `apps/bfDb/nodeTypes/rlhf/BfSample.ts` - Sample storage
+- `apps/aibff/commands/render.ts` - Source of deck rendering logic to refactor
+
+## Development Commands
+
+- **Test runner**: `bft test` - Run all tests
+- **Linting**: `bft lint` - TypeScript linting and formatting
+- **Development server**:
+  `timeout 10 bft app boltfoundry-com --dev --port 4000 &` - Start dev tools in
+  background
+
+## Current Status
+
+This plan covers Phases 2 and 3 (telemetry integration and testing) which
+represent completed or current work. **Phase 1** (database schema and markdown
+processing) is approximately **60% complete** with significant existing
+implementations that need refactoring and enhancement. Details can be found
+under "Next Steps" at the bottom of this document.
+
+## Phase 2: Telemetry Integration
+
+### Overview
+
+Phase 2 connects the deck system to the telemetry pipeline, enabling automatic
+sample collection when developers use decks in their API calls.
+
+### Enhanced Fetch Wrapper
+
+**connectBoltFoundry() Updates**:
+
+- Strips `bfMetadata` before sending to OpenAI
+- Preserves `bfMetadata` in telemetry data
+- Sends to collector endpoint with API key authentication
+
+**Provider Support Updates**:
+
+- Remove Mistral support (no longer needed)
+- Add OpenRouter support for multi-model access
+- Continue supporting OpenAI and Anthropic
+
+### Rendering and Metadata
 
 **deck.render() Output**:
 
@@ -169,21 +186,11 @@ interface BfDeckVersionProps {
 }
 ```
 
-### 5. Telemetry Integration
+### Telemetry Endpoint
 
-**Enhanced connectBoltFoundry()**:
+**Location**: `/api/telemetry` endpoint in boltfoundry-com
 
-- Strips `bfMetadata` before sending to OpenAI
-- Preserves `bfMetadata` in telemetry data
-- Sends to collector endpoint with API key authentication
-
-**Provider Support**:
-
-- Remove Mistral support (no longer needed)
-- Add OpenRouter support for multi-model access
-- Continue supporting OpenAI and Anthropic
-
-**Telemetry Endpoint**: Add `/api/telemetry` endpoint to boltfoundry-com that:
+**Functionality**:
 
 1. Validates API key via `CurrentViewer.createFromRequest()`
 2. Extracts `bfMetadata` from telemetry data
@@ -191,7 +198,68 @@ interface BfDeckVersionProps {
 4. Creates `BfSample` nodes linked to specific deck versions
 5. Sets `collectionMethod: "telemetry"` for automatic samples
 
-### 6. Auto-Evaluation Service
+### Database Patterns
+
+- **Immutable Versions**: Never modify existing deck versions
+- **Content Discovery**: Create versions on first telemetry hit
+- **Relationship Tracking**: Link samples to specific versions
+- **Query Optimization**: Index on version hashes for fast lookups
+
+### Phase 2 Implementation Tasks
+
+#### 2.1 Enhanced Fetch Wrapper
+
+- [ ] Update `connectBoltFoundry()` to strip `bfMetadata` before OpenAI calls
+      (`packages/bolt-foundry/bolt-foundry.ts`)
+- [ ] Update provider detection: Remove Mistral, add OpenRouter
+      (`packages/bolt-foundry/bolt-foundry.ts`)
+- [ ] Preserve `bfMetadata` in telemetry data for deck version association
+
+#### 2.2 Telemetry Endpoint
+
+- [ ] Add `/api/telemetry` route to boltfoundry-com
+- [ ] Implement telemetry data transformation with `bfMetadata` extraction
+- [ ] Find/create `BfDeck` and `BfDeckVersion` from telemetry metadata
+- [ ] Create `BfSample` nodes linked to specific deck versions
+- [ ] Create error handling and response patterns
+
+### Phase 2 Success Criteria
+
+- [ ] Telemetry endpoint creates samples linked to deck versions
+- [ ] Enhanced fetch wrapper preserves bfMetadata in telemetry
+- [ ] Provider support updated (remove Mistral, add OpenRouter)
+
+## Phase 3: Testing and Validation
+
+### Overview
+
+Phase 3 ensures the complete pipeline works end-to-end and establishes
+comprehensive testing coverage for reliability.
+
+### Testing Strategy
+
+#### Unit Tests
+
+- **Markdown parsing** - Card/lead/embed extraction
+- **Hash generation** - Positional hash calculations
+- **Deck rendering** - OpenAI request generation
+- **Telemetry transformation** - Data format conversion
+
+#### Integration Tests
+
+- **End-to-end telemetry flow** - Complete pipeline from markdown to sample
+- **Deck version discovery** - First-time deck creation via telemetry
+- **Sample association** - Correct linking to deck versions
+- **Error handling** - Malformed markdown, network failures
+
+#### Performance Tests
+
+- **Markdown parsing** - Large deck processing
+- **Hash generation** - Efficient calculation
+- **Telemetry throughput** - Handle expected volume
+- **Database operations** - Efficient sample creation
+
+### Auto-Evaluation Service
 
 **Location**: `/apps/bfDb/services/autoEvaluationService.ts`
 
@@ -217,7 +285,7 @@ interface AutoEvaluationService {
 - Create BfGraderResult entities with proper relationships
 - Add error handling and logging
 
-### 7. Disagreement Detection
+### Disagreement Detection
 
 **Core Queries**:
 
@@ -233,107 +301,167 @@ const DISAGREEMENT_THRESHOLD = 2; // |ai_score - human_score| >= 2
 - Create simple scoring threshold for "out of whack" samples
 - Add database indexes for efficient disagreement queries
 
-## Implementation Plan
-
-### Phase 1: Markdown Parsing and Hashing
-
-#### 1.1 Database Schema
-
-- [ ] Create `BfDeck` node type (`apps/bfDb/nodeTypes/rlhf/BfDeck.ts`)
-- [ ] Create `BfDeckVersion` node type
-      (`apps/bfDb/nodeTypes/rlhf/BfDeckVersion.ts`)
-- [ ] Add GraphQL mutations for deck/version management
-- [ ] Create comprehensive test suite
-
-#### 1.2 Markdown Processing
-
-- [ ] Implement markdown parser with positional hash generation
-      (`packages/bolt-foundry/deck-parser.ts`)
-- [ ] Create `readLocalDeck()` function for local markdown files
-      (`packages/bolt-foundry/deck-loader.ts`)
-- [ ] Add `fetchDeck()` function stub for remote deck retrieval
-      (`packages/bolt-foundry/deck-loader.ts`)
-- [ ] Implement deck rendering with bfMetadata generation
-
-### Phase 2: Telemetry Integration
-
-#### 2.1 Enhanced Fetch Wrapper
-
-- [ ] Update `connectBoltFoundry()` to strip `bfMetadata` before OpenAI calls
-      (`packages/bolt-foundry/bolt-foundry.ts`)
-- [ ] Update provider detection: Remove Mistral, add OpenRouter
-      (`packages/bolt-foundry/bolt-foundry.ts`)
-- [ ] Preserve `bfMetadata` in telemetry data for deck version association
-
-#### 2.2 Telemetry Endpoint
-
-- [ ] Add `/api/telemetry` route to boltfoundry-com
-- [ ] Implement telemetry data transformation with `bfMetadata` extraction
-- [ ] Find/create `BfDeck` and `BfDeckVersion` from telemetry metadata
-- [ ] Create `BfSample` nodes linked to specific deck versions
-- [ ] Create error handling and response patterns
-
-### Phase 3: End-to-End Testing
+### Phase 3 Implementation Tasks
 
 - [ ] Test complete deck.render() → telemetry → sample creation flow
 - [ ] Test markdown parsing and hash generation
 - [ ] Test deck version discovery and creation
 - [ ] Test error scenarios and edge cases
 
-## Technical Patterns
+### Phase 3 Success Criteria
 
-### Markdown Processing
+- [ ] End-to-end flow working: markdown → render → telemetry → sample
+- [ ] Comprehensive error handling and monitoring
+- [ ] Performance testing passed
+- [ ] Documentation updated
 
-- **Recursive Parsing**: Handle nested cards, leads, and embeds
-- **Context Injection**: Convert context variables to Q&A message pairs
-- **Tool Extraction**: Parse OpenAI function definitions from frontmatter
-- **Content Cleaning**: Remove embeds from system messages
+## Next Steps
 
-### Hash Generation
+This is the work that we should focus on. Above provides context, but below here
+is the work we're trying to complete right now.
+
+### Phase 1: Database Schema and Markdown Processing
+
+#### Overview
+
+Phase 1 establishes the foundational data structures and deck processing logic
+by refactoring existing aibff functionality into a shared library with added
+hashing capabilities.
+
+**Implementation Strategy**: Test-driven cleanroom implementation approach.
+Write comprehensive tests based on existing aibff behavior, then implement clean
+new code in the shared package. This ensures we understand the full scope of
+requirements while building a maintainable foundation for versioning
+enhancements.
+
+#### Database Schema
+
+**BfDeck - ✅ FULLY IMPLEMENTED**:
+
+- **Location**: `apps/bfDb/nodeTypes/rlhf/BfDeck.ts`
+- **Status**: Production-ready with GraphQL mutations, organization scoping
+- **Features**: Auto-generates graders, integrates with RLHF evaluation system
+- **Schema**: `name`, `systemPrompt`, `description`, `slug` fields implemented
+
+**BfDeckVersion - ❌ NOT IMPLEMENTED**:
+
+```typescript
+interface BfDeckVersionProps {
+  versionHash: string; // Content-derived hash
+  markdownContent: string; // Original markdown
+  parsedElements: ParsedElement[]; // Cards/leads/embeds with hashes
+}
+```
+
+This is the missing component needed for content-addressable deck versioning.
+
+#### Deck Version Hashing
+
+**Positional Hash Generation**:
+
+- Parse markdown into elements (cards, leads, embeds)
+- Generate positional hashes: `hash(element_content + previous_position_hash)`
+- Derive deck version hash from all positional hashes
+- Changes cascade through subsequent elements
+
+**Content Addressability**:
+
+- Same markdown content always produces same hash
+- Different versions create different hashes
+- Efficient change detection and diffing
+
+#### Markdown Processing - ✅ SOPHISTICATED LOGIC EXISTS
+
+**Current Implementation** in `apps/aibff/commands/render.ts`:
+
+- **`processMarkdownIncludes()`**: Recursive include processing, tool extraction
+- **`extractContextFromMarkdown()`**: TOML context variable definitions
+- **`renderDeck()`**: Complete OpenAI request generation with Q&A pairs
+- **Tool System**: Parses OpenAI function definitions from TOML frontmatter
+- **Sample Management**: Extracts conversation samples for calibration
+- **Validation**: Tool name uniqueness, context variable validation
+
+**❌ NEEDS REFACTORING**: Currently in aibff app, needs move to shared package
+
+**❌ CONSUMER ANTI-PATTERN**: `packages/team-status-analyzer` imports from aibff
+app
+
+**🔄 DUPLICATE IMPLEMENTATION**: `infra/bft/tasks/deck.bft.ts` has separate
+logic
+
+#### Hash Generation Patterns
 
 - **Deterministic**: Same content always produces same hash
 - **Cascading**: Changes affect all subsequent elements
 - **Efficient**: Fast lookups and change detection
 - **Collision-Resistant**: Use SHA-256 for hash generation
 
-### Database Patterns
+#### Phase 1 Implementation Tasks
 
-- **Immutable Versions**: Never modify existing deck versions
-- **Content Discovery**: Create versions on first telemetry hit
-- **Relationship Tracking**: Link samples to specific versions
-- **Query Optimization**: Index on version hashes for fast lookups
+**Priority 1: Test-Driven Cleanroom Implementation**
 
-## Testing Strategy
+##### 1.1 Implement Clean Deck Package
 
-### Unit Tests
+- [ ] Create `packages/bolt-foundry/deck.ts` with clean object-oriented
+      implementation
+- [ ] Implement `Deck` class using test-driven approach:
+  - [ ] Internal markdown processing with caching (includes, context, tools)
+  - [ ] `render()` method for OpenAI request generation
+  - [ ] Properties: `versionHash`, `deckId`, `markdownContent`, `metadata`
+- [ ] Implement `readLocalDeck()` function that returns `Deck` instances
+- [ ] Ensure all tests pass before proceeding
+- [ ] Add TypeScript types and proper error handling
 
-- **Markdown parsing** - Card/lead/embed extraction
-- **Hash generation** - Positional hash calculations
-- **Deck rendering** - OpenAI request generation
-- **Telemetry transformation** - Data format conversion
+##### 1.2 Replace Existing Usage
 
-### Integration Tests
+- [ ] Update `packages/team-status-analyzer/ai-summarizer.ts` to use new package
+- [ ] Update aibff internal imports (`commands/repl.ts`, `gui/guiServer.ts`)
+- [ ] Verify existing functionality works with new implementation
+- [ ] Run aibff tests to ensure no regressions
+- [ ] Consider consolidating `infra/bft/tasks/deck.bft.ts` logic
 
-- **End-to-end telemetry flow** - Complete pipeline from markdown to sample
-- **Deck version discovery** - First-time deck creation via telemetry
-- **Sample association** - Correct linking to deck versions
-- **Error handling** - Malformed markdown, network failures
+**Priority 2: Add Versioning System**
 
-### Performance Tests
+##### 1.3 Database Schema Enhancement
 
-- **Markdown parsing** - Large deck processing
-- **Hash generation** - Efficient calculation
-- **Telemetry throughput** - Handle expected volume
-- **Database operations** - Efficient sample creation
+- [x] ~~Create `BfDeck` node type~~ **ALREADY IMPLEMENTED** at
+      `apps/bfDb/nodeTypes/rlhf/BfDeck.ts`
+- [ ] Create `BfDeckVersion` node type
+      (`apps/bfDb/nodeTypes/rlhf/BfDeckVersion.ts`)
+- [x] ~~Create comprehensive test suite~~ **EXISTS** for BfDeck
+
+##### 1.4 Enhanced Deck Processing
+
+- [ ] Add positional hash generation to the refactored parsing logic
+- [ ] Create object-based `Deck` class with `.render()` method for local
+      markdown files
+- [ ] Implement caching of parsed markdown and computed hashes in Deck instances
+- [ ] Add `readLocalDeck()` function that returns `Deck` instances
+
+#### Phase 1 Success Criteria
+
+**Priority 1 Complete:**
+
+- [ ] Comprehensive test suite covers all existing aibff deck behavior
+- [ ] Clean implementation in `packages/bolt-foundry/deck.ts` passes all tests
+- [ ] `packages/team-status-analyzer` no longer imports from aibff app
+- [ ] All existing deck functionality works from shared package
+- [ ] Aibff tests pass with new implementation
+
+**Priority 2 Complete:**
+
+- [ ] Markdown parsing generates consistent positional hashes
+- [ ] `readLocalDeck()` loads and renders local markdown files
+- [ ] Deck versions are properly created and stored
 
 ## Future Enhancements
 
 ### Remote Deck Management
 
-- **fetchDeck() implementation** - Retrieve decks from database
-- **Deck editor** - Web-based markdown editing
+- **Database-hosted decks** - Store and retrieve deck definitions from database
+- **Deck editor** - Web-based markdown editing interface
 - **Version management** - Track deck evolution over time
-- **Collaboration** - Multi-user deck editing
+- **Collaboration** - Multi-user deck editing workflows
 
 ### Advanced Features
 
@@ -349,61 +477,23 @@ const DISAGREEMENT_THRESHOLD = 2; // |ai_score - human_score| >= 2
 - **Batch operations** - Process multiple samples efficiently
 - **Background processing** - Async telemetry processing
 
-## Implementation Files
+---
 
-### Core Implementation
+# Current Project
 
-- `packages/bolt-foundry/deck-parser.ts` - Markdown parsing and hash generation
-- `packages/bolt-foundry/deck-loader.ts` - Local and remote deck loading
-- `packages/bolt-foundry/bolt-foundry.ts` - Enhanced fetch wrapper
-- `apps/bfDb/nodeTypes/rlhf/BfDeck.ts` - Deck node type
-- `apps/bfDb/nodeTypes/rlhf/BfDeckVersion.ts` - Deck version node type
-- `apps/boltfoundry-com/handlers/telemetry.ts` - Telemetry endpoint
+## Create Comprehensive Test Suite
 
-### Test Files
-
-- `packages/bolt-foundry/__tests__/deck-parser.test.ts` - Parsing tests
-- `packages/bolt-foundry/__tests__/deck-loader.test.ts` - Loading tests
-- `packages/bolt-foundry/__tests__/bolt-foundry.test.ts` - Fetch wrapper tests
-- `apps/bfDb/nodeTypes/rlhf/__tests__/BfDeck.test.ts` - Deck tests
-- `apps/bfDb/nodeTypes/rlhf/__tests__/BfDeckVersion.test.ts` - Version tests
-- `apps/boltfoundry-com/__tests__/telemetry.test.ts` - Integration tests
-
-### Supporting Files
-
-- `apps/boltfoundry-com/services/telemetryTransformer.ts` - Data transformation
-- `packages/bolt-foundry/types/deck.ts` - TypeScript type definitions
-
-### Existing Files Referenced
-
-- `packages/bolt-foundry/bolt-foundry.ts:92-210` - Current fetch wrapper
-- `packages/bolt-foundry/bolt-foundry.ts:45-63` - TelemetryData type
-- `apps/bfDb/nodeTypes/rlhf/BfSample.ts` - Sample storage
-
-## Development Commands
-
-- **Test runner**: `bft test` - Run all tests
-- **Build system**: `bft build` - Full project build
-- **Development**: `bft devTools` - Start development environment
-- **Linting**: `bft lint` - TypeScript linting and formatting
-
-## Success Criteria
-
-### Phase 1 Complete
-
-- [ ] Markdown parsing generates consistent positional hashes
-- [ ] `readLocalDeck()` loads and renders local markdown files
-- [ ] Deck versions are properly created and stored
-
-### Phase 2 Complete
-
-- [ ] Telemetry endpoint creates samples linked to deck versions
-- [ ] Enhanced fetch wrapper preserves bfMetadata in telemetry
-- [ ] Provider support updated (remove Mistral, add OpenRouter)
-
-### Phase 3 Complete
-
-- [ ] End-to-end flow working: markdown → render → telemetry → sample
-- [ ] Comprehensive error handling and monitoring
-- [ ] Performance testing passed
-- [ ] Documentation updated
+- [ ] Study existing aibff behavior to understand all edge cases and
+      requirements
+- [ ] Create `packages/bolt-foundry/__tests__/deck.test.ts` with comprehensive
+      test coverage:
+  - [ ] Markdown include processing (recursive, different file types)
+  - [ ] Context extraction from TOML files
+  - [ ] Tool extraction from frontmatter
+  - [ ] Sample extraction for calibration
+  - [ ] OpenAI request generation with proper message structure
+  - [ ] Error handling for missing files, malformed TOML, etc.
+- [ ] Create test fixtures with representative .deck.md and .toml files
+- [ ] Document expected behavior for each function based on aibff analysis
+- [ ] Use `// @ts-expect-error - $EXPLANATION` for any TypeScript errors from
+      unscaffolded dependencies
