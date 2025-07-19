@@ -22,7 +22,9 @@ interface ViteManifest {
 }
 
 // Read Vite manifest to get asset paths
-function loadAssetPaths(isDev: boolean): { cssPath?: string; jsPath: string } {
+async function loadAssetPaths(
+  isDev: boolean,
+): Promise<{ cssPath?: string; jsPath: string }> {
   if (isDev) {
     // In dev mode, these paths aren't used since Vite handles everything
     const devPaths = {
@@ -34,10 +36,12 @@ function loadAssetPaths(isDev: boolean): { cssPath?: string; jsPath: string } {
   }
 
   try {
-    const manifestPath =
-      new URL(import.meta.resolve("./static/build/.vite/manifest.json"))
-        .pathname;
-    const manifestText = Deno.readTextFileSync(manifestPath);
+    const manifestUrl = import.meta.resolve(
+      "./static/build/.vite/manifest.json",
+    );
+    const manifestPath = new URL(manifestUrl).pathname;
+    const manifestData = await Deno.readFile(manifestPath);
+    const manifestText = new TextDecoder().decode(manifestData);
     const manifest: ViteManifest = JSON.parse(manifestText);
 
     const entry = manifest["ClientRoot.tsx"];
@@ -89,7 +93,7 @@ function shouldHandleWithReact(pathname: string): boolean {
 const flags = parseArgs(Deno.args, {
   string: ["port", "mode", "vite-port"],
   default: {
-    port: "3000",
+    port: "8000",
     mode: "production",
   },
 });
@@ -104,7 +108,7 @@ const isDev = flags.mode === "development";
 const vitePort = flags["vite-port"] ? parseInt(flags["vite-port"]) : undefined;
 
 // Load asset paths at startup
-const assetPaths = loadAssetPaths(isDev);
+const assetPaths = await loadAssetPaths(isDev);
 
 // Create API routes
 const apiRoutes = createApiRoutes({ isDev, port });
@@ -231,13 +235,14 @@ const handler = async (request: Request): Promise<Response> => {
 
   // Handle static assets first
   if (url.pathname.startsWith("/static/")) {
-    const staticPath = new URL(import.meta.resolve("./static")).pathname;
     const filePath = url.pathname.replace("/static/", "");
-    const fullPath = `${staticPath}/${filePath}`;
 
     try {
-      const file = await Deno.open(fullPath);
-      const stat = await Deno.stat(fullPath);
+      const assetUrl = import.meta.resolve(`./static/${filePath}`);
+
+      // Convert file:// URL to path for Deno.readFile
+      const assetPath = new URL(assetUrl).pathname;
+      const fileData = await Deno.readFile(assetPath);
 
       // Determine content type
       let contentType = "application/octet-stream";
@@ -250,17 +255,32 @@ const handler = async (request: Request): Promise<Response> => {
       else if (filePath.endsWith(".png")) contentType = "image/png";
       else if (filePath.endsWith(".ico")) contentType = "image/x-icon";
 
-      return new Response(file.readable, {
+      return new Response(fileData, {
         headers: {
           "Content-Type": contentType,
-          "Content-Length": stat.size.toString(),
+          "Content-Length": fileData.length.toString(),
         },
       });
-    } catch (error) {
-      if (error instanceof Deno.errors.NotFound) {
-        return new Response("Not Found", { status: 404 });
+    } catch {
+      logger.error(`❌ Static asset not found: ${filePath}`);
+      logger.error(
+        `   Resolved URL: ${import.meta.resolve(`./static/${filePath}`)}`,
+      );
+
+      // Log what's actually available in the static directory
+      try {
+        const staticDirUrl = import.meta.resolve("./static");
+        const staticDirPath = new URL(staticDirUrl).pathname;
+        const entries = [];
+        for await (const entry of Deno.readDir(staticDirPath)) {
+          entries.push(`${entry.isDirectory ? "DIR" : "FILE"}: ${entry.name}`);
+        }
+        logger.error(`   Available in static/: ${entries.join(", ")}`);
+      } catch (dirError) {
+        logger.error(`   Cannot read static directory: ${dirError}`);
       }
-      throw error;
+
+      return new Response("Not Found", { status: 404 });
     }
   }
 
