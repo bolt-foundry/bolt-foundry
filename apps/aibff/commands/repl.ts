@@ -34,7 +34,7 @@ async function runRepl(_args: Array<string>): Promise<void> {
   await Deno.writeTextFile(tempFile, pirateDeck);
 
   // Use renderDeck to create the initial messages with the pirate deck
-  const rendered = renderDeck(tempFile, {}, {
+  const rendered = await renderDeck(tempFile, {}, {
     model: "openai/gpt-4o-mini",
     temperature: 0.7,
     stream: true,

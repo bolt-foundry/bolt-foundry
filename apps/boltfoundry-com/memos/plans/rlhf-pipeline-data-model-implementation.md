@@ -443,25 +443,28 @@ All five RLHF node types are properly registered and exposed:
 - Type relationships and connections functional
 - Ready for mutation addition
 
-#### 🔄 **IN PROGRESS: GraphQL Mutation Implementation**
+#### 🔄 **APPROACH UPDATED: Telemetry-Driven Deck Discovery**
 
-**Current Approach**:
+**New Approach** (No manual deck creation):
 
-1. **Model-Centric Mutations**: Add `.mutation()` calls directly to BfDeck,
-   BfSample classes
-2. **Thin Controllers**: Mutation resolvers call simple model methods
-3. **Mock Integration**: Use mock analyzer for immediate testing
-4. **Incremental Replacement**: Replace mock with real LLM service later
+1. **Markdown-Based Decks**: Developers use local `.deck.md` files with
+   `readLocalDeck()`
+2. **Automatic Discovery**: Telemetry creates BfDeck and BfDeckVersion
+   automatically on API usage
+3. **Content Addressing**: Deck versions identified by content-derived hashes
+4. **Sample Collection**: Automatic linking to specific deck versions via
+   telemetry
 
-**Updated Phase 1 Tasks**:
+**Updated Phase 1 Tasks** (Telemetry-Driven):
 
 - [x] ✅ Data model implementation (all 5 node types)
 - [x] ✅ GraphQL schema registration
 - [x] ✅ Mock system prompt analyzer
-- [ ] 🔄 Add mutations to BfDeck class for deck creation
-- [ ] 📋 Add mutations to BfSample class for sample submission
-- [ ] 📋 Test end-to-end workflow via GraphQL
-- [ ] 📋 Setup hardcoded authentication for testing
+- [ ] 📋 Implement `BfDeckVersion` node type for content addressing
+- [ ] 📋 Integrate with markdown-based deck system
+      (`packages/bolt-foundry/deck.ts`)
+- [ ] 📋 Setup telemetry endpoint for automatic deck/sample creation
+- [ ] 📋 Test end-to-end: local markdown → telemetry → BfDeck creation
 
 ### Technical Architecture Corrections
 

@@ -298,7 +298,7 @@ default = "value"`,
   await Deno.writeTextFile(textPath, "These are some notes");
 
   try {
-    const result = renderDeck(deckPath, {});
+    const result = await renderDeck(deckPath, {});
 
     // System message should not contain ![...] embeds
     const systemMsg = result.messages[0];
@@ -318,7 +318,7 @@ default = "value"`,
 
 Deno.test("renderDeck function - should add context Q&A in correct format", async () => {
   const deckPath = await createTempDeckFile("# Test");
-  const result = renderDeck(deckPath, {
+  const result = await renderDeck(deckPath, {
     userName: "Alice",
     apiKey: "sk-123",
   });
@@ -339,7 +339,7 @@ Deno.test("renderDeck function - should skip context values without definitions"
   Object.assign(ui, captureUI);
 
   try {
-    const result = renderDeck(deckPath, {
+    const result = await renderDeck(deckPath, {
       unknownVar: "should be ignored",
     });
 
@@ -363,7 +363,7 @@ Deno.test("renderDeck function - should skip context values without definitions"
 
 Deno.test("renderDeck function - should return complete OpenAI request object", async () => {
   const deckPath = await createTempDeckFile("# Test Deck");
-  const result = renderDeck(deckPath, {});
+  const result = await renderDeck(deckPath, {});
 
   assert("messages" in result, "Should have messages property");
   assert(Array.isArray(result.messages), "Messages should be an array");
@@ -380,7 +380,7 @@ Deno.test("renderDeck function - should spread openAiCompletionOptions last", as
     custom_field: "test",
   };
 
-  const result = renderDeck(deckPath, {}, customOptions);
+  const result = await renderDeck(deckPath, {}, customOptions);
 
   assertEquals(result.temperature, 0.7);
   assertEquals(result.max_tokens, 1000);
@@ -400,7 +400,7 @@ This is a simple deck with no external references.
 
 Some content here.`);
 
-  const result = renderDeck(deckPath, {});
+  const result = await renderDeck(deckPath, {});
 
   assertEquals(result.messages.length, 1);
   assertEquals(result.messages[0].role, "system");
@@ -451,7 +451,7 @@ default = "https://api.example.com"`,
   );
 
   try {
-    const result = renderDeck(deckPath, {
+    const result = await renderDeck(deckPath, {
       userName: "Bob",
       userRole: "admin",
       apiKey: "sk-custom",
