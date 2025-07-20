@@ -1,11 +1,14 @@
-#! /usr/bin/env -S bff test
+#! /usr/bin/env -S deno test
 /**
- * infra/bff/friends/__tests__/IsoCommand.test.ts
- * Verifies that “bff iso” (Isograph code-gen) succeeds.
+ * infra/bff/__tests__/iso.test.ts
+ * Verifies that "bft iso" (Isograph code-gen) succeeds.
+ *
+ * NOTE: This test has been updated to test the new bft iso command
+ * instead of the deprecated bff iso command.
  */
 
 import { assertEquals } from "@std/assert";
-import { isoCommand } from "@bfmono/infra/bff/friends/iso.bff.ts";
+import { isoCommand } from "@bfmono/infra/bft/tasks/iso.bft.ts";
 
 /**
  * When invoked without options the helper exports the same numeric exit-code
@@ -14,7 +17,7 @@ import { isoCommand } from "@bfmono/infra/bff/friends/iso.bff.ts";
  *   0 → success
  *   ≠0 → compiler error (test fails)
  */
-Deno.test("bff iso exits with code 0", async () => {
+Deno.test("bft iso exits with code 0", async () => {
   const exitCode = await isoCommand([]);
   assertEquals(exitCode, 0);
 });
