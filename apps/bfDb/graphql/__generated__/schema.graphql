@@ -113,6 +113,13 @@ interface Node {
   id: ID!
 }
 
+type PageInfo {
+  endCursor: String
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+}
+
 type PublishedDocument implements Node {
   content: String!
   id: ID!
@@ -120,13 +127,23 @@ type PublishedDocument implements Node {
 
 type Query {
   blogPost: BlogPost
-  blogPosts: BlogPost
+  blogPosts(after: String, before: String, first: Int, last: Int): QueryBlogPostsConnection
   currentViewer: CurrentViewer
   deck: BfDeck
   documentsBySlug: PublishedDocument
   githubRepoStats: GithubRepoStats
   id: ID
   ok: Boolean
+}
+
+type QueryBlogPostsConnection {
+  edges: [QueryBlogPostsConnectionEdge]
+  pageInfo: PageInfo!
+}
+
+type QueryBlogPostsConnectionEdge {
+  cursor: String!
+  node: BlogPost
 }
 
 type Waitlist {
