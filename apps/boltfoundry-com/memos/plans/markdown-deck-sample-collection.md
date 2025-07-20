@@ -130,9 +130,8 @@ The `Deck` class provides an object-oriented interface with built-in caching:
 
 - **Test runner**: `bft test` - Run all tests
 - **Linting**: `bft lint` - TypeScript linting and formatting
-- **Development server**:
-  `timeout 10 bft app boltfoundry-com --dev --port 4000 &` - Start dev tools in
-  background
+- **Development server**: `timeout 10 bft dev boltfoundry-com &` - Start dev
+  tools in background
 
 ## Current Status
 

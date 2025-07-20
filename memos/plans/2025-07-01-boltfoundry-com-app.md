@@ -28,7 +28,7 @@ Deno architecture:
 
 - Create minimal working landing page
 - Establish Vite + Deno architecture foundation
-- Implement `bft app boltfoundry.com` command
+- Implement `bft dev boltfoundry-com` command
 - Single executable build process
 
 ### Directory Structure
@@ -118,10 +118,9 @@ export default defineConfig({
 #### CLI Command Structure
 
 ```bash
-bft app boltfoundry.com           # Run production server
-bft app boltfoundry.com --dev     # Run development mode with HMR
-bft app boltfoundry.com --build   # Build assets only
-bft app boltfoundry.com --port 4000  # Custom port
+bft dev boltfoundry-com           # Run development mode with HMR
+bft dev boltfoundry-com --build   # Build assets only
+bft dev boltfoundry-com --port 4000  # Custom port
 ```
 
 ### Dependencies
@@ -259,7 +258,7 @@ Follow patterns from apps/boltFoundry environment setup
 
 ### Phase 1 Complete When:
 
-- [ ] `bft app boltfoundry.com` launches working landing page
+- [ ] `bft dev boltfoundry-com` launches working landing page
 - [ ] `--dev` mode provides hot reload experience
 - [ ] `--build` mode creates production-ready assets
 - [ ] Single executable serves both static and dynamic content
