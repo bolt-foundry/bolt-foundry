@@ -96,3 +96,5 @@ export type {
   BfDsFullPageSpinnerProps,
   BfDsSpinnerProps,
 } from "./components/BfDsSpinner.tsx";
+
+export { BfDsProvider } from "./components/BfDsProvider.tsx";

@@ -80,7 +80,7 @@ type BfDsToastContainerProps = {
 export function BfDsToastContainer(
   { toasts, onRemove }: BfDsToastContainerProps,
 ) {
-  const toastRoot = document.getElementById("toast-root");
+  const toastRoot = globalThis.document?.getElementById("toast-root");
 
   if (!toastRoot) {
     // Toast root element not found - this is expected during SSR or if toast-root div is missing
