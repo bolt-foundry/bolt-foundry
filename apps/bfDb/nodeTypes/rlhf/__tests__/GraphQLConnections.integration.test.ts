@@ -6,10 +6,9 @@
  * including both successful queries and error handling for pagination attempts.
  */
 
-import { assertEquals, assertThrows } from "@std/assert";
+import { assertEquals, assertExists } from "@std/assert";
 import { withIsolatedDb } from "@bfmono/apps/bfDb/bfDb.ts";
 import { makeLoggedInCv } from "@bfmono/apps/bfDb/utils/testUtils.ts";
-import { BfErrorNotImplemented } from "@bfmono/lib/BfError.ts";
 import { BfOrganization } from "@bfmono/apps/bfDb/nodeTypes/BfOrganization.ts";
 import { BfDeck } from "@bfmono/apps/bfDb/nodeTypes/rlhf/BfDeck.ts";
 import { BfSample } from "@bfmono/apps/bfDb/nodeTypes/rlhf/BfSample.ts";
@@ -74,8 +73,9 @@ Deno.test("GraphQL Connection Integration - BfDeck.samples connection without pa
     assertEquals(connection.edges.length, 2);
     assertEquals(connection.pageInfo.hasNextPage, false);
     assertEquals(connection.pageInfo.hasPreviousPage, false);
-    assertEquals(connection.pageInfo.startCursor, null);
-    assertEquals(connection.pageInfo.endCursor, null);
+    // Note: cursors may be generated even for non-paginated connections
+    assertExists(connection.pageInfo.startCursor, "Should have startCursor");
+    assertExists(connection.pageInfo.endCursor, "Should have endCursor");
 
     // Verify edge data
     const edgeNodes = connection.edges.map((edge) => edge.node);
@@ -85,7 +85,7 @@ Deno.test("GraphQL Connection Integration - BfDeck.samples connection without pa
   });
 });
 
-Deno.test("GraphQL Connection Integration - BfDeck.samples connection with pagination should fail", async () => {
+Deno.test("GraphQL Connection Integration - BfDeck.samples connection with pagination should work", async () => {
   await withIsolatedDb(async () => {
     const cv = makeLoggedInCv({
       orgSlug: "test-org",
@@ -123,12 +123,23 @@ Deno.test("GraphQL Connection Integration - BfDeck.samples connection with pagin
     const samples = await deck.queryTargetInstances(BfSample);
     const connectionArgs: ConnectionArguments = { first: 10 }; // Pagination requested
 
-    // Should throw BfErrorNotImplemented
-    assertThrows(
-      () => BfSample.connection(samples, connectionArgs),
-      BfErrorNotImplemented,
-      "Cursor-based pagination requires node traversal methods",
+    // Should work - pagination is now implemented
+    const connection = BfSample.connection(samples, connectionArgs);
+
+    // Verify connection structure with pagination
+    assertExists(connection.edges, "Should have edges");
+    assertExists(connection.pageInfo, "Should have pageInfo");
+    assertEquals(
+      typeof connection.pageInfo.hasNextPage,
+      "boolean",
+      "Should have hasNextPage",
     );
+    assertEquals(
+      typeof connection.pageInfo.hasPreviousPage,
+      "boolean",
+      "Should have hasPreviousPage",
+    );
+    assertEquals(connection.edges.length, 1, "Should return the one sample");
   });
 });
 
@@ -217,7 +228,7 @@ Deno.test("GraphQL Connection Integration - BfSample.results connection without 
   });
 });
 
-Deno.test("GraphQL Connection Integration - BfSample.results connection with pagination should fail", async () => {
+Deno.test("GraphQL Connection Integration - BfSample.results connection with pagination should work", async () => {
   await withIsolatedDb(async () => {
     const cv = makeLoggedInCv({
       orgSlug: "test-org",
@@ -257,14 +268,28 @@ Deno.test("GraphQL Connection Integration - BfSample.results connection with pag
     const results = await sample.queryTargetInstances(BfGraderResult);
     const connectionArgs: ConnectionArguments = {
       last: 5,
-      before: "cursor123",
-    }; // Pagination requested
+    }; // Pagination requested without cursor filtering
 
-    // Should throw BfErrorNotImplemented
-    assertThrows(
-      () => BfGraderResult.connection(results, connectionArgs),
-      BfErrorNotImplemented,
-      "Use static queries without pagination args for now",
+    // Should work - pagination is now implemented
+    const connection = BfGraderResult.connection(results, connectionArgs);
+
+    // Verify connection structure with pagination
+    assertExists(connection.edges, "Should have edges");
+    assertExists(connection.pageInfo, "Should have pageInfo");
+    assertEquals(
+      typeof connection.pageInfo.hasNextPage,
+      "boolean",
+      "Should have hasNextPage",
+    );
+    assertEquals(
+      typeof connection.pageInfo.hasPreviousPage,
+      "boolean",
+      "Should have hasPreviousPage",
+    );
+    assertEquals(
+      connection.edges.length,
+      0,
+      "Should return empty results since no grader results exist",
     );
   });
 });

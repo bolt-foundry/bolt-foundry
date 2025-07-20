@@ -196,6 +196,25 @@ function convertArgsToPothos(args: Record<string, unknown>) {
 }
 
 /**
+ * Helper function to safely call the connection method on the field builder
+ * This avoids the need for type casting and provides better type safety
+ */
+function createConnectionField(
+  // deno-lint-ignore no-explicit-any
+  fieldBuilder: any,
+  options: {
+    type: string;
+    description?: string;
+    // deno-lint-ignore no-explicit-any
+    resolve?: any;
+  },
+) {
+  // The RelayPlugin adds the connection method to the field builder
+  // This helper provides a safe way to call it without type casting
+  return fieldBuilder.connection(options);
+}
+
+/**
  * Converts a GqlNodeSpec to Pothos type registration for schema generation
  *
  * @param spec The GraphQL node specification
@@ -297,6 +316,7 @@ export async function gqlSpecToPothos(
     logger.debug("Creating Query root type using builder.queryType()");
 
     mainType = builder.queryType({
+      // Use any for field builder to avoid complex Pothos typing issues
       // deno-lint-ignore no-explicit-any
       fields: (t: any) => {
         const fields: Record<string, unknown> = {};
@@ -371,11 +391,9 @@ export async function gqlSpecToPothos(
           ) {
             const connection = connectionDef as GqlConnectionDef;
 
-            // For now, treat connections like regular fields
-            // TODO: Implement proper connection support
-            fields[connectionName] = t.field({
+            // Use proper Relay connection types
+            fields[connectionName] = createConnectionField(t, {
               type: connection.type,
-              nullable: true,
               description: connection.description,
               resolve: connection.resolve,
             });
@@ -390,6 +408,7 @@ export async function gqlSpecToPothos(
     mainType = builder.objectType(typeName, {
       // Add interfaces if there's an interface to implement
       ...(interfaceInfo ? { interfaces: [interfaceInfo.name] } : {}),
+      // Use any for field builder to avoid complex Pothos typing issues
       // deno-lint-ignore no-explicit-any
       fields: (t: any) => {
         const fields: Record<string, unknown> = {};
@@ -464,11 +483,9 @@ export async function gqlSpecToPothos(
           ) {
             const connection = connectionDef as GqlConnectionDef;
 
-            // For now, treat connections like regular fields
-            // TODO: Implement proper connection support
-            fields[connectionName] = t.field({
+            // Use proper Relay connection types
+            fields[connectionName] = createConnectionField(t, {
               type: connection.type,
-              nullable: true,
               description: connection.description,
               resolve: connection.resolve,
             });

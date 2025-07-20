@@ -1,4 +1,5 @@
 import SchemaBuilder from "@pothos/core";
+import RelayPlugin from "@pothos/plugin-relay";
 import type { GraphQLSchema } from "graphql";
 import { loadGqlTypesPothos } from "./loadGqlTypesPothos.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
@@ -25,7 +26,10 @@ function createPothosBuilder(): BfSchemaBuilder {
     Context: BfGraphqlContext;
     Scalars: BfGraphqlScalars;
   }>({
-    plugins: [],
+    plugins: [RelayPlugin],
+    relay: {
+      cursorType: "String",
+    },
   });
 
   // Add custom scalars

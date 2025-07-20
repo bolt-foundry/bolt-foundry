@@ -1,60 +1,51 @@
-# Phase 3 UI Implementation Plan - Chat + Cards RLHF Interface
+# Phase 3 UI Implementation Plan - Simple Deck List Interface
 
-_Implementation memo for Phase 3 of RLHF pipeline - Chat + cards UI with AI
-assistant and contextual cards_
+_Implementation memo for Phase 3 of RLHF pipeline - Simple deck list → detail
+view workflow_
 
-**Date**: 2025-07-16\
-**Status**: Implementation Ready\
+**Date**: 2025-07-20\
+**Status**: Planning\
 **Prerequisites**: Phase 2 (Sample Collection) completion
 
 ## Executive Summary
 
-This memo outlines the implementation plan for Phase 3 of the RLHF pipeline,
-focusing on building a chat + cards interface for AI-assisted grading and human
-feedback correction. The MVP prioritizes essential workflow functionality with a
-chat-driven approach and contextual card interactions. The implementation
-leverages existing RLHF data models (100% complete) and comprehensive UI
-components (80% foundation ready).
+This memo outlines the simplified implementation plan for Phase 3 of the RLHF
+pipeline, focusing on building a straightforward deck list interface similar to
+EvalForge. The MVP prioritizes a simple workflow: list of decks → click deck →
+open detail view for sample review. This approach allows for iterative
+development and immediate user value while building toward more complex features
+later.
 
 ## Phase 3 MVP Requirements Analysis
 
 ### Core UI Architecture
 
-**Chat + Cards Layout**
+**Simple Deck List Layout**
 
-- Navigation sidebar: Collapsible navigation (hidden when detail view is open,
-  can be opened as drawer overlay)
-- Conversation view: Chat conversation with AI assistant (always visible,
-  shrinks when detail view opens)
-- Detail view: Opens when cards are clicked, takes up majority of screen space
-- Card interaction: Click card → opens detail view, shrinks conversation view,
-  hides navigation sidebar
-- Drawer mode: When detail view is open, navigation sidebar opens as overlay
-  drawer on top
+- Main view: List of available deck slugs
+- Click interaction: Click deck slug → opens detail view for that deck
+- Detail view: Full-screen or modal view for sample review and deck management
 
 **MVP Workflow Requirements**
 
-**3.1 Chat-Driven Workflow**
+**3.1 Deck List View**
 
-- AI assistant conversation in conversation view guides user through RLHF tasks
-- Assistant generates cards during conversation (deck cards, sample cards, etc.)
-- User interacts with assistant to manage decks, review samples, handle
-  disagreements
-- Cards provide quick access to detail views when clicked
+- Display all available deck slugs in a simple list format
+- Click any deck slug to open detail view
+- Minimal, focused interface
 
-**3.2 Card-Based Interactions**
+**3.2 Deck Detail View**
 
-- Deck cards: Show deck name, grader count, sample count
-- Sample cards: Show sample content, AI evaluation, need for human review
-- Disagreement cards: Show AI vs human evaluation conflicts
-- Click any card → opens detail view with forms and actions
+- Show samples that need human review/feedback
+- Display AI evaluation vs human feedback when available
+- Forms for providing human feedback on samples
+- Return to deck list when done
 
-**3.3 Assistant-Guided Operations**
+**3.3 Progressive Enhancement**
 
-- Create decks through chat conversation
-- Review inbox samples with assistant guidance
-- Handle "samples out of whack" with assistant recommendations
-- API integration with `orgslug_deckslug` format for external sample submission
+- Start with basic list → detail workflow
+- Add features iteratively (filters, search, batch operations)
+- Build toward more complex workflows once foundation is solid
 
 ## Current Implementation Status
 
@@ -64,15 +55,15 @@ components (80% foundation ready).
 
 - `BfGraderResult` with score, explanation, reasoningProcess fields
 - `BfSampleFeedback` with human correction capabilities
-- `BfSample` with completionData storage and `submitSample` mutation
+- `BfSample` with completionData storage
 - `BfGrader` with auto-generation from system prompts
-- `BfDeck` with `createDeck` mutation and auto-grader generation
+- `BfDeck` with existing deck data
 - Full relationship patterns using BfEdge connections
 
 **UI Component Foundation (80% Complete)**
 
 - `BfDsForm` with context-driven validation
-- `BfDsRadio` for -3 to +3 score selection
+- `BfDsButton` for feedback actions
 - `BfDsTextArea` for explanation input
 - `BfDsButton` for action handling
 - `BfDsTabs` for organizing interfaces
@@ -80,9 +71,9 @@ components (80% foundation ready).
 
 **Recent Progress (Phase 2 Completion)**
 
-- BfDeck has `createDeck` mutation with auto-grader generation
+- BfDeck has existing deck data available for querying
 - `analyzeSystemPrompt` service integrated in deck creation lifecycle
-- BfSample has `submitSample` mutation for API integration
+- BfSample has existing sample data for review
 - GraphQL mutations functional for deck and sample management
 
 ### ✅ **UPDATED STATUS (July 2025)**
@@ -104,7 +95,7 @@ components (80% foundation ready).
 **GraphQL Schema (COMPLETED)**
 
 - ✅ All RLHF types exposed in GraphQL with proper `id: ID!` fields
-- ✅ `createDeck` and `submitSample` mutations available
+- ✅ GraphQL queries available for deck and sample data
 - ✅ `deck(slug: String)` query for slug-based lookups
 - ✅ Generated Isograph types ready for component development
 
@@ -300,7 +291,7 @@ interface SampleDetailViewProps {
 - Full-screen detail view replacing content area
 - Show sample conversation data
 - Display AI evaluation (score, explanation, reasoning)
-- Human feedback form with -3 to +3 score selection
+- Human feedback form with simple input fields
 - Close button to return to cards view
 
 **DeckDetailView.tsx**:
@@ -349,51 +340,49 @@ export const appRoutes: RouteMap = new Map([
 
 ## Implementation Tasks
 
-### Sprint 1: UI Components (2-3 days)
+### Phase 1: Basic Deck List (1-2 days)
 
-**Task 1.1: Layout Context and State Management**
+**Task 1.1: Backend Data Setup**
 
-- [ ] Create `LayoutContext.tsx` with centralized layout state management
-- [ ] Implement state transitions for all layout modes (sidebar, drawer, detail
-      view)
-- [ ] Add proper TypeScript interfaces for layout state and actions
+- [ ] Add mock deck data to GraphQL queries
+- [ ] Ensure BfDeck has slug field for deck identification
+- [ ] Create simple deck list query in RlhfInterface
 
-**Task 1.2: Chat + Cards Layout**
+**Task 1.2: Deck List Component**
 
-- [ ] Create `MainLayout.tsx` that consumes LayoutContext
-- [ ] Create `ConversationView.tsx` with LayoutContext integration
-- [ ] Create `DetailView.tsx` with LayoutContext integration
-- [ ] Create `NavigationSidebar.tsx` with LayoutContext integration
+- [ ] Build simple deck slug list view with BfDs components
+- [ ] Display only deck slugs
+- [ ] Add click handlers for deck selection
+- [ ] Test deck list rendering and interactions
 
-**Task 1.3: Card Components**
+### Phase 2: Deck Detail View (1-2 days)
 
-- [ ] Create `DeckCard.tsx` for deck overview cards
-- [ ] Create `SampleCard.tsx` for sample review cards
-- [ ] Create `DisagreementCard.tsx` for disagreement cards
-- [ ] Implement card click handlers and transitions
+**Task 2.1: Detail View State**
 
-**Task 1.4: Detail View Components**
+- [ ] Add state management for selected deck
+- [ ] Implement view switching (list ↔ detail)
+- [ ] Add navigation back to deck list
 
-- [ ] Create `SampleDetailView.tsx` with feedback form
-- [ ] Create `DeckDetailView.tsx` with grader information
-- [ ] Create `DisagreementDetailView.tsx` for disagreement review
-- [ ] Implement form validation and close functionality
+**Task 2.2: Sample Review Interface**
 
-### Sprint 2: Integration and Testing (1-2 days)
+- [ ] Create basic sample display in detail view
+- [ ] Add sample feedback form with BfDs components
+- [ ] Implement sample submission workflow
+- [ ] Test detail view interactions
 
-**Task 2.1: Chat Interface Integration**
+### Phase 3: Polish and Testing (1 day)
 
-- [ ] Create `RlhfChatInterface.tsx` main component
-- [ ] Implement chat message handling and assistant integration
-- [ ] Add card generation logic based on conversation context
-- [ ] Connect all components with proper data flow and state management
+**Task 3.1: Integration Testing**
 
-**Task 2.2: End-to-End Testing**
+- [ ] Test complete workflow: deck list → detail → sample review → back to list
+- [ ] Verify data flow and state management
+- [ ] Test error handling and edge cases
 
-- [ ] Test complete workflow: create deck → submit sample → AI evaluation →
-      human feedback
-- [ ] Test UI responsiveness and accessibility
-- [ ] Verify card interactions and layout transitions
+**Task 3.2: UI Polish**
+
+- [ ] Add basic styling without Tailwind
+- [ ] Ensure responsive behavior
+- [ ] Add loading states and user feedback
 
 ## Success Criteria
 
@@ -418,7 +407,7 @@ export const appRoutes: RouteMap = new Map([
 - [ ] Clean, focused interface prioritizing essential workflow
 - [ ] Intuitive chat-driven interactions with AI assistant
 - [ ] Smooth card-to-detail view transitions with navigation sidebar hiding
-- [ ] Intuitive -3 to +3 scoring interface with visual feedback
+- [ ] Simple feedback form with clear input fields
 - [ ] Fast loading and responsive interactions
 - [ ] Keyboard navigation support
 
@@ -440,7 +429,7 @@ export const appRoutes: RouteMap = new Map([
   detection (see
   `/apps/boltfoundry-com/memos/plans/markdown-deck-sample-collection.md`)
 - **Existing RLHF data model**: Already implemented and tested
-- **BfDs Components**: Form, radio, textarea, button, tabs, callout components
+- **BfDs Components**: Form, textarea, button, tabs, callout components
 
 ## Future Considerations (Post-MVP)
 

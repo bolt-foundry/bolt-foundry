@@ -1,0 +1,47 @@
+[[samples.billing-inquiry.messages]]
+role = "user"
+content = "Hi, I'm having trouble understanding my latest invoice. There's a charge for $29.99 that I don't recognize. Can you help me figure out what this is for?"
+
+[[samples.billing-inquiry.messages]]
+role = "assistant"
+content = "I'd be happy to help you understand your invoice. The $29.99 charge is for your Premium Support subscription that was activated last month. This gives you priority email support and access to our knowledge base. You can view the details in your account settings under 'Billing & Subscriptions'. Would you like me to walk you through accessing that section?"
+
+[samples.billing-inquiry]
+score = 2
+description = "Good response that directly addresses the customer's concern with helpful details and offers additional assistance"
+
+[[samples.technical-issue.messages]]
+role = "user"
+content = "My product stopped working after the latest update. It keeps crashing when I try to open files. This is really frustrating!"
+
+[[samples.technical-issue.messages]]
+role = "assistant"
+content = "I understand how frustrating that must be, and I'm sorry you're experiencing crashes after the update. Let's get this resolved quickly. First, please try restarting the application completely. If that doesn't work, try clearing your app cache by going to Settings > Advanced > Clear Cache. If you're still having issues, there's a known compatibility issue with certain file types that our team is working on - I can send you a temporary workaround or schedule a call with our technical team."
+
+[samples.technical-issue]
+score = 3
+description = "Excellent response showing empathy, providing multiple solution steps, and offering escalation options"
+
+[[samples.return-request.messages]]
+role = "user"
+content = "I bought this item last week but it's not what I expected. Can I return it? What's your return policy?"
+
+[[samples.return-request.messages]]
+role = "assistant"
+content = "Absolutely! You can return the item within 30 days of purchase for a full refund. Since you purchased it last week, you're well within our return window. To start the return process, I'll need your order number. You can find this in your email confirmation or account order history. Once I have that, I can generate a prepaid return shipping label for you. Our return policy covers all items in original condition. Is there anything specific about the item that didn't meet your expectations?"
+
+[samples.return-request]
+score = 2
+description = "Helpful response with clear policy information and next steps, shows genuine interest in customer satisfaction"
+
+[[samples.subscription-change.messages]]
+role = "user"
+content = "I need to change my subscription plan to a lower tier. How do I do that and when would the change take effect?"
+
+[[samples.subscription-change.messages]]
+role = "assistant"
+content = "I can help you change your subscription plan. You can downgrade to a lower tier at any time through your account settings. Go to 'Account' > 'Subscription' and select 'Change Plan'. The change will take effect at the start of your next billing cycle, so you'll continue to have access to your current plan features until then. You won't be charged for the new plan until the current period ends. Would you like me to walk you through the specific steps, or do you have questions about what features are included in the different tiers?"
+
+[samples.subscription-change]
+score = 1
+description = "Adequate response that answers the question but could be more proactive in addressing potential concerns about the change"
