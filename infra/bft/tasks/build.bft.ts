@@ -42,9 +42,15 @@ export const INTERNAL_KEYS: Set<string> = new Set<string>([
   "BF_VAULT_ID",
 ]);
 
+// Additional config keys for boltfoundry-com app
+export const BOLTFOUNDRY_COM_KEYS: Set<string> = new Set<string>([
+  "GOOGLE_OAUTH_CLIENT_ID",
+]);
+
 const allowedEnvironmentVariables = [
   ...ENVIRONMENT_ONLY_KEYS,
   ...INTERNAL_KEYS,
+  ...BOLTFOUNDRY_COM_KEYS,
   ...PUBLIC_CONFIG_KEYS,
   ...PRIVATE_CONFIG_KEYS,
 ].reduce((acc, key) => acc.add(key), new Set<string>());
