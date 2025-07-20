@@ -12,6 +12,7 @@
     "jsr:@denosaurs/plug@1.1.0": "1.1.0",
     "jsr:@openai/openai@^4.78.1": "4.102.0",
     "jsr:@simplewebauthn/browser@^13.1.0": "13.1.2",
+    "jsr:@simplewebauthn/server@^13.1.1": "13.1.2",
     "jsr:@std/assert@*": "1.0.13",
     "jsr:@std/assert@0.223": "0.223.0",
     "jsr:@std/assert@0.224": "0.224.0",
@@ -68,11 +69,13 @@
     "npm:@babel/preset-react@^7.25.7": "7.27.1_@babel+core@7.28.0",
     "npm:@deno/vite-plugin@^1.0.4": "1.0.5_vite@6.3.5__picomatch@4.0.2_@types+node@22.15.15",
     "npm:@graphql-tools/schema@^10.0.6": "10.0.23_graphql@16.11.0",
+    "npm:@hexagon/base64@^1.1.27": "1.1.28",
     "npm:@isograph/babel-plugin@0.3.1": "0.3.1",
     "npm:@isograph/babel-plugin@~0.3.1": "0.3.1",
     "npm:@isograph/compiler@0.3.1": "0.3.1",
     "npm:@isograph/react@0.3.1": "0.3.1_react@19.1.0",
     "npm:@isograph/react@~0.3.1": "0.3.1_react@19.1.0",
+    "npm:@levischuck/tiny-cbor@~0.2.2": "0.2.11",
     "npm:@lexical/mark@0.33": "0.33.1",
     "npm:@lexical/react@0.33": "0.33.1_react@19.1.0_react-dom@19.1.0__react@19.1.0",
     "npm:@lexical/selection@0.33": "0.33.1",
@@ -80,7 +83,13 @@
     "npm:@lexical/utils@0.33": "0.33.1",
     "npm:@mdx-js/esbuild@^3.1.0": "3.1.0_esbuild@0.25.6",
     "npm:@neondatabase/serverless@^1.0.1": "1.0.1",
+    "npm:@peculiar/asn1-android@^2.3.10": "2.3.16",
+    "npm:@peculiar/asn1-ecc@^2.3.8": "2.3.15",
+    "npm:@peculiar/asn1-rsa@^2.3.8": "2.3.15",
+    "npm:@peculiar/asn1-schema@^2.3.8": "2.3.15",
+    "npm:@peculiar/asn1-x509@^2.3.8": "2.3.15",
     "npm:@pothos/core@^4.7.3": "4.7.3_graphql@16.11.0",
+    "npm:@pothos/plugin-relay@^4.4.2": "4.6.2_@pothos+core@4.7.3__graphql@16.11.0_graphql@16.11.0",
     "npm:@types/matter-js@~0.19.8": "0.19.8",
     "npm:@types/node@*": "22.15.15",
     "npm:@types/pg@^8.15.4": "8.15.4",
@@ -179,6 +188,18 @@
     },
     "@simplewebauthn/browser@13.1.2": {
       "integrity": "c9679e83a760d34ae98bb34b580067274f63a5a7ba4b32cd14a5814d6bdb29d6"
+    },
+    "@simplewebauthn/server@13.1.2": {
+      "integrity": "7f4e360846aad6a3a1b328099ee901625d2937e6665925236f6f74529b693feb",
+      "dependencies": [
+        "npm:@hexagon/base64",
+        "npm:@levischuck/tiny-cbor",
+        "npm:@peculiar/asn1-android",
+        "npm:@peculiar/asn1-ecc",
+        "npm:@peculiar/asn1-rsa",
+        "npm:@peculiar/asn1-schema",
+        "npm:@peculiar/asn1-x509"
+      ]
     },
     "@std/assert@0.223.0": {
       "integrity": "eb8d6d879d76e1cc431205bd346ed4d88dc051c6366365b1af47034b0670be24"
@@ -839,6 +860,9 @@
         "tslib"
       ]
     },
+    "@hexagon/base64@1.1.28": {
+      "integrity": "sha512-lhqDEAvWixy3bZ+UOYbPwUbBkwBq5C1LAJ/xPC8Oi+lL54oyakv/npbA0aU2hgCsx/1NUd4IBvV03+aUBWxerw=="
+    },
     "@img/sharp-darwin-arm64@0.33.5": {
       "integrity": "sha512-UT4p+iz/2H4twwAoLCqfA9UH5pI6DggwKEGuaPy7nCVQ8ZsiY5PIcrRvD1DzuY3qYL07NtIQcWnBSY/heikIFQ==",
       "optionalDependencies": [
@@ -966,6 +990,9 @@
         "@jridgewell/resolve-uri",
         "@jridgewell/sourcemap-codec"
       ]
+    },
+    "@levischuck/tiny-cbor@0.2.11": {
+      "integrity": "sha512-llBRm4dT4Z89aRsm6u2oEZ8tfwL/2l6BwpZ7JcyieouniDECM5AqNgr/y08zalEIvW3RSK4upYyybDcmjXqAow=="
     },
     "@lexical/clipboard@0.33.1": {
       "integrity": "sha512-Qd3/Cm3TW2DFQv58kMtLi86u5YOgpBdf+o7ySbXz55C613SLACsYQBB3X5Vu5hTx/t/ugYOpII4HkiatW6d9zA==",
@@ -1200,9 +1227,59 @@
         "@types/pg"
       ]
     },
+    "@peculiar/asn1-android@2.3.16": {
+      "integrity": "sha512-a1viIv3bIahXNssrOIkXZIlI2ePpZaNmR30d4aBL99mu2rO+mT9D6zBsp7H6eROWGtmwv0Ionp5olJurIo09dw==",
+      "dependencies": [
+        "@peculiar/asn1-schema",
+        "asn1js",
+        "tslib"
+      ]
+    },
+    "@peculiar/asn1-ecc@2.3.15": {
+      "integrity": "sha512-/HtR91dvgog7z/WhCVdxZJ/jitJuIu8iTqiyWVgRE9Ac5imt2sT/E4obqIVGKQw7PIy+X6i8lVBoT6wC73XUgA==",
+      "dependencies": [
+        "@peculiar/asn1-schema",
+        "@peculiar/asn1-x509",
+        "asn1js",
+        "tslib"
+      ]
+    },
+    "@peculiar/asn1-rsa@2.3.15": {
+      "integrity": "sha512-p6hsanvPhexRtYSOHihLvUUgrJ8y0FtOM97N5UEpC+VifFYyZa0iZ5cXjTkZoDwxJ/TTJ1IJo3HVTB2JJTpXvg==",
+      "dependencies": [
+        "@peculiar/asn1-schema",
+        "@peculiar/asn1-x509",
+        "asn1js",
+        "tslib"
+      ]
+    },
+    "@peculiar/asn1-schema@2.3.15": {
+      "integrity": "sha512-QPeD8UA8axQREpgR5UTAfu2mqQmm97oUqahDtNdBcfj3qAnoXzFdQW+aNf/tD2WVXF8Fhmftxoj0eMIT++gX2w==",
+      "dependencies": [
+        "asn1js",
+        "pvtsutils",
+        "tslib"
+      ]
+    },
+    "@peculiar/asn1-x509@2.3.15": {
+      "integrity": "sha512-0dK5xqTqSLaxv1FHXIcd4Q/BZNuopg+u1l23hT9rOmQ1g4dNtw0g/RnEi+TboB0gOwGtrWn269v27cMgchFIIg==",
+      "dependencies": [
+        "@peculiar/asn1-schema",
+        "asn1js",
+        "pvtsutils",
+        "tslib"
+      ]
+    },
     "@pothos/core@4.7.3_graphql@16.11.0": {
       "integrity": "sha512-V+5v4Jy4zMuY4az5BQe/5QXlBEB+uYkIZyhIngoaSkxAm16p8ZaH3NOTJIjjw0bGJoRAxvgfsrk1dgjH7LPFjA==",
       "dependencies": [
+        "graphql@16.11.0"
+      ]
+    },
+    "@pothos/plugin-relay@4.6.2_@pothos+core@4.7.3__graphql@16.11.0_graphql@16.11.0": {
+      "integrity": "sha512-9aweCv9T53z4+CmE+JF8QoXeAEd+wT/rZflZNzrvH6ln2Lj6qy/EVEcL5BMr6en3/IYHH+ROyHAAsy12t4uIUQ==",
+      "dependencies": [
+        "@pothos/core",
         "graphql@16.11.0"
       ]
     },
@@ -1542,6 +1619,14 @@
     },
     "argparse@2.0.1": {
       "integrity": "sha512-8+9WqebbFzpX9OR+Wa6O29asIogeRMzcGtAINdpMHHyAg10f05aSFVBbcEqGf/PXw1EjAZ+q2/bEBg3DvurK3Q=="
+    },
+    "asn1js@3.0.6": {
+      "integrity": "sha512-UOCGPYbl0tv8+006qks/dTgV9ajs97X2p0FAbyS2iyCRrmLSRolDaHdp+v/CLgnzHc3fVB+CwYiUmei7ndFcgA==",
+      "dependencies": [
+        "pvtsutils",
+        "pvutils",
+        "tslib"
+      ]
     },
     "assemblyai@4.14.0": {
       "integrity": "sha512-+j/ov8z+RF7pY1Crl6yO3dMHsriRT7jQzBE75xF2rFXqaYVjzKc6DPTWB7nLLBHXWbA72Cayk3pg0hl15eQ6fg==",
@@ -2811,6 +2896,15 @@
       "scripts": true,
       "bin": true
     },
+    "pvtsutils@1.3.6": {
+      "integrity": "sha512-PLgQXQ6H2FWCaeRak8vvk1GW462lMxB5s3Jm673N82zI4vqtVUPuZdffdZbPDFRoU8kAhItWFtPCWiPpp4/EDg==",
+      "dependencies": [
+        "tslib"
+      ]
+    },
+    "pvutils@1.1.3": {
+      "integrity": "sha512-pMpnA0qRdFp32b1sJl1wOJNxZLQ2cbQx+k6tjNtZ8CpvVhNqEPRgivZ2WOUev2YMajecdH7ctUPDvEe87nariQ=="
+    },
     "react-dom@19.1.0_react@19.1.0": {
       "integrity": "sha512-Xs1hdnE+DyKgeHJeJznQmYMIBG3TKIHJJT95Q58nHLSrElKlGQqDTR2HQ9fx5CN/Gk6Vh/kupBTDLU11/nDk/g==",
       "dependencies": [
@@ -3313,6 +3407,7 @@
       "npm:@mdx-js/esbuild@^3.1.0",
       "npm:@neondatabase/serverless@^1.0.1",
       "npm:@pothos/core@^4.7.3",
+      "npm:@pothos/plugin-relay@^4.4.2",
       "npm:@types/matter-js@~0.19.8",
       "npm:@types/pg@^8.15.4",
       "npm:@types/react@19",

@@ -6,8 +6,7 @@
  * basic connection functionality while throwing errors for pagination.
  */
 
-import { assertEquals, assertThrows } from "@std/assert";
-import { BfErrorNotImplemented } from "@bfmono/lib/BfError.ts";
+import { assertEquals, assertExists } from "@std/assert";
 import { BfNode, type InferProps } from "@bfmono/apps/bfDb/classes/BfNode.ts";
 import { connectionFromArray } from "graphql-relay";
 import type { ConnectionArguments } from "graphql-relay";
@@ -51,13 +50,28 @@ const paginationTestCases = [
 ];
 
 for (const testCase of paginationTestCases) {
-  Deno.test(`BfNode.connection() - should throw BfErrorNotImplemented when ${testCase.name} provided`, () => {
+  Deno.test(`BfNode.connection() - should work with pagination when ${testCase.name} provided`, () => {
+    // Create test nodes with sortable IDs (using empty arrays since we're testing structure, not content)
     const nodes: Array<TestNode> = [];
 
-    assertThrows(
-      () => BfNode.connection(nodes, testCase.args as ConnectionArguments),
-      BfErrorNotImplemented,
-      "Cursor-based pagination requires node traversal methods",
+    // Should not throw - pagination now works
+    const result = BfNode.connection(
+      nodes,
+      testCase.args as ConnectionArguments,
+    );
+
+    // Verify it returns a proper connection structure
+    assertExists(result.edges, "Should have edges");
+    assertExists(result.pageInfo, "Should have pageInfo");
+    assertEquals(
+      typeof result.pageInfo.hasNextPage,
+      "boolean",
+      "Should have hasNextPage",
+    );
+    assertEquals(
+      typeof result.pageInfo.hasPreviousPage,
+      "boolean",
+      "Should have hasPreviousPage",
     );
   });
 }
@@ -88,13 +102,25 @@ Deno.test("BfNode.connection() - should return same structure as connectionFromA
   );
 });
 
-Deno.test("BfNode.connection() - error message should be helpful and specific", () => {
+Deno.test("BfNode.connection() - should properly handle pagination arguments without throwing", () => {
   const nodes: Array<TestNode> = [];
-  const args: ConnectionArguments = { first: 10 };
 
-  assertThrows(
-    () => BfNode.connection(nodes, args),
-    BfErrorNotImplemented,
-    "Use static queries without pagination args for now",
+  // Test that pagination arguments don't throw errors anymore
+  const firstResult = BfNode.connection(nodes, { first: 2 });
+  assertExists(firstResult.edges, "Should have edges array");
+  assertExists(firstResult.pageInfo, "Should have pageInfo object");
+  assertEquals(
+    typeof firstResult.pageInfo.hasNextPage,
+    "boolean",
+    "Should have hasNextPage boolean",
   );
+  assertEquals(
+    typeof firstResult.pageInfo.hasPreviousPage,
+    "boolean",
+    "Should have hasPreviousPage boolean",
+  );
+
+  const lastResult = BfNode.connection(nodes, { last: 2 });
+  assertExists(lastResult.edges, "Should have edges array");
+  assertExists(lastResult.pageInfo, "Should have pageInfo object");
 });

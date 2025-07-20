@@ -175,22 +175,79 @@ export abstract class BfNode<TProps extends PropsBase = {}>
     nodes: Array<T>,
     args: ConnectionArguments,
   ): Connection<T> {
-    // Check for pagination args
-    if (args.first || args.last || args.after || args.before) {
-      const error = new BfErrorNotImplemented();
-      error.message =
-        "Cursor-based pagination requires node traversal methods. Use static queries without pagination args for now.";
-      throw error;
+    const { first, last, after, before } = args;
+
+    // If no pagination args, return simple connection
+    if (!first && !last && !after && !before) {
+      return connectionFromArray(nodes, {});
     }
 
-    // Return basic connection structure with null cursors for no pagination
-    const connection = connectionFromArray(nodes, {});
+    // Helper function to get sort value from a node
+    const getSortValue = (node: T): string => {
+      // Access sortValue through metadata, fallback to id
+      return String(node.metadata?.sortValue || node.id);
+    };
+
+    // For array-based connections with pagination args, implement cursor logic
+    const sortedNodes = [...nodes].sort((a, b) => {
+      // Sort by sortValue if available, otherwise by id
+      const aSort = getSortValue(a);
+      const bSort = getSortValue(b);
+      return aSort.localeCompare(bSort);
+    });
+
+    let startIndex = 0;
+    let endIndex = sortedNodes.length;
+
+    // Handle cursor-based filtering
+    if (after) {
+      const afterIndex = sortedNodes.findIndex((node) => {
+        const nodeSort = getSortValue(node);
+        return nodeSort > after;
+      });
+      if (afterIndex !== -1) startIndex = afterIndex;
+    }
+
+    if (before) {
+      const beforeIndex = sortedNodes.findIndex((node) => {
+        const nodeSort = getSortValue(node);
+        return nodeSort >= before;
+      });
+      if (beforeIndex !== -1) endIndex = beforeIndex;
+    }
+
+    // Apply first/last limits
+    if (first !== undefined && first !== null) {
+      endIndex = Math.min(startIndex + first, endIndex);
+    }
+
+    if (last !== undefined && last !== null) {
+      startIndex = Math.max(endIndex - last, startIndex);
+    }
+
+    const paginatedNodes = sortedNodes.slice(startIndex, endIndex);
+
+    // Generate proper cursors and pageInfo
+    const hasNextPage = endIndex < sortedNodes.length;
+    const hasPreviousPage = startIndex > 0;
+
+    const startCursor = paginatedNodes.length > 0
+      ? getSortValue(paginatedNodes[0])
+      : null;
+    const endCursor = paginatedNodes.length > 0
+      ? getSortValue(paginatedNodes[paginatedNodes.length - 1])
+      : null;
+
     return {
-      ...connection,
+      edges: paginatedNodes.map((node) => ({
+        cursor: getSortValue(node),
+        node,
+      })),
       pageInfo: {
-        ...connection.pageInfo,
-        startCursor: null,
-        endCursor: null,
+        hasNextPage,
+        hasPreviousPage,
+        startCursor,
+        endCursor,
       },
     };
   }
