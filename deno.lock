@@ -12,7 +12,6 @@
     "jsr:@denosaurs/plug@1.1.0": "1.1.0",
     "jsr:@openai/openai@^4.78.1": "4.102.0",
     "jsr:@simplewebauthn/browser@^13.1.0": "13.1.2",
-    "jsr:@simplewebauthn/server@^13.1.1": "13.1.2",
     "jsr:@std/assert@*": "1.0.13",
     "jsr:@std/assert@0.223": "0.223.0",
     "jsr:@std/assert@0.224": "0.224.0",
@@ -68,13 +67,12 @@
     "npm:@anthropic-ai/claude-code@^1.0.56": "1.0.56",
     "npm:@babel/preset-react@^7.25.7": "7.27.1_@babel+core@7.28.0",
     "npm:@deno/vite-plugin@^1.0.4": "1.0.5_vite@6.3.5__picomatch@4.0.2_@types+node@22.15.15",
-    "npm:@hexagon/base64@^1.1.27": "1.1.28",
+    "npm:@graphql-tools/schema@^10.0.6": "10.0.23_graphql@16.11.0",
     "npm:@isograph/babel-plugin@0.3.1": "0.3.1",
     "npm:@isograph/babel-plugin@~0.3.1": "0.3.1",
     "npm:@isograph/compiler@0.3.1": "0.3.1",
     "npm:@isograph/react@0.3.1": "0.3.1_react@19.1.0",
     "npm:@isograph/react@~0.3.1": "0.3.1_react@19.1.0",
-    "npm:@levischuck/tiny-cbor@~0.2.2": "0.2.11",
     "npm:@lexical/mark@0.33": "0.33.1",
     "npm:@lexical/react@0.33": "0.33.1_react@19.1.0_react-dom@19.1.0__react@19.1.0",
     "npm:@lexical/selection@0.33": "0.33.1",
@@ -82,11 +80,7 @@
     "npm:@lexical/utils@0.33": "0.33.1",
     "npm:@mdx-js/esbuild@^3.1.0": "3.1.0_esbuild@0.25.6",
     "npm:@neondatabase/serverless@^1.0.1": "1.0.1",
-    "npm:@peculiar/asn1-android@^2.3.10": "2.3.16",
-    "npm:@peculiar/asn1-ecc@^2.3.8": "2.3.15",
-    "npm:@peculiar/asn1-rsa@^2.3.8": "2.3.15",
-    "npm:@peculiar/asn1-schema@^2.3.8": "2.3.15",
-    "npm:@peculiar/asn1-x509@^2.3.8": "2.3.15",
+    "npm:@pothos/core@^4.7.3": "4.7.3_graphql@16.11.0",
     "npm:@types/matter-js@~0.19.8": "0.19.8",
     "npm:@types/node@*": "22.15.15",
     "npm:@types/pg@^8.15.4": "8.15.4",
@@ -96,15 +90,14 @@
     "npm:@vitejs/plugin-react@^4.3.4": "4.6.0_vite@6.3.5__picomatch@4.0.2_@babel+core@7.28.0_@types+node@22.15.15",
     "npm:assemblyai@^4.14.0": "4.14.0",
     "npm:chalk@^5.4.1": "5.4.1",
-    "npm:graphql-relay@~0.10.2": "0.10.2_graphql@15.10.1",
-    "npm:graphql-yoga@^5.14.0": "5.15.1_graphql@15.10.1",
-    "npm:graphql@^15.3.0": "15.10.1",
+    "npm:graphql-relay@~0.10.2": "0.10.2_graphql@16.11.0",
+    "npm:graphql-yoga@^5.14.0": "5.15.1_graphql@16.11.0",
+    "npm:graphql@^16.11.0": "16.11.0",
     "npm:lexical@0.33": "0.33.1",
     "npm:loglevel-plugin-prefix@~0.8.4": "0.8.4",
     "npm:loglevel@^1.9.2": "1.9.2",
     "npm:marked@16": "16.0.0",
     "npm:matter-js@0.20": "0.20.0",
-    "npm:nexus@^1.3.0": "1.3.0_graphql@15.10.1",
     "npm:pg@^8.16.3": "8.16.3",
     "npm:posthog-js@^1.256.2": "1.257.0",
     "npm:posthog-node@^5.1.1": "5.5.0",
@@ -186,18 +179,6 @@
     },
     "@simplewebauthn/browser@13.1.2": {
       "integrity": "c9679e83a760d34ae98bb34b580067274f63a5a7ba4b32cd14a5814d6bdb29d6"
-    },
-    "@simplewebauthn/server@13.1.2": {
-      "integrity": "7f4e360846aad6a3a1b328099ee901625d2937e6665925236f6f74529b693feb",
-      "dependencies": [
-        "npm:@hexagon/base64",
-        "npm:@levischuck/tiny-cbor",
-        "npm:@peculiar/asn1-android",
-        "npm:@peculiar/asn1-ecc",
-        "npm:@peculiar/asn1-rsa",
-        "npm:@peculiar/asn1-schema",
-        "npm:@peculiar/asn1-x509"
-      ]
     },
     "@std/assert@0.223.0": {
       "integrity": "eb8d6d879d76e1cc431205bd346ed4d88dc051c6366365b1af47034b0670be24"
@@ -790,7 +771,7 @@
     "@floating-ui/utils@0.2.10": {
       "integrity": "sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ=="
     },
-    "@graphql-tools/executor@1.4.7_graphql@15.10.1": {
+    "@graphql-tools/executor@1.4.7_graphql@16.11.0": {
       "integrity": "sha512-U0nK9jzJRP9/9Izf1+0Gggd6K6RNRsheFo1gC/VWzfnsr0qjcOSS9qTjY0OTC5iTPt4tQ+W5Zpw/uc7mebI6aA==",
       "dependencies": [
         "@graphql-tools/utils",
@@ -798,42 +779,42 @@
         "@repeaterjs/repeater",
         "@whatwg-node/disposablestack",
         "@whatwg-node/promise-helpers",
-        "graphql@15.10.1",
+        "graphql@16.11.0",
         "tslib"
       ]
     },
-    "@graphql-tools/merge@9.0.24_graphql@15.10.1": {
+    "@graphql-tools/merge@9.0.24_graphql@16.11.0": {
       "integrity": "sha512-NzWx/Afl/1qHT3Nm1bghGG2l4jub28AdvtG11PoUlmjcIjnFBJMv4vqL0qnxWe8A82peWo4/TkVdjJRLXwgGEw==",
       "dependencies": [
         "@graphql-tools/utils",
-        "graphql@15.10.1",
+        "graphql@16.11.0",
         "tslib"
       ]
     },
-    "@graphql-tools/schema@10.0.23_graphql@15.10.1": {
+    "@graphql-tools/schema@10.0.23_graphql@16.11.0": {
       "integrity": "sha512-aEGVpd1PCuGEwqTXCStpEkmheTHNdMayiIKH1xDWqYp9i8yKv9FRDgkGrY4RD8TNxnf7iII+6KOBGaJ3ygH95A==",
       "dependencies": [
         "@graphql-tools/merge",
         "@graphql-tools/utils",
-        "graphql@15.10.1",
+        "graphql@16.11.0",
         "tslib"
       ]
     },
-    "@graphql-tools/utils@10.8.6_graphql@15.10.1": {
+    "@graphql-tools/utils@10.8.6_graphql@16.11.0": {
       "integrity": "sha512-Alc9Vyg0oOsGhRapfL3xvqh1zV8nKoFUdtLhXX7Ki4nClaIJXckrA86j+uxEuG3ic6j4jlM1nvcWXRn/71AVLQ==",
       "dependencies": [
         "@graphql-typed-document-node/core",
         "@whatwg-node/promise-helpers",
         "cross-inspect",
         "dset",
-        "graphql@15.10.1",
+        "graphql@16.11.0",
         "tslib"
       ]
     },
-    "@graphql-typed-document-node/core@3.2.0_graphql@15.10.1": {
+    "@graphql-typed-document-node/core@3.2.0_graphql@16.11.0": {
       "integrity": "sha512-mB9oAsNCm9aM3/SOv4YtBMqZbYj10R7dkq8byBqxGY/ncFwhf2oQzMV+LCRlWoDSEBJ3COiR1yeDvMtsoOsuFQ==",
       "dependencies": [
-        "graphql@15.10.1"
+        "graphql@16.11.0"
       ]
     },
     "@graphql-yoga/logger@2.0.1": {
@@ -857,9 +838,6 @@
         "@repeaterjs/repeater",
         "tslib"
       ]
-    },
-    "@hexagon/base64@1.1.28": {
-      "integrity": "sha512-lhqDEAvWixy3bZ+UOYbPwUbBkwBq5C1LAJ/xPC8Oi+lL54oyakv/npbA0aU2hgCsx/1NUd4IBvV03+aUBWxerw=="
     },
     "@img/sharp-darwin-arm64@0.33.5": {
       "integrity": "sha512-UT4p+iz/2H4twwAoLCqfA9UH5pI6DggwKEGuaPy7nCVQ8ZsiY5PIcrRvD1DzuY3qYL07NtIQcWnBSY/heikIFQ==",
@@ -988,9 +966,6 @@
         "@jridgewell/resolve-uri",
         "@jridgewell/sourcemap-codec"
       ]
-    },
-    "@levischuck/tiny-cbor@0.2.11": {
-      "integrity": "sha512-llBRm4dT4Z89aRsm6u2oEZ8tfwL/2l6BwpZ7JcyieouniDECM5AqNgr/y08zalEIvW3RSK4upYyybDcmjXqAow=="
     },
     "@lexical/clipboard@0.33.1": {
       "integrity": "sha512-Qd3/Cm3TW2DFQv58kMtLi86u5YOgpBdf+o7ySbXz55C613SLACsYQBB3X5Vu5hTx/t/ugYOpII4HkiatW6d9zA==",
@@ -1225,47 +1200,10 @@
         "@types/pg"
       ]
     },
-    "@peculiar/asn1-android@2.3.16": {
-      "integrity": "sha512-a1viIv3bIahXNssrOIkXZIlI2ePpZaNmR30d4aBL99mu2rO+mT9D6zBsp7H6eROWGtmwv0Ionp5olJurIo09dw==",
+    "@pothos/core@4.7.3_graphql@16.11.0": {
+      "integrity": "sha512-V+5v4Jy4zMuY4az5BQe/5QXlBEB+uYkIZyhIngoaSkxAm16p8ZaH3NOTJIjjw0bGJoRAxvgfsrk1dgjH7LPFjA==",
       "dependencies": [
-        "@peculiar/asn1-schema",
-        "asn1js",
-        "tslib"
-      ]
-    },
-    "@peculiar/asn1-ecc@2.3.15": {
-      "integrity": "sha512-/HtR91dvgog7z/WhCVdxZJ/jitJuIu8iTqiyWVgRE9Ac5imt2sT/E4obqIVGKQw7PIy+X6i8lVBoT6wC73XUgA==",
-      "dependencies": [
-        "@peculiar/asn1-schema",
-        "@peculiar/asn1-x509",
-        "asn1js",
-        "tslib"
-      ]
-    },
-    "@peculiar/asn1-rsa@2.3.15": {
-      "integrity": "sha512-p6hsanvPhexRtYSOHihLvUUgrJ8y0FtOM97N5UEpC+VifFYyZa0iZ5cXjTkZoDwxJ/TTJ1IJo3HVTB2JJTpXvg==",
-      "dependencies": [
-        "@peculiar/asn1-schema",
-        "@peculiar/asn1-x509",
-        "asn1js",
-        "tslib"
-      ]
-    },
-    "@peculiar/asn1-schema@2.3.15": {
-      "integrity": "sha512-QPeD8UA8axQREpgR5UTAfu2mqQmm97oUqahDtNdBcfj3qAnoXzFdQW+aNf/tD2WVXF8Fhmftxoj0eMIT++gX2w==",
-      "dependencies": [
-        "asn1js",
-        "pvtsutils",
-        "tslib"
-      ]
-    },
-    "@peculiar/asn1-x509@2.3.15": {
-      "integrity": "sha512-0dK5xqTqSLaxv1FHXIcd4Q/BZNuopg+u1l23hT9rOmQ1g4dNtw0g/RnEi+TboB0gOwGtrWn269v27cMgchFIIg==",
-      "dependencies": [
-        "@peculiar/asn1-schema",
-        "asn1js",
-        "pvtsutils",
-        "tslib"
+        "graphql@16.11.0"
       ]
     },
     "@puppeteer/browsers@2.10.5": {
@@ -1604,14 +1542,6 @@
     },
     "argparse@2.0.1": {
       "integrity": "sha512-8+9WqebbFzpX9OR+Wa6O29asIogeRMzcGtAINdpMHHyAg10f05aSFVBbcEqGf/PXw1EjAZ+q2/bEBg3DvurK3Q=="
-    },
-    "asn1js@3.0.6": {
-      "integrity": "sha512-UOCGPYbl0tv8+006qks/dTgV9ajs97X2p0FAbyS2iyCRrmLSRolDaHdp+v/CLgnzHc3fVB+CwYiUmei7ndFcgA==",
-      "dependencies": [
-        "pvtsutils",
-        "pvutils",
-        "tslib"
-      ]
     },
     "assemblyai@4.14.0": {
       "integrity": "sha512-+j/ov8z+RF7pY1Crl6yO3dMHsriRT7jQzBE75xF2rFXqaYVjzKc6DPTWB7nLLBHXWbA72Cayk3pg0hl15eQ6fg==",
@@ -2048,13 +1978,13 @@
         "debug"
       ]
     },
-    "graphql-relay@0.10.2_graphql@15.10.1": {
+    "graphql-relay@0.10.2_graphql@16.11.0": {
       "integrity": "sha512-abybva1hmlNt7Y9pMpAzHuFnM2Mme/a2Usd8S4X27fNteLGRAECMYfhmsrpZFvGn3BhmBZugMXYW/Mesv3P1Kw==",
       "dependencies": [
-        "graphql@15.10.1"
+        "graphql@16.11.0"
       ]
     },
-    "graphql-yoga@5.15.1_graphql@15.10.1": {
+    "graphql-yoga@5.15.1_graphql@16.11.0": {
       "integrity": "sha512-wCSnviFFGC4CF9lyeRNMW1p55xVWkMRLPu9iHYbBd8WCJEjduDTo3nh91sVktpbJdUQ6rxNBN6hhpTYMFZuMwg==",
       "dependencies": [
         "@envelop/core",
@@ -2068,16 +1998,16 @@
         "@whatwg-node/promise-helpers",
         "@whatwg-node/server",
         "dset",
-        "graphql@15.10.1",
+        "graphql@16.11.0",
         "lru-cache@10.4.3",
         "tslib"
       ]
     },
-    "graphql@15.10.1": {
-      "integrity": "sha512-BL/Xd/T9baO6NFzoMpiMD7YUZ62R6viR5tp/MULVEnbYJXZA//kRNW7J0j1w/wXArgL0sCxhDfK5dczSKn3+cg=="
-    },
     "graphql@15.3.0": {
       "integrity": "sha512-GTCJtzJmkFLWRfFJuoo9RWWa/FfamUHgiFosxi/X1Ani4AVWbeyBenZTNX6dM+7WSbbFfTo/25eh0LLkwHMw2w=="
+    },
+    "graphql@16.11.0": {
+      "integrity": "sha512-mS1lbMsxgQj6hge1XZ6p7GPhbrtFwUFYi3wRzXAC/FmYnyXMTvvI3td3rjmQ2u8ewXueaSvRPWaEcgVVOT9Jnw=="
     },
     "hasown@2.0.2": {
       "integrity": "sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==",
@@ -2206,9 +2136,6 @@
     },
     "isomorphic.js@0.2.5": {
       "integrity": "sha512-PIeMbHqMt4DnUP3MA/Flc0HElYjMXArsw1qwJZcm9sqR8mq3l8NYizFMty0pWwE/tzIGH3EKK5+jes5mAr85yw=="
-    },
-    "iterall@1.3.0": {
-      "integrity": "sha512-QZ9qOMdF+QLHxy1QIpUHUU1D5pS2CG2P69LF6L6CPjPYA/XMOmKV3PZpawHoAjHNyB0swdVTRxdYT4tbBbxqwg=="
     },
     "js-tokens@4.0.0": {
       "integrity": "sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ=="
@@ -2665,14 +2592,6 @@
     "netmask@2.0.2": {
       "integrity": "sha512-dBpDMdxv9Irdq66304OLfEmQ9tbNRFnFTuZiLo+bD+r332bBmMJ8GBLXklIXXgxd3+v9+KUnZaUR5PJMa75Gsg=="
     },
-    "nexus@1.3.0_graphql@15.10.1": {
-      "integrity": "sha512-w/s19OiNOs0LrtP7pBmD9/FqJHvZLmCipVRt6v1PM8cRUYIbhEswyNKGHVoC4eHZGPSnD+bOf5A3+gnbt0A5/A==",
-      "dependencies": [
-        "graphql@15.10.1",
-        "iterall",
-        "tslib"
-      ]
-    },
     "node-releases@2.0.19": {
       "integrity": "sha512-xxOWJsBKtzAq7DY0J+DTzuz58K8e7sJbdgwkbMWQe8UYB6ekmsQ45q0M/tJDsGaZmbC+l7n57UV8Hl5tHxO9uw=="
     },
@@ -2891,15 +2810,6 @@
       ],
       "scripts": true,
       "bin": true
-    },
-    "pvtsutils@1.3.6": {
-      "integrity": "sha512-PLgQXQ6H2FWCaeRak8vvk1GW462lMxB5s3Jm673N82zI4vqtVUPuZdffdZbPDFRoU8kAhItWFtPCWiPpp4/EDg==",
-      "dependencies": [
-        "tslib"
-      ]
-    },
-    "pvutils@1.1.3": {
-      "integrity": "sha512-pMpnA0qRdFp32b1sJl1wOJNxZLQ2cbQx+k6tjNtZ8CpvVhNqEPRgivZ2WOUev2YMajecdH7ctUPDvEe87nariQ=="
     },
     "react-dom@19.1.0_react@19.1.0": {
       "integrity": "sha512-Xs1hdnE+DyKgeHJeJznQmYMIBG3TKIHJJT95Q58nHLSrElKlGQqDTR2HQ9fx5CN/Gk6Vh/kupBTDLU11/nDk/g==",
@@ -3392,6 +3302,7 @@
       "jsr:@std/testing@^1.0.9",
       "jsr:@std/toml@^1.0.4",
       "npm:@anthropic-ai/claude-code@^1.0.56",
+      "npm:@graphql-tools/schema@^10.0.6",
       "npm:@isograph/babel-plugin@~0.3.1",
       "npm:@isograph/react@~0.3.1",
       "npm:@lexical/mark@0.33",
@@ -3401,17 +3312,17 @@
       "npm:@lexical/utils@0.33",
       "npm:@mdx-js/esbuild@^3.1.0",
       "npm:@neondatabase/serverless@^1.0.1",
+      "npm:@pothos/core@^4.7.3",
       "npm:@types/matter-js@~0.19.8",
       "npm:@types/pg@^8.15.4",
       "npm:@types/react@19",
       "npm:assemblyai@^4.14.0",
       "npm:graphql-relay@~0.10.2",
       "npm:graphql-yoga@^5.14.0",
-      "npm:graphql@^15.3.0",
+      "npm:graphql@^16.11.0",
       "npm:lexical@0.33",
       "npm:marked@16",
       "npm:matter-js@0.20",
-      "npm:nexus@^1.3.0",
       "npm:pg@^8.16.3",
       "npm:posthog-js@^1.256.2",
       "npm:posthog-node@^5.1.1",

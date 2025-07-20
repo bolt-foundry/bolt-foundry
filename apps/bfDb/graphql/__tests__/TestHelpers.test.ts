@@ -4,14 +4,12 @@
  * Test helpers that avoid lint issues
  */
 
-import { makeSchema } from "nexus";
 import { graphql } from "graphql";
 import { createContext } from "../graphqlContext.ts";
-import { getSchemaOptions } from "../schemaConfig.ts";
+import { createPothosSchema } from "../schemaConfigPothosSimple.ts";
 
 export async function buildTestSchema() {
-  const schemaOptions = await getSchemaOptions();
-  return makeSchema(schemaOptions);
+  return await createPothosSchema();
 }
 
 export async function testQuery(options: { query: string }) {

@@ -1,12 +1,12 @@
 #! /usr/bin/env -S bff test
 
 import { assert } from "@std/assert";
-import { buildTestSchema } from "./TestHelpers.test.ts";
+import { createPothosSchema } from "@bfmono/apps/bfDb/graphql/schemaConfigPothosSimple.ts";
 import { printSchema } from "graphql";
 
 Deno.test("basic mutation with returns builder", async () => {
-  // Use production schema configuration
-  const schema = await buildTestSchema();
+  // Use production Pothos schema configuration
+  const schema = await createPothosSchema();
   const sdl = printSchema(schema);
 
   // SDL generated successfully

@@ -25,7 +25,7 @@ type AbstractConstructor = { prototype: any; name: string };
 /**
  * Combined type for class constructors
  */
-type ClassType = Constructor | AbstractConstructor;
+export type ClassType = Constructor | AbstractConstructor;
 
 /**
  * Options for GraphQL interface declaration
@@ -87,13 +87,17 @@ export function GraphQLInterface(options: GraphQLInterfaceOptions = {}) {
 
 /**
  * Checks if a class is marked as a GraphQL interface
+ * Only returns true if the class itself is decorated, not if it inherits from a decorated class
  *
  * @param target The class to check
- * @returns True if the class is marked as a GraphQL interface
+ * @returns True if the class itself is marked as a GraphQL interface
  */
 export function isGraphQLInterface(target: unknown): boolean {
-  // deno-lint-ignore no-explicit-any
-  return !!(target as any)[GRAPHQL_INTERFACE_PROPERTY];
+  // Check if the property exists directly on this class (not inherited)
+  return !!Object.prototype.hasOwnProperty.call(
+    target,
+    GRAPHQL_INTERFACE_PROPERTY,
+  );
 }
 
 /**

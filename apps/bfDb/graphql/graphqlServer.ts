@@ -1,22 +1,19 @@
 #! /usr/bin/env -S deno run --allow-write --allow-read --allow-env
 
-import { makeSchema } from "nexus";
 import { createYoga } from "graphql-yoga";
 
 import { createContext } from "@bfmono/apps/bfDb/graphql/graphqlContext.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
-// Let's create our own loadModelTypes function
-// import { loadModelTypes } from "apps/bfDb/builders/graphql/loadSpecs.ts";
+// Use complete Pothos schema with full builder system integration
+import { createPothosSchema } from "./schemaConfigPothosSimple.ts";
 
-const _logger = getLogger(import.meta);
+const logger = getLogger(import.meta);
 
 // Import our GraphQL builder tools - imported only for types but not used directly yet
 import type { makeGqlSpec as _makeGqlSpec } from "@bfmono/apps/bfDb/builders/graphql/makeGqlSpec.ts";
-import type { gqlSpecToNexus as _gqlSpecToNexus } from "@bfmono/apps/bfDb/builders/graphql/gqlSpecToNexus.ts";
-import { generateGqlTypes } from "@bfmono/infra/bff/friends/genGqlTypes.bff.ts";
-import { getSchemaOptions } from "./schemaConfig.ts";
+import type { gqlSpecToPothos as _gqlSpecToPothos } from "@bfmono/apps/bfDb/builders/graphql/gqlSpecToPothos.ts";
 
-export const schema = await makeSchema(await getSchemaOptions());
+export const schema = await createPothosSchema();
 
 // Create a Yoga instance with a GraphQL schema.
 export const yoga = createYoga({ schema });
@@ -33,5 +30,6 @@ export const graphQLHandler = async (req: Request) => {
 };
 
 if (import.meta.main) {
-  await generateGqlTypes();
+  // Server is ready - no need to generate types as we use Pothos
+  logger.info("GraphQL server ready with Pothos schema");
 }

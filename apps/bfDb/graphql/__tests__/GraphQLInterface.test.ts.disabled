@@ -7,20 +7,18 @@
  */
 
 import { assert, assertThrows } from "@std/assert";
-import { interfaceType, objectType } from "nexus";
-import { makeSchema } from "nexus";
 import { GraphQLNode } from "../GraphQLNode.ts";
 import { TestGraphQLNode } from "./__fixtures__/TestGraphQLNode.ts";
 import {
-  createInterfaceFromClass,
-  loadInterfaces,
-} from "../graphqlInterfaces.ts";
+  createInterfaceFromClassPothos,
+  loadInterfacesPothos,
+} from "../graphqlInterfacesPothos.ts";
 import {
   getGraphQLInterfaceMetadata,
   GraphQLInterface,
   isGraphQLInterface,
 } from "../decorators.ts";
-import { gqlSpecToNexus } from "@bfmono/apps/bfDb/builders/graphql/gqlSpecToNexus.ts";
+import { gqlSpecToPothos } from "@bfmono/apps/bfDb/builders/graphql/gqlSpecToPothos.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 // Get logger for debug output
@@ -88,16 +86,16 @@ Deno.test("GraphQLInterface decorator adds metadata to class", () => {
 
 Deno.test("determineInterface detects parent classes with @GraphQLInterface", async () => {
   // Get interface types
-  const interfaces = loadInterfaces();
+  const interfaces = loadInterfacesPothos();
 
   // Log the interfaces we got from loadInterfaces
   logger.debug(
     `Loaded interfaces: ${interfaces.map((i) => i.name).join(", ")}`,
   );
 
-  // Process TestGraphQLNode with gqlSpecToNexus
+  // Process TestGraphQLNode with gqlSpecToPothos
   const testNodeSpec = TestGraphQLNode.gqlSpec;
-  const testNodeNexusTypes = await gqlSpecToNexus(
+  const testNodePothosTypes = await gqlSpecToPothos(
     testNodeSpec,
     "TestGraphQLNode",
     {
