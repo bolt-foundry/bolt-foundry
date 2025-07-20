@@ -1,5 +1,5 @@
 /**
- * Type definitions for Nexus schema building
+ * Type definitions for GraphQL schema building
  */
 
 import type { GraphQLResolveInfo } from "graphql";
