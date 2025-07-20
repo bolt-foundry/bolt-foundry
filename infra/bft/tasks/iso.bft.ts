@@ -12,7 +12,6 @@ export async function isoCommand(options: Array<string>): Promise<number> {
 
   // Working directories with isograph configs
   const workingDirs = [
-    "apps/boltFoundry",
     "apps/aibff/gui",
     "apps/boltfoundry-com",
   ];

@@ -1,41 +1,30 @@
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
-import { makeSchema } from "nexus";
-import { getSchemaOptions } from "@bfmono/apps/bfDb/graphql/schemaConfig.ts";
+import { printSchema } from "graphql";
+import { createPothosSchema } from "@bfmono/apps/bfDb/graphql/schemaConfigPothosSimple.ts";
 import type { TaskDefinition } from "@bfmono/infra/bft/bft.ts";
 
 const logger = getLogger(import.meta);
 
 export async function generateGqlTypes() {
-  const schemaOptions = await getSchemaOptions();
-  makeSchema({
-    ...schemaOptions,
-    types: { ...schemaOptions.types },
-    contextType: {
-      module: import.meta.resolve("apps/bfDb/graphql/graphqlContext.ts")
-        .replace(
-          "file://",
-          "",
-        ),
-      export: "Context",
-    },
-    formatTypegen: (content, type) => {
-      if (type === "schema") {
-        return `### @generated \n${content}`;
-      } else {
-        return `/* @generated */\n// deno-lint-ignore-file\n${
-          content.replace(/(["'])(\.+\/[^"']+)\1/g, "$1$2.ts$1")
-        }`;
-      }
-    },
-    outputs: {
-      schema: new URL(
-        import.meta.resolve(`apps/bfDb/graphql/__generated__/schema.graphql`),
-      ).pathname,
-      typegen: new URL(
-        import.meta.resolve(`apps/bfDb/graphql/__generated__/_nexustypes.ts`),
-      ).pathname,
-    },
-  });
+  // Create Pothos schema
+  const schema = await createPothosSchema();
+
+  // Generate GraphQL schema SDL
+  const schemaString = `### @generated \n${printSchema(schema)}`;
+
+  // Write schema to file
+  const schemaPath = new URL(
+    import.meta.resolve(`apps/bfDb/graphql/__generated__/schema.graphql`),
+  ).pathname;
+
+  // Ensure directory exists
+  await Deno.mkdir(
+    new URL(import.meta.resolve(`apps/bfDb/graphql/__generated__/`)).pathname,
+    { recursive: true },
+  );
+
+  // Write schema file
+  await Deno.writeTextFile(schemaPath, schemaString);
 }
 
 export async function genGqlTypesCommand(_: Array<string>): Promise<number> {
@@ -51,7 +40,7 @@ export async function genGqlTypesCommand(_: Array<string>): Promise<number> {
 }
 
 export const bftDefinition = {
-  description: "Generate GraphQL schema and nexus types",
+  description: "Generate GraphQL schema using Pothos",
   fn: genGqlTypesCommand,
   aiSafe: true,
 } satisfies TaskDefinition;
