@@ -1,5 +1,6 @@
 #!/usr/bin/env -S deno run --allow-env --allow-read --allow-write --allow-net --watch
 
+import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 import { parseArgs } from "@std/cli";
 import { getLogger } from "@bolt-foundry/logger";
 import { renderToReadableStream } from "react-dom/server";
@@ -167,6 +168,9 @@ const handler = async (request: Request): Promise<Response> => {
       mode: isDev ? "development" : "production",
       port: port,
       currentPath: url.pathname,
+      GOOGLE_OAUTH_CLIENT_ID: getConfigurationVariable(
+        "GOOGLE_OAUTH_CLIENT_ID",
+      ),
     };
 
     // Create server-side Isograph environment
