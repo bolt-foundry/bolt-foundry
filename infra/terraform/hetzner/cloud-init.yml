@@ -7,6 +7,10 @@ runcmd:
   - systemctl enable docker
   - systemctl start docker
   - usermod -aG docker root
+  # Configure floating IP
+  - ip addr add ${floating_ip}/32 dev eth0
+  - echo "ip addr add ${floating_ip}/32 dev eth0" >> /etc/rc.local
+  - chmod +x /etc/rc.local
   # Mount database volume
   - if ! blkid /dev/sdb; then mkfs.ext4 /dev/sdb; fi # Only format if not already formatted
   - mkdir -p /mnt/database
