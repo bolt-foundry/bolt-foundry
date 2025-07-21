@@ -44,3 +44,97 @@ jobs:
         env:
           KAMAL_REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
         working-directory: ./
+
+      - name: Validate deployment health
+        run: |
+          echo "🔍 Validating deployment health..."
+          
+          # Wait for deployment to stabilize
+          echo "⏳ Waiting for deployment to stabilize..."
+          sleep 30
+          
+          # Health check with retries
+          echo "🩺 Testing health endpoint..."
+          for i in {1..60}; do
+            if curl -f -s https://next.boltfoundry.com/health > /dev/null 2>&1; then
+              echo "✅ Health endpoint responded successfully"
+              break
+            fi
+            if [ $i -eq 60 ]; then
+              echo "❌ Health endpoint failed after 60 attempts (10 minutes)"
+              echo "🔄 Attempting rollback..."
+              kamal rollback || echo "⚠️ Rollback command failed"
+              exit 1
+            fi
+            echo "Health check attempt $i/60 failed, retrying in 10s..."
+            sleep 10
+          done
+          
+          # Test main page endpoint
+          echo "🏠 Testing main page endpoint..."
+          for i in {1..10}; do
+            response_code=$(curl -s -o /dev/null -w "%{http_code}" https://next.boltfoundry.com/)
+            if [ "$response_code" = "200" ]; then
+              echo "✅ Main page responded with 200 OK"
+              break
+            fi
+            if [ $i -eq 10 ]; then
+              echo "❌ Main page failed with response code: $response_code"
+              echo "🔄 Attempting rollback..."
+              kamal rollback || echo "⚠️ Rollback command failed"
+              exit 1
+            fi
+            echo "Main page attempt $i/10 failed (response: $response_code), retrying in 10s..."
+            sleep 10
+          done
+          
+          # Enhanced health check - get detailed health info
+          echo "🔬 Performing detailed health check..."
+          health_response=$(curl -s https://next.boltfoundry.com/health)
+          if echo "$health_response" | grep -q '"status"'; then
+            echo "✅ Detailed health check passed"
+            echo "Health response: $health_response"
+          else
+            echo "❌ Detailed health check failed - invalid response format"
+            echo "Response: $health_response"
+            echo "🔄 Attempting rollback..."
+            kamal rollback || echo "⚠️ Rollback command failed"
+            exit 1
+          fi
+          
+          echo "🎉 Deployment validation successful!"
+
+      - name: Monitor post-deployment stability
+        run: |
+          echo "👀 Monitoring deployment stability for 2 minutes..."
+          
+          # Monitor for 2 minutes to catch early failures
+          for i in {1..12}; do
+            response_code=$(curl -s -o /dev/null -w "%{http_code}" https://next.boltfoundry.com/health)
+            if [ "$response_code" != "200" ]; then
+              echo "❌ Stability check failed with response code: $response_code at check $i/12"
+              echo "🔄 Attempting rollback..."
+              kamal rollback || echo "⚠️ Rollback command failed"
+              exit 1
+            fi
+            echo "✅ Stability check $i/12 passed (response: $response_code)"
+            sleep 10
+          done
+          
+          echo "🎯 Deployment is stable and healthy!"
+
+      - name: Deployment success notification
+        if: success()
+        run: |
+          echo "🚀 Deployment completed successfully!"
+          echo "✅ Service URL: https://next.boltfoundry.com"
+          echo "✅ Health Check: https://next.boltfoundry.com/health"
+          echo "✅ Deployment validated and stable"
+
+      - name: Deployment failure notification  
+        if: failure()
+        run: |
+          echo "💥 Deployment failed!"
+          echo "❌ Service may be unresponsive at: https://next.boltfoundry.com"
+          echo "🔍 Check logs above for specific failure reason"
+          echo "⚠️ Manual intervention may be required"
