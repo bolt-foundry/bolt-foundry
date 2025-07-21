@@ -76,8 +76,8 @@ resource "hcloud_ssh_key" "deploy" {
 resource "hcloud_server" "web" {
   name        = "boltfoundry-com"
   image       = "ubuntu-22.04"
-  server_type = "cx11"
-  location    = "ash"   # Ashburn
+  server_type = "cpx11"
+  location    = "ash"
   ssh_keys    = [hcloud_ssh_key.deploy.id]
   
   user_data = file("${path.module}/cloud-init.yml")
