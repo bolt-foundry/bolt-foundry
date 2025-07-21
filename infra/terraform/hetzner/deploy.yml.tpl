@@ -6,6 +6,10 @@ servers:
   web:
     - ${floating_ip}
 
+# Builder configuration for Kamal 2.x
+builder:
+  arch: amd64
+
 # Kamal 2.x proxy configuration with SSL and healthcheck
 proxy:
   ssl: true
