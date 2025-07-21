@@ -10,6 +10,7 @@ servers:
 builder:
   arch:
     - amd64
+  dockerfile: apps/boltfoundry-com/Dockerfile
 
 # Kamal 2.x proxy configuration with SSL and healthcheck
 proxy:
