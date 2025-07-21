@@ -33,7 +33,8 @@ jobs:
             -var="cloudflare_api_token=${{ secrets.CLOUDFLARE_API_TOKEN }}" \
             -var="cloudflare_zone_id=${{ secrets.CLOUDFLARE_ZONE_ID }}" \
             -var="github_username=${{ github.repository_owner }}" \
-            -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}"
+            -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}" \
+            -var="hyperdx_api_key=${{ secrets.HYPERDX_API_KEY }}"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -46,7 +47,8 @@ jobs:
             -var="cloudflare_api_token=${{ secrets.CLOUDFLARE_API_TOKEN }}" \
             -var="cloudflare_zone_id=${{ secrets.CLOUDFLARE_ZONE_ID }}" \
             -var="github_username=${{ github.repository_owner }}" \
-            -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}"
+            -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}" \
+            -var="hyperdx_api_key=${{ secrets.HYPERDX_API_KEY }}"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
