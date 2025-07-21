@@ -351,21 +351,21 @@ jobs:
       - name: Test container startup
         run: |
           echo "Testing container startup and health..."
-          
+
           # Start container in background
           docker run -d --name boltfoundry-com-test -p 8080:8000 boltfoundry-com-test
-          
+
           # Wait for container to start
           echo "Waiting for container to start..."
           sleep 10
-          
+
           # Check if container is still running
           if ! docker ps | grep -q boltfoundry-com-test; then
             echo "❌ Container failed to start or crashed"
             docker logs boltfoundry-com-test
             exit 1
           fi
-          
+
           # Test health endpoint
           echo "Testing health endpoint..."
           for i in {1..30}; do
@@ -381,7 +381,7 @@ jobs:
             echo "Health check attempt $i failed, retrying..."
             sleep 2
           done
-          
+
           # Test main endpoint
           echo "Testing main endpoint..."
           if curl -f http://localhost:8080/ >/dev/null 2>&1; then
@@ -391,7 +391,7 @@ jobs:
             docker logs boltfoundry-com-test
             exit 1
           fi
-          
+
           echo "✅ Docker container validation successful"
 
       - name: Cleanup test container
