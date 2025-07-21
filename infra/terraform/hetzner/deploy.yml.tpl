@@ -1,6 +1,6 @@
 service: boltfoundry-com
 
-image: boltfoundry-com
+image: ghcr.io/${github_username}/boltfoundry-com
 
 servers:
   web:
