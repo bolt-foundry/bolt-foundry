@@ -15,10 +15,11 @@ terraform {
     bucket                      = "boltfoundry-terraform-state"
     key                         = "boltfoundry-com/terraform.tfstate"
     region                      = "us-east-1"  # Required but ignored by Hetzner
-    # endpoint configured via TF_CLI_INIT_BACKEND_CONFIG_ENDPOINT env var
+    # endpoint configured via backends.s3 parameter in terraform init
     skip_credentials_validation = true
     skip_metadata_api_check     = true
     skip_region_validation      = true
+    skip_requesting_account_id  = true
     force_path_style           = true
   }
 }
