@@ -1,5 +1,6 @@
 #!/usr/bin/env -S deno run --allow-env --allow-read --allow-write --allow-net --watch
 
+// Test deployment trigger - Docker fixes complete!
 import { parseArgs } from "@std/cli";
 import { getLogger } from "@bolt-foundry/logger";
 import { renderToReadableStream } from "react-dom/server";
