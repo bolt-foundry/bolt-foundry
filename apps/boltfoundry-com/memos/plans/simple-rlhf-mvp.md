@@ -2,9 +2,9 @@
 
 _Minimal viable implementation for human feedback on AI evaluations_
 
-**Date**: 2025-07-20\
-**Status**: Planning\
-**Target**: 1-2 days to working MVP
+**Date**: 2025-07-21\
+**Status**: Milestone 1 Complete - Backend Demo Data ✅\
+**Next**: Milestone 2 - Frontend Form UI
 
 ## Executive Summary
 
@@ -31,20 +31,38 @@ feedback form that demonstrates the complete workflow with hardcoded test data.
 
 ## Current Implementation Status
 
-### ✅ **AVAILABLE FOUNDATIONS**
+### ✅ **BACKEND INFRASTRUCTURE (PRODUCTION READY)**
 
-- **BfSampleFeedback node**: Complete with score validation and explanation
-  fields
+- **Complete RLHF data model**: All 5 node types (BfDeck, BfGrader, BfSample,
+  BfGraderResult, BfSampleFeedback) fully implemented and tested
+- **Working GraphQL mutations**: `createDeck` and `submitSample` with
+  comprehensive test coverage
+- **Authentication system**: Google OAuth integration with automatic
+  organization creation
+- **Score validation**: -3 to +3 range validation in both BfGraderResult and
+  BfSampleFeedback
+- **Organization scoping**: All RLHF entities properly scoped with multi-tenant
+  support
+- **Comprehensive testing**: 12/12 tests passing including E2E and integration
+  tests
+- **✅ DEMO DATA AUTO-CREATION**: BfOrganization.afterCreate() hook creates demo
+  deck with filesystem integration
+
+### ✅ **FRONTEND INFRASTRUCTURE**
+
+- **Authentication-protected route**: `/rlhf` route working with login flow
 - **BfDs components**: BfDsForm, BfDsTextArea, BfDsButton, BfDsRadio available
-- **RlhfInterface component**: Located at
+- **Isograph integration**: GraphQL framework properly configured
+- **RlhfInterface component**: Basic shell exists at
   `/apps/boltfoundry-com/components/RlhfInterface.tsx`
-- **Sample data types**: BfSample, BfGraderResult types available
-- **Isograph integration**: Working pattern for GraphQL data fetching
 
 ### ❌ **MISSING COMPONENTS**
 
-- **submitFeedback mutation**: BfSampleFeedback has no GraphQL mutation
-- **Feedback form UI**: No form components built yet
+- **submitFeedback GraphQL mutation**: Needs to be exposed in BfSampleFeedback
+  schema
+- **Feedback form UI**: RlhfInterface currently contains only placeholder text
+- **Data integration**: Frontend needs to connect to backend via Isograph
+  queries
 
 ### ✅ **DEMO DATA STRATEGY**
 
@@ -72,54 +90,77 @@ creation**:
 This approach gives new users immediate, realistic content to explore the RLHF
 workflow.
 
-## Implementation Plan
+## Implementation Plan - Milestone-Based Approach
 
-### Step 0: Auto-Demo Creation
+### ✅ Milestone 1: Backend Demo Data (COMPLETED)
 
-**Implement BfOrganization.afterCreate() lifecycle hook**:
+**Implemented BfOrganization.afterCreate() lifecycle hook**:
 
-- Read customer-support-demo.deck.md markdown file
-- Create demo deck with auto-generated graders
-- Create 4 realistic customer support conversation samples
-- Generate AI evaluations for all samples
-- Add human feedback to first sample as example
+- ✅ BfOrganization.afterCreate() calls addDemoDeck() method
+- ✅ BfDeck.readPropsFromFile() loads deck content from filesystem
+- ✅ Integration with bolt-foundry package for deck file reading
+- ✅ Demo deck creation uses existing customer-support-demo.deck.md content
+- ✅ Schema changes: BfDeck systemPrompt → content field for better semantics
+- ✅ BfSample name field added for better identification
+- ✅ All tests updated and passing (12/12)
 
-**Benefits**:
+**Benefits Achieved**:
 
-- Every new organization gets immediate demo content
-- No manual setup required
-- Realistic workflow demonstration
-- Users can immediately test feedback interface
+- ✅ Every new organization gets immediate demo content
+- ✅ No manual setup required
+- ✅ Realistic workflow demonstration ready for frontend
+- ✅ Backend infrastructure complete for frontend integration
 
-### Step 1: Add submitFeedback Mutation
+### Milestone 2: Frontend Form UI (NEXT)
 
-```typescript
-// In apps/bfDb/nodeTypes/rlhf/BfSampleFeedback.ts
-static override gqlSpec = this.defineGqlNode((gql) =>
-  gql
-    .id()
-    .number("score")
-    .string("explanation")
-    .string("sampleId")
-    .string("graderId")
-    .mutation("submitFeedback", {
-      args: (a) => a
-        .nonNull.string("sampleId")
-        .nonNull.string("graderId")
-        .nonNull.number("score")
-        .nonNull.string("explanation"),
-      returns: (r) => r.nonNull.string("feedbackId").nonNull.boolean("success"),
-      resolve: async (_src, args, ctx) => {
-        // Create BfSampleFeedback record
-      }
-    })
-);
-```
+**Build feedback form interface in RlhfInterface.tsx**:
 
-### Step 2: Create Isograph Feedback Components
+- Implement Isograph GraphQL query to load demo deck data
+- Display sample conversation in readable format
+- Show AI evaluation with score, explanation, and reasoning
+- Create feedback form with score radio buttons (-3 to +3) and explanation
+  textarea
+- Add form validation and disabled states
 
-Following the Isograph component pattern (see
-[Pokemon vite-demo](https://github.com/isographlabs/isograph/tree/main/demos/vite-demo)):
+**Success Criteria**:
+
+- Form renders with real demo data from GraphQL
+- Score selection works with proper validation
+- Explanation textarea has minimum character validation
+- Form shows loading and error states appropriately
+
+### Milestone 3: GraphQL Integration
+
+- Add `submitFeedback` mutation to BfSampleFeedback GraphQL schema
+- Implement mutation resolver with proper organization scoping
+- Connect frontend form to mutation with error handling
+- Add success confirmation and form reset after submission
+
+**Success Criteria**:
+
+- submitFeedback mutation works via GraphQL
+- Frontend successfully submits feedback and shows confirmation
+- Submitted data persists correctly in database
+- Error scenarios are handled gracefully
+
+### Milestone 4: End-to-End Validation
+
+**Test complete workflow and polish**:
+
+- Verify complete flow: login → view demo data → submit feedback → verify
+  persistence
+- Add any missing error handling or loading states
+- Ensure mobile responsive design
+- Run full test suite and fix any issues
+
+**Success Criteria**:
+
+- Complete RLHF workflow functions end-to-end
+- All existing tests continue to pass
+- New functionality has appropriate test coverage
+- Interface works on mobile devices
+
+## File Structure
 
 ```typescript
 // Query.RlhfInterface.ts - Main RLHF interface with data fetching
