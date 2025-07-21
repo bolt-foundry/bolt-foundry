@@ -4,13 +4,18 @@ import { iso } from "@iso-bfc";
 export type RouteEntrypoint = {
   Body: React.FC | null | undefined;
   title: string;
+  status?: number;
+  headers?: Record<string, string>;
 };
 
 iso(`entrypoint Query.EntrypointHome`)
+iso(`entrypoint Query.EntrypointLogin`)
 iso(`entrypoint Query.EntrypointRlhf`)
 
 import entrypointHome from "@iso-bfc/Query/EntrypointHome/entrypoint.ts"
+import entrypointLogin from "@iso-bfc/Query/EntrypointLogin/entrypoint.ts"
 import entrypointRlhf from "@iso-bfc/Query/EntrypointRlhf/entrypoint.ts"
 
 export {entrypointHome};
+export {entrypointLogin};
 export {entrypointRlhf};
