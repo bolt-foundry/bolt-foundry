@@ -21,7 +21,7 @@ jobs:
         uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Init
-        run: terraform init -backend-config="endpoint=${{ secrets.S3_ENDPOINT }}"
+        run: terraform init -backend-config="endpoints.s3=${{ secrets.S3_ENDPOINT }}"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
