@@ -288,6 +288,120 @@ jobs:
           retention-days: 1
           if-no-files-found: ignore
 
+  # Docker build validation for boltfoundry-com
+  docker-build-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [build]
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+    # Only run when boltfoundry-com app or shared packages change
+    if: contains(github.event.pull_request.changed_files, 'apps/boltfoundry-com/') || contains(github.event.pull_request.changed_files, 'packages/') || github.event_name != 'pull_request'
+
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+
+      - uses: DeterminateSystems/nix-installer-action@main
+        with: { determinate: true }
+
+      - uses: DeterminateSystems/flakehub-cache-action@main
+
+      - name: Restore Deno / vendored / node cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            vendor
+            node_modules
+            /home/runner/.cache/deno
+          key: deno-${{ runner.os }}-${{ hashFiles('**/deno.json*', '**/package.json', '**/deno.lock') }}
+          restore-keys: |
+            deno-${{ runner.os }}-
+
+      # Download build artifacts from build job
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts-${{ github.run_number }}
+          path: .
+
+      - name: Put repo tools on PATH
+        run: echo "$GITHUB_WORKSPACE/infra/bin" >> "$GITHUB_PATH"
+
+      - name: Compile boltfoundry-com binary
+        run: |
+          nix develop .#github-actions --accept-flake-config --command bash -euc "
+            export DENO_DIR=\"/home/runner/.cache/deno\"
+            export OP_SERVICE_ACCOUNT_TOKEN=\"$OP_SERVICE_ACCOUNT_TOKEN\"
+            export PATH=\"\$PATH:\$PWD/infra/bin\"
+            echo \"Compiling boltfoundry-com binary...\"
+            bft compile boltfoundry-com
+            echo \"Binary compilation completed\"
+            ls -la build/ || echo \"No build/ directory found\"
+            ls -la apps/boltfoundry-com/build/ || echo \"No apps/boltfoundry-com/build/ directory found\"
+          "
+
+      - name: Test Docker build
+        run: |
+          echo "Testing Docker build for boltfoundry-com..."
+          docker build -t boltfoundry-com-test apps/boltfoundry-com/
+          echo "Docker build successful"
+
+      - name: Test container startup
+        run: |
+          echo "Testing container startup and health..."
+          
+          # Start container in background
+          docker run -d --name boltfoundry-com-test -p 8080:8000 boltfoundry-com-test
+          
+          # Wait for container to start
+          echo "Waiting for container to start..."
+          sleep 10
+          
+          # Check if container is still running
+          if ! docker ps | grep -q boltfoundry-com-test; then
+            echo "❌ Container failed to start or crashed"
+            docker logs boltfoundry-com-test
+            exit 1
+          fi
+          
+          # Test health endpoint
+          echo "Testing health endpoint..."
+          for i in {1..30}; do
+            if curl -f http://localhost:8080/health 2>/dev/null; then
+              echo "✅ Health check passed"
+              break
+            fi
+            if [ $i -eq 30 ]; then
+              echo "❌ Health check failed after 30 attempts"
+              docker logs boltfoundry-com-test
+              exit 1
+            fi
+            echo "Health check attempt $i failed, retrying..."
+            sleep 2
+          done
+          
+          # Test main endpoint
+          echo "Testing main endpoint..."
+          if curl -f http://localhost:8080/ >/dev/null 2>&1; then
+            echo "✅ Main endpoint responded successfully"
+          else
+            echo "❌ Main endpoint failed"
+            docker logs boltfoundry-com-test
+            exit 1
+          fi
+          
+          echo "✅ Docker container validation successful"
+
+      - name: Cleanup test container
+        if: always()
+        run: |
+          docker stop boltfoundry-com-test >/dev/null 2>&1 || true
+          docker rm boltfoundry-com-test >/dev/null 2>&1 || true
+
   e2e:
     runs-on: ubuntu-latest
     timeout-minutes: 15
