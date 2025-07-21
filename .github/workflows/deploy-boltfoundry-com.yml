@@ -60,7 +60,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: Install Kamal
-        run: gem install kamal --version 2.7.0 --no-document
+        run: sudo gem install kamal --version 2.7.0 --no-document
 
       - name: Deploy with Kamal
         run: |
