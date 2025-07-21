@@ -298,8 +298,6 @@ jobs:
       id-token: write
     env:
       OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
-    # Only run when boltfoundry-com app or shared packages change
-    if: contains(github.event.pull_request.changed_files, 'apps/boltfoundry-com/') || contains(github.event.pull_request.changed_files, 'packages/') || github.event_name != 'pull_request'
 
     steps:
       - uses: actions/checkout@v4
