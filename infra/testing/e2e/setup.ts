@@ -6,6 +6,13 @@ import { join } from "@std/path";
 import {
   addRecordingThrobber,
   removeRecordingThrobber,
+  type ScreenshotOptions,
+  smoothClick,
+  smoothClickText,
+  smoothFocus,
+  smoothScroll,
+  smoothType,
+  smoothWait,
 } from "../video-recording/smooth-ui.ts";
 import {
   startScreencastRecording,
@@ -107,6 +114,27 @@ export interface E2ETestContext {
     options?: { fullPage?: boolean; showAnnotations?: boolean },
   ) => Promise<string>;
   navigateTo: (path: string) => Promise<void>;
+  smoothClick: (
+    selector: string,
+    screenshots?: ScreenshotOptions,
+  ) => Promise<void>;
+  smoothType: (
+    selector: string,
+    text: string,
+    options?: {
+      charDelay?: number;
+      clickFirst?: boolean;
+      clearFirst?: boolean;
+    },
+    screenshots?: ScreenshotOptions,
+  ) => Promise<void>;
+  smoothClickText: (
+    buttonText: string,
+    screenshots?: ScreenshotOptions,
+  ) => Promise<void>;
+  smoothFocus: (selector: string) => Promise<void>;
+  smoothScroll: (direction: "up" | "down", amount?: number) => Promise<void>;
+  smoothWait: (duration: number) => Promise<void>;
   startVideoRecording: (
     name: string,
     options?: VideoConversionOptions,
@@ -382,6 +410,52 @@ export async function setupE2ETest(options: {
             error,
           );
         }
+      },
+      smoothClick: async (
+        selector: string,
+        screenshots?: ScreenshotOptions,
+      ): Promise<void> => {
+        await smoothClick({ page, takeScreenshot }, selector, screenshots);
+      },
+      smoothType: async (
+        selector: string,
+        text: string,
+        options?: {
+          charDelay?: number;
+          clickFirst?: boolean;
+          clearFirst?: boolean;
+        },
+        screenshots?: ScreenshotOptions,
+      ): Promise<void> => {
+        await smoothType(
+          { page, takeScreenshot },
+          selector,
+          text,
+          options,
+          screenshots,
+        );
+      },
+      smoothClickText: async (
+        buttonText: string,
+        screenshots?: ScreenshotOptions,
+      ): Promise<void> => {
+        await smoothClickText(
+          { page, takeScreenshot },
+          buttonText,
+          screenshots,
+        );
+      },
+      smoothFocus: async (selector: string): Promise<void> => {
+        await smoothFocus(page, selector);
+      },
+      smoothScroll: async (
+        direction: "up" | "down",
+        amount?: number,
+      ): Promise<void> => {
+        await smoothScroll(page, direction, amount);
+      },
+      smoothWait: async (duration: number): Promise<void> => {
+        await smoothWait(duration);
       },
       startVideoRecording: async (
         name: string,
