@@ -64,7 +64,12 @@ jobs:
 
       - name: Deploy with Kamal
         run: |
-          export KAMAL_REGISTRY_PASSWORD="${KAMAL_REGISTRY_PASSWORD}"
+          # Create .kamal directory and secrets file for Kamal 2.x
+          mkdir -p .kamal
+          echo "GITHUB_TOKEN=${KAMAL_REGISTRY_PASSWORD}" > .kamal/secrets
+          chmod 600 .kamal/secrets
+          
+          # Deploy with Kamal 2.x
           kamal deploy
         env:
           KAMAL_REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
