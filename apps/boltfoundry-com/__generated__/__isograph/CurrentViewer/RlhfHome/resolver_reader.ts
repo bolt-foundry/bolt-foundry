@@ -1,8 +1,8 @@
 import type {ComponentReaderArtifact, ExtractSecondParam, ReaderAst } from '@isograph/react';
-import { Query__RlhfInterface__param } from './param_type.ts';
-import { RlhfInterface as resolver } from '../../../../components/RlhfInterface.tsx';
+import { CurrentViewer__RlhfHome__param } from './param_type.ts';
+import { RlhfHome as resolver } from '../../../../components/RlhfHome.tsx';
 
-const readerAst: ReaderAst<Query__RlhfInterface__param> = [
+const readerAst: ReaderAst<CurrentViewer__RlhfHome__param> = [
   {
     kind: "Scalar",
     fieldName: "__typename",
@@ -13,11 +13,11 @@ const readerAst: ReaderAst<Query__RlhfInterface__param> = [
 ];
 
 const artifact: ComponentReaderArtifact<
-  Query__RlhfInterface__param,
+  CurrentViewer__RlhfHome__param,
   ExtractSecondParam<typeof resolver>
 > = {
   kind: "ComponentReaderArtifact",
-  fieldName: "Query.RlhfInterface",
+  fieldName: "CurrentViewer.RlhfHome",
   resolver,
   readerAst,
   hasUpdatable: false,

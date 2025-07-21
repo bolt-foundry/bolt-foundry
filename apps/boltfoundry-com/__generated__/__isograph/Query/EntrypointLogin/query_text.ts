@@ -1,4 +1,4 @@
-export default 'query EntrypointRlhf  {\
+export default 'query EntrypointLogin  {\
   id,\
   currentViewer {\
     __typename,\

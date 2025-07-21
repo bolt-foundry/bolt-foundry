@@ -8,8 +8,10 @@ import App from "./src/App.tsx";
 import { appRoutes, isographAppRoutes } from "./routes.ts";
 import { createApiRoutes } from "./apiRoutes.ts";
 import { getIsographEnvironment } from "./server/isographEnvironment.ts";
+import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 
 const logger = getLogger(import.meta);
+const requestLogger = getLogger("boltfoundry-com/requests");
 
 // Types for Vite manifest
 interface ViteManifestEntry {
@@ -113,19 +115,183 @@ const assetPaths = await loadAssetPaths(isDev);
 // Create API routes
 const apiRoutes = createApiRoutes({ isDev, port });
 
+const logResponse = (
+  requestId: string,
+  response: Response,
+  startTime: number,
+  method: string,
+  pathname: string,
+  search: string,
+  info?: string,
+) => {
+  const duration = Date.now() - startTime;
+  const statusColor = response.status >= 500
+    ? "🔴"
+    : response.status >= 400
+    ? "🟡"
+    : "🟢";
+  const sizeInfo = response.headers.get("content-length")
+    ? ` | ${response.headers.get("content-length")} bytes`
+    : "";
+  const extraInfo = info ? ` | ${info}` : "";
+
+  requestLogger.info(
+    `[${requestId}] ← ${statusColor} ${response.status} ${method} ${pathname}${search} | ${duration}ms${sizeInfo}${extraInfo}`,
+  );
+};
+
 const handler = async (request: Request): Promise<Response> => {
+  const startTime = Date.now();
   const url = new URL(request.url);
+  const method = request.method;
+  const userAgent = request.headers.get("user-agent") || "unknown";
+  const referer = request.headers.get("referer") || "-";
+  const requestId = crypto.randomUUID();
 
-  // Try to match against API routes
-  for (const route of apiRoutes) {
-    if (route.pattern.test(url)) {
-      return await route.handler(request);
+  requestLogger.info(
+    `[${requestId}] → ${method} ${url.pathname}${url.search} | UA: ${userAgent} | Referer: ${referer}`,
+  );
+
+  try {
+    // Try to match against API routes
+    for (const route of apiRoutes) {
+      if (route.pattern.test(url)) {
+        const response = await route.handler(request);
+        logResponse(
+          requestId,
+          response,
+          startTime,
+          method,
+          url.pathname,
+          url.search,
+          "API",
+        );
+        return response;
+      }
     }
-  }
 
-  // Check if this should be handled by React routing
-  if (shouldHandleWithReact(url.pathname)) {
-    // In dev mode, let Vite handle all UI routes
+    // Check if this should be handled by React routing
+    if (shouldHandleWithReact(url.pathname)) {
+      // In dev mode, let Vite handle all UI routes
+      if (isDev && vitePort) {
+        try {
+          const viteUrl =
+            `http://localhost:${vitePort}${url.pathname}${url.search}`;
+          const viteResponse = await fetch(viteUrl, {
+            method: request.method,
+            headers: request.headers,
+            body: request.body,
+          });
+
+          // Create new headers to avoid immutable headers issue
+          const headers = new Headers();
+          viteResponse.headers.forEach((value, key) => {
+            // Skip hop-by-hop headers
+            if (
+              !["connection", "keep-alive", "transfer-encoding"].includes(
+                key.toLowerCase(),
+              )
+            ) {
+              headers.set(key, value);
+            }
+          });
+
+          const response = new Response(viteResponse.body, {
+            status: viteResponse.status,
+            statusText: viteResponse.statusText,
+            headers,
+          });
+          logResponse(
+            requestId,
+            response,
+            startTime,
+            method,
+            url.pathname,
+            url.search,
+            "Vite Proxy",
+          );
+          return response;
+        } catch (error) {
+          logger.error(`[${requestId}] Error proxying to Vite:`, error);
+          const errorResponse = new Response(
+            "Error proxying to Vite dev server",
+            {
+              status: 502,
+            },
+          );
+          logResponse(
+            requestId,
+            errorResponse,
+            startTime,
+            method,
+            url.pathname,
+            url.search,
+            "Vite Proxy Error",
+          );
+          return errorResponse;
+        }
+      }
+
+      // Production mode: Handle with React SSR
+      const environment = {
+        mode: isDev ? "development" : "production",
+        port: port,
+        currentPath: url.pathname,
+        GOOGLE_OAUTH_CLIENT_ID: getConfigurationVariable(
+          "GOOGLE_OAUTH_CLIENT_ID",
+        ),
+      };
+
+      // Create server-side Isograph environment
+      const isographServerEnvironment = getIsographEnvironment(request);
+
+      const element = (
+        <ServerRenderedPage environment={environment} assetPaths={assetPaths}>
+          <App
+            initialPath={url.pathname}
+            IS_SERVER_RENDERING
+            isographServerEnvironment={isographServerEnvironment}
+            mode={environment.mode}
+            port={environment.port}
+            currentPath={environment.currentPath}
+          />
+        </ServerRenderedPage>
+      );
+
+      try {
+        const stream = await renderToReadableStream(element);
+        const response = new Response(stream, {
+          headers: { "content-type": "text/html; charset=utf-8" },
+        });
+        logResponse(
+          requestId,
+          response,
+          startTime,
+          method,
+          url.pathname,
+          url.search,
+          "React SSR",
+        );
+        return response;
+      } catch (error) {
+        logger.error(`[${requestId}] Error rendering React app:`, error);
+        const errorResponse = new Response("Internal Server Error", {
+          status: 500,
+        });
+        logResponse(
+          requestId,
+          errorResponse,
+          startTime,
+          method,
+          url.pathname,
+          url.search,
+          "React SSR Error",
+        );
+        return errorResponse;
+      }
+    }
+
+    // In dev mode, proxy to Vite for frontend assets (but not React routes)
     if (isDev && vitePort) {
       try {
         const viteUrl =
@@ -149,148 +315,158 @@ const handler = async (request: Request): Promise<Response> => {
           }
         });
 
-        return new Response(viteResponse.body, {
+        const response = new Response(viteResponse.body, {
           status: viteResponse.status,
           statusText: viteResponse.statusText,
           headers,
         });
+        logResponse(
+          requestId,
+          response,
+          startTime,
+          method,
+          url.pathname,
+          url.search,
+          "Vite Asset Proxy",
+        );
+        return response;
       } catch (error) {
-        logger.error("Error proxying to Vite:", error);
-        return new Response("Error proxying to Vite dev server", {
-          status: 502,
-        });
+        logger.error(`[${requestId}] Error proxying to Vite:`, error);
+        const errorResponse = new Response(
+          "Error proxying to Vite dev server",
+          {
+            status: 502,
+          },
+        );
+        logResponse(
+          requestId,
+          errorResponse,
+          startTime,
+          method,
+          url.pathname,
+          url.search,
+          "Vite Asset Proxy Error",
+        );
+        return errorResponse;
       }
     }
 
-    // Production mode: Handle with React SSR
-    const environment = {
-      mode: isDev ? "development" : "production",
-      port: port,
-      currentPath: url.pathname,
-    };
+    // Handle static assets first
+    if (url.pathname.startsWith("/static/")) {
+      const filePath = url.pathname.replace("/static/", "");
 
-    // Create server-side Isograph environment
-    const isographServerEnvironment = getIsographEnvironment(request);
-
-    const element = (
-      <ServerRenderedPage environment={environment} assetPaths={assetPaths}>
-        <App
-          initialPath={url.pathname}
-          IS_SERVER_RENDERING
-          isographServerEnvironment={isographServerEnvironment}
-          mode={environment.mode}
-          port={environment.port}
-          currentPath={environment.currentPath}
-        />
-      </ServerRenderedPage>
-    );
-
-    try {
-      const stream = await renderToReadableStream(element);
-      return new Response(stream, {
-        headers: { "content-type": "text/html; charset=utf-8" },
-      });
-    } catch (error) {
-      logger.error("Error rendering React app:", error);
-      return new Response("Internal Server Error", { status: 500 });
-    }
-  }
-
-  // In dev mode, proxy to Vite for frontend assets (but not React routes)
-  if (isDev && vitePort) {
-    try {
-      const viteUrl =
-        `http://localhost:${vitePort}${url.pathname}${url.search}`;
-      const viteResponse = await fetch(viteUrl, {
-        method: request.method,
-        headers: request.headers,
-        body: request.body,
-      });
-
-      // Create new headers to avoid immutable headers issue
-      const headers = new Headers();
-      viteResponse.headers.forEach((value, key) => {
-        // Skip hop-by-hop headers
-        if (
-          !["connection", "keep-alive", "transfer-encoding"].includes(
-            key.toLowerCase(),
-          )
-        ) {
-          headers.set(key, value);
-        }
-      });
-
-      return new Response(viteResponse.body, {
-        status: viteResponse.status,
-        statusText: viteResponse.statusText,
-        headers,
-      });
-    } catch (error) {
-      logger.error("Error proxying to Vite:", error);
-      return new Response("Error proxying to Vite dev server", {
-        status: 502,
-      });
-    }
-  }
-
-  // Handle static assets first
-  if (url.pathname.startsWith("/static/")) {
-    const filePath = url.pathname.replace("/static/", "");
-
-    try {
-      const assetUrl = import.meta.resolve(`./static/${filePath}`);
-
-      // Convert file:// URL to path for Deno.readFile
-      const assetPath = new URL(assetUrl).pathname;
-      const fileData = await Deno.readFile(assetPath);
-
-      // Determine content type
-      let contentType = "application/octet-stream";
-      if (filePath.endsWith(".html")) contentType = "text/html";
-      else if (filePath.endsWith(".js")) {
-        contentType = "application/javascript";
-      } else if (filePath.endsWith(".css")) contentType = "text/css";
-      else if (filePath.endsWith(".json")) contentType = "application/json";
-      else if (filePath.endsWith(".svg")) contentType = "image/svg+xml";
-      else if (filePath.endsWith(".png")) contentType = "image/png";
-      else if (filePath.endsWith(".ico")) contentType = "image/x-icon";
-
-      return new Response(fileData, {
-        headers: {
-          "Content-Type": contentType,
-          "Content-Length": fileData.length.toString(),
-        },
-      });
-    } catch {
-      logger.error(`❌ Static asset not found: ${filePath}`);
-      logger.error(
-        `   Resolved URL: ${import.meta.resolve(`./static/${filePath}`)}`,
-      );
-
-      // Log what's actually available in the static directory
       try {
-        const staticDirUrl = import.meta.resolve("./static");
-        const staticDirPath = new URL(staticDirUrl).pathname;
-        const entries = [];
-        for await (const entry of Deno.readDir(staticDirPath)) {
-          entries.push(`${entry.isDirectory ? "DIR" : "FILE"}: ${entry.name}`);
+        const assetUrl = import.meta.resolve(`./static/${filePath}`);
+
+        // Convert file:// URL to path for Deno.readFile
+        const assetPath = new URL(assetUrl).pathname;
+        const fileData = await Deno.readFile(assetPath);
+
+        // Determine content type
+        let contentType = "application/octet-stream";
+        if (filePath.endsWith(".html")) contentType = "text/html";
+        else if (filePath.endsWith(".js")) {
+          contentType = "application/javascript";
+        } else if (filePath.endsWith(".css")) contentType = "text/css";
+        else if (filePath.endsWith(".json")) contentType = "application/json";
+        else if (filePath.endsWith(".svg")) contentType = "image/svg+xml";
+        else if (filePath.endsWith(".png")) contentType = "image/png";
+        else if (filePath.endsWith(".ico")) contentType = "image/x-icon";
+
+        const response = new Response(fileData, {
+          headers: {
+            "Content-Type": contentType,
+            "Content-Length": fileData.length.toString(),
+          },
+        });
+        logResponse(
+          requestId,
+          response,
+          startTime,
+          method,
+          url.pathname,
+          url.search,
+          "Static Asset",
+        );
+        return response;
+      } catch {
+        logger.error(`[${requestId}] ❌ Static asset not found: ${filePath}`);
+        logger.error(
+          `   Resolved URL: ${import.meta.resolve(`./static/${filePath}`)}`,
+        );
+
+        // Log what's actually available in the static directory
+        try {
+          const staticDirUrl = import.meta.resolve("./static");
+          const staticDirPath = new URL(staticDirUrl).pathname;
+          const entries = [];
+          for await (const entry of Deno.readDir(staticDirPath)) {
+            entries.push(
+              `${entry.isDirectory ? "DIR" : "FILE"}: ${entry.name}`,
+            );
+          }
+          logger.error(`   Available in static/: ${entries.join(", ")}`);
+        } catch (dirError) {
+          logger.error(`   Cannot read static directory: ${dirError}`);
         }
-        logger.error(`   Available in static/: ${entries.join(", ")}`);
-      } catch (dirError) {
-        logger.error(`   Cannot read static directory: ${dirError}`);
+
+        const notFoundResponse = new Response("Not Found", { status: 404 });
+        logResponse(
+          requestId,
+          notFoundResponse,
+          startTime,
+          method,
+          url.pathname,
+          url.search,
+          "Static Asset Not Found",
+        );
+        return notFoundResponse;
       }
-
-      return new Response("Not Found", { status: 404 });
     }
-  }
 
-  // API routes should return 404 if not found
-  if (url.pathname.startsWith("/api/")) {
-    return new Response("Not Found", { status: 404 });
-  }
+    // API routes should return 404 if not found
+    if (url.pathname.startsWith("/api/")) {
+      const notFoundResponse = new Response("Not Found", { status: 404 });
+      logResponse(
+        requestId,
+        notFoundResponse,
+        startTime,
+        method,
+        url.pathname,
+        url.search,
+        "API Not Found",
+      );
+      return notFoundResponse;
+    }
 
-  // For all other unknown routes, return 404
-  return new Response("Not Found", { status: 404 });
+    // For all other unknown routes, return 404
+    const notFoundResponse = new Response("Not Found", { status: 404 });
+    logResponse(
+      requestId,
+      notFoundResponse,
+      startTime,
+      method,
+      url.pathname,
+      url.search,
+      "Route Not Found",
+    );
+    return notFoundResponse;
+  } catch (error) {
+    logger.error(`[${requestId}] Unhandled error in request handler:`, error);
+    const errorResponse = new Response("Internal Server Error", {
+      status: 500,
+    });
+    logResponse(
+      requestId,
+      errorResponse,
+      startTime,
+      method,
+      url.pathname,
+      url.search,
+      "Unhandled Error",
+    );
+    return errorResponse;
+  }
 };
 
 // Start the server
