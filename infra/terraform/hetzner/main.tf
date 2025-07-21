@@ -78,6 +78,12 @@ resource "hcloud_ssh_key" "deploy" {
   public_key = var.ssh_public_key
 }
 
+# Floating IP (created first, unassigned)
+resource "hcloud_floating_ip" "web" {
+  type     = "ipv4"
+  location = "ash"
+}
+
 # Server
 resource "hcloud_server" "web" {
   name        = "boltfoundry-com"
@@ -86,13 +92,15 @@ resource "hcloud_server" "web" {
   location    = "ash"
   ssh_keys    = [hcloud_ssh_key.deploy.id]
   
-  user_data = file("${path.module}/cloud-init.yml")
+  user_data = templatefile("${path.module}/cloud-init.yml", {
+    floating_ip = hcloud_floating_ip.web.ip_address
+  })
 }
 
-# Floating IP
-resource "hcloud_floating_ip" "web" {
-  type      = "ipv4"
-  server_id = hcloud_server.web.id
+# Assign floating IP to server
+resource "hcloud_floating_ip_assignment" "web" {
+  floating_ip_id = hcloud_floating_ip.web.id
+  server_id      = hcloud_server.web.id
 }
 
 # Database volume (independent of server)
