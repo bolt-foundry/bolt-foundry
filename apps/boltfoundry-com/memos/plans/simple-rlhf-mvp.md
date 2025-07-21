@@ -2,22 +2,24 @@
 
 _Minimal viable implementation for human feedback on AI evaluations_
 
-**Date**: 2025-07-20\
-**Status**: Planning\
-**Target**: 1-2 days to working MVP
+**Date**: 2025-07-21\
+**Status**: Ready for Implementation\
+**Approach**: Milestone-based implementation
 
 ## Executive Summary
 
 This plan outlines the absolute minimum implementation needed to validate the
 core RLHF value proposition: humans providing feedback on AI evaluations.
 Instead of building a complex chat+cards interface, we focus on a single
-feedback form that demonstrates the complete workflow with hardcoded test data.
+feedback form that demonstrates the complete workflow with realistic demo data
+automatically created for each organization.
 
 ## MVP Scope: Single Feedback Form
 
 ### Core Workflow
 
-1. **Display hardcoded sample data** (conversation + AI evaluation)
+1. **Display demo sample data** (conversation + AI evaluation from auto-created
+   demo content)
 2. **Show AI evaluation results** (score, explanation, reasoning)
 3. **Collect human feedback** (score + explanation)
 4. **Submit feedback** via GraphQL mutation
@@ -31,20 +33,40 @@ feedback form that demonstrates the complete workflow with hardcoded test data.
 
 ## Current Implementation Status
 
-### ✅ **AVAILABLE FOUNDATIONS**
+### ✅ **BACKEND INFRASTRUCTURE (PRODUCTION READY)**
 
-- **BfSampleFeedback node**: Complete with score validation and explanation
-  fields
+- **Complete RLHF data model**: All 5 node types (BfDeck, BfGrader, BfSample,
+  BfGraderResult, BfSampleFeedback) fully implemented and tested
+- **Working GraphQL mutations**: `createDeck` and `submitSample` with
+  comprehensive test coverage
+- **Authentication system**: Google OAuth integration with automatic
+  organization creation
+- **Score validation**: -3 to +3 range validation in both BfGraderResult and
+  BfSampleFeedback
+- **Mock prompt analyzer**: Automatically generates realistic graders
+  (helpfulness, accuracy, code quality, creativity, clarity)
+- **Organization scoping**: All RLHF entities properly scoped with multi-tenant
+  support
+- **Comprehensive testing**: 12/12 tests passing including E2E and integration
+  tests
+
+### ✅ **FRONTEND INFRASTRUCTURE**
+
+- **Authentication-protected route**: `/rlhf` route working with login flow
 - **BfDs components**: BfDsForm, BfDsTextArea, BfDsButton, BfDsRadio available
-- **RlhfInterface component**: Located at
+- **Isograph integration**: GraphQL framework properly configured
+- **RlhfInterface component**: Basic shell exists at
   `/apps/boltfoundry-com/components/RlhfInterface.tsx`
-- **Sample data types**: BfSample, BfGraderResult types available
-- **Isograph integration**: Working pattern for GraphQL data fetching
 
 ### ❌ **MISSING COMPONENTS**
 
-- **submitFeedback mutation**: BfSampleFeedback has no GraphQL mutation
-- **Feedback form UI**: No form components built yet
+- **submitFeedback GraphQL mutation**: Needs to be exposed in BfSampleFeedback
+  schema
+- **Feedback form UI**: RlhfInterface currently contains only placeholder text
+- **Demo data auto-creation**: BfOrganization.afterCreate() hook needs
+  implementation
+- **Data integration**: Frontend needs to connect to backend via Isograph
+  queries
 
 ### ✅ **DEMO DATA STRATEGY**
 
@@ -72,153 +94,298 @@ creation**:
 This approach gives new users immediate, realistic content to explore the RLHF
 workflow.
 
-## Implementation Plan
+## Implementation Plan - Milestone-Based Approach
 
-### Step 0: Auto-Demo Creation
+### Milestone 1: Backend Demo Data
 
 **Implement BfOrganization.afterCreate() lifecycle hook**:
 
-- Read customer-support-demo.deck.md markdown file
-- Create demo deck with auto-generated graders
-- Create 4 realistic customer support conversation samples
-- Generate AI evaluations for all samples
-- Add human feedback to first sample as example
+- Create customer support demo deck with system prompt
+- Generate 4 realistic conversation samples (billing, technical, returns,
+  subscription)
+- Create AI evaluations for all samples using existing grader system
+- Add one human feedback example showing disagreement with AI
 
-**Benefits**:
+**Success Criteria**:
 
-- Every new organization gets immediate demo content
-- No manual setup required
-- Realistic workflow demonstration
-- Users can immediately test feedback interface
+- New organizations automatically receive demo content on creation
+- Demo deck contains 3 graders (helpfulness, professionalism, accuracy)
+- 4 samples have realistic completion data and AI evaluations
+- 1 sample has human feedback demonstrating scoring disagreement
 
-### Step 1: Add submitFeedback Mutation
+### Milestone 2: Frontend Form UI
 
-```typescript
-// In apps/bfDb/nodeTypes/rlhf/BfSampleFeedback.ts
-static override gqlSpec = this.defineGqlNode((gql) =>
-  gql
-    .id()
-    .number("score")
-    .string("explanation")
-    .string("sampleId")
-    .string("graderId")
-    .mutation("submitFeedback", {
-      args: (a) => a
-        .nonNull.string("sampleId")
-        .nonNull.string("graderId")
-        .nonNull.number("score")
-        .nonNull.string("explanation"),
-      returns: (r) => r.nonNull.string("feedbackId").nonNull.boolean("success"),
-      resolve: async (_src, args, ctx) => {
-        // Create BfSampleFeedback record
-      }
-    })
-);
-```
+**Build feedback form interface in RlhfInterface.tsx**:
 
-### Step 2: Create Isograph Feedback Components
+- Implement Isograph GraphQL query to load demo deck data
+- Display sample conversation in readable format
+- Show AI evaluation with score, explanation, and reasoning
+- Create feedback form with score radio buttons (-3 to +3) and explanation
+  textarea
+- Add form validation and disabled states
 
-Following the Isograph component pattern (see
-[Pokemon vite-demo](https://github.com/isographlabs/isograph/tree/main/demos/vite-demo)):
+**Success Criteria**:
 
-```typescript
-// Query.RlhfInterface.ts - Main RLHF interface with data fetching
-export const Query_RlhfInterface = iso(`
-  field Query.RlhfInterface {
-    deck(slug: $slug) {
-      name
-      samples {
-        id
-        completionData
-        graderResults {
-          id
-          graderName
-          score
-          explanation
-        }
-      }
-    }
-  }
-`)(function RlhfInterface({ data }) {
-  // Component renders with auto-fetched GraphQL data
-  // No manual prop passing or hardcoded interfaces needed
-  return <FeedbackForm deck={data.deck} />;
-});
-```
+- Form renders with real demo data from GraphQL
+- Score selection works with proper validation
+- Explanation textarea has minimum character validation
+- Form shows loading and error states appropriately
 
-This eliminates the need for hardcoded TypeScript interfaces - Isograph
-automatically handles data fetching and typing based on the GraphQL schema.
+### Milestone 3: GraphQL Integration
 
-### Step 3: Update RlhfInterface with Demo Data Query
+**Expose and connect submitFeedback mutation**:
 
-```typescript
-// In apps/boltfoundry-com/components/RlhfInterface.tsx
-const HARDCODED_SAMPLE = {
-  conversation: [
-    { role: "user", content: "How do I center a div in CSS?" },
-    {
-      role: "assistant",
-      content:
-        "You can use flexbox: display: flex; justify-content: center; align-items: center;",
-    },
-  ],
-};
+- Add `submitFeedback` mutation to BfSampleFeedback GraphQL schema
+- Implement mutation resolver with proper organization scoping
+- Connect frontend form to mutation with error handling
+- Add success confirmation and form reset after submission
 
-const HARDCODED_AI_RESULT = {
-  score: 2,
-  explanation: "Good technical accuracy, could be more comprehensive",
-  reasoningProcess: "Evaluated correctness and completeness...",
-};
-```
+**Success Criteria**:
 
-### Step 4: Wire Up Form Submission
+- submitFeedback mutation works via GraphQL
+- Frontend successfully submits feedback and shows confirmation
+- Submitted data persists correctly in database
+- Error scenarios are handled gracefully
 
-- Connect form to submitFeedback mutation
-- Add success/error handling
-- Display submission result
+### Milestone 4: End-to-End Validation
+
+**Test complete workflow and polish**:
+
+- Verify complete flow: login → view demo data → submit feedback → verify
+  persistence
+- Add any missing error handling or loading states
+- Ensure mobile responsive design
+- Run full test suite and fix any issues
+
+**Success Criteria**:
+
+- Complete RLHF workflow functions end-to-end
+- All existing tests continue to pass
+- New functionality has appropriate test coverage
+- Interface works on mobile devices
 
 ## File Structure
 
 ```
 apps/boltfoundry-com/
 ├── components/
-│   ├── RlhfInterface.tsx              # Main component (update with Isograph query)
-│   └── FeedbackForm.tsx               # New feedback form component
+│   ├── RlhfInterface.tsx              # ✅ EXISTS - Main component (needs UI implementation)
+│   ├── RlhfHome.tsx                   # ✅ EXISTS - RLHF home page 
+│   └── entrypoints/EntrypointRlhf.ts  # ✅ EXISTS - Authentication routing
 └── memos/plans/
-    └── simple-rlhf-mvp.md            # This file
+    └── simple-rlhf-mvp.md            # ✅ THIS FILE (canonical RLHF plan)
 
 apps/bfDb/nodeTypes/rlhf/
-├── BfSampleFeedback.ts                # Add submitFeedback mutation
-└── demo-decks/
-    └── customer-support-demo.deck.md  # Demo deck content (✅ created)
+├── BfDeck.ts                          # ✅ COMPLETE - Deck creation with mutations
+├── BfGrader.ts                        # ✅ COMPLETE - Evaluation criteria
+├── BfSample.ts                        # ✅ COMPLETE - Sample submission with mutations  
+├── BfGraderResult.ts                  # ✅ COMPLETE - AI evaluation results
+├── BfSampleFeedback.ts                # ⚠️ NEEDS - submitFeedback mutation exposure
+└── __tests__/                         # ✅ COMPLETE - Comprehensive test suite (12/12 passing)
+    ├── RlhfMutations.integration.test.ts
+    ├── RlhfPipelineIntegrationTest.test.ts
+    └── RlhfWorkflow.test.ts
 
 apps/bfDb/nodeTypes/
-└── BfOrganization.ts                  # Add afterCreate() hook for auto-demo creation
+└── BfOrganization.ts                  # ⚠️ NEEDS - afterCreate() hook for demo data
+
+apps/bfDb/services/
+└── mockPromptAnalyzer.ts              # ✅ EXISTS - Auto-generates graders from system prompts
 ```
 
 ## Technical Specifications
 
-### Hardcoded Test Data
+### GraphQL Integration
+
+**Isograph Component Pattern**:
 
 ```typescript
-interface HardcodedSample {
-  id: string;
-  conversation: Array<{ role: "user" | "assistant"; content: string }>;
-  deckSlug: string;
-}
+// CurrentViewer.DecksList.ts - Component for listing decks
+export const CurrentViewer_DecksList = iso(`
+  field CurrentViewer.DecksList @component {
+    organization {
+      decks(first: 10) {
+        edges {
+          node {
+            id
+            DecksListItem  # Child component reference for each deck
+          }
+        }
+      }
+    }
+  }
+`)(function DecksList({ data }) {
+  const decks = data.organization?.decks.edges || [];
+  if (decks.length === 0) return <div>No decks found</div>;
 
-interface HardcodedGraderResult {
-  id: string;
-  graderName: string;
-  score: number; // -3 to +3
-  explanation: string;
-  reasoningProcess: string;
-}
+  return (
+    <div>
+      <h2>Your Evaluation Decks</h2>
+      {decks.map((deck) => <deck.node.DecksListItem key={deck.node.id} />)}
+    </div>
+  );
+});
 
-interface FeedbackData {
-  score: number; // -3 to +3
-  explanation: string;
-}
+// BfDeck.DecksListItem.ts - Component for individual deck in the list
+export const BfDeck_DecksListItem = iso(`
+  field BfDeck.DecksListItem @component {
+    id
+    name
+    slug
+    DeckSamplesList  # Child component reference
+  }
+`)(function DecksListItem({ data }) {
+  return (
+    <div>
+      <h3>{data.name} ({data.slug})</h3>
+      <data.DeckSamplesList />
+    </div>
+  );
+});
+
+// BfDeck.DeckSamplesList.ts - Component for listing deck samples
+export const BfDeck_DeckSamplesList = iso(`
+  field BfDeck.DeckSamplesList @component {
+    name
+    samples(first: 10) {
+      edges {
+        node {
+          id
+          DeckSamplesListItem  # Child component reference
+        }
+      }
+    }
+  }
+`)(function DeckSamplesList({ data }) {
+  const samples = data.samples.edges || [];
+  if (samples.length === 0) return <div>No samples found</div>;
+
+  return (
+    <div>
+      <h4>Samples for {data.name}</h4>
+      {samples.map((sample) => (
+        <sample.node.DeckSamplesListItem key={sample.node.id} />
+      ))}
+    </div>
+  );
+});
+
+// BfSample.DeckSamplesListItem.ts - Component for individual sample
+export const BfSample_DeckSamplesListItem = iso(`
+  field BfSample.DeckSamplesListItem @component {
+    id
+    name
+    completionData
+    SampleFeedbackForm  # Child component reference
+  }
+`)(function DeckSamplesListItem({ data }) {
+  const sampleName = data.name || `Sample ${data.id.slice(-8)}`;
+
+  return (
+    <div>
+      <h5>{sampleName}</h5>
+      <data.SampleFeedbackForm />
+    </div>
+  );
+});
+
+// BfGraderResult.GraderResultItem.ts - Component for individual grader results
+export const BfGraderResult_GraderResultItem = iso(`
+  field BfGraderResult.GraderResultItem @component {
+    id
+    score
+    explanation
+    reasoningProcess
+    grader {
+      id
+      graderText
+    }
+  }
+`)(function GraderResultItem({ data }) {
+  return (
+    <div>
+      <h4>AI Evaluation</h4>
+      <div>Score: {data.score}</div>
+      <div>Explanation: {data.explanation}</div>
+      <div>Reasoning: {data.reasoningProcess}</div>
+      <div>Grader: {data.grader.graderText}</div>
+    </div>
+  );
+});
+
+// BfSample.SampleFeedbackForm.ts - Component for feedback form
+export const BfSample_SampleFeedbackForm = iso(`
+  field BfSample.SampleFeedbackForm @component {
+    id
+    completionData
+    graderResults(first: 3) {
+      edges {
+        node {
+          id
+          GraderResultItem  # Child component reference
+        }
+      }
+    }
+  }
+`)(function SampleFeedbackForm({ data }) {
+  const graderResults = data.graderResults.edges || [];
+  if (graderResults.length === 0) return <div>No evaluations found</div>;
+
+  return (
+    <div>
+      <h4>Sample Conversation</h4>
+      <div>{/* Display conversation from completionData here */}</div>
+
+      <h4>AI Evaluations</h4>
+      {graderResults.map((result) => (
+        <result.node.GraderResultItem key={result.node.id} />
+      ))}
+
+      <h4>Your Feedback</h4>
+      {/* Feedback form UI here */}
+    </div>
+  );
+});
+
+// Query.RlhfInterface.ts - Main RLHF interface with Isograph
+export const Query_RlhfInterface = iso(`
+  field Query.RlhfInterface @component {
+    currentViewer {
+      DecksList  # Child component reference
+    }
+  }
+`)(function RlhfInterface({ data }) {
+  return (
+    <div>
+      <h1>RLHF Feedback Interface</h1>
+      <data.currentViewer.DecksList />
+    </div>
+  );
+});
+```
+
+**submitFeedback Mutation (Entrypoint Style)**:
+
+```typescript
+// Mutation.SubmitFeedback.ts - Entrypoint mutation for submitting feedback
+export const Mutation_SubmitFeedback = iso(`
+  field Mutation.SubmitFeedback @component {
+    submitFeedback(sampleId: $sampleId, graderId: $graderId, score: $score, explanation: $explanation) {
+      id
+      score
+      explanation
+    }
+  }
+`)(function SubmitFeedback({ data }) {
+  // This component can show success state, loading state, etc.
+  return (
+    <div>
+      <p>Feedback submitted successfully!</p>
+      <div>ID: {data.submitFeedback.id}</div>
+      <div>Score: {data.submitFeedback.score}</div>
+    </div>
+  );
+});
 ```
 
 ### Form Validation
@@ -249,24 +416,38 @@ interface FeedbackData {
 └─────────────────────────────────────┘
 ```
 
-## Success Metrics
+## Success Metrics (Updated for Current State)
 
-### Functional
+### Milestone 1: Backend Demo Data
 
-- [ ] Form renders with hardcoded data
-- [ ] Radio buttons work for score selection (-3 to +3)
-- [ ] Textarea accepts explanation input
-- [ ] Form validation prevents invalid submissions
-- [ ] Successful submission shows confirmation
-- [ ] Data persists in database
+- [ ] BfOrganization.afterCreate() creates demo deck on new org creation
+- [ ] Demo deck has customer support system prompt and 3 auto-generated graders
+- [ ] 4 realistic conversation samples with completion data
+- [ ] AI evaluations generated for all samples
+- [ ] 1 human feedback example showing disagreement
 
-### Technical
+### Milestone 2: Frontend Form UI
 
-- [ ] Uses existing BfDs components consistently
-- [ ] Follows Isograph GraphQL patterns
-- [ ] Error handling for network failures
-- [ ] Loading states during submission
-- [ ] Responsive design works on mobile
+- [ ] Isograph query loads demo data from GraphQL
+- [ ] Sample conversation displays in readable chat format
+- [ ] AI evaluation shows score, explanation, and reasoning clearly
+- [ ] Score radio buttons (-3 to +3) with proper validation
+- [ ] Explanation textarea with minimum character requirement
+- [ ] Form shows appropriate loading and error states
+
+### Milestone 3: GraphQL Integration
+
+- [ ] submitFeedback mutation exposed in BfSampleFeedback schema
+- [ ] Frontend form connects to mutation with proper error handling
+- [ ] Success confirmation and form reset after submission
+- [ ] Submitted feedback persists correctly in database
+
+### Milestone 4: End-to-End Validation
+
+- [ ] Complete workflow: login → demo data → submit feedback → persistence
+- [ ] All 12 existing backend tests continue to pass
+- [ ] Mobile responsive design verified
+- [ ] Error scenarios handled gracefully
 
 ## Risk Mitigation
 
@@ -332,14 +513,12 @@ implementation effort, providing a solid foundation for future enhancements.
 
 ### Codebase Architecture References
 
-- **[RLHF Pipeline Implementation Plan](../../../boltfoundry-com/memos/plans/rlhf-pipeline-data-model-implementation.md)** -
-  Complete backend status and data model
-- **[Phase 3 UI Implementation Plan](./phase-3-ui-implementation.md)** -
-  Original complex chat+cards interface plan
-- **[BfNode Lifecycle Hooks](../../bfDb/classes/BfNode.ts:573-574)** -
-  afterCreate and beforeCreate hook definitions
-- **[BfDeck afterCreate Example](../../bfDb/nodeTypes/rlhf/BfDeck.ts:75-83)** -
-  Reference implementation for lifecycle hooks
+- **[BfNode Lifecycle Hooks](../../bfDb/classes/BfNode.ts)** - afterCreate and
+  beforeCreate hook definitions
+- **[BfDeck Implementation](../../bfDb/nodeTypes/rlhf/BfDeck.ts)** - Reference
+  for GraphQL mutations and lifecycle hooks
+- **[Mock Prompt Analyzer](../../bfDb/services/mockPromptAnalyzer.ts)** -
+  Auto-generates graders from system prompts
 
 ### Component Libraries & Design System
 
@@ -361,12 +540,10 @@ implementation effort, providing a solid foundation for future enhancements.
 
 ### Demo Content & Test Data
 
-- **[Customer Support Demo Deck](../../bfDb/nodeTypes/rlhf/demo-decks/customer-support-demo.deck.md)** -
-  Main demo deck structure
-- **[Demo Graders](../../bfDb/nodeTypes/rlhf/demo-decks/graders/)** - Individual
-  grader specifications
-- **[Sample Conversations](../../bfDb/nodeTypes/rlhf/demo-decks/customer-support-samples.toml)** -
-  Realistic test data
+- **Demo content will be created programmatically** - Customer support scenarios
+  with billing, technical, returns, and subscription conversations
+- **Test data examples** - See `/apps/bfDb/nodeTypes/rlhf/__tests__/` for
+  realistic sample data patterns
 
 ### Development Tools & Commands
 

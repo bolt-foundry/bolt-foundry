@@ -1,14 +1,13 @@
 import { BfNode, type InferProps } from "@bfmono/apps/bfDb/classes/BfNode.ts";
 import { BfOrganization } from "@bfmono/apps/bfDb/nodeTypes/BfOrganization.ts";
-import { BfGrader } from "./BfGrader.ts";
-import { analyzeSystemPrompt } from "@bfmono/apps/bfDb/services/mockPromptAnalyzer.ts";
+import { readLocalDeck } from "@bolt-foundry/bolt-foundry";
 
 /**
  * BfDeck represents a deck of cards/prompts used for RLHF evaluation.
  *
  * A deck contains:
  * - name: Human-readable name for the deck
- * - systemPrompt: The evaluation criteria and instructions for graders (MVP: simple string, should be structured data matching aibff's deck system)
+ * - content: The deck content (markdown format with evaluation criteria and instructions)
  * - description: Detailed description of what this deck is used for
  *
  * Decks are scoped to organizations and can be associated with:
@@ -19,14 +18,14 @@ export class BfDeck extends BfNode<InferProps<typeof BfDeck>> {
   static override gqlSpec = this.defineGqlNode((gql) =>
     gql
       .string("name")
-      .string("systemPrompt")
+      .string("content")
       .string("description")
       .nonNull.string("slug")
       .typedMutation("createDeck", {
         args: (a) =>
           a
             .nonNull.string("name")
-            .nonNull.string("systemPrompt")
+            .nonNull.string("content")
             .string("description")
             .nonNull.string("slug"),
         returns: "BfDeck",
@@ -44,10 +43,10 @@ export class BfDeck extends BfNode<InferProps<typeof BfDeck>> {
             await org.save();
           }
           const deck = await org.createTargetNode(BfDeck, {
-            name: args.name, // No casting needed! TypeScript knows this is string
-            systemPrompt: args.systemPrompt, // No casting needed! TypeScript knows this is string
-            description: args.description || "", // No casting needed! TypeScript knows this is string | undefined
-            slug: args.slug, // No casting needed! TypeScript knows this is string
+            name: args.name,
+            content: args.content,
+            description: args.description || "",
+            slug: args.slug,
           }) as BfDeck;
           await deck.afterCreate();
           const result = deck.toGraphql();
@@ -63,22 +62,26 @@ export class BfDeck extends BfNode<InferProps<typeof BfDeck>> {
   static override bfNodeSpec = this.defineBfNode((node) =>
     node
       .string("name")
-      .string("systemPrompt")
+      .string("content")
       .string("description")
       .string("slug")
   );
 
   /**
-   * Lifecycle method called after deck creation.
-   * Analyzes the system prompt and auto-generates graders.
+   * Read deck properties from a filesystem .deck.md file
    */
-  public override async afterCreate(): Promise<void> {
-    const analysis = await analyzeSystemPrompt(this.props.systemPrompt);
+  static async readPropsFromFile(deckPath: string) {
+    const deck = await readLocalDeck(deckPath);
 
-    for (const graderSuggestion of analysis.graders) {
-      await this.createTargetNode(BfGrader, {
-        graderText: graderSuggestion.graderText,
-      });
-    }
+    // Extract content from the rendered deck (system message content)
+    const rendered = deck.render({});
+    const content = rendered.messages[0]?.content || "";
+
+    return {
+      name: "Customer Support Response Evaluator",
+      content,
+      description: "Demo deck for evaluating customer service interactions",
+      slug: "demo-customer-support",
+    };
   }
 }
