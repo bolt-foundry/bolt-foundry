@@ -43,6 +43,8 @@
           pkgs._1password-cli
           pkgs.typescript-language-server
           pkgs.ffmpeg
+          pkgs.ruby
+          pkgs.rubyPackages.kamal
         ] ++ lib.optionals (!pkgs.stdenv.isDarwin) [
           # Linux-only packages
           pkgs.chromium
