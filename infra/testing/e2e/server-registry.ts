@@ -57,6 +57,9 @@ export const E2E_SERVER_REGISTRY: Array<ServerRegistryEntry> = [
       serverPath: "./build/boltfoundry-com",
       defaultPort: 8002,
       envVar: "BF_E2E_BOLTFOUNDRY_COM_URL",
+      env: {
+        "BF_E2E_MODE": "true",
+      },
     },
   },
 ];

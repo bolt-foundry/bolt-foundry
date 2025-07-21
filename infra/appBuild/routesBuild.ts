@@ -83,6 +83,8 @@ import { iso } from "${isoImport}";
 export type RouteEntrypoint = {
   Body: React.FC | null | undefined;
   title: string;
+  status?: number;
+  headers?: Record<string, string>;
 };
 
 ${isoEntrypoints.join("\n")}
