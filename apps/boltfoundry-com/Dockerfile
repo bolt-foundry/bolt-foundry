@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy the compiled binary
-COPY ../build/boltfoundry-com /usr/local/bin/boltfoundry-com
+COPY build/boltfoundry-com /usr/local/bin/boltfoundry-com
 RUN chmod +x /usr/local/bin/boltfoundry-com
 
 # Non-root user for security
