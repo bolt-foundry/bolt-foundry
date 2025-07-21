@@ -29,6 +29,12 @@ import {
 
 const logger = getLogger(import.meta);
 
+export interface AnnotatedVideoRecordingControls {
+  stop: () => Promise<VideoConversionResult | null>;
+  showSubtitle: (text: string) => Promise<void>;
+  highlightElement: (selector: string, text: string) => Promise<void>;
+}
+
 // Simple server startup without global registry - each test gets its own server
 
 /**
@@ -98,7 +104,7 @@ export interface E2ETestContext {
   baseUrl: string;
   takeScreenshot: (
     name: string,
-    options?: { fullPage?: boolean },
+    options?: { fullPage?: boolean; showAnnotations?: boolean },
   ) => Promise<string>;
   navigateTo: (path: string) => Promise<void>;
   startVideoRecording: (
@@ -113,6 +119,10 @@ export interface E2ETestContext {
     targetFps?: number,
     options?: VideoConversionOptions,
   ) => Promise<() => Promise<VideoConversionResult | null>>;
+  startAnnotatedVideoRecording: (
+    name: string,
+    options?: VideoConversionOptions,
+  ) => Promise<AnnotatedVideoRecordingControls>;
   teardown: () => Promise<void>;
 }
 
@@ -273,17 +283,51 @@ export async function setupE2ETest(options: {
     // Create screenshot function
     const takeScreenshot = async (
       name: string,
-      options?: { fullPage?: boolean },
+      options?: { fullPage?: boolean; showAnnotations?: boolean },
     ): Promise<string> => {
       const fileName = `${Date.now()}_${name.replace(/\s+/g, "-")}.png`;
       const filePath = join(screenshotsDir, fileName) as `${string}.png`;
 
       try {
+        // Hide annotations by default (showAnnotations defaults to false)
+        const showAnnotations = options?.showAnnotations ?? false;
+
+        if (!showAnnotations) {
+          // Hide all e2e annotations for clean screenshot
+          await page.evaluate(() => {
+            const subtitle = document.getElementById("e2e-subtitle");
+            const highlights = document.querySelectorAll(".e2e-highlight");
+
+            if (subtitle) subtitle.style.display = "none";
+            highlights.forEach((highlight) => {
+              (highlight as HTMLElement).style.display = "none";
+            });
+          });
+        }
+
         await page.screenshot({
           path: filePath,
           fullPage: options?.fullPage ?? false,
         });
-        logger.info(`Screenshot saved to: ${filePath}`);
+
+        if (!showAnnotations) {
+          // Restore annotations after screenshot
+          await page.evaluate(() => {
+            const subtitle = document.getElementById("e2e-subtitle");
+            const highlights = document.querySelectorAll(".e2e-highlight");
+
+            if (subtitle) subtitle.style.display = "";
+            highlights.forEach((highlight) => {
+              (highlight as HTMLElement).style.display = "";
+            });
+          });
+        }
+
+        logger.info(
+          `Screenshot saved to: ${filePath}${
+            showAnnotations ? " (with annotations)" : " (clean)"
+          }`,
+        );
         return filePath;
       } catch (error) {
         logger.error(`Failed to take screenshot: ${(error as Error).message}`);
@@ -488,6 +532,213 @@ export async function setupE2ETest(options: {
             );
             return null;
           }
+        };
+      },
+      startAnnotatedVideoRecording: async (
+        name: string,
+        options?: VideoConversionOptions,
+      ): Promise<AnnotatedVideoRecordingControls> => {
+        const videosDir = getConfigurationVariable("BF_E2E_VIDEO_DIR") ||
+          join(Deno.cwd(), "tmp", "videos");
+
+        // Ensure videos directory exists
+        await ensureDir(videosDir);
+
+        // Inject cursor overlay for better video visibility
+        try {
+          await injectCursorOverlay(page);
+          logger.debug("Cursor overlay injected for annotated video recording");
+        } catch (error) {
+          logger.warn("Failed to inject cursor overlay:", error);
+        }
+
+        const session = await startScreencastRecording(page, name, videosDir);
+
+        // Start throbber for entire recording session to keep screencast active
+        await addRecordingThrobber(page);
+
+        return {
+          stop: async (): Promise<VideoConversionResult | null> => {
+            try {
+              // Stop throbber before stopping recording
+              await removeRecordingThrobber(page);
+
+              const videoResult = await stopScreencastRecording(
+                page,
+                session,
+                options,
+              );
+
+              // Clean up cursor overlay
+              try {
+                await removeCursorOverlay(page);
+              } catch (error) {
+                logger.debug("Failed to remove cursor overlay:", error);
+              }
+
+              logger.info(
+                `Annotated video recording completed: ${videoResult.videoPath} (${videoResult.fileSize} bytes)`,
+              );
+              return videoResult;
+            } catch (error) {
+              logger.error(
+                `Failed to stop annotated video recording: ${
+                  (error as Error).message
+                }`,
+              );
+              return null;
+            }
+          },
+          showSubtitle: async (text: string): Promise<void> => {
+            await page.evaluate((subtitleText) => {
+              // Remove existing subtitle if present
+              const existing = document.getElementById("e2e-subtitle");
+              if (existing) existing.remove();
+
+              // Create subtitle element
+              const subtitle = document.createElement("div");
+              subtitle.id = "e2e-subtitle";
+              subtitle.textContent = subtitleText;
+              subtitle.style.cssText = `
+                position: fixed;
+                bottom: 60px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+                padding: 12px 24px;
+                border-radius: 8px;
+                font-size: 16px;
+                font-family: system-ui, -apple-system, sans-serif;
+                font-weight: 500;
+                z-index: 2147483646;
+                pointer-events: none;
+                max-width: 80vw;
+                text-align: center;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+                transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+                opacity: 0;
+                transform: translateX(-50%) translateY(10px);
+              `;
+
+              document.body.appendChild(subtitle);
+
+              // Trigger animation
+              requestAnimationFrame(() => {
+                subtitle.style.opacity = "1";
+                subtitle.style.transform = "translateX(-50%) translateY(0)";
+              });
+            }, text);
+
+            logger.info(`Subtitle displayed: "${text}"`);
+          },
+          highlightElement: async (
+            selector: string,
+            text: string,
+          ): Promise<void> => {
+            // Check if element exists before highlighting
+            const elementExists = await page.evaluate((elementSelector) => {
+              return !!document.querySelector(elementSelector);
+            }, selector);
+
+            if (!elementExists) {
+              logger.warn(`Element not found for highlighting: ${selector}`);
+              return;
+            }
+
+            await page.evaluate(
+              (elementSelector, annotationText) => {
+                // Find the target element
+                const element = document.querySelector(elementSelector);
+                if (!element) {
+                  return;
+                }
+
+                // Remove existing highlights
+                document.querySelectorAll(".e2e-highlight").forEach((h) =>
+                  h.remove()
+                );
+
+                // Get element position
+                const rect = element.getBoundingClientRect();
+
+                // Create highlight overlay
+                const highlight = document.createElement("div");
+                highlight.className = "e2e-highlight";
+                highlight.style.cssText = `
+                position: fixed;
+                left: ${rect.left - 4}px;
+                top: ${rect.top - 4}px;
+                width: ${rect.width + 8}px;
+                height: ${rect.height + 8}px;
+                border: 3px solid #ff6b35;
+                border-radius: 8px;
+                z-index: 2147483645;
+                pointer-events: none;
+                box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.2);
+                animation: highlight-pulse 2s ease-in-out infinite;
+              `;
+
+                // Create annotation text
+                const annotation = document.createElement("div");
+                annotation.className = "e2e-highlight";
+                annotation.textContent = annotationText;
+                annotation.style.cssText = `
+                position: fixed;
+                left: ${rect.left}px;
+                top: ${rect.top - 45}px;
+                background: #ff6b35;
+                color: white;
+                padding: 8px 12px;
+                border-radius: 6px;
+                font-size: 14px;
+                font-family: system-ui, -apple-system, sans-serif;
+                font-weight: 500;
+                z-index: 2147483646;
+                pointer-events: none;
+                white-space: nowrap;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+                transform: translateY(10px);
+                opacity: 0;
+                transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+              `;
+
+                // Add CSS keyframes for pulse animation
+                if (!document.getElementById("e2e-highlight-styles")) {
+                  const style = document.createElement("style");
+                  style.id = "e2e-highlight-styles";
+                  style.textContent = `
+                  @keyframes highlight-pulse {
+                    0%, 100% { 
+                      opacity: 1;
+                      transform: scale(1);
+                    }
+                    50% { 
+                      opacity: 0.7;
+                      transform: scale(1.02);
+                    }
+                  }
+                `;
+                  document.head.appendChild(style);
+                }
+
+                document.body.appendChild(highlight);
+                document.body.appendChild(annotation);
+
+                // Trigger annotation animation
+                requestAnimationFrame(() => {
+                  annotation.style.opacity = "1";
+                  annotation.style.transform = "translateY(0)";
+                });
+              },
+              selector,
+              text,
+            );
+
+            logger.info(
+              `Element highlighted: "${selector}" with text: "${text}"`,
+            );
+          },
         };
       },
       teardown: async (): Promise<void> => {
