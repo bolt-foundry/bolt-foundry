@@ -1,0 +1,46 @@
+name: Deploy boltfoundry-com
+
+on:
+  push:
+    branches: [main]
+    paths: ["apps/boltfoundry-com/**"]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: DeterminateSystems/flakehub-cache-action@main
+
+      - name: Build binary
+        run: nix develop --impure --command bft compile boltfoundry-com
+
+      - name: Login to GitHub Container Registry
+        run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build and push Docker image
+        run: |
+          # Build with git hash and latest tags
+          docker build -t ghcr.io/${{ github.repository_owner }}/boltfoundry-com:${{ github.sha }} apps/boltfoundry-com/
+          docker tag ghcr.io/${{ github.repository_owner }}/boltfoundry-com:${{ github.sha }} ghcr.io/${{ github.repository_owner }}/boltfoundry-com:latest
+          docker push ghcr.io/${{ github.repository_owner }}/boltfoundry-com:${{ github.sha }}
+          docker push ghcr.io/${{ github.repository_owner }}/boltfoundry-com:latest
+
+      - name: Install Kamal
+        run: gem install kamal
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H $(terraform output -raw server_ip 2>/dev/null || echo "placeholder-ip") >> ~/.ssh/known_hosts || true
+
+      - name: Deploy with Kamal
+        run: kamal deploy
+        env:
+          KAMAL_REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+        working-directory: ./
