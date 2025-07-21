@@ -3,6 +3,7 @@ name: Deploy Infrastructure (Hetzner)
 on:
   workflow_dispatch:
   push:
+    branches: [main]
     paths: ["infra/terraform/hetzner/**"]
 
 jobs:
