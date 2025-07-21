@@ -47,7 +47,7 @@ jobs:
         run: |
           cd infra/terraform/hetzner
           terraform init -backend-config="endpoint=${{ secrets.S3_ENDPOINT }}"
-          terraform apply -refresh-only -auto-approve \
+          terraform apply -auto-approve \
             -var="hcloud_token=${{ secrets.HETZNER_API_TOKEN }}" \
             -var="cloudflare_api_token=${{ secrets.CLOUDFLARE_API_TOKEN }}" \
             -var="cloudflare_zone_id=${{ secrets.CLOUDFLARE_ZONE_ID }}" \
