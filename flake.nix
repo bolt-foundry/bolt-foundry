@@ -31,6 +31,7 @@
       mkEverythingExtra = { pkgs, system }:
         let
           lib = pkgs.lib;
+          unstable = import nixpkgs-unstable { inherit system; config.allowUnfree = true; };
         in
         [
           pkgs.unzip
@@ -43,6 +44,7 @@
           pkgs._1password-cli
           pkgs.typescript-language-server
           pkgs.ffmpeg
+          unstable.kamal
         ] ++ lib.optionals (!pkgs.stdenv.isDarwin) [
           # Linux-only packages
           pkgs.chromium
