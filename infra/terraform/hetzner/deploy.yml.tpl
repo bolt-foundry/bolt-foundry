@@ -6,6 +6,12 @@ servers:
   web:
     - ${floating_ip}
 
+# SSH configuration for Kamal 2.x
+ssh:
+  user: root
+  keys:
+    - ~/.ssh/id_rsa
+
 # Builder configuration for Kamal 2.x
 builder:
   arch:
