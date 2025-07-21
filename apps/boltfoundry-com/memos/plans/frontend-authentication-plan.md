@@ -488,3 +488,194 @@ Total: **2 days** before RLHF MVP can begin
 This authentication implementation unblocks the entire RLHF MVP by enabling user
 login, organization creation, and access to the GraphQL API with proper user
 context.
+
+---
+
+## Appendix
+
+### Google Documentation Links
+
+#### Google Identity Services (Primary Documentation)
+
+- **[Google Identity Services Overview](https://developers.google.com/identity/gsi/web/guides/overview)** -
+  Main documentation for GSI integration
+- **[Display the Sign In With Google button](https://developers.google.com/identity/gsi/web/guides/display-button)** -
+  Button integration guide
+- **[Handle credential responses](https://developers.google.com/identity/gsi/web/guides/handle-credential-responses-js-functions)** -
+  Credential response handling
+- **[JavaScript API reference](https://developers.google.com/identity/gsi/web/reference/js-reference)** -
+  Complete GSI JavaScript API
+- **[HTML API reference](https://developers.google.com/identity/gsi/web/reference/html-reference)** -
+  HTML data attributes and configuration
+
+#### Google Cloud Console Setup
+
+- **[Set up your Google API console project](https://developers.google.com/identity/gsi/web/guides/get-google-api-clientid)** -
+  OAuth client ID creation
+- **[Google Cloud Console](https://console.cloud.google.com/)** - Main Google
+  Cloud Console
+- **[OAuth consent screen setup](https://developers.google.com/identity/oauth2/web-server#creatingclientidsecrets)** -
+  Consent screen configuration
+- **[Authorized JavaScript origins](https://developers.google.com/identity/oauth2/web-server#authorized-redirect-uris)** -
+  Domain authorization setup
+
+#### OAuth 2.0 and JWT
+
+- **[Google OAuth 2.0 documentation](https://developers.google.com/identity/protocols/oauth2)** -
+  OAuth 2.0 flow documentation
+- **[ID Token validation](https://developers.google.com/identity/gsi/web/guides/verify-google-id-token)** -
+  Server-side token verification
+- **[JWT.io](https://jwt.io/)** - JWT token decoder and debugger
+
+#### Security Best Practices
+
+- **[Security best practices for Google Sign-In](https://developers.google.com/identity/gsi/web/guides/security-best-practices)** -
+  Security recommendations
+- **[Cross-Site Request Forgery protection](https://developers.google.com/identity/gsi/web/guides/security-best-practices#csrf-protection)** -
+  CSRF prevention
+- **[Domain verification](https://developers.google.com/identity/gsi/web/guides/security-best-practices#domain-verification)** -
+  Domain security
+
+### Internal Reference Files
+
+#### Backend Implementation (Complete)
+
+- **[`apps/bfDb/classes/CurrentViewer.ts`](../../../../apps/bfDb/classes/CurrentViewer.ts)** -
+  Complete Google OAuth backend implementation
+  - Google token verification via tokeninfo endpoint
+  - JWT session management with dual-token system
+  - Organization auto-creation from Google Workspace domains
+  - User profile creation and management
+
+- **[`apps/bfDb/graphql/utils/graphqlContextUtils.ts`](../../../../apps/bfDb/graphql/utils/graphqlContextUtils.ts)** -
+  JWT session utilities
+  - Access token refresh logic
+  - Cookie configuration and security
+  - Session versioning and revocation
+
+- **[`apps/bfDb/graphql/__generated__/schema.graphql`](../../../../apps/bfDb/graphql/__generated__/schema.graphql)** -
+  GraphQL schema
+  - `CurrentViewer` interface definition
+  - `loginWithGoogle(idToken: String!)` mutation
+  - `currentViewer` query
+
+#### Frontend Reference Implementation (boltFoundry)
+
+- **[`apps/boltFoundry/components/CurrentViewer/LoginWithGoogleButton.tsx`](../../../../apps/boltFoundry/components/CurrentViewer/LoginWithGoogleButton.tsx)** -
+  Complete GSI implementation (commented out)
+  - Google script loading and initialization
+  - Button rendering and styling
+  - Credential response handling
+  - GraphQL mutation integration
+  - Error handling and loading states
+
+- **[`apps/boltFoundry/components/CurrentViewer/LoginPage.tsx`](../../../../apps/boltFoundry/components/CurrentViewer/LoginPage.tsx)** -
+  Login page implementation (commented out)
+  - Isograph integration patterns
+  - Authentication state management
+  - Redirect logic
+
+- **[`apps/boltFoundry/contexts/AppEnvironmentContext.tsx`](../../../../apps/boltFoundry/contexts/AppEnvironmentContext.tsx)** -
+  App context patterns
+  - User state management
+  - Feature flags and configuration
+  - Environment variable handling
+
+- **[`apps/boltFoundry/__generated__/configKeys.ts`](../../../../apps/boltFoundry/__generated__/configKeys.ts)** -
+  Environment configuration
+  - `GOOGLE_OAUTH_CLIENT_ID` setup example
+  - Configuration variable patterns
+
+#### Testing References
+
+- **[`apps/boltFoundry/__tests__/e2e/loginPage.test.e2e.ts`](../../../../apps/boltFoundry/__tests__/e2e/loginPage.test.e2e.ts)** -
+  Complete E2E authentication tests
+  - Google OAuth mocking patterns
+  - Session persistence testing
+  - Organization creation testing
+  - Cookie handling verification
+
+- **[`apps/boltFoundry/__tests__/e2e/utils.ts`](../../../../apps/boltFoundry/__tests__/e2e/utils.ts)** -
+  E2E testing utilities
+  - Authentication test helpers
+  - Mock user creation
+  - Test data patterns
+
+#### Configuration and Infrastructure
+
+- **[`packages/get-configuration-var/get-configuration-var.ts`](../../../../packages/get-configuration-var/get-configuration-var.ts)** -
+  Configuration management
+  - Correct pattern for environment variables
+  - 1Password integration for secrets
+  - Browser-safe configuration loading
+
+- **[`deno.jsonc`](../../../../deno.jsonc)** - Project configuration
+  - Import maps and path aliases
+  - Workspace configuration
+  - Compiler options
+
+- **[`apps/boltfoundry-com/isograph.config.json`](../../isograph.config.json)** -
+  Isograph configuration
+  - GraphQL schema endpoint
+  - Generated code output paths
+  - Type generation settings
+
+#### Database Models
+
+- **[`apps/bfDb/nodeTypes/BfOrganization.ts`](../../../../apps/bfDb/nodeTypes/BfOrganization.ts)** -
+  Organization model
+  - Auto-creation from Google Workspace domains
+  - Lifecycle hooks for demo data
+  - Relationship to BfPerson
+
+- **[`apps/bfDb/nodeTypes/BfPerson.ts`](../../../../apps/bfDb/nodeTypes/BfPerson.ts)** -
+  User model
+  - Email and profile management
+  - Organization membership
+  - GraphQL type definitions
+
+#### Design System Components
+
+- **[`apps/bfDs/components/BfDsButton.tsx`](../../../../apps/bfDs/components/BfDsButton.tsx)** -
+  Button component for login UI
+- **[`apps/bfDs/components/BfDsForm.tsx`](../../../../apps/bfDs/components/BfDsForm.tsx)** -
+  Form components
+- **[`apps/bfDs/components/BfDsSpinner.tsx`](../../../../apps/bfDs/components/BfDsSpinner.tsx)** -
+  Loading indicators
+- **[`apps/bfDs/components/BfDsCallout.tsx`](../../../../apps/bfDs/components/BfDsCallout.tsx)** -
+  Error/success messages
+
+#### Build and Development
+
+- **[`apps/boltfoundry-com/vite.config.ts`](../../vite.config.ts)** - Vite build
+  configuration
+- **[`apps/boltfoundry-com/deno.jsonc`](../../deno.jsonc)** - App-specific Deno
+  configuration
+- **[`infra/bft/tasks/build.bft.ts`](../../../../infra/bft/tasks/build.bft.ts)** -
+  Build task implementation
+
+### Related Implementation Plans
+
+- **[`apps/boltfoundry-com/memos/plans/simple-rlhf-mvp.md`](../simple-rlhf-mvp.md)** -
+  RLHF MVP plan (depends on auth)
+- **[`memos/plans/kamal-hetzner-deployment.md`](../../../../memos/plans/kamal-hetzner-deployment.md)** -
+  Production deployment plan
+- **[`docs/guides/getting-started.md`](../../../../docs/guides/getting-started.md)** -
+  General project setup guide
+
+### Troubleshooting Resources
+
+- **[`packages/logger/logger.ts`](../../../../packages/logger/logger.ts)** -
+  Logging utilities for debugging
+- **[`CLAUDE.md`](../../../../CLAUDE.md)** - Development environment setup and
+  commands
+- **[`README.md`](../../../../README.md)** - Project overview and quick start
+
+### Environment Setup Files
+
+- **[`.env.local`](../../../../.env.local)** - Local environment variables (add
+  GOOGLE_OAUTH_CLIENT_ID)
+- **[`infra/bff/commands/inject-secrets.bff.ts`](../../../../infra/bff/commands/inject-secrets.bff.ts)** -
+  1Password secrets injection
+- **[`packages/get-configuration-var/README.md`](../../../../packages/get-configuration-var/README.md)** -
+  Configuration management guide

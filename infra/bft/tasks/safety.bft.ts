@@ -216,7 +216,7 @@ async function safety(): Promise<number> {
         decision: "block",
         reason: `bft ${parsed.command}${
           parsed.subcommand ? ` ${parsed.subcommand}` : ""
-        } is not a defined BFT command. Run 'bft --help' to see available commands.`,
+        } is not a defined BFT command. Run 'bft help' to see available commands.`,
       };
       ui.output(JSON.stringify(output));
     } else if (safe) {
