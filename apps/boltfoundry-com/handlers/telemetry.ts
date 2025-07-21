@@ -137,11 +137,10 @@ export async function handleTelemetryRequest(
       // Create new deck
       deck = await org.createTargetNode(BfDeck, {
         name: deckName,
-        systemPrompt: deckContent,
+        content: deckContent,
         description: `Auto-created from telemetry for ${deckName}`,
         slug,
       }) as BfDeck;
-      await deck.afterCreate();
       logger.info(`Created new deck: ${deckName} (slug: ${slug})`);
     }
 
@@ -155,6 +154,7 @@ export async function handleTelemetryRequest(
     };
 
     const sample = await deck.createTargetNode(BfSample, {
+      name: `Telemetry Sample ${Date.now()}`,
       completionData: JSON.stringify(completionData),
       collectionMethod: "telemetry",
     });

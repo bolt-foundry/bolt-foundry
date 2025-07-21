@@ -73,7 +73,7 @@ Deno.test("createDeck mutation creates deck and auto-generates graders", async (
       mutation {
         createDeck(
           name: "Test Code Review Deck"
-          systemPrompt: "Evaluate code review responses for accuracy and helpfulness."
+          content: "Evaluate code review responses for accuracy and helpfulness."
           description: "A test deck for code review evaluation"
           slug: "test-org_test-code-review-deck"
         ) {
@@ -134,7 +134,7 @@ Deno.test("submitSample mutation creates sample linked to deck", async () => {
       mutation {
         createDeck(
           name: "Test Sample Deck"
-          systemPrompt: "Evaluate responses for quality."
+          content: "Evaluate responses for quality."
           description: "A test deck for sample submission"
           slug: "test-org_test-sample-deck"
         ) {
