@@ -24,6 +24,18 @@ env:
     SQLITE_DB_PATH: /data/bfdb.sqlite
     BF_ENV: production
 
+# HyperDX logging configuration
+logging:
+  driver: fluentd
+  options:
+    fluentd-address: tls://in-otel.hyperdx.io:24225
+    labels: '__HDX_API_KEY,service.name'
+
+# Docker labels for HyperDX
+labels:
+  __HDX_API_KEY: ${hyperdx_api_key}
+  service.name: boltfoundry-com
+
 aliases:
   console: app exec --interactive --reuse "bash"
   shell: app exec --interactive --reuse "bash"
