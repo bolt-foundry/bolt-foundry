@@ -6,9 +6,17 @@ servers:
   web:
     - ${floating_ip}
 
-# SSL via Let's Encrypt
-ssl:
-  email: support@boltfoundry.com
+# Kamal 2.x proxy configuration with SSL and healthcheck
+proxy:
+  ssl: true
+  host: ${domain}
+  app_port: 8000
+  healthcheck:
+    path: /
+    port: 8000
+    max_attempts: 7
+    interval: 10
+    timeout: 5
 
 registry:
   # Use GitHub Container Registry for simplicity
@@ -40,12 +48,6 @@ aliases:
   console: app exec --interactive --reuse "bash"
   shell: app exec --interactive --reuse "bash"
   logs: app logs --follow
-
-# Health check
-healthcheck:
-  path: /
-  port: 8000
-  max_attempts: 7
 
 # Database volume (mounted from Hetzner volume)
 volumes:
