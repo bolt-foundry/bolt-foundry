@@ -160,7 +160,7 @@ function getFormatArgs(format: string): Array<string> {
     case "webm":
       return ["-c:v", "libvpx-vp9"];
     case "gif":
-      return ["-vf", "fps=10,scale=640:-1:flags=lanczos,palettegen"];
+      return ["-vf", "fps=10,flags=lanczos,palettegen"];
     default:
       return [];
   }

@@ -27,6 +27,11 @@ export async function startScreencastRecording(
 
   await ensureDir(outputDir);
 
+  // Get current viewport dimensions to match screencast
+  const viewport = page.viewport();
+  const maxWidth = viewport?.width || 1280;
+  const maxHeight = viewport?.height || 800;
+
   const session: VideoRecordingSession = {
     frames: [],
     startTime: Date.now(),
@@ -36,11 +41,44 @@ export async function startScreencastRecording(
   };
 
   await cdpSession.send("Page.enable");
+
+  // CRITICAL FIX: Lock viewport dimensions using Device Metrics Override
+  // This prevents dimension changes when DOM overlays are injected
+  await cdpSession.send("Emulation.setDeviceMetricsOverride", {
+    width: maxWidth,
+    height: maxHeight,
+    deviceScaleFactor: 1,
+    mobile: false,
+    screenWidth: maxWidth,
+    screenHeight: maxHeight,
+  });
+
+  // ADDITIONAL FIX: Explicitly set visible size for screencast recording
+  // This ensures screencast dimensions match exactly regardless of browser UI
+  try {
+    await cdpSession.send("Emulation.setVisibleSize", {
+      width: maxWidth,
+      height: maxHeight,
+    });
+    logger.info(
+      `Visible size set to ${maxWidth}×${maxHeight} for screencast consistency`,
+    );
+  } catch (error) {
+    logger.warn(
+      "setVisibleSize not supported, falling back to device metrics only:",
+      error,
+    );
+  }
+
+  logger.info(
+    `Device metrics locked to ${maxWidth}×${maxHeight} for stable recording`,
+  );
+
   await cdpSession.send("Page.startScreencast", {
     format: "png",
     quality: 80,
-    maxWidth: 1920,
-    maxHeight: 1080,
+    maxWidth,
+    maxHeight,
     everyNthFrame: 1, // Capture every frame
   });
 
