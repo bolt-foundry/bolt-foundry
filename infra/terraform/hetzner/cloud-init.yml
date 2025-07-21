@@ -1,0 +1,15 @@
+#cloud-config
+packages:
+  - docker.io
+  - docker-compose
+
+runcmd:
+  - systemctl enable docker
+  - systemctl start docker
+  - usermod -aG docker root
+  # Mount database volume
+  - if ! blkid /dev/sdb; then mkfs.ext4 /dev/sdb; fi # Only format if not already formatted
+  - mkdir -p /mnt/database
+  - mount /dev/sdb /mnt/database
+  - echo '/dev/sdb /mnt/database ext4 defaults 0 0' >> /etc/fstab
+  - chown -R 1000:1000 /mnt/database # Match container user
