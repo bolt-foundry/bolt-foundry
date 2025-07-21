@@ -15,7 +15,7 @@ terraform {
     bucket                      = "boltfoundry-terraform-state"
     key                         = "boltfoundry-com/terraform.tfstate"
     region                      = "us-east-1"  # Required but ignored by Hetzner
-    endpoint                    = var.s3_endpoint
+    # endpoint configured via TF_CLI_INIT_BACKEND_CONFIG_ENDPOINT env var
     skip_credentials_validation = true
     skip_metadata_api_check     = true
     skip_region_validation      = true
@@ -45,10 +45,6 @@ variable "github_username" {
   type        = string
 }
 
-variable "s3_endpoint" {
-  description = "Hetzner Object Storage S3 endpoint URL"
-  type        = string
-}
 
 variable "ssh_public_key" {
   description = "SSH public key for server access"
