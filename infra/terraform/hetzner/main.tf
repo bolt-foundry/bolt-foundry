@@ -58,6 +58,12 @@ variable "domain_name" {
   default     = "next.boltfoundry.com"
 }
 
+variable "hyperdx_api_key" {
+  description = "HyperDX API key for logging"
+  type        = string
+  sensitive   = true
+}
+
 provider "hcloud" {
   token = var.hcloud_token
 }
@@ -126,9 +132,10 @@ resource "cloudflare_record" "web" {
 # Generate Kamal config with floating IP and domain
 resource "local_file" "kamal_config" {
   content = templatefile("${path.module}/deploy.yml.tpl", {
-    floating_ip     = hcloud_floating_ip.web.ip_address
-    domain          = var.domain_name
-    github_username = var.github_username
+    floating_ip      = hcloud_floating_ip.web.ip_address
+    domain           = var.domain_name
+    github_username  = var.github_username
+    hyperdx_api_key  = var.hyperdx_api_key
   })
   filename = "${path.module}/../../../config/deploy.yml"
 }
