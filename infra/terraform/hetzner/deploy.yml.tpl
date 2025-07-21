@@ -8,7 +8,8 @@ servers:
 
 # Builder configuration for Kamal 2.x
 builder:
-  arch: amd64
+  arch:
+    - amd64
 
 # Kamal 2.x proxy configuration with SSL and healthcheck
 proxy:
@@ -17,8 +18,6 @@ proxy:
   app_port: 8000
   healthcheck:
     path: /
-    port: 8000
-    max_attempts: 7
     interval: 10
     timeout: 5
 
