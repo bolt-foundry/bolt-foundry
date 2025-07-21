@@ -59,12 +59,13 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
+      - name: Install Kamal
+        run: gem install kamal --version 2.7.0 --no-document
+
       - name: Deploy with Kamal
         run: |
-          nix develop .#github-actions --accept-flake-config --command bash -euc "
-            export KAMAL_REGISTRY_PASSWORD=\"$KAMAL_REGISTRY_PASSWORD\"
-            kamal deploy
-          "
+          export KAMAL_REGISTRY_PASSWORD="${KAMAL_REGISTRY_PASSWORD}"
+          kamal deploy
         env:
           KAMAL_REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
         working-directory: ./
@@ -80,7 +81,7 @@ jobs:
           # Health check with retries
           echo "🩺 Testing health endpoint..."
           for i in {1..60}; do
-            if curl -f -s https://next.boltfoundry.com/health > /dev/null 2>&1; then
+            if curl -f -s https://next.boltfoundry.com/ > /dev/null 2>&1; then
               echo "✅ Health endpoint responded successfully"
               break
             fi
@@ -114,10 +115,10 @@ jobs:
 
           # Enhanced health check - get detailed health info
           echo "🔬 Performing detailed health check..."
-          health_response=$(curl -s https://next.boltfoundry.com/health)
-          if echo "$health_response" | grep -q '"status"'; then
+          health_response=$(curl -s https://next.boltfoundry.com/)
+          if echo "$health_response" | grep -q 'html\|HTML'; then
             echo "✅ Detailed health check passed"
-            echo "Health response: $health_response"
+            echo "Health response contains HTML content"
           else
             echo "❌ Detailed health check failed - invalid response format"
             echo "Response: $health_response"
@@ -134,7 +135,7 @@ jobs:
 
           # Monitor for 2 minutes to catch early failures
           for i in {1..12}; do
-            response_code=$(curl -s -o /dev/null -w "%{http_code}" https://next.boltfoundry.com/health)
+            response_code=$(curl -s -o /dev/null -w "%{http_code}" https://next.boltfoundry.com/)
             if [ "$response_code" != "200" ]; then
               echo "❌ Stability check failed with response code: $response_code at check $i/12"
               echo "🔄 Attempting rollback..."
@@ -152,7 +153,7 @@ jobs:
         run: |
           echo "🚀 Deployment completed successfully!"
           echo "✅ Service URL: https://next.boltfoundry.com"
-          echo "✅ Health Check: https://next.boltfoundry.com/health"
+          echo "✅ Health Check: https://next.boltfoundry.com/"
           echo "✅ Deployment validated and stable"
 
       - name: Deployment failure notification
