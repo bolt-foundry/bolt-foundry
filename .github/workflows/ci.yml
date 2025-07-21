@@ -29,7 +29,7 @@ jobs:
 
       - uses: DeterminateSystems/flakehub-cache-action@main
 
-      # 1️⃣ RESTORE
+      # 1️⃣ RESTORE Dependencies
       - name: Restore Deno / vendored / node cache
         id: cache-deno
         uses: actions/cache/restore@v4
@@ -41,6 +41,19 @@ jobs:
           key: deno-${{ runner.os }}-${{ hashFiles('**/deno.json*', '**/package.json', '**/deno.lock') }}
           restore-keys: |
             deno-${{ runner.os }}-
+
+      # 2️⃣ RESTORE Build Artifacts
+      - name: Restore build artifacts and generated code
+        id: cache-build
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            build/
+            **/apps/*/__generated__/
+            apps/bfDb/graphql/__generated__/
+          key: build-${{ runner.os }}-${{ hashFiles('infra/bft/tasks/build.bft.ts', 'infra/bft/tasks/iso.bft.ts', 'infra/bft/tasks/genGqlTypes.bft.ts', 'apps/bfDb/graphql/**/*.ts', 'apps/*/isograph.config.json', 'flake.lock') }}
+          restore-keys: |
+            build-${{ runner.os }}-
 
       - name: Put repo tools on PATH
         run: echo "$GITHUB_WORKSPACE/infra/bin" >> "$GITHUB_PATH"
@@ -65,6 +78,17 @@ jobs:
             node_modules
             /home/runner/.cache/deno
           key: ${{ steps.cache-deno.outputs.cache-primary-key }}
+
+      # 3️⃣ SAVE Build Artifacts
+      - name: Save build artifacts and generated code
+        if: ${{ steps.cache-build.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            build/
+            **/apps/*/__generated__/
+            apps/bfDb/graphql/__generated__/
+          key: ${{ steps.cache-build.outputs.cache-primary-key }}
 
   lint:
     runs-on: ubuntu-latest
