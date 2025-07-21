@@ -98,7 +98,7 @@ workflow.
 
 ### Milestone 1: Backend Demo Data
 
-**Implement BfOrganization.afterCreate() lifecycle hook**:
+**Implemented BfOrganization.afterCreate() lifecycle hook**:
 
 - Create customer support demo deck with system prompt
 - Generate 4 realistic conversation samples (billing, technical, returns,
