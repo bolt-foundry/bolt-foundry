@@ -165,6 +165,13 @@ export async function setupE2ETest(options: {
     `Starting e2e test with baseUrl: ${baseUrl}, headless: ${headless}`,
   );
 
+  if (!headless) {
+    logger.warn(
+      "Running in non-headless mode - video recordings may have inconsistent dimensions due to browser UI (address bar, toolbars). " +
+        "For consistent video dimensions, set BF_E2E_SHOW_BROWSER=false or run in headless mode.",
+    );
+  }
+
   try {
     // Find the browser executable path
     let chromiumPath = "chromium";
@@ -243,7 +250,12 @@ export async function setupE2ETest(options: {
     const browser = await launch({
       headless,
       executablePath: chromiumPath,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--window-size=1280,720",
+      ],
+      defaultViewport: { width: 1280, height: 720 },
       dumpio: false, // Don't dump Chrome's stdio to prevent resource leaks
     });
 
@@ -264,7 +276,7 @@ export async function setupE2ETest(options: {
     }
 
     const page = await browser.newPage();
-    await page.setViewport({ width: 1280, height: 800 });
+    await page.setViewport({ width: 1280, height: 720 });
 
     page.on("console", (msg) => {
       const line = `[browser ${msg.type()}] ${msg.text()}`;
@@ -591,6 +603,23 @@ export async function setupE2ETest(options: {
           },
           showSubtitle: async (text: string): Promise<void> => {
             await page.evaluate((subtitleText) => {
+              // Get or create E2E overlay container
+              let container = document.getElementById("e2e-overlay-container");
+              if (!container) {
+                container = document.createElement("div");
+                container.id = "e2e-overlay-container";
+                container.style.cssText = `
+                  position: fixed;
+                  top: 0;
+                  left: 0;
+                  width: 100%;
+                  height: 100%;
+                  pointer-events: none;
+                  z-index: 2147483647;
+                `;
+                document.body.appendChild(container);
+              }
+
               // Remove existing subtitle if present
               const existing = document.getElementById("e2e-subtitle");
               if (existing) existing.remove();
@@ -611,7 +640,7 @@ export async function setupE2ETest(options: {
                 font-size: 16px;
                 font-family: system-ui, -apple-system, sans-serif;
                 font-weight: 500;
-                z-index: 2147483646;
+                z-index: 5;
                 pointer-events: none;
                 max-width: 80vw;
                 text-align: center;
@@ -621,7 +650,7 @@ export async function setupE2ETest(options: {
                 transform: translateX(-50%) translateY(10px);
               `;
 
-              document.body.appendChild(subtitle);
+              container.appendChild(subtitle);
 
               // Trigger animation
               requestAnimationFrame(() => {
@@ -654,6 +683,25 @@ export async function setupE2ETest(options: {
                   return;
                 }
 
+                // Get or create E2E overlay container
+                let container = document.getElementById(
+                  "e2e-overlay-container",
+                );
+                if (!container) {
+                  container = document.createElement("div");
+                  container.id = "e2e-overlay-container";
+                  container.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    pointer-events: none;
+                    z-index: 2147483647;
+                  `;
+                  document.body.appendChild(container);
+                }
+
                 // Remove existing highlights
                 document.querySelectorAll(".e2e-highlight").forEach((h) =>
                   h.remove()
@@ -673,7 +721,7 @@ export async function setupE2ETest(options: {
                 height: ${rect.height + 8}px;
                 border: 3px solid #ff6b35;
                 border-radius: 8px;
-                z-index: 2147483645;
+                z-index: 20;
                 pointer-events: none;
                 box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.2);
                 animation: highlight-pulse 2s ease-in-out infinite;
@@ -694,7 +742,7 @@ export async function setupE2ETest(options: {
                 font-size: 14px;
                 font-family: system-ui, -apple-system, sans-serif;
                 font-weight: 500;
-                z-index: 2147483646;
+                z-index: 25;
                 pointer-events: none;
                 white-space: nowrap;
                 box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
@@ -722,8 +770,8 @@ export async function setupE2ETest(options: {
                   document.head.appendChild(style);
                 }
 
-                document.body.appendChild(highlight);
-                document.body.appendChild(annotation);
+                container.appendChild(highlight);
+                container.appendChild(annotation);
 
                 // Trigger annotation animation
                 requestAnimationFrame(() => {
