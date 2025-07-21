@@ -1,5 +1,6 @@
 import { handleTelemetryRequest } from "./handlers/telemetry.ts";
 import { handleGraphQLRequest } from "./handlers/graphql.ts";
+import { handleGoogleAuthRequest } from "./handlers/googleAuth.ts";
 
 export interface ApiRoute {
   pattern: URLPattern;
@@ -33,6 +34,10 @@ export function createApiRoutes(
     {
       pattern: new URLPattern({ pathname: "/graphql" }),
       handler: handleGraphQLRequest,
+    },
+    {
+      pattern: new URLPattern({ pathname: "/api/auth/google" }),
+      handler: handleGoogleAuthRequest,
     },
   ];
 }
