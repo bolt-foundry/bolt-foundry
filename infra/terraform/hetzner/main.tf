@@ -12,7 +12,7 @@ terraform {
   }
   
   backend "s3" {
-    bucket                      = "boltfoundry-terraform-state"
+    bucket                      = "bfterraform"
     key                         = "boltfoundry-com/terraform.tfstate"
     region                      = "us-east-1"  # Required but ignored by Hetzner
     # endpoint configured via endpoint parameter in terraform init
