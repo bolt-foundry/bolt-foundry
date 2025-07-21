@@ -41,7 +41,11 @@ jobs:
           ssh-keyscan -H $(terraform output -raw server_ip 2>/dev/null || echo "placeholder-ip") >> ~/.ssh/known_hosts || true
 
       - name: Deploy with Kamal
-        run: kamal deploy
+        run: |
+          nix develop .#github-actions --accept-flake-config --command bash -euc "
+            export KAMAL_REGISTRY_PASSWORD=\"$KAMAL_REGISTRY_PASSWORD\"
+            kamal deploy
+          "
         env:
           KAMAL_REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
         working-directory: ./
