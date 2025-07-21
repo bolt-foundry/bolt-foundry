@@ -61,6 +61,91 @@ export const insertContactSchema = createInsertSchema(contacts).pick({
   name: true,
   email: true,
   company: true,
+}).extend({
+  name: z.string().min(1).max(100).refine(
+    (name) => {
+      // Block SQL injection patterns
+      const sqlPatterns = [
+        /select\s*\(/i,
+        /union\s+select/i,
+        /insert\s+into/i,
+        /update\s+set/i,
+        /delete\s+from/i,
+        /drop\s+table/i,
+        /sleep\s*\(/i,
+        /waitfor\s+delay/i,
+        /benchmark\s*\(/i,
+      ];
+
+      return !sqlPatterns.some((pattern) => pattern.test(name));
+    },
+    { message: "Name contains invalid characters" },
+  ).refine(
+    (name) => {
+      // Block XSS patterns
+      const xssPatterns = [
+        /<script/i,
+        /javascript:/i,
+        /on\w+\s*=/i,
+        /<iframe/i,
+        /<object/i,
+        /<embed/i,
+      ];
+
+      return !xssPatterns.some((pattern) => pattern.test(name));
+    },
+    { message: "Name contains invalid characters" },
+  ),
+  email: z.string().min(1).max(100).refine(
+    (email) => {
+      // Apply same validation to email field
+      const maliciousPatterns = [
+        /select\s*\(/i,
+        /union\s+select/i,
+        /insert\s+into/i,
+        /update\s+set/i,
+        /delete\s+from/i,
+        /drop\s+table/i,
+        /sleep\s*\(/i,
+        /waitfor\s+delay/i,
+        /benchmark\s*\(/i,
+        /<script/i,
+        /javascript:/i,
+        /on\w+\s*=/i,
+        /<iframe/i,
+        /<object/i,
+        /<embed/i,
+      ];
+
+      return !maliciousPatterns.some((pattern) => pattern.test(email));
+    },
+    { message: "Email contains invalid characters" },
+  ),
+  company: z.string().min(1).max(100).refine(
+    (company) => {
+      // Apply same validation to company field
+      const maliciousPatterns = [
+        /select\s*\(/i,
+        /union\s+select/i,
+        /insert\s+into/i,
+        /update\s+set/i,
+        /delete\s+from/i,
+        /drop\s+table/i,
+        /sleep\s*\(/i,
+        /waitfor\s+delay/i,
+        /benchmark\s*\(/i,
+        /<script/i,
+        /javascript:/i,
+        /on\w+\s*=/i,
+        /<iframe/i,
+        /<object/i,
+        /<embed/i,
+      ];
+
+      return !maliciousPatterns.some((pattern) => pattern.test(company));
+    },
+    { message: "Company contains invalid characters" },
+  ),
 });
 
 export const updateContactSchema = z.object({
