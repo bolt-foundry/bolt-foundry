@@ -80,8 +80,8 @@ resource "hcloud_ssh_key" "deploy" {
 
 # Floating IP (created first, unassigned)
 resource "hcloud_floating_ip" "web" {
-  type     = "ipv4"
-  location = "ash"
+  type      = "ipv4"
+  home_location = "ash"
 }
 
 # Server
