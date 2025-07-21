@@ -3,6 +3,44 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with
 code in this repository.
 
+## Core Development Principle
+
+**🚀 Simple is almost always better than complex.**
+
+When in doubt, build the smallest thing that could work. Working code beats
+perfect code.
+
+## Development Philosophy
+
+### Move Fast and Ship
+
+- **Working > Perfect** - Ship functional solutions quickly over architecturally
+  perfect ones
+- **Iterate in production** - Get something working in users' hands, then
+  improve based on real usage
+- **Bias toward action** - When uncertain between approaches, pick one and ship
+  it
+- **Fail fast** - Build the simplest thing that could work, learn from failures
+  quickly
+
+### Code Quality Expectations
+
+- **Good enough is good enough** - Don't over-engineer unless performance/scale
+  demands it
+- **Pragmatic solutions encouraged** - Hardcode values, copy-paste code, use
+  quick hacks if they solve the problem
+- **Technical debt is acceptable** - Mark it with TODOs, but don't let it block
+  shipping
+- **Refactor after shipping** - Clean up working code rather than perfecting
+  unshipped code
+
+### When Building Features
+
+1. **Start with the hack** - Build the most direct solution first
+2. **Ship the MVP** - Get basic functionality working and deployed
+3. **Measure real usage** - Let actual user behavior guide improvements
+4. **Iterate based on data** - Don't guess what users want
+
 ## Project Overview
 
 **Bolt Foundry** - Customer Success Platform for AI that enables continuous
@@ -11,7 +49,7 @@ improvement through customer feedback using RLHF workflows.
 - **Runtime**: Deno 2.x with TypeScript
 - **Source Control**: Sapling SCM (not Git)
 - **Task Runner**: `bft <command>` (Bolt Foundry Tool)
-- **Package Management**: Import maps (no npm)
+- **Package Management**: Nix and `deno add`
 
 ## Development Commands
 
@@ -93,9 +131,11 @@ improvement through customer feedback using RLHF workflows.
 
 ### Package Management
 
-- **No npm install required** - uses Deno's import maps in `deno.jsonc`
+- **Nix for system dependencies** - Use `nix develop` to enter development shell
+- **Deno for JavaScript/TypeScript packages** - Use `deno add <package>` to add
+  dependencies
 - **JSR dependencies**: `@std/*`, `@deno/*` packages from jsr.io
-- **npm dependencies**: Direct `npm:package-name` imports
+- **npm dependencies**: Use `deno add npm:package-name`
 - **Local imports**: `@bfmono/` prefix for monorepo modules
 
 ### Database Layer (bfDb)
@@ -104,3 +144,14 @@ improvement through customer feedback using RLHF workflows.
 - Automatic GraphQL schema generation via decorators
 - Multiple backend support
 - Connection-based pagination and traversal patterns
+
+---
+
+## 🎯 Final Reminder
+
+**Before building anything: What's the simplest version that could work?**
+
+- Start small and iterate
+- Working code beats perfect architecture
+- You can always improve later
+- Simple is almost always better than complex
