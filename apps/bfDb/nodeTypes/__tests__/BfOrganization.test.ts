@@ -17,13 +17,14 @@ Deno.test("BfOrganization - Organization isolation", async () => {
     const sharedProps = {
       deck: {
         name: "Shared Deck",
-        systemPrompt: "Shared system prompt",
+        content: "Shared system prompt",
         description: "Shared description",
       },
       grader: {
         graderText: "Shared grader text",
       },
       sample: {
+        name: "Shared Sample",
         completionData: {
           id: "shared-completion",
           object: "chat.completion" as const,

@@ -22,7 +22,7 @@ Deno.test("RLHF Workflow - Create deck via sample submission, add AI evaluation 
     // Create deck (simulating telemetry endpoint)
     const deck = await org.createTargetNode(BfDeck, {
       name: "customer-service",
-      systemPrompt: "You are a helpful customer service agent.",
+      content: "You are a helpful customer service agent.",
       description: "Auto-created from telemetry",
       slug: "test-org_customer-service",
     });
@@ -38,6 +38,7 @@ Deno.test("RLHF Workflow - Create deck via sample submission, add AI evaluation 
         },
       }),
       collectionMethod: "telemetry",
+      name: "Customer Support Sample",
     });
 
     // Mock AI evaluation by directly creating a grader result
@@ -57,6 +58,7 @@ Deno.test("RLHF Workflow - Create deck via sample submission, add AI evaluation 
     // Verify workflow
     assertEquals(deck.props.name, "customer-service");
     assertEquals(sample.props.collectionMethod, "telemetry");
+    assertEquals(sample.props.name, "Customer Support Sample");
     assertEquals(feedback.props.score, 3);
     assertExists(feedback.props.explanation);
   });

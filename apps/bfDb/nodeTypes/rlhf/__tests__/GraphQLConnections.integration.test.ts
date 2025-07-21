@@ -31,12 +31,13 @@ Deno.test("GraphQL Connection Integration - BfDeck.samples connection without pa
 
     const deck = await org.createTargetNode(BfDeck, {
       name: "Integration Test Deck",
-      systemPrompt: "Test GraphQL connections",
+      content: "Test GraphQL connections",
       description: "Deck for testing connection resolvers",
       slug: "integration-test-deck",
     });
 
     const sample1 = await deck.createTargetNode(BfSample, {
+      name: "Sample 1",
       completionData: {
         id: "sample-1",
         model: "gpt-4",
@@ -51,6 +52,7 @@ Deno.test("GraphQL Connection Integration - BfDeck.samples connection without pa
     });
 
     const sample2 = await deck.createTargetNode(BfSample, {
+      name: "Sample 2",
       completionData: {
         id: "sample-2",
         model: "gpt-4",
@@ -100,12 +102,13 @@ Deno.test("GraphQL Connection Integration - BfDeck.samples connection with pagin
 
     const deck = await org.createTargetNode(BfDeck, {
       name: "Pagination Test Deck",
-      systemPrompt: "Test pagination errors",
+      content: "Test pagination errors",
       description: "Deck for testing pagination error handling",
       slug: "pagination-test-deck",
     });
 
     await deck.createTargetNode(BfSample, {
+      name: "Pagination Test Sample",
       completionData: {
         id: "sample-1",
         model: "gpt-4",
@@ -158,13 +161,14 @@ Deno.test("GraphQL Connection Integration - BfSample.results connection without 
 
     const deck = await org.createTargetNode(BfDeck, {
       name: "Results Test Deck",
-      systemPrompt: "Test result connections",
+      content: "Test result connections",
       description: "Deck for testing result connection resolvers",
       slug: "results-test-deck",
     });
 
     // Create sample and graders for test setup
     const sample = await deck.createTargetNode(BfSample, {
+      name: "Results Test Sample",
       completionData: {
         id: "sample-1",
         model: "gpt-4",
@@ -243,13 +247,14 @@ Deno.test("GraphQL Connection Integration - BfSample.results connection with pag
 
     const deck = await org.createTargetNode(BfDeck, {
       name: "Pagination Error Test Deck",
-      systemPrompt: "Test pagination errors in results",
+      content: "Test pagination errors in results",
       description: "Testing pagination error handling",
       slug: "pagination-error-test-deck",
     });
 
     // Create sample for test setup
     const sample = await deck.createTargetNode(BfSample, {
+      name: "Pagination Error Test Sample",
       completionData: {
         id: "sample-1",
         model: "gpt-4",
@@ -309,7 +314,7 @@ Deno.test("GraphQL Connection Integration - empty connections should work correc
 
     const deck = await org.createTargetNode(BfDeck, {
       name: "Empty Deck",
-      systemPrompt: "Empty deck for testing",
+      content: "Empty deck for testing",
       description: "This deck has no samples",
       slug: "empty-deck",
     });
@@ -343,12 +348,13 @@ Deno.test("GraphQL Connection Integration - connection preserves node properties
 
     const deck = await org.createTargetNode(BfDeck, {
       name: "Property Preservation Deck",
-      systemPrompt: "Testing property preservation",
+      content: "Testing property preservation",
       description: "Verify all properties are maintained",
       slug: "property-preservation-deck",
     });
 
     const sample = await deck.createTargetNode(BfSample, {
+      name: "Property Preservation Sample",
       completionData: {
         id: "prop-sample",
         model: "gpt-4-turbo",

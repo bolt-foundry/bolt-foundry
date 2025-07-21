@@ -3,6 +3,7 @@ import type { OpenAI } from "@openai/openai";
 
 export { BfClient } from "./BfClient.ts";
 export * from "./deck.ts";
+export { readLocalDeck } from "./deck.ts";
 
 let logger = console;
 const enableLogging = false;

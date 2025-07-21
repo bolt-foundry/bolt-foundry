@@ -185,8 +185,8 @@ Deno.test("GraphQL spec inheritance - BfDeck should inherit id field from BfNode
   );
   assert(deckSpec.fields.name, "BfDeck should have its own name field");
   assert(
-    deckSpec.fields.systemPrompt,
-    "BfDeck should have its own systemPrompt field",
+    deckSpec.fields.content,
+    "BfDeck should have its own content field",
   );
 });
 
