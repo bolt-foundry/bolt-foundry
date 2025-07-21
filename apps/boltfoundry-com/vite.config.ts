@@ -1,3 +1,4 @@
+import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 import { defineConfig } from "vite";
 import deno from "@deno/vite-plugin";
 import react from "@vitejs/plugin-react";
@@ -8,6 +9,13 @@ export default defineConfig({
     deno(),
     react({ babel: { babelrc: true } }),
   ],
+  define: {
+    "globalThis.__ENVIRONMENT__": JSON.stringify({
+      GOOGLE_OAUTH_CLIENT_ID: getConfigurationVariable(
+        "GOOGLE_OAUTH_CLIENT_ID",
+      ),
+    }),
+  },
   server: {
     port: 8080,
     hmr: {
