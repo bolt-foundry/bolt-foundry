@@ -3,6 +3,7 @@ import { BfDsButton } from "@bfmono/apps/bfDs/index.ts";
 import { BfDsCopyButton } from "@bfmono/apps/bfDs/index.ts";
 import { useRouter } from "../contexts/RouterContext.tsx";
 import { Nav } from "./Nav.tsx";
+import { WaitlistSection } from "./WaitlistSection.tsx";
 
 export const Home = iso(`
   field Query.Home @component {
@@ -66,6 +67,9 @@ export const Home = iso(`
           </div>
         </div>
       </main>
+
+      {/* Waitlist Section */}
+      <WaitlistSection />
 
       {/* Footer */}
       <div className="landing-footer">
