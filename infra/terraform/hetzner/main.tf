@@ -128,13 +128,14 @@ resource "hcloud_snapshot" "server_backup" {
   }
 }
 
-# Cloudflare DNS record
+# Cloudflare DNS record with proxy enabled for SSL and DDoS protection
 resource "cloudflare_record" "web" {
   zone_id = var.cloudflare_zone_id
   name    = var.domain_name == "boltfoundry.com" ? "@" : replace(var.domain_name, ".boltfoundry.com", "")
   value   = hcloud_floating_ip.web.ip_address
   type    = "A"
   ttl     = 1  # Auto TTL
+  proxied = true  # Enable Cloudflare proxy for SSL termination and protection
 }
 
 # Generate Kamal config with floating IP and domain
