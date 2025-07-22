@@ -459,8 +459,25 @@ async function renderDeck(
   return request;
 }
 
+function formatOutput(
+  request: OpenAICompletionRequest,
+  format: string,
+): string {
+  switch (format) {
+    case "markdown":
+      return request.messages.map((m) => `**${m.role}:** ${m.content}`).join(
+        "\n\n",
+      );
+    case "raw":
+      return request.messages.map((m) => m.content).join("\n\n");
+    case "json":
+    default:
+      return JSON.stringify(request, null, 2);
+  }
+}
+
 // Export functions and types for use by other modules
-export { processMarkdownIncludes, renderDeck };
+export { formatOutput, processMarkdownIncludes, renderDeck };
 export type { ProcessedMarkdown, Sample };
 
 export const renderCommand: Command = {
@@ -469,7 +486,7 @@ export const renderCommand: Command = {
   run: async (args: Array<string>) => {
     // Parse arguments using Deno's standard library
     const flags = parseFlags(args, {
-      string: ["context-file"],
+      string: ["context-file", "format"],
       boolean: ["help"],
       stopEarly: false,
       "--": true,
@@ -483,11 +500,15 @@ export const renderCommand: Command = {
       ui.info(
         "  --context-file <path>  Path to TOML file with context values",
       );
+      ui.info(
+        "  --format <type>        Output format: json (default), markdown, raw",
+      );
       ui.info("  --help                 Show this help message");
       ui.info("");
       ui.info("Examples:");
       ui.info("  aibff render deck.md");
       ui.info("  aibff render deck.md --context-file context.toml");
+      ui.info("  aibff render deck.md --format markdown");
       Deno.exit(1);
     }
 
@@ -544,7 +565,8 @@ export const renderCommand: Command = {
       // Render the deck with context injection
       const openAiRequest = await renderDeck(deckPath, contextValues, {});
 
-      ui.output(JSON.stringify(openAiRequest, null, 2));
+      const format = flags.format || "json";
+      ui.output(formatOutput(openAiRequest, format));
     } catch (error) {
       if (error instanceof Deno.errors.NotFound) {
         ui.error(`File not found: ${deckPath}`);

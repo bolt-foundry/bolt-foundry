@@ -249,7 +249,7 @@ Deno.test("RLHF Pipeline Integration - Complete end-to-end workflow", async () =
   });
 });
 
-Deno.test("Organization auto-creates demo RLHF content", async () => {
+Deno.test("Organization creates demo RLHF content via createDemoDeck()", async () => {
   await withIsolatedDb(async () => {
     const cv = makeLoggedInCv({ orgSlug: "demo-org", email: "test@demo.com" });
 
@@ -259,7 +259,10 @@ Deno.test("Organization auto-creates demo RLHF content", async () => {
     });
     await org.save();
 
-    // Check if a deck was automatically created
+    // Explicitly create demo deck (now done during Google OAuth, not afterCreate)
+    await org.createDemoDeck();
+
+    // Check if a deck was created
     const decks = await org.queryTargetInstances(BfDeck);
     assertEquals(decks.length, 1);
     assertEquals(decks[0].props.name, "Customer Support Response Evaluator");
