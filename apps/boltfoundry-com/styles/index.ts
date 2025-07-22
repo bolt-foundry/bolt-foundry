@@ -3,7 +3,6 @@
 
 import "../src/index.css";
 import "@bfmono/static/bfDsStyle.css";
-import "./test.css";
-import "./gradient.css";
+import "@bfmono/static/landingStyle.css";
 
 // Add any future CSS imports here
