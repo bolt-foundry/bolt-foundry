@@ -4,5 +4,6 @@
 import "../src/index.css";
 import "@bfmono/static/bfDsStyle.css";
 import "@bfmono/static/landingStyle.css";
+import "../components/WaitlistSection.css";
 
 // Add any future CSS imports here

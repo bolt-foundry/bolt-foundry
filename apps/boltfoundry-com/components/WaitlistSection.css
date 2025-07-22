@@ -1,0 +1,62 @@
+/* Waitlist Section Specific Styles */
+
+.waitlist-form-header {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.waitlist-form-header h2 {
+  font-size: 2.5rem;
+  font-family: var(--marketingFontFamily);
+  font-weight: 400;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+  color: var(--bfds-text);
+}
+
+.waitlist-form-header p {
+  font-size: 1.1rem;
+  line-height: 1.5;
+  color: var(--bfds-text-06);
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.waitlist-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.waitlist-form-loading {
+  justify-content: center;
+  padding: 1rem;
+  color: var(--bfds-text-06);
+  font-size: 0.9rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .waitlist-form-header h2 {
+    font-size: 2rem;
+  }
+
+  .waitlist-form-header p {
+    font-size: 1rem;
+  }
+
+  .substack-form {
+    max-width: 100%;
+    padding: 0 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .waitlist-form-header h2 {
+    font-size: 1.8rem;
+  }
+
+  .waitlist-form {
+    gap: 1rem;
+  }
+}
