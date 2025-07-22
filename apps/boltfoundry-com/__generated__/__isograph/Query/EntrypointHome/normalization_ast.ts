@@ -12,6 +12,24 @@ const normalizationAst: NormalizationAst = {
       fieldName: "__typename",
       arguments: null,
     },
+    {
+      kind: "Linked",
+      fieldName: "githubRepoStats",
+      arguments: null,
+      concreteType: "GithubRepoStats",
+      selections: [
+        {
+          kind: "Scalar",
+          fieldName: "id",
+          arguments: null,
+        },
+        {
+          kind: "Scalar",
+          fieldName: "stars",
+          arguments: null,
+        },
+      ],
+    },
   ],
 };
 export default normalizationAst;
