@@ -58,6 +58,12 @@ variable "domain_name" {
   default     = "next.boltfoundry.com"
 }
 
+variable "hyperdx_api_key" {
+  description = "HyperDX API key for logging"
+  type        = string
+  sensitive   = true
+}
+
 provider "hcloud" {
   token = var.hcloud_token
 }
@@ -72,6 +78,12 @@ resource "hcloud_ssh_key" "deploy" {
   public_key = var.ssh_public_key
 }
 
+# Floating IP (created first, unassigned)
+resource "hcloud_floating_ip" "web" {
+  type      = "ipv4"
+  home_location = "ash"
+}
+
 # Server
 resource "hcloud_server" "web" {
   name        = "boltfoundry-com"
@@ -80,13 +92,15 @@ resource "hcloud_server" "web" {
   location    = "ash"
   ssh_keys    = [hcloud_ssh_key.deploy.id]
   
-  user_data = file("${path.module}/cloud-init.yml")
+  user_data = templatefile("${path.module}/cloud-init.yml", {
+    floating_ip = hcloud_floating_ip.web.ip_address
+  })
 }
 
-# Floating IP
-resource "hcloud_floating_ip" "web" {
-  type      = "ipv4"
-  server_id = hcloud_server.web.id
+# Assign floating IP to server
+resource "hcloud_floating_ip_assignment" "web" {
+  floating_ip_id = hcloud_floating_ip.web.id
+  server_id      = hcloud_server.web.id
 }
 
 # Database volume (independent of server)
@@ -114,21 +128,23 @@ resource "hcloud_snapshot" "server_backup" {
   }
 }
 
-# Cloudflare DNS record
+# Cloudflare DNS record with proxy enabled for SSL and DDoS protection
 resource "cloudflare_record" "web" {
   zone_id = var.cloudflare_zone_id
   name    = var.domain_name == "boltfoundry.com" ? "@" : replace(var.domain_name, ".boltfoundry.com", "")
   value   = hcloud_floating_ip.web.ip_address
   type    = "A"
   ttl     = 1  # Auto TTL
+  proxied = true  # Enable Cloudflare proxy for SSL termination and protection
 }
 
 # Generate Kamal config with floating IP and domain
 resource "local_file" "kamal_config" {
   content = templatefile("${path.module}/deploy.yml.tpl", {
-    floating_ip     = hcloud_floating_ip.web.ip_address
-    domain          = var.domain_name
-    github_username = var.github_username
+    floating_ip      = hcloud_floating_ip.web.ip_address
+    domain           = var.domain_name
+    github_username  = var.github_username
+    hyperdx_api_key  = var.hyperdx_api_key
   })
   filename = "${path.module}/../../../config/deploy.yml"
 }

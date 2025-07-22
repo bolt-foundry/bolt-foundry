@@ -90,6 +90,7 @@
     "npm:@peculiar/asn1-x509@^2.3.8": "2.3.15",
     "npm:@pothos/core@^4.7.3": "4.7.3_graphql@16.11.0",
     "npm:@pothos/plugin-relay@^4.4.2": "4.6.2_@pothos+core@4.7.3__graphql@16.11.0_graphql@16.11.0",
+    "npm:@types/google.accounts@^0.0.17": "0.0.17",
     "npm:@types/matter-js@~0.19.8": "0.19.8",
     "npm:@types/node@*": "22.15.15",
     "npm:@types/pg@^8.15.4": "8.15.4",
@@ -1448,6 +1449,9 @@
     },
     "@types/estree@1.0.8": {
       "integrity": "sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w=="
+    },
+    "@types/google.accounts@0.0.17": {
+      "integrity": "sha512-ZDOmep4Zslca9pFJ7oXgg/DdirGU+tPuWlXRGfIFNqMtBvkEgzktY292O3V03Ul6AA7ye4CDVZlMnd9m1FeIeg=="
     },
     "@types/hast@3.0.4": {
       "integrity": "sha512-WPs+bbQw5aCj+x6laNGWLH3wviHtoCv/P3+otBhbOhJgG8qtpdAMlTCxLtsTWA7LH1Oh/bFCHsBn0TPS5m30EQ==",
@@ -3408,6 +3412,7 @@
       "npm:@neondatabase/serverless@^1.0.1",
       "npm:@pothos/core@^4.7.3",
       "npm:@pothos/plugin-relay@^4.4.2",
+      "npm:@types/google.accounts@^0.0.17",
       "npm:@types/matter-js@~0.19.8",
       "npm:@types/pg@^8.15.4",
       "npm:@types/react@19",

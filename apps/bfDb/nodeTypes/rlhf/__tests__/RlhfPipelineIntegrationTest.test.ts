@@ -34,7 +34,7 @@ Deno.test("RLHF Pipeline Integration - Complete end-to-end workflow", async () =
 
     const deck = await org.createTargetNode(BfDeck, {
       name: "Code Review Quality Deck",
-      systemPrompt:
+      content:
         "Evaluate code review responses for clarity, accuracy, and helpfulness. Rate on a scale of -3 to +3.",
       description:
         "A comprehensive deck for evaluating the quality of code review responses in software development teams.",
@@ -44,7 +44,7 @@ Deno.test("RLHF Pipeline Integration - Complete end-to-end workflow", async () =
     // Verify deck creation
     assertEquals(deck.props.name, "Code Review Quality Deck");
     assertEquals(
-      deck.props.systemPrompt,
+      deck.props.content,
       "Evaluate code review responses for clarity, accuracy, and helpfulness. Rate on a scale of -3 to +3.",
     );
     assertEquals(
@@ -111,6 +111,7 @@ Deno.test("RLHF Pipeline Integration - Complete end-to-end workflow", async () =
     };
 
     const sample = await deck.createTargetNode(BfSample, {
+      name: "Code Review Sample",
       completionData: completionData as unknown as JSONValue,
       collectionMethod: "manual",
     });
@@ -245,5 +246,22 @@ Deno.test("RLHF Pipeline Integration - Complete end-to-end workflow", async () =
       feedback.metadata.bfOid,
     ];
     assertEquals(new Set(allOids).size, 1); // All should be the same
+  });
+});
+
+Deno.test("Organization auto-creates demo RLHF content", async () => {
+  await withIsolatedDb(async () => {
+    const cv = makeLoggedInCv({ orgSlug: "demo-org", email: "test@demo.com" });
+
+    const org = await BfOrganization.__DANGEROUS__createUnattached(cv, {
+      name: "Demo Organization",
+      domain: "demo.com",
+    });
+    await org.save();
+
+    // Check if a deck was automatically created
+    const decks = await org.queryTargetInstances(BfDeck);
+    assertEquals(decks.length, 1);
+    assertEquals(decks[0].props.name, "Customer Support Response Evaluator");
   });
 });

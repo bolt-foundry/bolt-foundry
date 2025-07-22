@@ -31,6 +31,7 @@
       mkEverythingExtra = { pkgs, system }:
         let
           lib = pkgs.lib;
+          unstable = import nixpkgs-unstable { inherit system; config.allowUnfree = true; };
         in
         [
           pkgs.unzip
@@ -119,6 +120,42 @@
 
           # legacy alias
           default         = everything;
+        };
+
+        # FlakeHub-cached build packages
+        packages = rec {
+          # Build the main web application
+          web = pkgs.stdenv.mkDerivation {
+            pname = "bolt-foundry-web";
+            version = "0.1.0";
+            src = ./.;
+            nativeBuildInputs = with pkgs; [ pkgs.deno ];
+            buildPhase = ''
+              export DENO_DIR=$TMPDIR/deno_cache
+              deno task build:web
+            '';
+            installPhase = ''
+              mkdir -p $out/bin
+              cp build/web $out/bin/ || echo "No web binary found"
+              cp -r static $out/ || echo "No static directory found"
+            '';
+          };
+
+          # Build the marketing site
+          boltfoundry-com = pkgs.stdenv.mkDerivation {
+            pname = "boltfoundry-com";
+            version = "0.1.0";
+            src = ./.;
+            nativeBuildInputs = with pkgs; [ pkgs.deno ];
+            buildPhase = ''
+              export DENO_DIR=$TMPDIR/deno_cache
+              deno task build:boltfoundry-com
+            '';
+            installPhase = ''
+              mkdir -p $out/bin
+              cp build/boltfoundry-com $out/bin/ || echo "No boltfoundry-com binary found"
+            '';
+          };
         };
       });
 }

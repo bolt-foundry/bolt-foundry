@@ -2,15 +2,40 @@ import type { EagerReaderArtifact, ReaderAst } from '@isograph/react';
 import { Query__EntrypointRlhf__param } from './param_type.ts';
 import { Query__EntrypointRlhf__output_type } from './output_type.ts';
 import { EntrypointRlhf as resolver } from '../../../../entrypoints/EntrypointRlhf.ts';
-import Query__RlhfInterface__resolver_reader from '../../Query/RlhfInterface/resolver_reader.ts';
+import CurrentViewer__LoginPage__resolver_reader from '../../CurrentViewer/LoginPage/resolver_reader.ts';
+import CurrentViewer__RlhfHome__resolver_reader from '../../CurrentViewer/RlhfHome/resolver_reader.ts';
 
 const readerAst: ReaderAst<Query__EntrypointRlhf__param> = [
   {
-    kind: "Resolver",
-    alias: "RlhfInterface",
+    kind: "Linked",
+    fieldName: "currentViewer",
+    alias: null,
     arguments: null,
-    readerArtifact: Query__RlhfInterface__resolver_reader,
-    usedRefetchQueries: [],
+    condition: null,
+    isUpdatable: false,
+    selections: [
+      {
+        kind: "Scalar",
+        fieldName: "__typename",
+        alias: null,
+        arguments: null,
+        isUpdatable: false,
+      },
+      {
+        kind: "Resolver",
+        alias: "LoginPage",
+        arguments: null,
+        readerArtifact: CurrentViewer__LoginPage__resolver_reader,
+        usedRefetchQueries: [],
+      },
+      {
+        kind: "Resolver",
+        alias: "RlhfHome",
+        arguments: null,
+        readerArtifact: CurrentViewer__RlhfHome__resolver_reader,
+        usedRefetchQueries: [],
+      },
+    ],
   },
 ];
 

@@ -4,6 +4,8 @@ import { iso } from "@iso";
 export type RouteEntrypoint = {
   Body: React.FC | null | undefined;
   title: string;
+  status?: number;
+  headers?: Record<string, string>;
 };
 
 iso(`entrypoint Mutation.JoinWaitlist`)

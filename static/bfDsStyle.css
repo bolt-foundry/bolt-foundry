@@ -68,6 +68,14 @@
 
   --bfds-focus: #3b82f6;
   --bfds-focus-outline: rgba(59, 130, 246, 0.3);
+  --bfds-focus-hover: #2563eb;
+  --bfds-focus-active: #1e40af;
+  --bfds-focus-09: rgba(59, 130, 246, 0.9);
+  --bfds-focus-08: rgba(59, 130, 246, 0.8);
+  --bfds-focus-06: rgba(59, 130, 246, 0.6);
+  --bfds-focus-04: rgba(59, 130, 246, 0.4);
+  --bfds-focus-02: rgba(59, 130, 246, 0.2);
+  --bfds-focus-01: rgba(59, 130, 246, 0.1);
 
   /* Callout variant colors */
   --bfds-callout-info-bg: #1a1f2e;
@@ -85,14 +93,7 @@
   --bfds-callout-error-bg: #2a1a1a;
   --bfds-callout-error-border: #4a2d2d;
   --bfds-callout-error-text: #e17a7a;
-  --bfds-focus-hover: #2563eb;
-  --bfds-focus-active: #1e40af;
-  --bfds-focus-09: rgba(59, 130, 246, 0.9);
-  --bfds-focus-08: rgba(59, 130, 246, 0.8);
-  --bfds-focus-06: rgba(59, 130, 246, 0.6);
-  --bfds-focus-04: rgba(59, 130, 246, 0.4);
-  --bfds-focus-02: rgba(59, 130, 246, 0.2);
-  --bfds-focus-01: rgba(59, 130, 246, 0.1);
+
 
   --fontFamily: "DM Sans", "sans-serif";
   --marketingFontFamily: "Bebas Neue", "sans-serif";

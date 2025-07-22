@@ -3,6 +3,23 @@ import type { CursorGlobals } from "./cursor-types.ts";
 
 export async function injectCursorOverlay(page: Page): Promise<void> {
   await page.evaluate(() => {
+    // Create or get E2E overlay container
+    let container = document.getElementById("e2e-overlay-container");
+    if (!container) {
+      container = document.createElement("div");
+      container.id = "e2e-overlay-container";
+      container.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 2147483647;
+      `;
+      document.body.appendChild(container);
+    }
+
     // Remove existing cursor if it exists
     const existingCursor = document.getElementById("e2e-cursor-overlay");
     if (existingCursor) {
@@ -20,14 +37,14 @@ export async function injectCursorOverlay(page: Page): Promise<void> {
       border: 3px solid rgba(255, 255, 255, 1);
       border-radius: 50%;
       pointer-events: none;
-      z-index: 999999;
+      z-index: 10;
       transition: all 0.15s ease-out;
       box-shadow: 0 0 15px rgba(255, 50, 50, 0.8), 0 0 30px rgba(255, 50, 50, 0.4);
       transform: translate(-50%, -50%);
       display: block;
     `;
 
-    document.body.appendChild(cursor);
+    container.appendChild(cursor);
 
     // Store cursor element globally
     (globalThis as CursorGlobals).__e2eCursor = cursor;

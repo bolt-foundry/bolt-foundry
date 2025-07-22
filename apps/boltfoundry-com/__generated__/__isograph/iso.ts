@@ -1,9 +1,15 @@
 import type { IsographEntrypoint } from '@isograph/react';
+import { type CurrentViewer__LoginPage__param } from './CurrentViewer/LoginPage/param_type.ts';
+import { type CurrentViewer__RlhfHome__param } from './CurrentViewer/RlhfHome/param_type.ts';
+import { type Mutation__JoinWaitlist__param } from './Mutation/JoinWaitlist/param_type.ts';
 import { type Query__EntrypointHome__param } from './Query/EntrypointHome/param_type.ts';
+import { type Query__EntrypointLogin__param } from './Query/EntrypointLogin/param_type.ts';
 import { type Query__EntrypointRlhf__param } from './Query/EntrypointRlhf/param_type.ts';
 import { type Query__Home__param } from './Query/Home/param_type.ts';
 import { type Query__RlhfInterface__param } from './Query/RlhfInterface/param_type.ts';
+import entrypoint_Mutation__JoinWaitlist from '../__isograph/Mutation/JoinWaitlist/entrypoint.ts';
 import entrypoint_Query__EntrypointHome from '../__isograph/Query/EntrypointHome/entrypoint.ts';
+import entrypoint_Query__EntrypointLogin from '../__isograph/Query/EntrypointLogin/entrypoint.ts';
 import entrypoint_Query__EntrypointRlhf from '../__isograph/Query/EntrypointRlhf/entrypoint.ts';
 
 // This is the type given to regular client fields.
@@ -55,8 +61,24 @@ type MatchesWhitespaceAndString<
 > = Whitespace<T> extends `${TString}${string}` ? T : never;
 
 export function iso<T>(
+  param: T & MatchesWhitespaceAndString<'field CurrentViewer.LoginPage', T>
+): IdentityWithParamComponent<CurrentViewer__LoginPage__param>;
+
+export function iso<T>(
+  param: T & MatchesWhitespaceAndString<'field CurrentViewer.RlhfHome', T>
+): IdentityWithParamComponent<CurrentViewer__RlhfHome__param>;
+
+export function iso<T>(
+  param: T & MatchesWhitespaceAndString<'field Mutation.JoinWaitlist', T>
+): IdentityWithParam<Mutation__JoinWaitlist__param>;
+
+export function iso<T>(
   param: T & MatchesWhitespaceAndString<'field Query.EntrypointHome', T>
 ): IdentityWithParam<Query__EntrypointHome__param>;
+
+export function iso<T>(
+  param: T & MatchesWhitespaceAndString<'field Query.EntrypointLogin', T>
+): IdentityWithParam<Query__EntrypointLogin__param>;
 
 export function iso<T>(
   param: T & MatchesWhitespaceAndString<'field Query.EntrypointRlhf', T>
@@ -71,8 +93,16 @@ export function iso<T>(
 ): IdentityWithParamComponent<Query__RlhfInterface__param>;
 
 export function iso<T>(
+  param: T & MatchesWhitespaceAndString<'entrypoint Mutation.JoinWaitlist', T>
+): typeof entrypoint_Mutation__JoinWaitlist;
+
+export function iso<T>(
   param: T & MatchesWhitespaceAndString<'entrypoint Query.EntrypointHome', T>
 ): typeof entrypoint_Query__EntrypointHome;
+
+export function iso<T>(
+  param: T & MatchesWhitespaceAndString<'entrypoint Query.EntrypointLogin', T>
+): typeof entrypoint_Query__EntrypointLogin;
 
 export function iso<T>(
   param: T & MatchesWhitespaceAndString<'entrypoint Query.EntrypointRlhf', T>
@@ -84,8 +114,12 @@ export function iso(isographLiteralText: string):
   | IsographEntrypoint<any, any, any>
 {
   switch (isographLiteralText) {
+    case 'entrypoint Mutation.JoinWaitlist':
+      return entrypoint_Mutation__JoinWaitlist;
     case 'entrypoint Query.EntrypointHome':
       return entrypoint_Query__EntrypointHome;
+    case 'entrypoint Query.EntrypointLogin':
+      return entrypoint_Query__EntrypointLogin;
     case 'entrypoint Query.EntrypointRlhf':
       return entrypoint_Query__EntrypointRlhf;
   } 

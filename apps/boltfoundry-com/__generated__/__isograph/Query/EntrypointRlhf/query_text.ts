@@ -1,4 +1,8 @@
 export default 'query EntrypointRlhf  {\
   id,\
-  __typename,\
+  currentViewer {\
+    __typename,\
+    id,\
+    __typename,\
+  },\
 }';

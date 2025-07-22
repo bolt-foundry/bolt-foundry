@@ -57,12 +57,14 @@ export class BfSample extends BfNode<InferProps<typeof BfSample>> {
     gql
       .json("completionData")
       .string("collectionMethod")
+      .string("name")
       .typedMutation("submitSample", {
         args: (a) =>
           a
             .nonNull.string("deckId")
             .nonNull.string("completionData")
-            .string("collectionMethod"),
+            .string("collectionMethod")
+            .string("name"),
         returns: "BfSample",
         resolve: async (_src, args, ctx) => {
           const cv = ctx.getCurrentViewer();
@@ -71,6 +73,7 @@ export class BfSample extends BfNode<InferProps<typeof BfSample>> {
             completionData: JSON.parse(args.completionData),
             collectionMethod: (args.collectionMethod ||
               "manual") as BfSampleCollectionMethod,
+            name: args.name || "",
           });
 
           return sample.toGraphql();
@@ -86,5 +89,6 @@ export class BfSample extends BfNode<InferProps<typeof BfSample>> {
     node
       .json("completionData") // Native JSON storage
       .string("collectionMethod") // "manual" | "telemetry"
+      .string("name") // Optional human-readable name for the sample
   );
 }
