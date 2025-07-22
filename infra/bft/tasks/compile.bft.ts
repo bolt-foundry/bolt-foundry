@@ -134,7 +134,7 @@ Examples:
       "compile",
       "--allow-all",
       "--include",
-      "static",
+      new URL(import.meta.resolve("@bfmono/static")).pathname,
       "--output",
       binaryPath,
       serverPath,

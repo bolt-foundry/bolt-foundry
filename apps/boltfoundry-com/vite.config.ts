@@ -3,6 +3,7 @@ import { defineConfig } from "vite";
 import deno from "@deno/vite-plugin";
 import react from "@vitejs/plugin-react";
 
+// deno-lint-ignore bolt-foundry/no-env-direct-access
 const replitDomain = Deno.env.get("REPLIT_DEV_DOMAIN");
 const allowedHosts = replitDomain ? [replitDomain] : undefined;
 
@@ -35,7 +36,7 @@ export default defineConfig({
       input: new URL(import.meta.resolve("./ClientRoot.tsx")).pathname,
       output: {
         dir: new URL(import.meta.resolve("@bfmono/build")).pathname,
-        // entryFileNames: "ClientRoot.js",
+        entryFileNames: "ClientRoot.js",
         format: "es",
       },
     },
@@ -43,8 +44,8 @@ export default defineConfig({
   resolve: {
     alias: {
       "@bfmono/": new URL(import.meta.resolve("@bfmono/")).pathname,
-      // "@bfmono/static/":
-      //   new URL(import.meta.resolve("@bfmono/static/")).pathname,
+      "@bfmono/static/":
+        new URL(import.meta.resolve("@bfmono/static/")).pathname,
     },
   },
   publicDir: new URL(import.meta.resolve("@bfmono/static/")).pathname,
