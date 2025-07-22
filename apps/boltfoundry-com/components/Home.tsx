@@ -3,8 +3,8 @@ import { iso } from "@iso-bfc";
 import { useRef, useState } from "react";
 import { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
 import { BfDsCopyButton } from "@bfmono/apps/bfDs/components/BfDsCopyButton.tsx";
-// import { useMutation } from "@bfmono/apps/boltFoundry/hooks/isographPrototypes/useMutation.tsx";
-// import joinWaitlistMutation from "@bfmono/apps/boltFoundry/__generated__/__isograph/Mutation/JoinWaitlist/entrypoint.ts";
+import { useMutation } from "@bfmono/apps/boltfoundry-com/hooks/isographPrototypes/useMutation.tsx";
+import joinWaitlistMutation from "@bfmono/apps/boltfoundry-com/__generated__/__isograph/Mutation/JoinWaitlist/entrypoint.ts";
 
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { BfDsForm } from "@bfmono/apps/bfDs/components/BfDsForm.tsx";
@@ -20,20 +20,15 @@ type WaitlistFormData = {
   company: string;
 };
 
-// export const Home = iso(`
-//   field Query.Home @component {
-//     __typename
-//     githubRepoStats {
-//       stars
-//     }
-//   }
-// `)(function Home({ data }) {
 export const Home = iso(`
   field Query.Home @component {
     __typename
+    githubRepoStats {
+      stars
+    }
   }
 `)(function Home({ data }) {
-  // const { commit } = useMutation(joinWaitlistMutation);
+  const { commit } = useMutation(joinWaitlistMutation);
   const [formSubmitting, setFormSubmitting] = useState(false);
   const [formSubmat, setFormSubmat] = useState(false);
   const [error, setError] = useState(false);
@@ -57,28 +52,27 @@ export const Home = iso(`
     setError(false);
 
     try {
-      console.log("TODO: commit");
-      // commit(
-      //   { name: value.name, email: value.email, company: value.company },
-      //   {
-      //     onError: () => {
-      //       logger.error("Error joining waitlist");
-      //       setError(true);
-      //       setFormSubmitting(false);
-      //     },
-      //     onComplete: ({ joinWaitlist }) => {
-      //       if (!joinWaitlist.success) {
-      //         logger.error(joinWaitlist.message);
-      //         setError(true);
-      //         setFormSubmitting(false);
-      //         return;
-      //       }
-      //       logger.info("Successfully joined waitlist");
-      //       setFormSubmat(true);
-      //       setFormSubmitting(false);
-      //     },
-      //   },
-      // );
+      commit(
+        { name: value.name, email: value.email, company: value.company },
+        {
+          onError: () => {
+            logger.error("Error joining waitlist");
+            setError(true);
+            setFormSubmitting(false);
+          },
+          onComplete: ({ joinWaitlist }) => {
+            if (!joinWaitlist.success) {
+              logger.error(joinWaitlist.message);
+              setError(true);
+              setFormSubmitting(false);
+              return;
+            }
+            logger.info("Successfully joined waitlist");
+            setFormSubmat(true);
+            setFormSubmitting(false);
+          },
+        },
+      );
     } catch (error) {
       logger.error("Unexpected error during form submission", error);
       setError(true);
@@ -111,7 +105,7 @@ export const Home = iso(`
               href="https://github.com/bolt-foundry/bolt-foundry"
               target="_blank"
             >
-              {/* {data?.githubRepoStats?.stars.toString() ?? "--"} */}
+              {data?.githubRepoStats?.stars.toString() ?? "--"}
             </BfDsButton>
             <h1 className="main hero-headline">
               Structured prompts, reliable output
