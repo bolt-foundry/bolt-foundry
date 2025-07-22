@@ -212,6 +212,15 @@ Be helpful.`;
     await Deno.writeTextFile(`${tempDir}/main.deck.md`, deckContent);
 
     const deck = await readLocalDeck(`${tempDir}/main.deck.md`);
+
+    // Should extract context into deck.context
+    assert(deck.context, "deck.context should be defined");
+    assert(deck.context.userName, "userName context should be extracted");
+    assertEquals(
+      deck.context.userName.assistantQuestion,
+      "What is the user's name?",
+    );
+
     const result = deck.render({}, { context: { userName: "Alice" } });
 
     // Should have system message + Q&A pair
@@ -256,6 +265,12 @@ You can help with weather.`;
     await Deno.writeTextFile(`${tempDir}/main.deck.md`, deckContent);
 
     const deck = await readLocalDeck(`${tempDir}/main.deck.md`);
+
+    // Should extract tools into deck.tools
+    assert(deck.tools, "deck.tools should be defined");
+    assertEquals(deck.tools.length, 1);
+    assertEquals(deck.tools[0].name, "get_weather");
+
     const result = deck.render({}, {});
 
     // Should extract tools and remove TOML reference
@@ -268,5 +283,134 @@ You can help with weather.`;
     );
   } finally {
     await cleanup(tempDir);
+  }
+});
+
+Deno.test("Deck - getAllSamples() extracts samples from TOML includes", async () => {
+  const tempDir = await Deno.makeTempDir();
+
+  try {
+    // Create TOML file with samples (based on customer-support-samples.toml structure)
+    const samplesContent = `[samples]
+
+[samples.billing-inquiry]
+score = 2
+description = "Good response that directly addresses the customer's concern with helpful details"
+
+[[samples.billing-inquiry.messages]]
+role = "user"
+content = "Hi, I'm having trouble understanding my latest invoice. There's a charge for $29.99 that I don't recognize. Can you help me figure out what this is for?"
+
+[[samples.billing-inquiry.messages]]
+role = "assistant"
+content = "I'd be happy to help you understand your invoice. The $29.99 charge is for your Premium Support subscription that was activated last month. This gives you priority email support and access to our knowledge base."
+
+[samples.technical-issue]
+score = 3
+description = "Excellent response showing empathy and providing clear next steps"
+
+[[samples.technical-issue.messages]]
+role = "user"
+content = "My product stopped working after the latest update. It keeps crashing when I try to open files."
+
+[[samples.technical-issue.messages]]
+role = "assistant"
+content = "I understand how frustrating that must be. Let's get this resolved quickly. First, please try restarting the application completely."`;
+
+    await Deno.writeTextFile(`${tempDir}/samples.toml`, samplesContent);
+
+    // Create deck that includes samples
+    const deckContent = `# Customer Support Evaluator
+
+You evaluate customer support interactions.
+
+![ground truth samples](samples.toml)
+
+Rate each interaction on helpfulness and professionalism.`;
+
+    await Deno.writeTextFile(`${tempDir}/main.deck.md`, deckContent);
+
+    const deck = await readLocalDeck(`${tempDir}/main.deck.md`);
+
+    // Should extract all samples with correct structure
+    assert(deck.samples, "deck.samples should contain samples object");
+    assertEquals(Object.keys(deck.samples).length, 2);
+
+    // Test billing-inquiry sample
+    const billingInquiry = deck.samples["billing-inquiry"];
+    assert(billingInquiry, "billing-inquiry sample should exist");
+    assertEquals(billingInquiry.messages.length, 2);
+    assertEquals(billingInquiry.messages[0].role, "user");
+    assertEquals(
+      billingInquiry.messages[0].content,
+      "Hi, I'm having trouble understanding my latest invoice. There's a charge for $29.99 that I don't recognize. Can you help me figure out what this is for?",
+    );
+    assertEquals(billingInquiry.messages[1].role, "assistant");
+    assertEquals(
+      billingInquiry.messages[1].content,
+      "I'd be happy to help you understand your invoice. The $29.99 charge is for your Premium Support subscription that was activated last month. This gives you priority email support and access to our knowledge base.",
+    );
+    assertEquals(billingInquiry.score, 2);
+    assertEquals(
+      billingInquiry.description,
+      "Good response that directly addresses the customer's concern with helpful details",
+    );
+
+    // Test technical-issue sample
+    const technicalIssue = deck.samples["technical-issue"];
+    assert(technicalIssue, "technical-issue sample should exist");
+    assertEquals(technicalIssue.messages.length, 2);
+    assertEquals(technicalIssue.messages[0].role, "user");
+    assertEquals(technicalIssue.messages[1].role, "assistant");
+    assertEquals(technicalIssue.score, 3);
+    assertEquals(
+      technicalIssue.description,
+      "Excellent response showing empathy and providing clear next steps",
+    );
+  } finally {
+    await cleanup(tempDir);
+  }
+});
+
+Deno.test("Deck - getAllSamples() returns empty object when no samples exist", async () => {
+  const content = `# Simple Assistant
+
+You are helpful.`;
+
+  const deckPath = await createTempDeckFile(content);
+
+  try {
+    const deck = await readLocalDeck(deckPath);
+
+    assertEquals(deck.samples, {});
+  } finally {
+    await cleanup(deckPath);
+  }
+});
+
+Deno.test("Deck - extracts graders from frontmatter", async () => {
+  const content = `+++
+graders = [
+  "./graders/helpfulness.deck.md",
+  "./graders/professionalism.deck.md"
+]
++++
+
+# Customer Support Evaluator
+
+You evaluate customer support responses.`;
+
+  const deckPath = await createTempDeckFile(content);
+
+  try {
+    const deck = await readLocalDeck(deckPath);
+
+    // Should extract graders array from frontmatter
+    assert(Array.isArray(deck.graders), "deck.graders should be an array");
+    assertEquals(deck.graders.length, 2);
+    assertEquals(deck.graders[0], "./graders/helpfulness.deck.md");
+    assertEquals(deck.graders[1], "./graders/professionalism.deck.md");
+  } finally {
+    await cleanup(deckPath);
   }
 });

@@ -9,6 +9,7 @@ export const RlhfHome = iso(`
     <div>
       <h1>RLHF Interface</h1>
       <p>Welcome to the RLHF interface! You are logged in.</p>
+      <p>❌ No demo conversation found yet</p>
     </div>
   );
 });

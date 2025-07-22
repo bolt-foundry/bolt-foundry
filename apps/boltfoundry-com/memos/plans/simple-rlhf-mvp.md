@@ -68,50 +68,52 @@ automatically created for each organization.
 - **Data integration**: Frontend needs to connect to backend via Isograph
   queries
 
-### ✅ **DEMO DATA STRATEGY**
+### ✅ **DEMO DATA STRATEGY (COMPLETE)**
 
-Instead of hardcoded frontend data, we're implementing **automatic demo data
-creation**:
+**Automatic demo data creation** is fully implemented:
 
-- **Demo deck**: Customer Support Response Evaluator (markdown-based)
-- **Auto-creation**: BfOrganization.afterCreate() hook creates demo content when
-  new orgs are created via Google OAuth
-- **Complete workflow**: 4 sample conversations + AI evaluations + 1 human
-  feedback example
-- **Realistic data**: Actual customer support scenarios with meaningful
-  evaluations
+- **Demo deck**: Customer Support Response Evaluator (markdown-based) ✅
+- **Auto-creation**: `BfOrganization.createDemoDeck()` called during Google
+  OAuth org creation in `CurrentViewer.loginWithGoogleToken()` ✅
+- **Complete workflow**: 4 sample conversations with realistic completion data
+  ✅
+- **Sample data**: Defined in `customer-support-samples.toml` with billing,
+  technical, returns, subscription scenarios ✅
 
-**Demo Content Structure**:
+**Demo Content Structure** (All Implemented):
 
 1. **Customer Support Demo Deck** - Evaluates helpfulness, professionalism,
-   accuracy
+   accuracy ✅
 2. **4 Sample Conversations** - Billing, technical, returns, subscription
-   scenarios
-3. **AI Evaluations** - Realistic scores and explanations for all samples
-4. **1 Human Feedback** - Example feedback on first sample showing disagreement
-   with AI
+   scenarios with realistic ChatCompletion data ✅
+3. **Ground truth scores** - Pre-defined expected scores (1-3 range) for each
+   sample ✅
+4. **Sample descriptions** - Human-readable explanations for expected quality ✅
 
 This approach gives new users immediate, realistic content to explore the RLHF
 workflow.
 
 ## Implementation Plan - Milestone-Based Approach
 
-### Milestone 1: Backend Demo Data
+### ~~Milestone 1: Backend Demo Data~~ ✅ **COMPLETE**
 
-**Implemented BfOrganization.afterCreate() lifecycle hook**:
+**~~Implemented BfOrganization.afterCreate() lifecycle hook~~ Updated to
+`CurrentViewer.loginWithGoogleToken()`**:
 
-- Create customer support demo deck with system prompt
-- Generate 4 realistic conversation samples (billing, technical, returns,
+- ✅ Create customer support demo deck with system prompt
+- ✅ Generate 4 realistic conversation samples (billing, technical, returns,
   subscription)
-- Create AI evaluations for all samples using existing grader system
-- Add one human feedback example showing disagreement with AI
+- ✅ Demo content defined in `customer-support-samples.toml` with realistic
+  ChatCompletion data
+- ⚠️ AI evaluations and human feedback still need to be generated dynamically
 
 **Success Criteria**:
 
-- New organizations automatically receive demo content on creation
-- Demo deck contains 3 graders (helpfulness, professionalism, accuracy)
-- 4 samples have realistic completion data and AI evaluations
-- 1 sample has human feedback demonstrating scoring disagreement
+- ✅ New organizations automatically receive demo content on creation via
+  `org.createDemoDeck()`
+- ✅ Demo deck contains 3 graders (helpfulness, professionalism, accuracy)
+- ✅ 4 samples have realistic completion data and ground truth scores
+- ⚠️ AI evaluations and human feedback examples need dynamic generation
 
 ### Milestone 2: Frontend Form UI
 
@@ -187,7 +189,7 @@ apps/bfDb/nodeTypes/rlhf/
     └── RlhfWorkflow.test.ts
 
 apps/bfDb/nodeTypes/
-└── BfOrganization.ts                  # ⚠️ NEEDS - afterCreate() hook for demo data
+└── BfOrganization.ts                  # ✅ COMPLETE - createDemoDeck() method implemented
 
 apps/bfDb/services/
 └── mockPromptAnalyzer.ts              # ✅ EXISTS - Auto-generates graders from system prompts
@@ -418,13 +420,14 @@ export const Mutation_SubmitFeedback = iso(`
 
 ## Success Metrics (Updated for Current State)
 
-### Milestone 1: Backend Demo Data
+### ~~Milestone 1: Backend Demo Data~~ ✅ **COMPLETE**
 
-- [ ] BfOrganization.afterCreate() creates demo deck on new org creation
-- [ ] Demo deck has customer support system prompt and 3 auto-generated graders
-- [ ] 4 realistic conversation samples with completion data
-- [ ] AI evaluations generated for all samples
-- [ ] 1 human feedback example showing disagreement
+- [x] ~~BfOrganization.afterCreate()~~ CurrentViewer.loginWithGoogleToken()
+      creates demo deck on new org creation
+- [x] Demo deck has customer support system prompt and 3 auto-generated graders
+- [x] 4 realistic conversation samples with completion data
+- [ ] AI evaluations generated for all samples (needs dynamic generation)
+- [ ] 1 human feedback example showing disagreement (needs dynamic generation)
 
 ### Milestone 2: Frontend Form UI
 

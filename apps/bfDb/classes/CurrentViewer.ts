@@ -114,6 +114,7 @@ export abstract class CurrentViewer extends GraphQLObjectBase {
           name: tokenInfo.hd,
           domain: tokenInfo.hd,
         });
+        await org.createDemoDeck();
       }
 
       let person = await BfPerson.find(cv, personId);

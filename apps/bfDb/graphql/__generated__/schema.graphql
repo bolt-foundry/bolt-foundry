@@ -1,10 +1,21 @@
 ### @generated 
 type BfDeck implements BfNode {
+  content: String
   description: String
   id: ID!
   name: String
+  samples(after: String, before: String, first: Int, last: Int): BfDeckSamplesConnection
   slug: String!
-  systemPrompt: String
+}
+
+type BfDeckSamplesConnection {
+  edges: [BfDeckSamplesConnectionEdge]
+  pageInfo: PageInfo!
+}
+
+type BfDeckSamplesConnectionEdge {
+  cursor: String!
+  node: BfSample
 }
 
 type BfEdge implements BfNode {
@@ -103,7 +114,7 @@ type JoinWaitlistPayload {
 }
 
 type Mutation {
-  createDeck(description: String, name: String!, slug: String!, systemPrompt: String!): BfDeck
+  createDeck(content: String!, description: String, name: String!, slug: String!): BfDeck
   joinWaitlist(company: String, email: String!, name: String!): JoinWaitlistPayload
   loginWithGoogle(idToken: String!): CurrentViewer
   submitSample(collectionMethod: String, completionData: String!, deckId: String!, name: String): BfSample

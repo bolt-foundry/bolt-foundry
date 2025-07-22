@@ -15,16 +15,9 @@ export class BfOrganization extends BfNode<InferProps<typeof BfOrganization>> {
   );
 
   /**
-   * Lifecycle hook: Auto-create demo RLHF content for new organizations
-   */
-  protected override async afterCreate(): Promise<void> {
-    await this.addDemoDeck();
-  }
-
-  /**
    * Create demo RLHF deck for this organization
    */
-  async addDemoDeck(): Promise<void> {
+  async createDemoDeck(): Promise<void> {
     const deckPath = new URL(
       import.meta.resolve("./rlhf/demo-decks/customer-support-demo.deck.md"),
     ).pathname;
