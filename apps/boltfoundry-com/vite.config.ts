@@ -8,6 +8,7 @@ const allowedHosts = replitDomain ? [replitDomain] : undefined;
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: './',
   plugins: [
     deno(),
     react({ babel: { babelrc: true } }),
