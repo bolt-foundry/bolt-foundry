@@ -1,0 +1,55 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+  prometheus:
+    config:
+      scrape_configs:
+        - job_name: "deno-apps"
+          scrape_interval: 15s
+          docker_sd_configs:
+            - host: unix:///var/run/docker.sock
+              refresh_interval: 30s
+          relabel_configs:
+            - source_labels: [__meta_docker_container_label_service_name]
+              regex: boltfoundry-com
+              action: keep
+            - source_labels: [__meta_docker_container_name]
+              target_label: container_name
+            - source_labels: [__meta_docker_container_label_service_version]
+              target_label: service_version
+
+exporters:
+  otlphttp:
+    endpoint: https://in-otel.hyperdx.io
+    headers:
+      authorization: ${HDX_API_KEY}
+
+processors:
+  batch:
+    timeout: 1s
+    send_batch_size: 1024
+  memory_limiter:
+    limit_mib: 256
+
+service:
+  telemetry:
+    logs:
+      level: info
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [otlphttp]
+    metrics:
+      receivers: [otlp, prometheus]
+      processors: [memory_limiter, batch]
+      exporters: [otlphttp]
+    logs:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [otlphttp]

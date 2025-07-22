@@ -60,6 +60,23 @@ aliases:
   shell: app exec --interactive --reuse "bash"
   logs: app logs --follow
 
+# OpenTelemetry Collector for observability
+accessories:
+  otel_collector:
+    image: otel/opentelemetry-collector:0.100.0
+    port: 4318
+    files:
+      - infra/terraform/hetzner/config/otel_collector.yml:/etc/otelcol/config.yaml
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    options:
+      user: 0
+    roles:
+      - web
+    env:
+      clear:
+        HDX_API_KEY: ${hyperdx_api_key}
+
 # Database volume (mounted from Hetzner volume)
 volumes:
   - "/mnt/database:/data"
