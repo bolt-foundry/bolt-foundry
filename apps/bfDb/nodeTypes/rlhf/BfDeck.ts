@@ -1,6 +1,8 @@
 import { BfNode, type InferProps } from "@bfmono/apps/bfDb/classes/BfNode.ts";
 import { BfOrganization } from "@bfmono/apps/bfDb/nodeTypes/BfOrganization.ts";
 import { readLocalDeck } from "@bolt-foundry/bolt-foundry";
+import { BfSample } from "./BfSample.ts";
+import type * as path from "@std/path";
 
 /**
  * BfDeck represents a deck of cards/prompts used for RLHF evaluation.
@@ -83,5 +85,56 @@ export class BfDeck extends BfNode<InferProps<typeof BfDeck>> {
       description: "Demo deck for evaluating customer service interactions",
       slug: "demo-customer-support",
     };
+  }
+
+  /**
+   * Lifecycle hook: Create demo samples after deck creation
+   */
+  protected override async afterCreate(): Promise<void> {
+    try {
+      // Use import.meta.resolve to get the demo deck path for embedded resources
+      const deckUrl = import.meta.resolve(
+        "./demo-decks/customer-support-demo.deck.md",
+      );
+      const deckPath = new URL(deckUrl).pathname;
+
+      // Read the demo deck and extract samples
+      const deck = await readLocalDeck(deckPath);
+      const samples = deck.samples;
+
+      // Create BfSample nodes for each sample (unscored, for evaluation)
+      for (const [sampleKey, sampleData] of Object.entries(samples)) {
+        // Convert conversation messages to completionData format
+        const completionData = {
+          id: `imported-${sampleKey}`,
+          object: "chat.completion",
+          created: Math.floor(Date.now() / 1000),
+          model: "imported",
+          choices: [{
+            index: 0,
+            message: sampleData.messages[sampleData.messages.length - 1], // Last message (assistant response)
+            finish_reason: "stop",
+          }],
+          messages: sampleData.messages, // Original conversation
+        };
+
+        await this.createTargetNode(BfSample, {
+          name: sampleKey,
+          completionData,
+          collectionMethod: "import",
+        });
+      }
+
+      console.log(
+        `Created ${
+          Object.keys(samples).length
+        } demo samples for deck ${this.props.slug}`,
+      );
+    } catch (error) {
+      console.warn(
+        "Failed to create demo samples:",
+        error instanceof Error ? error.message : String(error),
+      );
+    }
   }
 }
