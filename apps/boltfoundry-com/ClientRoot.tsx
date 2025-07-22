@@ -3,7 +3,7 @@ import { getLogger } from "@bolt-foundry/logger";
 import App from "./src/App.tsx";
 import "./src/index.css";
 import "@bfmono/static/bfDsStyle.css";
-import "@bfmono/apps/boltfoundry-com/components/plinko/plinko.css";
+import "@bfmono/static/plinko.css";
 
 const logger = getLogger(import.meta);
 
