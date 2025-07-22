@@ -68,7 +68,7 @@ header.landing-header {
 }
 
 .hero-section {
-  background: url(/static/assets/images/bf-symbol-angle-left-1000_black_wide.jpg);
+  background: url(https://bolt-foundry-assets.s3.us-east-2.amazonaws.com/bf-symbol-angle-left-1000_black_wide.jpg);
   background-repeat: no-repeat;
   background-position: center center;
   background-size: cover;
@@ -143,7 +143,6 @@ code.npm-command {
   text-align: left;
   color: var(--bfds-text-06);
 }
-
 
 /* Docs Layout with Sidebar */
 .docs-layout {
@@ -245,8 +244,8 @@ code.npm-command {
   object-fit: cover;
 }
 .blog-post-image {
-  height: 300px; 
-  width: 100%; 
+  height: 300px;
+  width: 100%;
   object-fit: contain;
 }
 
@@ -333,7 +332,6 @@ pre > code {
   border-bottom: 1px solid var(--bfds-background-005);
 }
 
-
 /* Mobile responsiveness */
 @media (max-width: 1024px) {
   .landing-content {
@@ -366,13 +364,9 @@ pre > code {
     width: 260px;
   }
 
-  .docs-sidebar-content {
+  .docs-sidebar-content {}
 
-  }
-
-  .docs-sidebar-section {
-
-  }
+  .docs-sidebar-section {}
 
   .docs-section .landing-content {
     padding: 0;
@@ -419,7 +413,6 @@ pre > code {
     background-position: 130% center;
   }
 } */
-
 
 .vertical-separator {
   border-left: 1px solid var(--bfds-border);
@@ -639,7 +632,7 @@ h1.deck-title, h2.card-title {
 }
 
 .plinko-controls h2 {
-  font-family: var( --marketingFontFamily);
+  font-family: var(--marketingFontFamily);
   font-size: 42px;
   line-height: 1;
   margin: 0.8em 0 0;

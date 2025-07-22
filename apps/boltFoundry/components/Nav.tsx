@@ -9,7 +9,7 @@ type Props = {
   page?: string;
 };
 
-export function Nav({ page }: Props) {
+export function Nav({ page: _page }: Props) {
   const { navigate } = useRouter();
   const [hoverLogo, setHoverLogo] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
@@ -17,7 +17,8 @@ export function Nav({ page }: Props) {
   const NavButtons = () => {
     return (
       <>
-        <BfDsButton
+        {
+          /* <BfDsButton
           variant={page === "blog" ? "primary" : "ghost-primary"}
           href="/blog"
           target="_top"
@@ -30,7 +31,8 @@ export function Nav({ page }: Props) {
           target="_top"
         >
           Docs
-        </BfDsButton>
+        </BfDsButton> */
+        }
         <BfDsButton
           variant="ghost-primary"
           href="https://discord.gg/tU5ksTBfEj"
