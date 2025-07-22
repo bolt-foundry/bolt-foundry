@@ -89,6 +89,24 @@ Examples:
       ui.output("Assets not found, building frontend first...");
     }
 
+    // Clean monorepo root static/build to prevent Vite from copying stale artifacts
+    const monorepoStaticBuildPath = new URL(import.meta.resolve("../../../static/build")).pathname;
+    try {
+      await Deno.remove(monorepoStaticBuildPath, { recursive: true });
+      if (!flags.quiet) {
+        ui.output("🧹 Cleaned monorepo static/build to prevent stale artifacts");
+      }
+    } catch (error) {
+      if (!(error instanceof Deno.errors.NotFound)) {
+        if (!flags.quiet) {
+          ui.output(`Warning: Failed to clean monorepo static/build: ${
+            error instanceof Error ? error.message : String(error)
+          }`);
+        }
+        // Don't fail the build for cleanup issues
+      }
+    }
+
     // Run Vite build directly (same as bft dev --build)
     const buildCommand = new Deno.Command("deno", {
       args: ["run", "-A", "--node-modules-dir", "npm:vite", "build"],
