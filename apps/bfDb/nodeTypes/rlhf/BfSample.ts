@@ -5,7 +5,7 @@ import type { BfGid } from "@bfmono/lib/types.ts";
 /**
  * Collection method for BfSample - how the sample was collected
  */
-export type BfSampleCollectionMethod = "manual" | "telemetry";
+export type BfSampleCollectionMethod = "manual" | "telemetry" | "import";
 
 /**
  * Completion data that combines the OpenAI ChatCompletion response with the original request parameters
