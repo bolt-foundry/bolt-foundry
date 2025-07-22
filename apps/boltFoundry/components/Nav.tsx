@@ -9,7 +9,7 @@ type Props = {
   page?: string;
 };
 
-export function Nav({ page }: Props) {
+export function Nav({ page: _page }: Props) {
   const { navigate } = useRouter();
   const [hoverLogo, setHoverLogo] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
