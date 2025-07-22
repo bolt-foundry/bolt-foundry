@@ -3,7 +3,7 @@ import { defineConfig } from "vite";
 import deno from "@deno/vite-plugin";
 import react from "@vitejs/plugin-react";
 
-const replitDomain = Deno.env.get("REPLIT_DEV_DOMAIN");
+const replitDomain = getConfigurationVariable("REPLIT_DEV_DOMAIN");
 const allowedHosts = replitDomain ? [replitDomain] : undefined;
 
 // https://vite.dev/config/
