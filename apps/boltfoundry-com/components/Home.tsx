@@ -1,60 +1,92 @@
 import { iso } from "@iso-bfc";
 import { BfDsButton } from "@bfmono/apps/bfDs/index.ts";
+import { BfDsCopyButton } from "@bfmono/apps/bfDs/index.ts";
 import { useRouter } from "../contexts/RouterContext.tsx";
 
 export const Home = iso(`
   field Query.Home @component {
     __typename
+    githubRepoStats {
+      stars
+    }
   }
-`)(function Home() {
+`)(function Home({ data }) {
   const { navigate } = useRouter();
 
+  const bfCode = "aibff calibrate grader.deck.md";
+
   return (
-    <div style={{ padding: "2rem", maxWidth: "800px", margin: "0 auto" }}>
-      {/* Green square - inline CSS (should always work) */}
-      <div
-        style={{
-          width: "100px",
-          height: "100px",
-          backgroundColor: "green",
-          margin: "1rem 0",
-          border: "2px solid darkgreen",
-        }}
-      />
-      {/* Red square - external CSS file (testing CSS loading) */}
-      <div id="test-red-square" />
-      {/* Gradient square - additional external CSS file */}
-      <div id="test-gradient-square" />
-      <h1>Bolt Foundry</h1>
-      <p>Coming Soon</p>
+    <div className="landing-page">
+      {/* Hero Section */}
+      <main className="hero-section flexColumn">
+        <div className="landing-content">
+          <div className="hero-content">
+            {/* GitHub button */}
+            <BfDsButton
+              variant="ghost"
+              icon="brand-github"
+              href="https://github.com/bolt-foundry/bolt-foundry"
+              target="_blank"
+            >
+              {data?.githubRepoStats?.stars.toString() ?? "--"}
+            </BfDsButton>
 
-      <div style={{ marginTop: "2rem" }}>
-        <p>
-          This is the Phase 1 implementation of the Bolt Foundry landing page.
-        </p>
-        <p>Architecture foundation established with Vite + Deno + React.</p>
+            <h1 className="main">
+              Structured prompts, reliable output
+            </h1>
+            <p>
+              Open source tooling to turn prompt engineering into more science
+              than art through structured, testable prompts
+            </p>
 
-        <div style={{ marginTop: "2rem" }}>
+            {/* NPM Install Section */}
+            <div className="npm-command-container flexRow flexWrap gapMedium">
+              <code className="npm-command">
+                {bfCode}
+              </code>
+              <BfDsCopyButton
+                aria-label="Copy command"
+                textToCopy={bfCode}
+              />
+            </div>
+
+            <div style={{ marginTop: "2rem" }}>
+              <BfDsButton
+                onClick={() => navigate("/ui")}
+                variant="secondary"
+                size="medium"
+              >
+                View UI Demo
+              </BfDsButton>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      {/* Footer */}
+      <div className="landing-footer">
+        <div className="landing-content flexRow gapMedium alignItemsCenter">
+          <div className="flex1">
+            &copy; 2025 Bolt Foundry. All rights reserved.
+          </div>
           <BfDsButton
-            onClick={() => navigate("/ui")}
-            variant="primary"
             size="medium"
-          >
-            View UI Demo
-          </BfDsButton>
+            variant="ghost"
+            icon="brand-discord"
+            iconOnly
+            href="https://discord.gg/tU5ksTBfEj"
+            target="_blank"
+          />
+          <BfDsButton
+            size="medium"
+            variant="ghost"
+            icon="brand-github"
+            iconOnly
+            href="https://github.com/bolt-foundry/bolt-foundry"
+            target="_blank"
+          />
         </div>
       </div>
-
-      <footer
-        style={{
-          marginTop: "4rem",
-          textAlign: "center",
-          fontSize: "0.9rem",
-          color: "#666",
-        }}
-      >
-        © 2025 Bolt Foundry. All rights reserved.
-      </footer>
     </div>
   );
 });

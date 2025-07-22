@@ -1,8 +1,0 @@
-#test-gradient-square {
-  width: 100px;
-  height: 100px;
-  background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
-  margin: 1rem 0;
-  border: 2px solid #333;
-  border-radius: 8px;
-}

@@ -18,62 +18,75 @@ Deno.test("CSS loading - inline and external CSS on home page", async () => {
     // Take screenshot of home page to verify CSS squares are visible
     await context.takeScreenshot("css-test-home-page");
 
-    // Verify both squares are visible in the DOM
-    const squaresStatus = await context.page.evaluate(() => {
-      // Check for green square (inline CSS)
-      const hasGreenSquare = Array.from(document.querySelectorAll("div")).some(
-        (div) => {
-          const styles = globalThis.getComputedStyle(div);
-          return (
-            styles.backgroundColor === "green" ||
-            styles.backgroundColor === "rgb(0, 128, 0)"
-          );
-        },
-      );
+    // Verify professional CSS styling is loaded correctly
+    const cssLoadingStatus = await context.page.evaluate(() => {
+      // Check for landing page wrapper with proper class
+      const landingPage = document.querySelector(".landing-page");
+      const hasLandingPageClass = landingPage !== null;
 
-      // Check for red square (external CSS)
-      const redSquare = document.getElementById("test-red-square");
-      const hasRedSquare = redSquare !== null;
-      let redSquareStyled = false;
-      if (redSquare) {
-        const styles = globalThis.getComputedStyle(redSquare);
-        redSquareStyled = styles.backgroundColor === "red" ||
-          styles.backgroundColor === "rgb(255, 0, 0)";
+      // Check for hero section with professional styling
+      const heroSection = document.querySelector(".hero-section");
+      const hasHeroSection = heroSection !== null;
+      let heroSectionStyled = false;
+      if (heroSection) {
+        const styles = globalThis.getComputedStyle(heroSection);
+        // Check for flexbox display which is set by .flexColumn class
+        heroSectionStyled = styles.display === "flex";
+      }
+
+      // Check for professional typography classes
+      const mainHeading = document.querySelector("h1.main");
+      const hasMainHeading = mainHeading !== null;
+      let mainHeadingStyled = false;
+      if (mainHeading) {
+        const styles = globalThis.getComputedStyle(mainHeading);
+        // Should have large font size from landingStyle.css
+        mainHeadingStyled = parseFloat(styles.fontSize) > 40; // 4em should be > 40px
       }
 
       return {
-        greenSquarePresent: hasGreenSquare,
-        redSquarePresent: hasRedSquare,
-        redSquareStyled: redSquareStyled,
+        landingPageClass: hasLandingPageClass,
+        heroSectionPresent: hasHeroSection,
+        heroSectionStyled: heroSectionStyled,
+        mainHeadingPresent: hasMainHeading,
+        mainHeadingStyled: mainHeadingStyled,
         allDivs: Array.from(document.querySelectorAll("div")).length,
         pageText: document.body.textContent?.substring(0, 200),
       };
     });
 
-    logger.info(`CSS squares status:`, squaresStatus);
+    logger.info(`CSS loading status:`, cssLoadingStatus);
 
     // Verify the page loaded correctly first
     assert(
-      squaresStatus.pageText?.includes("Bolt Foundry"),
-      "Home page should contain 'Bolt Foundry' text",
+      cssLoadingStatus.pageText?.includes(
+        "Structured prompts, reliable output",
+      ),
+      "Home page should contain professional landing page heading",
     );
 
-    // Verify green square (inline CSS) is present and styled
+    // Verify landing page wrapper class is applied
     assert(
-      squaresStatus.greenSquarePresent,
-      "Green square with inline CSS should be visible and styled",
+      cssLoadingStatus.landingPageClass,
+      "Landing page should have .landing-page class applied",
     );
 
-    // Verify red square element exists
+    // Verify hero section exists and is styled
     assert(
-      squaresStatus.redSquarePresent,
-      "Red square element with ID 'test-red-square' should exist in DOM",
+      cssLoadingStatus.heroSectionPresent,
+      "Hero section with .hero-section class should exist in DOM",
     );
 
-    // Verify red square is styled (external CSS loaded)
+    // Verify hero section has proper styling from external CSS
     assert(
-      squaresStatus.redSquareStyled,
-      "Red square should be styled with red background from external CSS",
+      cssLoadingStatus.heroSectionStyled,
+      "Hero section should be styled with flexbox from external CSS",
+    );
+
+    // Verify main heading has professional typography
+    assert(
+      cssLoadingStatus.mainHeadingPresent && cssLoadingStatus.mainHeadingStyled,
+      "Main heading should have large font size from professional CSS",
     );
 
     // Check that the bundled CSS file is loaded correctly

@@ -219,12 +219,12 @@ Deno.test("SSR serves correct response headers", async () => {
     );
 
     assert(
-      html?.includes("Bolt Foundry"),
+      html?.includes("Structured prompts, reliable output"),
       "HTML should contain server-rendered heading",
     );
 
     assert(
-      html?.includes("Coming Soon"),
+      html?.includes("Open source tooling"),
       "HTML should contain server-rendered subtitle",
     );
 
