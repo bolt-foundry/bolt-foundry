@@ -34,8 +34,8 @@ export default defineConfig({
     rollupOptions: {
       input: new URL(import.meta.resolve("./ClientRoot.tsx")).pathname,
       output: {
-        dir: new URL(import.meta.resolve("./static/build")).pathname,
-        entryFileNames: "ClientRoot.js",
+        dir: new URL(import.meta.resolve("@bfmono/build")).pathname,
+        // entryFileNames: "ClientRoot.js",
         format: "es",
       },
     },
@@ -43,8 +43,8 @@ export default defineConfig({
   resolve: {
     alias: {
       "@bfmono/": new URL(import.meta.resolve("@bfmono/")).pathname,
-      "@bfmono/static/":
-        new URL(import.meta.resolve("@bfmono/static/")).pathname,
+      // "@bfmono/static/":
+      //   new URL(import.meta.resolve("@bfmono/static/")).pathname,
     },
   },
   publicDir: new URL(import.meta.resolve("@bfmono/static/")).pathname,

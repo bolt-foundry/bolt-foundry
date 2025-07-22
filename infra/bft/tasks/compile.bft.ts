@@ -56,8 +56,8 @@ Examples:
   }
 
   const appPath =
-    new URL(import.meta.resolve("../../../apps/boltfoundry-com")).pathname;
-  const buildDir = new URL(import.meta.resolve("../../../build")).pathname;
+    new URL(import.meta.resolve("@bfmono/apps/boltfoundry-com")).pathname;
+  const buildDir = new URL(import.meta.resolve("@bfmono/build")).pathname;
 
   // Ensure build directory exists
   try {
@@ -74,7 +74,7 @@ Examples:
   }
 
   // Check if assets are built, if not, build them
-  const staticBuildPath = `${appPath}/static/build`;
+  const staticBuildPath = import.meta.resolve("@bfmono/build/static/build");
   let assetsExist = false;
 
   try {
@@ -91,7 +91,7 @@ Examples:
 
     // Run Vite build directly (same as bft dev --build)
     const buildCommand = new Deno.Command("deno", {
-      args: ["run", "-A", "--node-modules-dir", "npm:vite", "build"],
+      args: ["run", "-A", "npm:vite", "build"],
       cwd: appPath,
       stdout: flags.quiet ? "null" : "inherit",
       stderr: flags.quiet ? "null" : "inherit",
