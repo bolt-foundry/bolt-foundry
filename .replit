@@ -1,17 +1,9 @@
-
 entrypoint = "README.md"
-modules = ["postgresql-16"]
 
 [nix]
 channel = "stable-24_11"
 
-[deployment]
-deploymentTarget = "cloudrun"
-build = ["./scripts/build.sh"]
-run = ["sh", "-c", "WEB_PORT=9999 ./build/web"]
-
-# Deno LSP handles the entire monorepo but only performs formatting in examples/
-# (configured via deno.jsonc to exclude examples/ from linting and type checking)
+# Language Server Configuration (keep existing)
 [languages.deno]
 pattern = "**/*.{ts,js,tsx,jsx,json,jsonc,md,mdx}"
 [languages.deno.languageServer]
@@ -21,177 +13,43 @@ enable = true
 lint = true
 config = "./deno.jsonc"
 
-# TypeScript LSP specifically for examples/ directory
-# Each example should have its own tsconfig.json that extends tsconfig.base.json
 [languages.typescript]
 pattern = "examples/**/*.{ts,tsx,js,jsx}"
 [languages.typescript.languageServer]
 start = ["typescript-language-server", "--stdio"]
 
 [workflows]
-runButton = "Run for development"
+runButton = "Run boltfoundry-com"
 
 [[workflows.workflow]]
-name = "BFF build and run"
+name = "Run boltfoundry-com"
 mode = "sequential"
-author = 33272860
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "bff build && bff serve"
-
-[[workflows.workflow]]
-name = "Run for development"
-author = 33272860
-mode = "parallel"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "BFF build and run"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "Run dev tools"
-
-[[workflows.workflow]]
-name = "---------------------------"
-mode = "sequential"
-author = "agent"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "echo \"this is a separator\""
-
-[[workflows.workflow]]
-name = "Run dev tools"
-mode = "parallel"
-author = "agent"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "bff devTools --debug"
-
-[[workflows.workflow]]
-name = "Restart language server"
-mode = "sequential"
-author = 33272860
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "bff restartLsp"
-
-[[workflows.workflow]]
-name = "Start next.js sample"
-mode = "sequential"
-author = 33272860
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "bff run examples/nextjs-sample"
-
-[[workflows.workflow]]
-name = "Run E2E Tests"
-author = 33272860
-mode = "sequential"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "bff e2e --build"
-
-[[workflows.workflow]]
-name = "Run E2E Tests Only"
-author = 33272860
-mode = "sequential"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "bff e2e"
-
-
-[[workflows.workflow]]
-name = "Run internalbf.com"
 author = 33417482
-mode = "parallel"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "bff run apps/internalbf"
-
-[[workflows.workflow]]
-name = "Run Collector"
-author = 33272860
-mode = "sequential"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "bff run apps/collector"
-
-[[ports]]
-localPort = 3000
-externalPort = 3002
-
-[[ports]]
-localPort = 3001
-externalPort = 6000
-
-[[ports]]
-localPort = 3002
-externalPort = 6800
-
-[[ports]]
-localPort = 3003
-externalPort = 4200
-
-[[ports]]
-localPort = 3004
-externalPort = 5173
-
-[[ports]]
-localPort = 3006
-externalPort = 8000
-
-[[ports]]
-localPort = 3007
-externalPort = 8008
+args = "bft dev boltfoundry-com"
 
 [[ports]]
 localPort = 3011
 externalPort = 3001
 
 [[ports]]
-localPort = 5000
-externalPort = 5000
-
-[[ports]]
-localPort = 5003
-externalPort = 8080
-
-[[ports]]
-localPort = 5005
-externalPort = 8099
-
-[[ports]]
-localPort = 5007
-externalPort = 8081
-
-[[ports]]
 localPort = 8000
+externalPort = 8000
+exposeLocalhost = true
 
 [[ports]]
-localPort = 8001
-externalPort = 3003
+localPort = 8080
+externalPort = 8080
+exposeLocalhost = true
 
 [[ports]]
-localPort = 8888
-externalPort = 3000
+localPort = 8081
+externalPort = 8081
+exposeLocalhost = true
 
-[[ports]]
-localPort = 9999
-externalPort = 80
-
-[objectStorage]
-defaultBucketID = "replit-objstore-8028c9e1-a66e-4994-abdc-12c7efcd4d02"
-
+# Environment variables (keep existing)
 [env]
 HISTFILE = "$REPL_HOME/.cache/bash_history"
 HISTCONTROL = "ignoredups"
