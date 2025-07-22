@@ -19,9 +19,9 @@ builder:
   dockerfile: apps/boltfoundry-com/Dockerfile
   context: .
 
-# Kamal 2.x proxy configuration with SSL and healthcheck
+# Kamal 2.x proxy configuration - HTTP only (SSL handled by Cloudflare)
 proxy:
-  ssl: true
+  ssl: false
   host: ${domain}
   app_port: 8000
   healthcheck:
