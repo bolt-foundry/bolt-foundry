@@ -5,6 +5,7 @@ import {
   entrypointLogin,
   entrypointRlhf,
 } from "./__generated__/builtRoutes.ts";
+import { Plinko } from "./components/plinko/Plinko.tsx";
 
 export type ComponentWithHeader = React.ComponentType<unknown> & {
   HeaderComponent?: React.ComponentType<unknown>;
@@ -19,6 +20,7 @@ export type IsographRoute = BfIsographEntrypoint;
 
 // Traditional React routes
 export const appRoutes = new Map<string, RouteGuts>([
+  ["/plinko", { Component: Plinko }],
   ["/ui", { Component: UIDemo }],
 ]);
 
