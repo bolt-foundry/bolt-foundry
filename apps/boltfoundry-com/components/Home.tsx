@@ -2,6 +2,7 @@ import { iso } from "@iso-bfc";
 import { BfDsButton } from "@bfmono/apps/bfDs/index.ts";
 import { BfDsCopyButton } from "@bfmono/apps/bfDs/index.ts";
 import { useRouter } from "../contexts/RouterContext.tsx";
+import { Nav } from "./Nav.tsx";
 
 export const Home = iso(`
   field Query.Home @component {
@@ -17,6 +18,9 @@ export const Home = iso(`
 
   return (
     <div className="landing-page">
+      {/* Navigation Header */}
+      <Nav />
+
       {/* Hero Section */}
       <main className="hero-section flexColumn">
         <div className="landing-content">
