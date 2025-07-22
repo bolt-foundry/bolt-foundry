@@ -111,7 +111,7 @@ testing patterns.
 
 - Use BFF commands for common tasks
 - Run `bft format` and `bft ci` before committing
-- Build with `bff build`
+- Build with `bft build`
 - Type check with `bff check [file_path]`
 - Test with `bff test path/to/test/file.test.ts`
 

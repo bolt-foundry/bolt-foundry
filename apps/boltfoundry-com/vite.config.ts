@@ -3,6 +3,9 @@ import { defineConfig } from "vite";
 import deno from "@deno/vite-plugin";
 import react from "@vitejs/plugin-react";
 
+const replitDomain = Deno.env.get("REPLIT_DEV_DOMAIN");
+const allowedHosts = replitDomain ? [replitDomain] : undefined;
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
@@ -19,8 +22,9 @@ export default defineConfig({
   server: {
     port: 8080,
     hmr: {
-      port: 5001, // Dynamic port will be set by CLI
+      port: 8081, // Dynamic port will be set by CLI
     },
+    allowedHosts,
   },
   preview: {
     port: 8081,

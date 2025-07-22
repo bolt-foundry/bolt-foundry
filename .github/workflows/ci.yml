@@ -297,7 +297,7 @@ jobs:
             export DENO_DIR=\"/home/runner/.cache/deno\"
             export OP_SERVICE_ACCOUNT_TOKEN=\"$OP_SERVICE_ACCOUNT_TOKEN\"
             export PATH=\"\$PATH:\$PWD/infra/bin\"
-            bft build
+            bft compile boltfoundry-com
           "
 
       # Upload build artifacts for e2e tests
