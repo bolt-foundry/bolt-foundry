@@ -40,20 +40,7 @@ export function ServerRenderedPage(
               JSON.stringify(environment ?? {})
             };
 
-          console.log("🔧 Inline script executing, __REHYDRATE__ exists:", !!globalThis.__REHYDRATE__);
-          
-          if (globalThis.__REHYDRATE__) {
-            console.log("🔧 Calling __REHYDRATE__");
-            try {
-              await globalThis.__REHYDRATE__(globalThis.__ENVIRONMENT__);
-              console.log("🔧 __REHYDRATE__ call completed");
-            } catch (error) {
-              console.error("🔧 __REHYDRATE__ call failed:", error);
-            }
-          } else {
-            // can't rehydrate yet.
-            console.warn("🔧 Rehydration fail - __REHYDRATE__ not found");
-          }
+          console.log("🔧 Environment ready, ClientRoot will handle hydration");
           `,
           }}
         />

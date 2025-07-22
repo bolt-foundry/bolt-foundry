@@ -11,6 +11,20 @@ export const Home = iso(`
 
   return (
     <div style={{ padding: "2rem", maxWidth: "800px", margin: "0 auto" }}>
+      {/* Green square - inline CSS (should always work) */}
+      <div
+        style={{
+          width: "100px",
+          height: "100px",
+          backgroundColor: "green",
+          margin: "1rem 0",
+          border: "2px solid darkgreen",
+        }}
+      />
+      {/* Red square - external CSS file (testing CSS loading) */}
+      <div id="test-red-square" />
+      {/* Gradient square - additional external CSS file */}
+      <div id="test-gradient-square" />
       <h1>Bolt Foundry</h1>
       <p>Coming Soon</p>
 

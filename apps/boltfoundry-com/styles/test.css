@@ -1,0 +1,7 @@
+#test-red-square {
+  width: 100px;
+  height: 100px;
+  background-color: red;
+  margin: 1rem 0;
+  border: 2px solid darkred;
+}
