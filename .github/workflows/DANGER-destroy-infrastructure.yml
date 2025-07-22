@@ -3,7 +3,7 @@ name: "🚨 DANGER - Destroy Infrastructure 🚨"
 # This workflow is ENABLED for infrastructure cleanup
 # To disable: change "workflow_dispatch" to "workflow_dispatch_DISABLED"
 on:
-  workflow_dispatch:
+  workflow_dispatch_DISABLED:
     inputs:
       confirmation:
         description: 'Type exactly: "DESTROY-PRODUCTION-INFRASTRUCTURE-PERMANENTLY"'
