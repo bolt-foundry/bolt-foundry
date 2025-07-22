@@ -3,7 +3,9 @@ name: Deploy boltfoundry-com
 on:
   push:
     branches: [main]
-    paths: ["apps/boltfoundry-com/**"]
+    paths: 
+      - "apps/boltfoundry-com/**"
+      - "infra/terraform/hetzner/**"
   workflow_dispatch:
 
 jobs:
