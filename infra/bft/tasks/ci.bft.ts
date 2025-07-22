@@ -3,7 +3,6 @@ import { runShellCommandWithOutput } from "@bfmono/infra/bff/shellBase.ts";
 import { loggerGithub } from "@bfmono/infra/bff/githubLogger.ts";
 import { refreshAllSecrets } from "@bfmono/packages/get-configuration-var/get-configuration-var.ts";
 import type { TaskDefinition } from "@bfmono/infra/bft/bft.ts";
-import { buildCommand } from "./build.bft.ts";
 import { testCommand } from "./test.bft.ts";
 import { formatCommand } from "./format.bft.ts";
 import { lintCommand } from "./lint.bft.ts";
@@ -69,14 +68,7 @@ export async function ciCommand(options: Array<string>): Promise<number> {
     return installResult;
   }
 
-  // 2) Build step
-  const buildResult = await buildCommand([]);
-  if (buildResult !== 0) {
-    logCI.error("Build step failed");
-    return buildResult;
-  }
-
-  // 3) Lint (with GitHub annotations if requested)
+  // 2) Lint (with GitHub annotations if requested)
   const lintArgs = useGithub ? ["-g"] : [];
   const lintResult = await lintCommand(lintArgs);
   if (lintResult !== 0) {
@@ -84,28 +76,28 @@ export async function ciCommand(options: Array<string>): Promise<number> {
     return lintResult;
   }
 
-  // 4) Unit Tests
+  // 3) Unit Tests
   const testResult = await testCommand([]);
   if (testResult !== 0) {
     logCI.error("Test step failed");
     return testResult;
   }
 
-  // 5) E2E Tests
+  // 4) E2E Tests
   const e2eTestResult = await e2eCommand(["--build"]);
   if (e2eTestResult !== 0) {
     logCI.error("E2E test step failed");
     return e2eTestResult;
   }
 
-  // 6) Format check
+  // 5) Format check
   const fmtResult = await formatCommand(["--check"]);
   if (fmtResult !== 0) {
     logCI.error("Format check failed");
     return fmtResult;
   }
 
-  // 7) Type check
+  // 6) Type check
   const typecheckResult = await checkCommand([]);
   if (typecheckResult !== 0) {
     logCI.error("Type check failed");
@@ -114,7 +106,6 @@ export async function ciCommand(options: Array<string>): Promise<number> {
 
   logger.info("\n📊 CI Checks Summary:");
   logger.info(`Install:   ✅`);
-  logger.info(`Build:     ✅`);
   logger.info(`Lint:      ✅`);
   logger.info(`Test:      ✅`);
   logger.info(`E2E Test:  ✅`);
@@ -127,7 +118,7 @@ export async function ciCommand(options: Array<string>): Promise<number> {
 
 export const bftDefinition = {
   description:
-    "Run CI checks (lint, test, build, format). E.g. `bft ci -g` for GH annotations.",
+    "Run CI checks (lint, test, format). E.g. `bft ci -g` for GH annotations.",
   fn: ciCommand,
   aiSafe: true,
 } satisfies TaskDefinition;

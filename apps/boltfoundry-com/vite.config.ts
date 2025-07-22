@@ -19,8 +19,11 @@ export default defineConfig({
   server: {
     port: 8080,
     hmr: {
-      port: 5001, // Dynamic port will be set by CLI
+      port: 8081, // Dynamic port will be set by CLI
     },
+    allowedHosts: Deno.env.get("REPLIT_DEV_DOMAIN")
+      ? [Deno.env.get("REPLIT_DEV_DOMAIN")]
+      : undefined,
   },
   preview: {
     port: 8081,
