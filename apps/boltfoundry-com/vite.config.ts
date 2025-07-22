@@ -3,6 +3,7 @@ import { defineConfig } from "vite";
 import deno from "@deno/vite-plugin";
 import react from "@vitejs/plugin-react";
 
+// deno-lint-ignore bolt-foundry/no-env-direct-access
 const replitDomain = Deno.env.get("REPLIT_DEV_DOMAIN");
 const allowedHosts = replitDomain ? [replitDomain] : undefined;
 
