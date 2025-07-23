@@ -60,10 +60,10 @@ async function loadAssetPaths(
     logger.warn("Failed to read Vite manifest:", error);
   }
 
-  // Fallback to hardcoded paths
+  // Fallback to hardcoded paths (should rarely be used)
   const fallback = {
     cssPath: undefined,
-    jsPath: "/static/build/ClientRoot.js",
+    jsPath: "/static/build/ClientRoot-[hash].js", // This should be updated after build
   };
   logger.info("Using fallback asset paths");
   return fallback;
@@ -362,6 +362,20 @@ const handler = async (request: Request): Promise<Response> => {
         const assetPath = new URL(assetUrl).pathname;
         const fileData = await Deno.readFile(assetPath);
 
+        // Generate ETag from file content
+        const hash = await crypto.subtle.digest("SHA-256", fileData);
+        const etag = `"${
+          Array.from(new Uint8Array(hash)).map((b) =>
+            b.toString(16).padStart(2, "0")
+          ).join("").slice(0, 16)
+        }"`;
+
+        // Check if client has the same version
+        const clientETag = request.headers.get("if-none-match");
+        if (clientETag === etag) {
+          return new Response(null, { status: 304 });
+        }
+
         // Determine content type
         let contentType = "application/octet-stream";
         if (filePath.endsWith(".html")) contentType = "text/html";
@@ -373,12 +387,17 @@ const handler = async (request: Request): Promise<Response> => {
         else if (filePath.endsWith(".png")) contentType = "image/png";
         else if (filePath.endsWith(".ico")) contentType = "image/x-icon";
 
-        const response = new Response(fileData, {
-          headers: {
-            "Content-Type": contentType,
-            "Content-Length": fileData.length.toString(),
-          },
-        });
+        const headers = {
+          "Content-Type": contentType,
+          "Content-Length": fileData.length.toString(),
+          "ETag": etag,
+          "Cache-Control":
+            filePath.includes("-") && filePath.match(/\.(js|css)$/)
+              ? "public, max-age=31536000, immutable" // Long cache for hashed assets
+              : "public, max-age=86400, must-revalidate", // Standard cache for other files
+        };
+
+        const response = new Response(fileData, { headers });
         logResponse(
           requestId,
           response,
