@@ -156,6 +156,53 @@
               cp build/boltfoundry-com $out/bin/ || echo "No boltfoundry-com binary found"
             '';
           };
+
+          # OCI container image for codebot isolation
+          codebot-container = pkgs.dockerTools.buildImage {
+            name = "bft-codebot";
+            tag = "latest";
+            
+            # Use the everything dev shell environment as base
+            contents = let
+              baseDeps = mkBaseDeps { inherit pkgs system; };
+              extraDeps = mkEverythingExtra { inherit pkgs system; };
+              unstable = import nixpkgs-unstable { inherit system; config.allowUnfree = true; };
+            in
+            baseDeps ++ extraDeps ++ [
+              # Add Claude Code CLI via npm package in container
+              (pkgs.buildEnv {
+                name = "claude-code-env";
+                paths = [
+                  unstable.nodejs_22
+                  (pkgs.runCommand "claude-code-cli" {} ''
+                    mkdir -p $out/bin
+                    echo '#!/bin/sh' > $out/bin/claude-code
+                    echo 'exec ${unstable.nodejs_22}/bin/npx @anthropic-ai/claude-code "$@"' >> $out/bin/claude-code
+                    chmod +x $out/bin/claude-code
+                  '')
+                ];
+              })
+              # Essential shell utilities
+              pkgs.coreutils
+              pkgs.bash
+              pkgs.git
+            ];
+            
+            config = {
+              # Set up working directory
+              WorkingDir = "/workspace";
+              
+              # Environment variables
+              Env = [
+                "PATH=/bin:/usr/bin"
+                "DENO_DIR=/tmp/deno_cache"
+                "HOME=/root"
+              ];
+              
+              # Default shell
+              Cmd = [ "/bin/bash" ];
+            };
+          };
         };
       });
 }
