@@ -491,6 +491,11 @@ a:not(.bfds-button).dark:visited {
   height: 24px;
 }
 
+.bfds-icon--xlarge {
+  width: 32px;
+  height: 32px;
+}
+
 /* Button */
 
 .bfds-button {
@@ -2401,7 +2406,7 @@ a.bfds-button:hover {
   -webkit-appearance: none;
   appearance: none;
   background-color: var(--bfds-background);
-  border: 2px solid var(--bfds-primary);
+  border: 2px solid var(--bfds-range-custom-color, var(--bfds-primary));
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
@@ -2411,7 +2416,7 @@ a.bfds-button:hover {
 .bfds-range::-moz-range-thumb {
   appearance: none;
   background-color: var(--bfds-background);
-  border: 2px solid var(--bfds-primary);
+  border: 2px solid var(--bfds-range-custom-color, var(--bfds-primary));
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
