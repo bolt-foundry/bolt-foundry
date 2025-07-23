@@ -171,7 +171,7 @@ export function WaitlistSection(
             />
 
             <BfDsFormSubmitButton
-              text={submissionState.isLoading ? "Joining" : "Join Waitlist"}
+              text={submissionState.isLoading ? "Submitting" : "Submit"}
               variant="primary"
               size="medium"
               disabled={submissionState.isLoading}
