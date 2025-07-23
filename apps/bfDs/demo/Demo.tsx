@@ -123,7 +123,8 @@ const componentSections: Array<ComponentSection> = [
   {
     id: "range",
     name: "Range",
-    description: "Range sliders with value display, ticks, and custom formatting",
+    description:
+      "Range sliders with value display, ticks, and custom formatting",
     component: BfDsRangeExample,
     category: "Form",
   },
