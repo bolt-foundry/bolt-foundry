@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { iso } from "@iso-bfc";
 import { BfDsButton } from "@bfmono/apps/bfDs/index.ts";
-import { BfDsCopyButton } from "@bfmono/apps/bfDs/index.ts";
+import type { BfDsCopyButton } from "@bfmono/apps/bfDs/index.ts";
 import { Nav } from "./Nav.tsx";
 import { WaitlistSection } from "./WaitlistSection.tsx";
 

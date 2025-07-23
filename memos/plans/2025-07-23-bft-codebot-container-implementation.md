@@ -168,6 +168,17 @@ bft codebot --docker        # Fallback to Docker if available
 
 ## Testing Strategy
 
+### Continuous Integration
+
+- **Container Build Validation**: Existing GitHub Actions CI automatically
+  validates Nix-based container builds
+- **Multi-Platform Testing**: CI runs on Ubuntu, with Nix providing consistent
+  environment
+- **Automated Testing**: All container builds tested on every PR via
+  `.github/workflows/ci.yml`
+- **Registry Integration**: Built containers can be pushed to GitHub Container
+  Registry (ghcr.io)
+
 ### Unit Tests
 
 - Container creation and teardown
@@ -242,11 +253,13 @@ bft codebot --docker        # Fallback to Docker if available
 
 ## Implementation Phases
 
-### Phase 1: Basic Container Setup
+### Phase 1: Basic Container Setup ✅
 
 - Nix-based OCI container image generation using existing flake infrastructure
 - Reproducible development environment with all required dependencies
 - BFT integration following existing task patterns
+- **CI Integration**: Container image building validated automatically via
+  GitHub Actions
 
 ### Phase 2: Claude Code Integration
 
