@@ -86,11 +86,11 @@ Deno.test("SSR landing page loads and hydrates correctly", async () => {
     // Verify that the client bundle script is loaded
     const clientScript = await context.page.evaluate(() => {
       const script = document.querySelector(
-        'script[src="/static/build/ClientRoot.js"]',
+        'script[src^="/static/build/ClientRoot-"]',
       );
       return script !== null;
     });
-    assert(clientScript, "Page should include ClientRoot.js script");
+    assert(clientScript, "Page should include ClientRoot script");
 
     // Verify that the __ENVIRONMENT__ global is set up for rehydration
     const hasEnvironment = await context.page.evaluate(() => {
@@ -289,9 +289,18 @@ Deno.test("SSR handles static assets correctly", async () => {
       throw new Error("No CSS link found in the page");
     }
 
-    // Test that JavaScript is loaded correctly
+    // Test that JavaScript is loaded correctly - navigate to home page first
+    await context.page.goto(context.baseUrl);
+    const jsPath = await context.page.evaluate(() => {
+      const script = document.querySelector(
+        'script[src^="/static/build/ClientRoot-"]',
+      );
+      return script?.getAttribute("src") || null;
+    });
+    assert(jsPath, "ClientRoot script should be found on page");
+
     const jsResponse = await context.page.goto(
-      new URL("/static/build/ClientRoot.js", context.baseUrl).toString(),
+      new URL(jsPath, context.baseUrl).toString(),
     );
     assertEquals(
       jsResponse?.status(),

@@ -36,7 +36,9 @@ export default defineConfig({
       input: new URL(import.meta.resolve("./ClientRoot.tsx")).pathname,
       output: {
         dir: new URL(import.meta.resolve("./static/build")).pathname,
-        entryFileNames: "ClientRoot.js",
+        entryFileNames: "ClientRoot-[hash].js",
+        chunkFileNames: "chunks/[name]-[hash].js",
+        assetFileNames: "assets/[name]-[hash].[ext]",
         format: "es",
       },
     },
