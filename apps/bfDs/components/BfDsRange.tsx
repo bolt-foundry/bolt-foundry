@@ -37,6 +37,8 @@ export type BfDsRangeProps =
     size?: BfDsRangeSize;
     /** Visual state of the range */
     state?: BfDsRangeState;
+    /** Custom color for the fill and handle */
+    color?: string;
     /** Error message to display */
     errorMessage?: string;
     /** Success message to display */
@@ -50,7 +52,7 @@ export type BfDsRangeProps =
   }
   & Omit<
     React.InputHTMLAttributes<HTMLInputElement>,
-    "value" | "onChange" | "type" | "min" | "max" | "step"
+    "value" | "onChange" | "type" | "min" | "max" | "step" | "size"
   >;
 
 export function BfDsRange({
@@ -67,6 +69,7 @@ export function BfDsRange({
   tickLabels,
   size = "medium",
   state = "default",
+  color,
   errorMessage,
   successMessage,
   helpText,
@@ -91,11 +94,23 @@ export function BfDsRange({
     : standaloneProp ?? min;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = parseFloat(e.target.value);
+    const rawValue = parseFloat(e.target.value);
+    
+    // Round to the appropriate precision based on step to avoid floating point issues
+    const decimalPlaces = step.toString().includes('.') 
+      ? step.toString().split('.')[1].length 
+      : 0;
+    const newValue = Math.round(rawValue * Math.pow(10, decimalPlaces)) / Math.pow(10, decimalPlaces);
+    
     if (isInFormContext && formContext?.onChange && formContext?.data && name) {
       formContext.onChange({ ...formContext.data, [name]: newValue });
     } else if (standaloneOnChange) {
-      standaloneOnChange(e);
+      // Create a new event with the corrected value
+      const correctedEvent = {
+        ...e,
+        target: { ...e.target, value: newValue.toString() }
+      } as React.ChangeEvent<HTMLInputElement>;
+      standaloneOnChange(correctedEvent);
     }
   };
 
@@ -237,7 +252,10 @@ export function BfDsRange({
         <div className="bfds-range-track">
           <div
             className="bfds-range-fill"
-            style={fillStyle}
+            style={{
+              ...fillStyle,
+              ...(color && { backgroundColor: color }),
+            }}
           />
         </div>
         <input
@@ -253,6 +271,11 @@ export function BfDsRange({
           required={required}
           value={value}
           onChange={handleChange}
+          style={{
+            ...(color && {
+              "--bfds-range-custom-color": color,
+            } as React.CSSProperties),
+          }}
           aria-describedby={[
             helpText ? helpTextId : null,
             actualErrorMessage ? errorId : null,
