@@ -8,7 +8,9 @@ export function BfDsRangeExample() {
   const [value, setValue] = React.useState(50);
   const [volumeValue, setVolumeValue] = React.useState(0.7);
   const [temperatureValue, setTemperatureValue] = React.useState(20);
-  const [formData, setFormData] = React.useState<Record<string, unknown> | null>(null);
+  const [formData, setFormData] = React.useState<
+    Record<string, unknown> | null
+  >(null);
 
   const handleFormSubmit = (data: Record<string, unknown>) => {
     setFormData(data);
@@ -108,7 +110,9 @@ export function BfDsRangeExample() {
       </section>
 
       <section className="bfds-example__section">
-        <h3 className="bfds-example__subtitle">Negative Ranges (Fill from Zero)</h3>
+        <h3 className="bfds-example__subtitle">
+          Negative Ranges (Fill from Zero)
+        </h3>
         <div className="bfds-example__items">
           <BfDsRange
             label="Balance (-100 to 100)"
@@ -177,6 +181,31 @@ export function BfDsRangeExample() {
             showValue={false}
             value={25}
             onChange={() => {}}
+          />
+        </div>
+      </section>
+
+      <section className="bfds-example__section">
+        <h3 className="bfds-example__subtitle">Custom Colors</h3>
+        <div className="bfds-example__items">
+          <BfDsRange
+            label="Red Range"
+            color="#ef4444"
+            value={60}
+            onChange={() => {}}
+          />
+          <BfDsRange
+            label="Green Range"
+            color="#10b981"
+            value={40}
+            onChange={() => {}}
+          />
+          <BfDsRange
+            label="Purple Range"
+            color="#8b5cf6"
+            value={80}
+            onChange={() => {}}
+            showTicks
           />
         </div>
       </section>
