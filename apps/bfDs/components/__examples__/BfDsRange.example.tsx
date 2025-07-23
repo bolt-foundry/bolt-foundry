@@ -8,7 +8,9 @@ export function BfDsRangeExample() {
   const [value, setValue] = React.useState(50);
   const [volumeValue, setVolumeValue] = React.useState(0.7);
   const [temperatureValue, setTemperatureValue] = React.useState(20);
-  const [formData, setFormData] = React.useState<Record<string, unknown> | null>(null);
+  const [formData, setFormData] = React.useState<
+    Record<string, unknown> | null
+  >(null);
 
   const handleFormSubmit = (data: Record<string, unknown>) => {
     setFormData(data);

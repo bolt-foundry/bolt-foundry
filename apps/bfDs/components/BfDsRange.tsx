@@ -52,7 +52,7 @@ export type BfDsRangeProps =
   }
   & Omit<
     React.InputHTMLAttributes<HTMLInputElement>,
-    "value" | "onChange" | "type" | "min" | "max" | "step"
+    "value" | "onChange" | "type" | "min" | "max" | "step" | "size"
   >;
 
 export function BfDsRange({
