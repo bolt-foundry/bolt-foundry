@@ -50,22 +50,27 @@ export const Home = iso(`
             </BfDsButton>
 
             <h1 className="main">
-              Structured prompts, reliable output
+              Understand what your LLM is really doing
             </h1>
             <p>
-              Open source tooling to turn prompt engineering into more science
-              than art through structured, testable prompts
+              Context Engineering tools to turn AI development from art to
+              science
             </p>
 
             {/* NPM Install Section */}
             <div className="npm-command-container flexRow flexWrap gapMedium">
-              <code className="npm-command">
+              <BfDsButton onClick={scrollToWaitlist}>
+                Stay updated
+              </BfDsButton>
+              {
+                /* <code className="npm-command">
                 {bfCode}
               </code>
               <BfDsCopyButton
                 aria-label="Copy npm command"
                 textToCopy={bfCode}
-              />
+              /> */
+              }
             </div>
           </div>
         </div>
