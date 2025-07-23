@@ -36,7 +36,7 @@ Deno.test("BfDsRange - applies custom formatter", () => {
       max={1}
       formatValue={(val) => `${Math.round(val * 100)}%`}
       onChange={() => {}}
-    />
+    />,
   );
   const valueDisplay = screen.getByText("75%");
   assertExists(valueDisplay);
@@ -53,8 +53,12 @@ Deno.test("BfDsRange - renders different sizes", () => {
 });
 
 Deno.test("BfDsRange - renders different states", () => {
-  const { container: error } = render(<BfDsRange state="error" errorMessage="Error!" />);
-  const { container: success } = render(<BfDsRange state="success" successMessage="Success!" />);
+  const { container: error } = render(
+    <BfDsRange state="error" errorMessage="Error!" />,
+  );
+  const { container: success } = render(
+    <BfDsRange state="success" successMessage="Success!" />,
+  );
   const { container: disabled } = render(<BfDsRange disabled />);
 
   assertExists(error.querySelector(".bfds-range--error"));
@@ -88,15 +92,17 @@ Deno.test("BfDsRange - handles value changes", () => {
 
   render(<BfDsRange value={value} onChange={handleChange} />);
   const input = screen.getByRole("slider") as HTMLInputElement;
-  
+
   fireEvent.change(input, { target: { value: "75" } });
   assertEquals(value, 75);
 });
 
 Deno.test("BfDsRange - respects min/max/step", () => {
-  render(<BfDsRange min={10} max={50} step={5} value={25} onChange={() => {}} />);
+  render(
+    <BfDsRange min={10} max={50} step={5} value={25} onChange={() => {}} />,
+  );
   const input = screen.getByRole("slider") as HTMLInputElement;
-  
+
   assertEquals(input.min, "10");
   assertEquals(input.max, "50");
   assertEquals(input.step, "5");
@@ -118,9 +124,9 @@ Deno.test("BfDsRange - renders custom tick labels", () => {
         { value: 50, label: "Medium" },
         { value: 100, label: "High" },
       ]}
-    />
+    />,
   );
-  
+
   assertExists(screen.getByText("Low"));
   assertExists(screen.getByText("Medium"));
   assertExists(screen.getByText("High"));
@@ -130,28 +136,34 @@ Deno.test("BfDsRange - works in form context", () => {
   let formData: Record<string, unknown> | null = null;
   
   render(
-    <BfDsForm onSubmit={(data) => { formData = data; }}>
+    <BfDsForm
+      onSubmit={(data) => {
+        formData = data;
+      }}
+    >
       <BfDsRange name="volume" label="Volume" min={0} max={100} />
       <button type="submit">Submit</button>
-    </BfDsForm>
+    </BfDsForm>,
   );
-  
+
   const input = screen.getByLabelText("Volume") as HTMLInputElement;
   fireEvent.change(input, { target: { value: "75" } });
-  
+
   const submitButton = screen.getByText("Submit");
   fireEvent.click(submitButton);
-  
+
   assertEquals(formData?.volume, 75);
 });
 
 Deno.test("BfDsRange - disabled state prevents interaction", () => {
   let value = 50;
-  const handleChange = () => { value = 100; };
-  
+  const handleChange = () => {
+    value = 100;
+  };
+
   render(<BfDsRange disabled value={value} onChange={handleChange} />);
   const input = screen.getByRole("slider") as HTMLInputElement;
-  
+
   assertEquals(input.disabled, true);
   fireEvent.change(input, { target: { value: "100" } });
   assertEquals(value, 50); // Value should not change
@@ -165,9 +177,9 @@ Deno.test("BfDsRange - has proper ARIA attributes", () => {
       max={100}
       value={50}
       onChange={() => {}}
-    />
+    />,
   );
-  
+
   const input = screen.getByLabelText("Accessible Range");
   assertEquals(input.getAttribute("aria-valuemin"), "0");
   assertEquals(input.getAttribute("aria-valuemax"), "100");
@@ -184,9 +196,9 @@ Deno.test("BfDsRange - custom formatValue affects aria-valuetext", () => {
       value={0.5}
       formatValue={(val) => `${Math.round(val * 100)}%`}
       onChange={() => {}}
-    />
+    />,
   );
-  
+
   const input = screen.getByLabelText("Percentage");
   assertEquals(input.getAttribute("aria-valuetext"), "50%");
 });

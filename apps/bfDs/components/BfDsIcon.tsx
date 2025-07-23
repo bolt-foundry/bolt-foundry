@@ -5,7 +5,7 @@ import { getLogger } from "@bfmono/packages/logger/logger.ts";
 const logger = getLogger(import.meta);
 
 export type BfDsIconName = keyof typeof icons;
-export type BfDsIconSize = "small" | "medium" | "large";
+export type BfDsIconSize = "small" | "medium" | "large" | "xlarge";
 
 export type BfDsIconProps = {
   /** Name of the icon to display */
