@@ -18,6 +18,7 @@ import { BfDsCalloutExample } from "../components/__examples__/BfDsCallout.examp
 import { BfDsToastExample } from "../components/__examples__/BfDsToast.example.tsx";
 import { BfDsPillExample } from "../components/__examples__/BfDsPill.example.tsx";
 import { BfDsSpinnerExample } from "../components/__examples__/BfDsSpinner.example.tsx";
+import { BfDsRangeExample } from "../components/__examples__/BfDsRange.example.tsx";
 
 type ComponentSection = {
   id: string;
@@ -117,6 +118,13 @@ const componentSections: Array<ComponentSection> = [
     name: "Toggle",
     description: "Toggle switches with smooth animations and sizes",
     component: BfDsToggleExample,
+    category: "Form",
+  },
+  {
+    id: "range",
+    name: "Range",
+    description: "Range sliders with value display, ticks, and custom formatting",
+    component: BfDsRangeExample,
     category: "Form",
   },
   {

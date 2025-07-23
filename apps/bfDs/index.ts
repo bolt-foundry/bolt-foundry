@@ -98,3 +98,10 @@ export type {
 } from "./components/BfDsSpinner.tsx";
 
 export { BfDsProvider } from "./components/BfDsProvider.tsx";
+
+export { BfDsRange } from "./components/BfDsRange.tsx";
+export type {
+  BfDsRangeProps,
+  BfDsRangeSize,
+  BfDsRangeState,
+} from "./components/BfDsRange.tsx";
