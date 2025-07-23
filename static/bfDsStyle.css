@@ -583,6 +583,23 @@ a:not(.bfds-button).dark:visited {
   border-color: var(--bfds-primary-active);
 }
 
+/* Outline variant */
+.bfds-button--outline-secondary {
+  background-color: transparent;
+  color: var(--bfds-text);
+  border-color: var(--bfds-secondary);
+}
+
+.bfds-button--outline-secondary:hover:not(:disabled) {
+  background-color: var(--bfds-secondary);
+  color: var(--bfds-text);
+}
+
+.bfds-button--outline-secondary:active:not(:disabled) {
+  background-color: var(--bfds-secondary-active);
+  border-color: var(--bfds-secondary-active);
+}
+
 /* Ghost variant */
 .bfds-button--ghost {
   background-color: transparent;
@@ -602,14 +619,14 @@ a:not(.bfds-button).dark:visited {
 /* Ghost primary variant */
 .bfds-button--ghost-primary {
   background-color: transparent;
-  color: var(--bfds-text);
+  color: var(--bfds-primary);
   border-color: transparent;
 }
 
 .bfds-button--ghost-primary:hover:not(:disabled) {
   background-color: var(--bfds-background-hover);
   color: var(--bfds-primary);
-  border-color: var(--bfds-primary-hover);
+  border-color: var(--bfds-primary-04);
 }
 
 .bfds-button--ghost-primary:active:not(:disabled) {

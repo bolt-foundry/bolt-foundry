@@ -7,6 +7,7 @@ export type BfDsButtonVariant =
   | "primary"
   | "secondary"
   | "outline"
+  | "outline-secondary"
   | "ghost"
   | "ghost-primary";
 
