@@ -1,0 +1,156 @@
+/* Plinko */
+
+:root {
+  --primaryColor: rgba(255, 215, 0, 1);
+  --secondaryColor: rgba(34, 217, 229, 1);
+  --tertiaryColor: rgba(255, 255, 255, 1);
+  --fourtharyColor: rgba(238, 130, 238, 1);
+}
+
+.plinko {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  background: var(--background);
+}
+
+.plinko-spinner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.plinko-scene {
+  cursor: pointer;
+  position: relative;
+  margin-right: 75px;
+}
+
+.plinko-scene canvas {
+  position: relative;
+  z-index: 2;
+  opacity: 0;
+}
+.plinko-scene .fade {
+  opacity: 0;
+}
+.plinko-scene.active .fade,
+.plinko-scene.active canvas {
+  transition: 500ms opacity ease;
+  opacity: 1;
+}
+
+.plinko-controls {
+  margin: 24px;
+  margin-left: 75px;
+  text-align: left;
+}
+
+.plinko-controls h2 {
+  font-family: var(--marketingFontFamily);
+  font-size: 42px;
+  line-height: 1;
+  margin: 0.8em 0 0;
+}
+
+.plinko-controls-text {
+  margin-bottom: 0.6em;
+}
+
+.temperature {
+  font-family: var(--marketingFontFamily);
+  color: var(--fourtharyColor);
+  font-size: 32px;
+  line-height: 1;
+}
+
+.plinko-stat {
+  font-size: 24px;
+  font-family: var(--marketingFontFamily);
+  font-weight: bold;
+  display: flex;
+  gap: 14px;
+}
+.plinko-stat-header {
+  font-weight: 400;
+}
+
+.plinko-container {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  z-index: 1;
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+.plinko-puck {
+  position: absolute;
+  top: 16px;
+  border-radius: 50%;
+  border: 1px solid transparent;
+  cursor: grab;
+  z-index: 10;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.plinko-puck:hover {
+  border: 1px solid var(--fourtharyColor);
+}
+
+.bin-separator {
+  position: absolute;
+  top: 4px;
+  width: 4px;
+  height: calc(100% - 8px);
+  background-color: var(--primaryColor);
+  border-radius: 4px;
+}
+
+.sideTitle {
+  position: absolute;
+  left: 100%;
+  margin-left: 16px;
+  top: calc(50% - 12px);
+  font-family: var(--marketingFontFamily);
+  font-size: 24px;
+  line-height: 1;
+}
+.sideTitle.prompt {
+  color: var(--fourtharyColor);
+}
+.sideTitle.model {
+  color: var(--secondaryColor);
+}
+.sideTitle.output {
+  color: var(--primaryColor);
+}
+
+.starBox {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.starBox.star3 div:nth-child(2) {
+  margin-bottom: 25px;
+}
+.starBox.star3 div:nth-child(1),
+.starBox.star3 div:nth-child(3) {
+  margin-top: 20px;
+}
+.starBox.star3 div:nth-child(1) {
+  margin-right: -12px;
+}
+.starBox.star3 div:nth-child(3) {
+  margin-left: -12px;
+}
