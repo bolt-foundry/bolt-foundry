@@ -1,4 +1,4 @@
-import { UIDemo } from "./src/components/UIDemo.tsx";
+import { UIDemo } from "./components/UIDemo.tsx";
 import type { BfIsographEntrypoint } from "./lib/BfIsographEntrypoint.ts";
 import {
   entrypointHome,

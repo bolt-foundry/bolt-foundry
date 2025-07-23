@@ -19,7 +19,9 @@ export function BfDsButtonExample() {
           </BfDsButton>
           <BfDsButton variant="secondary">Secondary</BfDsButton>
           <BfDsButton variant="outline">Outline</BfDsButton>
+          <BfDsButton variant="outline-secondary">Outline secondary</BfDsButton>
           <BfDsButton variant="ghost">Ghost</BfDsButton>
+          <BfDsButton variant="ghost-primary">Ghost primary</BfDsButton>
         </div>
       </div>
 
@@ -88,6 +90,9 @@ export function BfDsButtonExample() {
           <BfDsButton overlay variant="secondary">Secondary Overlay</BfDsButton>
           <BfDsButton overlay variant="outline">Outline Overlay</BfDsButton>
           <BfDsButton overlay variant="ghost">Ghost Overlay</BfDsButton>
+          <BfDsButton overlay variant="ghost-primary">
+            Ghost primary Overlay
+          </BfDsButton>
           <BfDsButton overlay icon="arrowRight">With Icon</BfDsButton>
           <BfDsButton overlay icon="burgerMenu" iconOnly />
         </div>

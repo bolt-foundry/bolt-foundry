@@ -61,8 +61,7 @@ export function Nav({ page }: Props) {
           UI Demo
         </BfDsButton>
         <BfDsButton
-          variant="secondary"
-          overlay
+          variant="outline-secondary"
           onClick={() => navigate("/login")}
         >
           Login

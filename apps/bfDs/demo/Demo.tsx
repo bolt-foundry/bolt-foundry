@@ -169,9 +169,11 @@ export function BfDsDemo() {
     <div
       style={{
         display: "flex",
-        minHeight: "100vh",
+        height: "calc(100vh - 68px)",
         backgroundColor: "var(--bfds-background)",
         color: "var(--bfds-text)",
+        marginTop: 68,
+        boxSizing: "border-box",
       }}
     >
       {/* Sidebar */}
@@ -184,7 +186,8 @@ export function BfDsDemo() {
           overflowY: "auto",
           position: "sticky",
           top: 0,
-          height: "100vh",
+          height: "100%",
+          boxSizing: "border-box",
         }}
       >
         <div style={{ padding: "0 24px", marginBottom: "32px" }}>
