@@ -182,6 +182,31 @@ export function BfDsRangeExample() {
       </section>
 
       <section className="bfds-example__section">
+        <h3 className="bfds-example__subtitle">Custom Colors</h3>
+        <div className="bfds-example__items">
+          <BfDsRange
+            label="Red Range"
+            color="#ef4444"
+            value={60}
+            onChange={() => {}}
+          />
+          <BfDsRange
+            label="Green Range"
+            color="#10b981"
+            value={40}
+            onChange={() => {}}
+          />
+          <BfDsRange
+            label="Purple Range"
+            color="#8b5cf6"
+            value={80}
+            onChange={() => {}}
+            showTicks
+          />
+        </div>
+      </section>
+
+      <section className="bfds-example__section">
         <h3 className="bfds-example__subtitle">Form Integration</h3>
         <BfDsForm onSubmit={handleFormSubmit}>
           <BfDsRange

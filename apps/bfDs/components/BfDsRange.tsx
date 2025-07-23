@@ -37,6 +37,8 @@ export type BfDsRangeProps =
     size?: BfDsRangeSize;
     /** Visual state of the range */
     state?: BfDsRangeState;
+    /** Custom color for the fill and handle */
+    color?: string;
     /** Error message to display */
     errorMessage?: string;
     /** Success message to display */
@@ -67,6 +69,7 @@ export function BfDsRange({
   tickLabels,
   size = "medium",
   state = "default",
+  color,
   errorMessage,
   successMessage,
   helpText,
@@ -237,7 +240,10 @@ export function BfDsRange({
         <div className="bfds-range-track">
           <div
             className="bfds-range-fill"
-            style={fillStyle}
+            style={{
+              ...fillStyle,
+              ...(color && { backgroundColor: color }),
+            }}
           />
         </div>
         <input
@@ -253,6 +259,11 @@ export function BfDsRange({
           required={required}
           value={value}
           onChange={handleChange}
+          style={{
+            ...(color && {
+              '--bfds-range-custom-color': color,
+            } as React.CSSProperties),
+          }}
           aria-describedby={[
             helpText ? helpTextId : null,
             actualErrorMessage ? errorId : null,
