@@ -504,7 +504,6 @@ a:not(.bfds-button).dark:visited {
   transition: all 0.2s ease-in-out;
   text-decoration: none;
   outline: none;
-  font-family: system-ui, -apple-system, sans-serif;
   border: 1px solid;
 }
 
@@ -798,7 +797,6 @@ a.bfds-button:hover {
   border: none;
   background: transparent;
   color: var(--bfds-text-secondary);
-  font-family: system-ui, -apple-system, sans-serif;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
@@ -864,7 +862,6 @@ a.bfds-button:hover {
   border: none;
   background: transparent;
   color: var(--bfds-text-muted);
-  font-family: system-ui, -apple-system, sans-serif;
   font-weight: 400;
   font-size: 12px;
   cursor: pointer;
@@ -948,7 +945,6 @@ a.bfds-button:hover {
 }
 
 .bfds-input-label {
-  font-family: system-ui, -apple-system, sans-serif;
   font-size: 14px;
   font-weight: 500;
   color: var(--bfds-text);
@@ -966,7 +962,6 @@ a.bfds-button:hover {
   border-radius: 6px;
   background-color: var(--bfds-background);
   color: var(--bfds-text);
-  font-family: system-ui, -apple-system, sans-serif;
   font-size: 14px;
   line-height: 1.4;
   transition: all 0.2s ease-in-out;
@@ -1015,14 +1010,12 @@ a.bfds-button:hover {
 
 /* Input help text */
 .bfds-input-help {
-  font-family: system-ui, -apple-system, sans-serif;
   font-size: 12px;
   color: var(--bfds-text-secondary);
   line-height: 1.3;
 }
 
 .bfds-input-error {
-  font-family: system-ui, -apple-system, sans-serif;
   font-size: 12px;
   color: var(--bfds-error);
   line-height: 1.3;
@@ -1032,7 +1025,6 @@ a.bfds-button:hover {
 }
 
 .bfds-input-success {
-  font-family: system-ui, -apple-system, sans-serif;
   font-size: 12px;
   color: var(--bfds-success);
   line-height: 1.3;
@@ -1050,7 +1042,6 @@ a.bfds-button:hover {
 }
 
 .bfds-textarea-label {
-  font-family: system-ui, -apple-system, sans-serif;
   font-size: 14px;
   font-weight: 500;
   color: var(--bfds-text);
@@ -1068,7 +1059,6 @@ a.bfds-button:hover {
   border-radius: 6px;
   background-color: var(--bfds-background);
   color: var(--bfds-text);
-  font-family: system-ui, -apple-system, sans-serif;
   font-size: 14px;
   line-height: 1.5;
   transition: all 0.2s ease-in-out;
@@ -1135,14 +1125,12 @@ a.bfds-button:hover {
 
 /* TextArea help text */
 .bfds-textarea-help {
-  font-family: system-ui, -apple-system, sans-serif;
   font-size: 12px;
   color: var(--bfds-text-secondary);
   line-height: 1.3;
 }
 
 .bfds-textarea-error {
-  font-family: system-ui, -apple-system, sans-serif;
   font-size: 12px;
   color: var(--bfds-error);
   line-height: 1.3;
@@ -1152,7 +1140,6 @@ a.bfds-button:hover {
 }
 
 .bfds-textarea-success {
-  font-family: system-ui, -apple-system, sans-serif;
   font-size: 12px;
   color: var(--bfds-success);
   line-height: 1.3;
@@ -1171,7 +1158,6 @@ a.bfds-button:hover {
 }
 
 .bfds-select-label {
-  font-family: system-ui, -apple-system, sans-serif;
   font-size: 14px;
   font-weight: 500;
   color: var(--bfds-text);
@@ -1197,7 +1183,6 @@ a.bfds-button:hover {
   display: block;
   width: 100%;
   padding: 12px 40px 12px 16px;
-  font-family: system-ui, -apple-system, sans-serif;
   font-size: 14px;
   font-weight: 400;
   line-height: 1.4;
@@ -1287,7 +1272,6 @@ a.bfds-button:hover {
 
 .bfds-select-option {
   padding: 12px 16px;
-  font-family: system-ui, -apple-system, sans-serif;
   font-size: 14px;
   font-weight: 400;
   line-height: 1.4;
@@ -1344,7 +1328,6 @@ a.bfds-button:hover {
   align-items: center;
   gap: 8px;
   cursor: pointer;
-  font-family: system-ui, -apple-system, sans-serif;
   font-size: 14px;
   font-weight: 400;
   line-height: 1.4;
@@ -1457,7 +1440,6 @@ a.bfds-button:hover {
   align-items: center;
   gap: 8px;
   cursor: pointer;
-  font-family: system-ui, -apple-system, sans-serif;
   font-size: 14px;
   font-weight: 400;
   line-height: 1.4;
@@ -1619,7 +1601,6 @@ a.bfds-button:hover {
   align-items: center;
   gap: 8px;
   cursor: pointer;
-  font-family: system-ui, -apple-system, sans-serif;
   font-size: 14px;
   font-weight: 400;
   line-height: 1.4;
@@ -2215,7 +2196,6 @@ a.bfds-button:hover {
   padding: 24px;
   background-color: var(--bfds-background);
   color: var(--bfds-text);
-  font-family: system-ui, -apple-system, sans-serif;
 }
 
 .bfds-example h2 {
@@ -2308,4 +2288,336 @@ a.bfds-button:hover {
   margin-top: 8px;
   color: var(--bfds-text-secondary);
   word-break: break-word;
+}
+
+/* Range */
+
+.bfds-range-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.bfds-range-container--with-ticks {
+  padding-bottom: 32px;
+}
+
+.bfds-range-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.bfds-range-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--bfds-text);
+  line-height: 1.4;
+}
+
+.bfds-range-required {
+  color: var(--bfds-error);
+  margin-left: 2px;
+}
+
+.bfds-range-value {
+  font-family: "DM Mono", monospace;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--bfds-text);
+  background-color: var(--bfds-secondary);
+  padding: 4px 12px;
+  border-radius: 12px;
+  transition: all 0.2s ease-in-out;
+}
+
+.bfds-range-container:hover .bfds-range-value {
+  background-color: var(--bfds-primary);
+  color: var(--bfds-background);
+}
+
+.bfds-range-wrapper {
+  position: relative;
+  padding: 0;
+}
+
+.bfds-range-track {
+  position: absolute;
+  width: 100%;
+  height: 8px;
+  background-color: var(--bfds-secondary);
+  border-radius: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  transition: all 0.2s ease-in-out;
+}
+
+.bfds-range-fill {
+  position: absolute;
+  height: 100%;
+  background-color: var(--bfds-primary);
+  border-radius: 4px;
+  transition: width 0.1s ease-out;
+}
+
+.bfds-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  padding: 0;
+  border: none;
+  outline: none;
+}
+
+.bfds-range::-webkit-slider-runnable-track {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  height: 8px;
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+.bfds-range::-moz-range-track {
+  appearance: none;
+  background: transparent;
+  height: 8px;
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+.bfds-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: var(--bfds-background);
+  border: 2px solid var(--bfds-primary);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  margin-top: 0;
+}
+
+.bfds-range::-moz-range-thumb {
+  appearance: none;
+  background-color: var(--bfds-background);
+  border: 2px solid var(--bfds-primary);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  margin-top: 0;
+}
+
+.bfds-range:hover::-webkit-slider-thumb {
+  transform: scale(1.1);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+.bfds-range:hover::-moz-range-thumb {
+  transform: scale(1.1);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+.bfds-range:hover ~ .bfds-range-track {
+  background-color: var(--bfds-secondary-hover);
+}
+
+.bfds-range:focus {
+  outline: none;
+}
+
+.bfds-range:focus::-webkit-slider-thumb {
+  box-shadow: 0 0 0 4px var(--bfds-focus-outline), 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.bfds-range:focus::-moz-range-thumb {
+  box-shadow: 0 0 0 4px var(--bfds-focus-outline), 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Range sizes */
+.bfds-range--small::-webkit-slider-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  margin-top: -4px;
+}
+
+.bfds-range--small::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  margin-top: -4px;
+}
+
+.bfds-range--medium::-webkit-slider-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  margin-top: -6px;
+}
+
+.bfds-range--medium::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  margin-top: -6px;
+}
+
+.bfds-range--large::-webkit-slider-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  margin-top: -8px;
+}
+
+.bfds-range--large::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  margin-top: -8px;
+}
+
+/* Range states */
+.bfds-range-container--error .bfds-range-track {
+  background-color: rgba(239, 68, 68, 0.2);
+}
+
+.bfds-range-container--error .bfds-range-fill {
+  background-color: var(--bfds-error);
+}
+
+.bfds-range--error::-webkit-slider-thumb {
+  border-color: var(--bfds-error);
+}
+
+.bfds-range--error::-moz-range-thumb {
+  border-color: var(--bfds-error);
+}
+
+.bfds-range-container--success .bfds-range-track {
+  background-color: rgba(16, 185, 129, 0.2);
+}
+
+.bfds-range-container--success .bfds-range-fill {
+  background-color: var(--bfds-success);
+}
+
+.bfds-range--success::-webkit-slider-thumb {
+  border-color: var(--bfds-success);
+}
+
+.bfds-range--success::-moz-range-thumb {
+  border-color: var(--bfds-success);
+}
+
+.bfds-range--disabled {
+  cursor: not-allowed;
+}
+
+.bfds-range-container--disabled {
+  opacity: 0.6;
+}
+
+.bfds-range-container--disabled .bfds-range-track {
+  background-color: var(--bfds-background-hover);
+}
+
+.bfds-range-container--disabled .bfds-range-fill {
+  background-color: var(--bfds-text-muted);
+}
+
+.bfds-range--disabled::-webkit-slider-thumb {
+  cursor: not-allowed;
+  background-color: var(--bfds-text-muted);
+  border-color: var(--bfds-text-muted);
+  box-shadow: none;
+}
+
+.bfds-range--disabled::-moz-range-thumb {
+  cursor: not-allowed;
+  background-color: var(--bfds-text-muted);
+  border-color: var(--bfds-text-muted);
+  box-shadow: none;
+}
+
+/* Range ticks */
+.bfds-range-ticks {
+  position: absolute;
+  width: 100%;
+  top: 100%;
+  left: 0;
+  margin-top: 2px;
+  pointer-events: none;
+}
+
+.bfds-range-tick {
+  position: absolute;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.bfds-range-tick--first {
+  transform: translateX(0);
+  align-items: flex-start;
+}
+
+.bfds-range-tick--last {
+  transform: translateX(-100%);
+  align-items: flex-end;
+}
+
+.bfds-range-tick-mark {
+  width: 2px;
+  height: 8px;
+  background-color: var(--bfds-secondary);
+  opacity: 0.5;
+}
+
+.bfds-range-tick-label {
+  font-size: 11px;
+  color: var(--bfds-text-secondary);
+  white-space: nowrap;
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* Range help and messages */
+.bfds-range-help {
+  font-size: 12px;
+  color: var(--bfds-text-secondary);
+  line-height: 1.3;
+  margin-top: 4px;
+}
+
+.bfds-range-error {
+  font-size: 12px;
+  color: var(--bfds-error);
+  line-height: 1.3;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.bfds-range-success {
+  font-size: 12px;
+  color: var(--bfds-success);
+  line-height: 1.3;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
 }
