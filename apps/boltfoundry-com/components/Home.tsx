@@ -1,7 +1,7 @@
+import { useRef } from "react";
 import { iso } from "@iso-bfc";
 import { BfDsButton } from "@bfmono/apps/bfDs/index.ts";
 import { BfDsCopyButton } from "@bfmono/apps/bfDs/index.ts";
-import { useRouter } from "../contexts/RouterContext.tsx";
 import { Nav } from "./Nav.tsx";
 import { WaitlistSection } from "./WaitlistSection.tsx";
 
@@ -13,7 +13,20 @@ export const Home = iso(`
     }
   }
 `)(function Home({ data }) {
-  const { navigate } = useRouter();
+  const heroRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  const scrollToTop = () => {
+    if (heroRef.current) {
+      heroRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  const scrollToWaitlist = () => {
+    if (contentRef.current) {
+      contentRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   const bfCode = "aibff calibrate grader.deck.md";
 
@@ -23,7 +36,7 @@ export const Home = iso(`
       <Nav />
 
       {/* Hero Section */}
-      <main className="hero-section flexColumn">
+      <main className="hero-section flexColumn" ref={heroRef}>
         <div className="landing-content">
           <div className="hero-content">
             {/* GitHub button */}
@@ -50,51 +63,53 @@ export const Home = iso(`
                 {bfCode}
               </code>
               <BfDsCopyButton
-                aria-label="Copy command"
+                aria-label="Copy npm command"
                 textToCopy={bfCode}
               />
             </div>
-
-            <div style={{ marginTop: "2rem" }}>
-              <BfDsButton
-                onClick={() => navigate("/ui")}
-                variant="secondary"
-                size="medium"
-              >
-                View UI Demo
-              </BfDsButton>
-            </div>
           </div>
+        </div>
+        <div className="more-content flexCenter flexColumn mobile-hide">
+          <BfDsButton
+            variant="ghost-primary"
+            icon="arrowDown"
+            iconOnly
+            onClick={scrollToWaitlist}
+          />
         </div>
       </main>
 
-      {/* Waitlist Section */}
-      <WaitlistSection />
-
-      {/* Footer */}
-      <div className="landing-footer">
-        <div className="landing-content flexRow gapMedium alignItemsCenter">
-          <div className="flex1">
-            &copy; 2025 Bolt Foundry. All rights reserved.
-          </div>
-          <BfDsButton
-            size="medium"
-            variant="ghost"
-            icon="brand-discord"
-            iconOnly
-            href="https://discord.gg/tU5ksTBfEj"
-            target="_blank"
-          />
-          <BfDsButton
-            size="medium"
-            variant="ghost"
-            icon="brand-github"
-            iconOnly
-            href="https://github.com/bolt-foundry/bolt-foundry"
-            target="_blank"
-          />
+      {/* Content */}
+      <section className="page-content">
+        <div className="landing-content" ref={contentRef}>
+          <WaitlistSection actionButton={scrollToTop} />
         </div>
-      </div>
+
+        {/* Footer */}
+        <div className="landing-footer">
+          <div className="landing-content flexRow gapMedium alignItemsCenter">
+            <div className="flex1">
+              &copy; 2025 Bolt Foundry. All rights reserved.
+            </div>
+            <BfDsButton
+              size="small"
+              variant="ghost"
+              icon="brand-discord"
+              iconOnly
+              href="https://discord.gg/tU5ksTBfEj"
+              target="_blank"
+            />
+            <BfDsButton
+              size="small"
+              variant="ghost"
+              icon="brand-github"
+              iconOnly
+              href="https://github.com/bolt-foundry/bolt-foundry"
+              target="_blank"
+            />
+          </div>
+        </div>
+      </section>
     </div>
   );
 });

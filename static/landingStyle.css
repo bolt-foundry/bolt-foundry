@@ -86,7 +86,7 @@ header.landing-header {
   align-items: start;
 }
 
-.substack-section {
+.page-content {
   min-height: 100vh;
   padding-top: 60px;
   padding-bottom: 60px;
@@ -96,20 +96,8 @@ header.landing-header {
   position: relative;
   text-align: center;
 }
-.substack-section p {
+.page-content p {
   font-size: 1.3em;
-}
-
-.substack-form {
-  width: 100%;
-  max-width: 400px;
-  margin: 0 auto;
-}
-
-.waitlist-form-container {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
 }
 
 .npm-command-container {
