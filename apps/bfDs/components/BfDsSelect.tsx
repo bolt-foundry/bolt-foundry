@@ -18,8 +18,10 @@ export type BfDsSelectProps = {
   name?: string;
 
   // Standalone props
-  /** Currently selected value */
+  /** Currently selected value (controlled) */
   value?: string;
+  /** Default selected value for uncontrolled usage */
+  defaultValue?: string;
   /** Selection change callback */
   onChange?: (value: string) => void;
 
@@ -45,6 +47,7 @@ export type BfDsSelectProps = {
 export function BfDsSelect({
   name,
   value,
+  defaultValue,
   onChange,
   options,
   placeholder = "Select...",
@@ -58,6 +61,9 @@ export function BfDsSelect({
   const formContext = useBfDsFormContext();
   const isInForm = !!formContext;
   const selectId = id || React.useId();
+
+  // Internal state for uncontrolled mode
+  const [internalValue, setInternalValue] = useState(defaultValue ?? "");
 
   // Dropdown state (used for both regular and typeahead)
   const [isOpen, setIsOpen] = useState(false);
@@ -74,11 +80,17 @@ export function BfDsSelect({
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Use form context if available
+  // Determine control mode
+  const isControlled = value !== undefined;
+
+  // Get actual value from form context, controlled prop, or internal state
   const actualValue = isInForm
     ? (formContext.data as Record<string, unknown>)?.[name || ""] as string ||
       ""
-    : value || "";
+    : isControlled
+    ? value
+    : internalValue;
+
   const actualOnChange = isInForm
     ? (newValue: string) => {
       if (name && formContext.onChange && formContext.data) {
@@ -91,7 +103,13 @@ export function BfDsSelect({
         onChange?.(newValue);
       }
     }
-    : onChange;
+    : (newValue: string) => {
+      onChange?.(newValue);
+      if (!isControlled) {
+        // Update internal state for uncontrolled mode
+        setInternalValue(newValue);
+      }
+    };
 
   // Filter options based on search term
   const filteredOptions = useMemo(() => {

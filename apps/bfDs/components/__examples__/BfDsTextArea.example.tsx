@@ -3,9 +3,6 @@ import { BfDsTextArea } from "../BfDsTextArea.tsx";
 
 export function BfDsTextAreaExample() {
   const [value1, setValue1] = useState("");
-  const [value2, setValue2] = useState(
-    "This is some existing content in the textarea that demonstrates how it looks with text.",
-  );
   const [value3, setValue3] = useState(
     "Valid content that passed validation",
   );
@@ -15,23 +12,22 @@ export function BfDsTextAreaExample() {
       <h2>BfDsTextArea Examples</h2>
 
       <div className="bfds-example__section">
-        <h3>Standalone Mode</h3>
+        <h3>Controlled vs Uncontrolled</h3>
         <div className="bfds-example__group">
           <BfDsTextArea
-            label="Your Message"
+            label="Controlled TextArea"
             placeholder="Enter your message here..."
             value={value1}
             onChange={(e) => setValue1(e.target.value)}
-            helpText="This is a standalone textarea field"
+            helpText={`Character count: ${value1.length}`}
             rows={3}
           />
           <BfDsTextArea
-            label="Description"
-            placeholder="Describe your project..."
-            required
-            value={value2}
-            onChange={(e) => setValue2(e.target.value)}
-            rows={4}
+            label="Uncontrolled TextArea"
+            placeholder="Manages its own state"
+            defaultValue="Initial content"
+            helpText="This textarea manages its own state internally"
+            rows={3}
           />
         </div>
       </div>
@@ -45,8 +41,7 @@ export function BfDsTextAreaExample() {
             state="error"
             errorMessage="Content is too short"
             rows={3}
-            value=""
-            onChange={() => {}}
+            defaultValue=""
           />
           <BfDsTextArea
             label="Success State"
@@ -61,9 +56,8 @@ export function BfDsTextAreaExample() {
             label="Disabled State"
             placeholder="Cannot edit this"
             state="disabled"
-            value="This content cannot be edited"
+            defaultValue="This content cannot be edited"
             rows={3}
-            onChange={() => {}}
           />
         </div>
       </div>
@@ -76,32 +70,28 @@ export function BfDsTextAreaExample() {
             placeholder="Cannot be resized"
             resize="none"
             rows={2}
-            value=""
-            onChange={() => {}}
+            defaultValue=""
           />
           <BfDsTextArea
             label="Horizontal Resize"
             placeholder="Can be resized horizontally"
             resize="horizontal"
             rows={2}
-            value=""
-            onChange={() => {}}
+            defaultValue=""
           />
           <BfDsTextArea
             label="Vertical Resize (Default)"
             placeholder="Can be resized vertically"
             resize="vertical"
             rows={2}
-            value=""
-            onChange={() => {}}
+            defaultValue=""
           />
           <BfDsTextArea
             label="Both Directions"
             placeholder="Can be resized in both directions"
             resize="both"
             rows={2}
-            value=""
-            onChange={() => {}}
+            defaultValue=""
           />
         </div>
       </div>
@@ -113,22 +103,19 @@ export function BfDsTextAreaExample() {
             label="Small (2 rows)"
             placeholder="Small textarea"
             rows={2}
-            value=""
-            onChange={() => {}}
+            defaultValue=""
           />
           <BfDsTextArea
             label="Medium (4 rows)"
             placeholder="Medium textarea"
             rows={4}
-            value=""
-            onChange={() => {}}
+            defaultValue=""
           />
           <BfDsTextArea
             label="Large (6 rows)"
             placeholder="Large textarea"
             rows={6}
-            value=""
-            onChange={() => {}}
+            defaultValue=""
           />
         </div>
       </div>
@@ -139,8 +126,7 @@ export function BfDsTextAreaExample() {
           placeholder="Just a placeholder with help text"
           helpText="This textarea has no label but includes help text"
           rows={3}
-          value=""
-          onChange={() => {}}
+          defaultValue=""
         />
       </div>
     </div>

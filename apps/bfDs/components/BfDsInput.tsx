@@ -9,8 +9,10 @@ export type BfDsInputProps = {
   name?: string;
 
   // Standalone props
-  /** Current input value */
+  /** Current input value (controlled) */
   value?: string;
+  /** Default value for uncontrolled usage */
+  defaultValue?: string;
   /** Change event handler */
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 
@@ -36,6 +38,7 @@ export type BfDsInputProps = {
 export function BfDsInput({
   name,
   value: standaloneProp,
+  defaultValue,
   onChange: standaloneOnChange,
   label,
   placeholder,
@@ -55,19 +58,28 @@ export function BfDsInput({
   const errorId = `${inputId}-error`;
   const successId = `${inputId}-success`;
 
+  // Internal state for uncontrolled mode
+  const [internalValue, setInternalValue] = React.useState(defaultValue ?? "");
+
   // Determine if we're in form context or standalone mode
   const isInFormContext = formContext !== null && name !== undefined;
+  const isControlled = standaloneProp !== undefined;
 
-  // Get value and onChange from form context or standalone props
+  // Get value from form context, controlled prop, or internal state
   const value = isInFormContext && formContext?.data && name
     ? (formContext.data[name as keyof typeof formContext.data] as string) ?? ""
-    : standaloneProp ?? "";
+    : isControlled
+    ? standaloneProp
+    : internalValue;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (isInFormContext && formContext?.onChange && formContext?.data && name) {
       formContext.onChange({ ...formContext.data, [name]: e.target.value });
     } else if (standaloneOnChange) {
       standaloneOnChange(e);
+    } else if (!isControlled) {
+      // Update internal state for uncontrolled mode
+      setInternalValue(e.target.value);
     }
   };
 

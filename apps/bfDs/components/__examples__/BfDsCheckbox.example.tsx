@@ -22,14 +22,20 @@ export function BfDsCheckboxExample() {
       <h2>BfDsCheckbox Examples</h2>
 
       <div className="bfds-example__section">
-        <h3>Standalone Checkbox</h3>
+        <h3>Controlled vs Uncontrolled</h3>
         <div className="bfds-example__group">
           <BfDsCheckbox
-            label="I agree to the terms and conditions"
+            label="Controlled Checkbox"
             checked={standaloneChecked}
             onChange={setStandaloneChecked}
           />
           <p>Checked: {standaloneChecked ? "Yes" : "No"}</p>
+
+          <BfDsCheckbox
+            label="Uncontrolled Checkbox (starts checked)"
+            defaultChecked
+          />
+          <p>This checkbox manages its own state internally</p>
         </div>
       </div>
 
@@ -83,28 +89,24 @@ export function BfDsCheckboxExample() {
         <div className="bfds-example__group">
           <BfDsCheckbox
             label="Unchecked"
-            checked={false}
-            onChange={() => {}}
+            defaultChecked={false}
           />
 
           <BfDsCheckbox
             label="Checked"
-            checked
-            onChange={() => {}}
+            defaultChecked
           />
 
           <BfDsCheckbox
             label="Disabled Unchecked"
-            checked={false}
+            defaultChecked={false}
             disabled
-            onChange={() => {}}
           />
 
           <BfDsCheckbox
             label="Disabled Checked"
-            checked
+            defaultChecked
             disabled
-            onChange={() => {}}
           />
 
           <BfDsCheckbox
