@@ -1,4 +1,5 @@
-import * as React from "react";
+import type * as React from "react";
+import { useId, useState } from "react";
 import { useBfDsFormContext } from "./BfDsForm.tsx";
 
 export type BfDsRangeSize = "small" | "medium" | "large";
@@ -11,8 +12,10 @@ export type BfDsRangeProps =
     name?: string;
 
     // Standalone props
-    /** Current range value */
+    /** Current range value (controlled) */
     value?: number;
+    /** Default value for uncontrolled usage */
+    defaultValue?: number;
     /** Change event handler */
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 
@@ -58,6 +61,7 @@ export type BfDsRangeProps =
 export function BfDsRange({
   name,
   value: standaloneProp,
+  defaultValue,
   onChange: standaloneOnChange,
   label,
   min = 0,
@@ -80,18 +84,26 @@ export function BfDsRange({
   ...props
 }: BfDsRangeProps) {
   const formContext = useBfDsFormContext();
-  const inputId = id || React.useId();
+  const inputId = id || useId();
   const helpTextId = `${inputId}-help`;
   const errorId = `${inputId}-error`;
   const successId = `${inputId}-success`;
 
+  // Internal state for uncontrolled mode
+  const [internalValue, setInternalValue] = useState(
+    defaultValue ?? min,
+  );
+
   // Determine if we're in form context or standalone mode
   const isInFormContext = formContext !== null && name !== undefined;
+  const isControlled = standaloneProp !== undefined;
 
-  // Get value and onChange from form context or standalone props
+  // Get value from form context, controlled prop, or internal state
   const value = isInFormContext && formContext?.data && name
     ? (formContext.data[name as keyof typeof formContext.data] as number) ?? min
-    : standaloneProp ?? min;
+    : isControlled
+    ? standaloneProp
+    : internalValue;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = parseFloat(e.target.value);
@@ -112,6 +124,9 @@ export function BfDsRange({
         target: { ...e.target, value: newValue.toString() },
       } as React.ChangeEvent<HTMLInputElement>;
       standaloneOnChange(correctedEvent);
+    } else if (!isControlled) {
+      // Update internal state for uncontrolled mode
+      setInternalValue(newValue);
     }
   };
 

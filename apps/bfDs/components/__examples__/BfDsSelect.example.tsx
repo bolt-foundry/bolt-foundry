@@ -238,16 +238,24 @@ export function BfDsSelectExample() {
       <h2>BfDsSelect Examples</h2>
 
       <div className="bfds-example__section">
-        <h3>Standalone Select</h3>
+        <h3>Controlled vs Uncontrolled</h3>
         <div className="bfds-example__group">
           <BfDsSelect
-            label="Country"
+            label="Controlled Select"
             options={countryOptions}
             value={standaloneValue}
             onChange={setStandaloneValue}
             placeholder="Choose a country"
           />
           <p>Selected: {standaloneValue || "None"}</p>
+
+          <BfDsSelect
+            label="Uncontrolled Select"
+            options={sizeOptions}
+            defaultValue="m"
+            placeholder="Choose a size"
+          />
+          <p>This select manages its own state internally</p>
         </div>
       </div>
 

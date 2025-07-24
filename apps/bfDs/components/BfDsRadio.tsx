@@ -1,4 +1,5 @@
 import type * as React from "react";
+import { useState } from "react";
 import { useBfDsFormContext } from "./BfDsForm.tsx";
 
 export type BfDsRadioOption = {
@@ -18,8 +19,10 @@ export type BfDsRadioProps = {
   name: string;
 
   // Standalone props
-  /** Currently selected value */
+  /** Currently selected value (controlled) */
   value?: string;
+  /** Default selected value for uncontrolled usage */
+  defaultValue?: string;
   /** Selection change callback */
   onChange?: (value: string) => void;
 
@@ -43,6 +46,7 @@ export type BfDsRadioProps = {
 export function BfDsRadio({
   name,
   value,
+  defaultValue,
   onChange,
   options,
   disabled = false,
@@ -55,10 +59,19 @@ export function BfDsRadio({
   const formContext = useBfDsFormContext();
   const isInForm = !!formContext;
 
-  // Use form context if available
+  // Internal state for uncontrolled mode
+  const [internalValue, setInternalValue] = useState(defaultValue ?? "");
+
+  // Determine control mode
+  const isControlled = value !== undefined;
+
+  // Get actual value from form context, controlled prop, or internal state
   const actualValue = isInForm
     ? (formContext.data as Record<string, unknown>)?.[name] as string || ""
-    : value || "";
+    : isControlled
+    ? value
+    : internalValue;
+
   const actualOnChange = isInForm
     ? (newValue: string) => {
       if (formContext.onChange && formContext.data) {
@@ -68,7 +81,13 @@ export function BfDsRadio({
         });
       }
     }
-    : onChange;
+    : (newValue: string) => {
+      onChange?.(newValue);
+      if (!isControlled) {
+        // Update internal state for uncontrolled mode
+        setInternalValue(newValue);
+      }
+    };
 
   const radioGroupClasses = [
     "bfds-radio-group",

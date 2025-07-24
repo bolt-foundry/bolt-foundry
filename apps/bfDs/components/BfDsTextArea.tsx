@@ -1,4 +1,5 @@
-import * as React from "react";
+import type * as React from "react";
+import { useId, useState } from "react";
 import { useBfDsFormContext } from "./BfDsForm.tsx";
 
 export type BfDsTextAreaState = "default" | "error" | "success" | "disabled";
@@ -10,8 +11,10 @@ export type BfDsTextAreaProps =
     name?: string;
 
     // Standalone props
-    /** Current textarea value */
+    /** Current textarea value (controlled) */
     value?: string;
+    /** Default value for uncontrolled usage */
+    defaultValue?: string;
     /** Change event handler */
     onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
 
@@ -43,6 +46,7 @@ export type BfDsTextAreaProps =
 export function BfDsTextArea({
   name,
   value: standaloneProp,
+  defaultValue,
   onChange: standaloneOnChange,
   label,
   placeholder,
@@ -58,24 +62,33 @@ export function BfDsTextArea({
   ...props
 }: BfDsTextAreaProps) {
   const formContext = useBfDsFormContext();
-  const textAreaId = id || React.useId();
+  const textAreaId = id || useId();
   const helpTextId = `${textAreaId}-help`;
   const errorId = `${textAreaId}-error`;
   const successId = `${textAreaId}-success`;
 
+  // Internal state for uncontrolled mode
+  const [internalValue, setInternalValue] = useState(defaultValue ?? "");
+
   // Determine if we're in form context or standalone mode
   const isInFormContext = formContext !== null && name !== undefined;
+  const isControlled = standaloneProp !== undefined;
 
-  // Get value and onChange from form context or standalone props
+  // Get value from form context, controlled prop, or internal state
   const value = isInFormContext && formContext?.data && name
     ? (formContext.data[name as keyof typeof formContext.data] as string) ?? ""
-    : standaloneProp ?? "";
+    : isControlled
+    ? standaloneProp
+    : internalValue;
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (isInFormContext && formContext?.onChange && formContext?.data && name) {
       formContext.onChange({ ...formContext.data, [name]: e.target.value });
     } else if (standaloneOnChange) {
       standaloneOnChange(e);
+    } else if (!isControlled) {
+      // Update internal state for uncontrolled mode
+      setInternalValue(e.target.value);
     }
   };
 

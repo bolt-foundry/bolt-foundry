@@ -83,22 +83,19 @@ export function BfDsToggleExample() {
           <BfDsToggle
             label="Small toggle"
             size="small"
-            checked
-            onChange={() => {}}
+            defaultChecked
           />
 
           <BfDsToggle
             label="Medium toggle (default)"
             size="medium"
-            checked
-            onChange={() => {}}
+            defaultChecked
           />
 
           <BfDsToggle
             label="Large toggle"
             size="large"
-            checked
-            onChange={() => {}}
+            defaultChecked
           />
         </div>
       </div>
@@ -108,35 +105,31 @@ export function BfDsToggleExample() {
         <div className="bfds-example__group">
           <BfDsToggle
             label="Unchecked"
-            checked={false}
-            onChange={() => {}}
+            defaultChecked={false}
           />
 
           <BfDsToggle
             label="Checked"
-            checked
-            onChange={() => {}}
+            defaultChecked
           />
 
           <BfDsToggle
             label="Disabled Unchecked"
-            checked={false}
+            defaultChecked={false}
             disabled
-            onChange={() => {}}
           />
 
           <BfDsToggle
             label="Disabled Checked"
-            checked
+            defaultChecked
             disabled
-            onChange={() => {}}
           />
 
           <BfDsToggle label="Without onChange Handler" />
 
           <BfDsToggle
             label="No Label"
-            onChange={() => {}}
+            defaultChecked={false}
           />
         </div>
       </div>
