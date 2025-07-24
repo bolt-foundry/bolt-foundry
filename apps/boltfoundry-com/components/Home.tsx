@@ -1,7 +1,6 @@
 import { useRef } from "react";
 import { iso } from "@iso-bfc";
 import { BfDsButton } from "@bfmono/apps/bfDs/index.ts";
-import { BfDsCopyButton } from "@bfmono/apps/bfDs/index.ts";
 import { Nav } from "./Nav.tsx";
 import { WaitlistSection } from "./WaitlistSection.tsx";
 
@@ -27,8 +26,6 @@ export const Home = iso(`
       contentRef.current.scrollIntoView({ behavior: "smooth" });
     }
   };
-
-  const bfCode = "aibff calibrate grader.deck.md";
 
   return (
     <div className="landing-page">
@@ -62,15 +59,6 @@ export const Home = iso(`
               <BfDsButton onClick={scrollToWaitlist}>
                 Stay updated
               </BfDsButton>
-              {
-                /* <code className="npm-command">
-                {bfCode}
-              </code>
-              <BfDsCopyButton
-                aria-label="Copy npm command"
-                textToCopy={bfCode}
-              /> */
-              }
             </div>
           </div>
         </div>

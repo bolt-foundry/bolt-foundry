@@ -4,7 +4,7 @@ import { BfDsForm } from "@bfmono/apps/bfDs/components/BfDsForm.tsx";
 import { BfDsInput } from "@bfmono/apps/bfDs/components/BfDsInput.tsx";
 import { BfDsFormSubmitButton } from "@bfmono/apps/bfDs/components/BfDsFormSubmitButton.tsx";
 import { BfDsSpinner } from "@bfmono/apps/bfDs/components/BfDsSpinner.tsx";
-import JoinWaitlistMutation from "../__generated__/__isograph/Mutation/JoinWaitlist/entrypoint.ts";
+import JoinWaitlistMutation from "@iso-bfc/Mutation/JoinWaitlist/entrypoint.ts";
 import { useMutation } from "../hooks/isographPrototypes/useMutation.tsx";
 import { getLogger } from "@bolt-foundry/logger";
 

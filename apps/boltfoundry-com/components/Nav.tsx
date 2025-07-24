@@ -17,6 +17,26 @@ export function Nav({ page }: Props) {
   const NavButtons = () => {
     return (
       <>
+        <BfDsButton
+          variant="outline"
+          overlay
+          href="https://github.com/bolt-foundry/bolt-foundry"
+          target="_blank"
+          rel="noopener noreferrer"
+          icon="brand-github"
+          iconOnly
+          size="small"
+        />
+        <BfDsButton
+          variant="outline"
+          overlay
+          href="https://discord.gg/tU5ksTBfEj"
+          target="_blank"
+          rel="noopener noreferrer"
+          icon="brand-discord"
+          iconOnly
+          size="small"
+        />
         {
           /* <BfDsButton
           variant={page === "blog" ? "primary" : "outline"}
@@ -35,24 +55,6 @@ export function Nav({ page }: Props) {
           Docs
         </BfDsButton> */
         }
-        <BfDsButton
-          variant="outline"
-          overlay
-          href="https://github.com/bolt-foundry/bolt-foundry"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          GitHub
-        </BfDsButton>
-        <BfDsButton
-          variant="outline"
-          overlay
-          href="https://discord.gg/tU5ksTBfEj"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Discord
-        </BfDsButton>
         <BfDsButton
           variant={page === "ui" ? "primary" : "outline"}
           overlay={page !== "ui"}
