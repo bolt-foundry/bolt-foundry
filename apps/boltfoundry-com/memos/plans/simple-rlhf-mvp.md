@@ -60,26 +60,27 @@ automatically created for each organization.
 
 ### ❌ **MISSING COMPONENTS**
 
-- **submitFeedback GraphQL mutation**: Needs to be exposed in BfSampleFeedback
-  schema
-- **Feedback form UI**: RlhfInterface currently contains only placeholder text
-- **Demo data auto-creation**: BfOrganization.afterCreate() hook needs
-  implementation
-- **Data integration**: Frontend needs to connect to backend via Isograph
+- ❌ **submitFeedback GraphQL mutation**: Needs to be exposed in
+  BfSampleFeedback schema
+- ❌ **Feedback form UI**: RlhfInterface currently contains only placeholder
+  text
+- ❌ **Data integration**: Frontend needs to connect to backend via Isograph
   queries
 
-### ✅ **DEMO DATA STRATEGY**
+### 🔄 **DEMO DATA STRATEGY**
 
 Instead of hardcoded frontend data, we're implementing **automatic demo data
 creation**:
 
-- **Demo deck**: Customer Support Response Evaluator (markdown-based)
-- **Auto-creation**: BfOrganization.afterCreate() hook creates demo content when
-  new orgs are created via Google OAuth
-- **Complete workflow**: 4 sample conversations + AI evaluations + 1 human
-  feedback example
-- **Realistic data**: Actual customer support scenarios with meaningful
-  evaluations
+- **✅ Demo deck**: Customer Support Response Evaluator (markdown-based)
+- **✅ Auto-creation**: BfOrganization.afterCreate() hook implemented and
+  creates demo deck when new orgs are created via Google OAuth
+- **✅ Demo content files**: 4 sample conversations (billing, technical,
+  returns, subscription) defined in TOML format
+- **❌ Missing**: Automatic creation of BfSample records, AI evaluations, and
+  human feedback example from demo content files
+- **✅ Realistic data**: Actual customer support scenarios with meaningful
+  evaluations ready for implementation
 
 **Demo Content Structure**:
 
@@ -94,44 +95,32 @@ creation**:
 This approach gives new users immediate, realistic content to explore the RLHF
 workflow.
 
-## Implementation Plan - Milestone-Based Approach
+## Implementation Plan - Frontend-First Approach
 
-### Milestone 1: Backend Demo Data
+### 🎯 **CURRENT PRIORITY: Milestone A - Frontend Form UI**
 
-**Implemented BfOrganization.afterCreate() lifecycle hook**:
-
-- Create customer support demo deck with system prompt
-- Generate 4 realistic conversation samples (billing, technical, returns,
-  subscription)
-- Create AI evaluations for all samples using existing grader system
-- Add one human feedback example showing disagreement with AI
-
-**Success Criteria**:
-
-- New organizations automatically receive demo content on creation
-- Demo deck contains 3 graders (helpfulness, professionalism, accuracy)
-- 4 samples have realistic completion data and AI evaluations
-- 1 sample has human feedback demonstrating scoring disagreement
-
-### Milestone 2: Frontend Form UI
-
-**Build feedback form interface in RlhfInterface.tsx**:
+**Build feedback form interface in RlhfInterface.tsx** (can use existing demo
+deck):
 
 - Implement Isograph GraphQL query to load demo deck data
-- Display sample conversation in readable format
-- Show AI evaluation with score, explanation, and reasoning
+- Display sample conversation in readable format (can use hardcoded data
+  initially)
+- Show AI evaluation with score, explanation, and reasoning (can use mock data)
 - Create feedback form with score radio buttons (-3 to +3) and explanation
   textarea
 - Add form validation and disabled states
 
 **Success Criteria**:
 
-- Form renders with real demo data from GraphQL
-- Score selection works with proper validation
-- Explanation textarea has minimum character validation
-- Form shows loading and error states appropriately
+- ❌ Form renders with demo data from GraphQL (or hardcoded initially)
+- ❌ Score selection works with proper validation
+- ❌ Explanation textarea has minimum character validation
+- ❌ Form shows loading and error states appropriately
 
-### Milestone 3: GraphQL Integration
+**Status**: **HIGH PRIORITY** - Can proceed immediately with existing backend
+infrastructure
+
+### Milestone B: GraphQL Integration
 
 **Expose and connect submitFeedback mutation**:
 
@@ -140,14 +129,21 @@ workflow.
 - Connect frontend form to mutation with error handling
 - Add success confirmation and form reset after submission
 
-**Success Criteria**:
+### Milestone C: Backend Demo Data Enhancement (Lower Priority)
 
-- submitFeedback mutation works via GraphQL
-- Frontend successfully submits feedback and shows confirmation
-- Submitted data persists correctly in database
-- Error scenarios are handled gracefully
+**✅ PARTIALLY COMPLETE: BfOrganization.afterCreate() lifecycle hook**:
 
-### Milestone 4: End-to-End Validation
+- ✅ Create customer support demo deck with system prompt
+- ✅ Demo deck auto-generates 3 graders (helpfulness, professionalism, accuracy)
+- ⏳ **DEFERRED**: Generate 4 realistic conversation samples as BfSample records
+- ⏳ **DEFERRED**: Create AI evaluations for all samples using existing grader
+  system
+- ⏳ **DEFERRED**: Add one human feedback example showing disagreement with AI
+
+**Status**: **DEFERRED** - Demo deck creation works for frontend testing; full
+sample creation can be implemented later
+
+### Milestone D: End-to-End Validation
 
 **Test complete workflow and polish**:
 
@@ -157,12 +153,22 @@ workflow.
 - Ensure mobile responsive design
 - Run full test suite and fix any issues
 
+**E2E Testing Approach**:
+
+- ✅ Basic RLHF route test exists (`rlhf.test.e2e.ts`) - tests authentication
+- ❌ **Missing**: Comprehensive feedback form E2E tests with OAuth flow
+- ❌ **Missing**: Test-specific data fixtures (BfOrganization → BfDeck →
+  BfSample → BfGraderResult)
+- ❌ **Missing**: Annotated video recording for visual documentation
+
 **Success Criteria**:
 
-- Complete RLHF workflow functions end-to-end
-- All existing tests continue to pass
-- New functionality has appropriate test coverage
-- Interface works on mobile devices
+- ❌ Complete RLHF workflow functions end-to-end (basic E2E test exists, but
+  comprehensive feedback form tests missing)
+- ✅ All existing tests continue to pass
+- ❌ New functionality has appropriate test coverage (comprehensive E2E tests
+  not implemented)
+- ❌ Interface works on mobile devices (not tested)
 
 ## File Structure
 
@@ -180,14 +186,14 @@ apps/bfDb/nodeTypes/rlhf/
 ├── BfGrader.ts                        # ✅ COMPLETE - Evaluation criteria
 ├── BfSample.ts                        # ✅ COMPLETE - Sample submission with mutations  
 ├── BfGraderResult.ts                  # ✅ COMPLETE - AI evaluation results
-├── BfSampleFeedback.ts                # ⚠️ NEEDS - submitFeedback mutation exposure
+├── BfSampleFeedback.ts                # ❌ MISSING - submitFeedback mutation exposure
 └── __tests__/                         # ✅ COMPLETE - Comprehensive test suite (12/12 passing)
     ├── RlhfMutations.integration.test.ts
     ├── RlhfPipelineIntegrationTest.test.ts
     └── RlhfWorkflow.test.ts
 
 apps/bfDb/nodeTypes/
-└── BfOrganization.ts                  # ⚠️ NEEDS - afterCreate() hook for demo data
+└── BfOrganization.ts                  # ✅ COMPLETE - afterCreate() hook implemented for demo data
 
 apps/bfDb/services/
 └── mockPromptAnalyzer.ts              # ✅ EXISTS - Auto-generates graders from system prompts
@@ -416,33 +422,36 @@ export const Mutation_SubmitFeedback = iso(`
 └─────────────────────────────────────┘
 ```
 
-## Success Metrics (Updated for Current State)
+## Success Metrics (Frontend-First Priority)
 
-### Milestone 1: Backend Demo Data
+### 🎯 **Milestone A: Frontend Form UI (CURRENT PRIORITY)**
 
-- [ ] BfOrganization.afterCreate() creates demo deck on new org creation
-- [ ] Demo deck has customer support system prompt and 3 auto-generated graders
-- [ ] 4 realistic conversation samples with completion data
-- [ ] AI evaluations generated for all samples
-- [ ] 1 human feedback example showing disagreement
-
-### Milestone 2: Frontend Form UI
-
-- [ ] Isograph query loads demo data from GraphQL
+- [ ] Form renders with demo data from GraphQL (or hardcoded initially)
 - [ ] Sample conversation displays in readable chat format
 - [ ] AI evaluation shows score, explanation, and reasoning clearly
 - [ ] Score radio buttons (-3 to +3) with proper validation
 - [ ] Explanation textarea with minimum character requirement
 - [ ] Form shows appropriate loading and error states
 
-### Milestone 3: GraphQL Integration
+### Milestone B: GraphQL Integration
 
 - [ ] submitFeedback mutation exposed in BfSampleFeedback schema
 - [ ] Frontend form connects to mutation with proper error handling
 - [ ] Success confirmation and form reset after submission
 - [ ] Submitted feedback persists correctly in database
 
-### Milestone 4: End-to-End Validation
+### Milestone C: Backend Demo Data Enhancement (DEFERRED)
+
+- [x] BfOrganization.afterCreate() creates demo deck on new org creation
+- [x] Demo deck has customer support system prompt and 3 auto-generated graders
+- [ ] 4 realistic conversation samples with completion data (TOML files exist,
+      need BfSample record creation)
+- [ ] AI evaluations generated for all samples (needs BfDeck.afterCreate()
+      implementation)
+- [ ] 1 human feedback example showing disagreement (needs BfSampleFeedback
+      creation)
+
+### Milestone D: End-to-End Validation
 
 - [ ] Complete workflow: login → demo data → submit feedback → persistence
 - [ ] All 12 existing backend tests continue to pass
