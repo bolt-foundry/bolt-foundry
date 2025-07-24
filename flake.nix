@@ -156,6 +156,12 @@
               cp build/boltfoundry-com $out/bin/ || echo "No boltfoundry-com binary found"
             '';
           };
+
+          # Container environment package
+          codebot-env = pkgs.buildEnv {
+            name = "codebot-environment";
+            paths = (mkBaseDeps { inherit pkgs system; }) ++ everythingExtra;
+          };
         };
       });
 }
