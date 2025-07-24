@@ -9,15 +9,18 @@ export type RouteEntrypoint = {
 };
 
 iso(`entrypoint Mutation.JoinWaitlist`)
+iso(`entrypoint Query.EntrypointEval`)
 iso(`entrypoint Query.EntrypointHome`)
 iso(`entrypoint Query.EntrypointLogin`)
 iso(`entrypoint Query.EntrypointRlhf`)
 
+import entrypointEval from "@iso-bfc/Query/EntrypointEval/entrypoint.ts"
 import entrypointHome from "@iso-bfc/Query/EntrypointHome/entrypoint.ts"
 import entrypointLogin from "@iso-bfc/Query/EntrypointLogin/entrypoint.ts"
 import entrypointRlhf from "@iso-bfc/Query/EntrypointRlhf/entrypoint.ts"
 import joinWaitlist from "@iso-bfc/Mutation/JoinWaitlist/entrypoint.ts"
 
+export {entrypointEval};
 export {entrypointHome};
 export {entrypointLogin};
 export {entrypointRlhf};

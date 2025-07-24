@@ -3,14 +3,13 @@ import { useState } from "react";
 import { BfLogo } from "@bfmono/apps/cfDs/static/BfLogo.tsx";
 import { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
 
-import { useRouter } from "@bfmono/apps/boltfoundry-com/contexts/RouterContext.tsx";
-
 type Props = {
   page?: string;
+  onSidebarToggle?: () => void;
+  sidebarOpen?: boolean;
 };
 
-export function Nav({ page }: Props) {
-  const { navigate } = useRouter();
+export function Nav({ page, onSidebarToggle, sidebarOpen }: Props) {
   const [hoverLogo, setHoverLogo] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
 
@@ -37,6 +36,15 @@ export function Nav({ page }: Props) {
           iconOnly
           size="small"
         />
+        <div className="navSeparator" />
+        {page !== "home" && (
+          <BfDsButton
+            variant="outline"
+            link="/"
+            overlay
+            icon="home"
+          />
+        )}
         {
           /* <BfDsButton
           variant={page === "blog" ? "primary" : "outline"}
@@ -53,18 +61,25 @@ export function Nav({ page }: Props) {
           target="_top"
         >
           Docs
-        </BfDsButton> */
-        }
+        </BfDsButton>
+        <BfDsButton
+          variant={page === "eval" ? "primary" : "outline"}
+          overlay={page !== "eval"}
+          link="/eval"
+        >
+          Eval
+        </BfDsButton>
         <BfDsButton
           variant={page === "ui" ? "primary" : "outline"}
           overlay={page !== "ui"}
-          onClick={() => navigate("/ui")}
+          link="/ui"
         >
           UI Demo
-        </BfDsButton>
+        </BfDsButton> */
+        }
         <BfDsButton
-          variant="outline-secondary"
-          onClick={() => navigate("/login")}
+          variant={page === "login" ? "secondary" : "outline-secondary"}
+          link="/login"
         >
           Login
         </BfDsButton>
@@ -73,12 +88,26 @@ export function Nav({ page }: Props) {
   };
 
   return (
-    <header className="landing-header">
+    <header className="landing-header flexRow">
+      <div className="flex1 selfAlignCenter">
+        {onSidebarToggle && (
+          <div className="landing-header-sidebar-button">
+            <BfDsButton
+              variant="ghost"
+              icon={sidebarOpen ? "sidebarClose" : "sidebarOpen"}
+              iconOnly
+              size="medium"
+              onClick={onSidebarToggle}
+              style={{ marginRight: "1rem" }}
+            />
+          </div>
+        )}
+      </div>
       <div className="landing-content flexRow gapLarge">
         <div className="flex1 flexRow alignItemsCenter">
-          <div
+          <a
             className="header-logo clickable"
-            onClick={() => navigate("/")}
+            href="/"
             onMouseEnter={() => setHoverLogo(true)}
             onMouseLeave={() => setHoverLogo(false)}
           >
@@ -89,7 +118,7 @@ export function Nav({ page }: Props) {
                 : "var(--bfds-text)"}
               height={24}
             />
-          </div>
+          </a>
         </div>
         <div className="mobile-hide">
           <nav className="alignItemsCenter flexRow gapLarge header-nav">
@@ -122,6 +151,7 @@ export function Nav({ page }: Props) {
           </div>
         )}
       </div>
+      <div className="flex1 selfAlignCenter" />
     </header>
   );
 }
