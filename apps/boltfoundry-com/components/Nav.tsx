@@ -3,8 +3,6 @@ import { useState } from "react";
 import { BfLogo } from "@bfmono/apps/cfDs/static/BfLogo.tsx";
 import { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
 
-import { useRouter } from "@bfmono/apps/boltfoundry-com/contexts/RouterContext.tsx";
-
 type Props = {
   page?: string;
   onSidebarToggle?: () => void;
@@ -12,7 +10,6 @@ type Props = {
 };
 
 export function Nav({ page, onSidebarToggle, sidebarOpen }: Props) {
-  const { navigate } = useRouter();
   const [hoverLogo, setHoverLogo] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
 
@@ -108,9 +105,9 @@ export function Nav({ page, onSidebarToggle, sidebarOpen }: Props) {
       </div>
       <div className="landing-content flexRow gapLarge">
         <div className="flex1 flexRow alignItemsCenter">
-          <div
+          <a
             className="header-logo clickable"
-            onClick={() => navigate("/")}
+            href="/"
             onMouseEnter={() => setHoverLogo(true)}
             onMouseLeave={() => setHoverLogo(false)}
           >
@@ -121,7 +118,7 @@ export function Nav({ page, onSidebarToggle, sidebarOpen }: Props) {
                 : "var(--bfds-text)"}
               height={24}
             />
-          </div>
+          </a>
         </div>
         <div className="mobile-hide">
           <nav className="alignItemsCenter flexRow gapLarge header-nav">
