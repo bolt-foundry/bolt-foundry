@@ -21,7 +21,7 @@ const EvalContext = createContext<EvalContextType | undefined>(undefined);
 // Helper function to detect mobile
 const isMobile = () => {
   if (typeof window === "undefined") return false;
-  return window.innerWidth <= 768;
+  return globalThis.innerWidth <= 768;
 };
 
 export function EvalProvider({ children }: { children: ReactNode }) {

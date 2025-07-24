@@ -19,6 +19,10 @@ import { BfDsToastExample } from "../components/__examples__/BfDsToast.example.t
 import { BfDsPillExample } from "../components/__examples__/BfDsPill.example.tsx";
 import { BfDsSpinnerExample } from "../components/__examples__/BfDsSpinner.example.tsx";
 import { BfDsRangeExample } from "../components/__examples__/BfDsRange.example.tsx";
+import { BfDsModalExample } from "../components/__examples__/BfDsModal.example.tsx";
+import { BfDsEmptyStateExample } from "../components/__examples__/BfDsEmptyState.example.tsx";
+import { BfDsCardExample } from "../components/__examples__/BfDsCard.example.tsx";
+import { BfDsBadgeExample } from "../components/__examples__/BfDsBadge.example.tsx";
 
 type ComponentSection = {
   id: string;
@@ -154,6 +158,34 @@ const componentSections: Array<ComponentSection> = [
     name: "Spinner",
     description: "Loading spinners with customizable sizes and colors",
     component: BfDsSpinnerExample,
+    category: "Core",
+  },
+  {
+    id: "modal",
+    name: "Modal",
+    description: "Overlay dialogs for forms, confirmations, and content",
+    component: BfDsModalExample,
+    category: "Core",
+  },
+  {
+    id: "empty-state",
+    name: "Empty State",
+    description: "Display when there's no data or content to show",
+    component: BfDsEmptyStateExample,
+    category: "Core",
+  },
+  {
+    id: "card",
+    name: "Card",
+    description: "Container for content with variants and interactive states",
+    component: BfDsCardExample,
+    category: "Core",
+  },
+  {
+    id: "badge",
+    name: "Badge",
+    description: "Small status indicators and labels with variants and actions",
+    component: BfDsBadgeExample,
     category: "Core",
   },
 ];
