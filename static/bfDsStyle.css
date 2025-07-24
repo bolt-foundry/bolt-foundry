@@ -237,6 +237,9 @@ a:not(.bfds-button).dark:visited {
 .justifyContentCenter {
   justify-content: center;
 }
+.selfAlignCenter {
+  align-self: center
+}
 .selfAlignEnd {
   align-self: end;
 }
