@@ -31,3 +31,6 @@ generated-icon.png
 
 # Generated Claude commands for BFT
 .claude/commands/bft/
+
+# BFT container workspaces
+.bft/container/
