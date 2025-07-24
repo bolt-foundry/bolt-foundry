@@ -1,3 +1,7 @@
+.landing-page.with-header {
+  padding-top: 68px;
+}
+
 .landing-content {
   padding: 16px 24px;
   width: min(100%, 80rem);
@@ -63,6 +67,13 @@ header.landing-header {
   backdrop-filter: blur(3px);
   background: var(--bfds-background-06);
   z-index: 1000;
+}
+
+.navSeparator {
+  width: 2px;
+  height: 42px;
+  background: var(--bfds-border);
+  border-radius: 2px;
 }
 
 .hero-section {

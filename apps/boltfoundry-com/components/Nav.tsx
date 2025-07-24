@@ -7,9 +7,11 @@ import { useRouter } from "@bfmono/apps/boltfoundry-com/contexts/RouterContext.t
 
 type Props = {
   page?: string;
+  onSidebarToggle?: () => void;
+  sidebarOpen?: boolean;
 };
 
-export function Nav({ page }: Props) {
+export function Nav({ page, onSidebarToggle, sidebarOpen }: Props) {
   const { navigate } = useRouter();
   const [hoverLogo, setHoverLogo] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
@@ -37,6 +39,15 @@ export function Nav({ page }: Props) {
           iconOnly
           size="small"
         />
+        <div className="navSeparator" />
+        {page !== "home" && (
+          <BfDsButton
+            variant="outline"
+            link="/"
+            overlay
+            icon="home"
+          />
+        )}
         {
           /* <BfDsButton
           variant={page === "blog" ? "primary" : "outline"}
@@ -53,18 +64,25 @@ export function Nav({ page }: Props) {
           target="_top"
         >
           Docs
-        </BfDsButton> */
-        }
+        </BfDsButton>
+        <BfDsButton
+          variant={page === "eval" ? "primary" : "outline"}
+          overlay={page !== "eval"}
+          link="/eval"
+        >
+          Eval
+        </BfDsButton>
         <BfDsButton
           variant={page === "ui" ? "primary" : "outline"}
           overlay={page !== "ui"}
-          onClick={() => navigate("/ui")}
+          link="/ui"
         >
           UI Demo
-        </BfDsButton>
+        </BfDsButton> */
+        }
         <BfDsButton
-          variant="outline-secondary"
-          onClick={() => navigate("/login")}
+          variant={page === "login" ? "secondary" : "outline-secondary"}
+          link="/login"
         >
           Login
         </BfDsButton>
@@ -76,6 +94,16 @@ export function Nav({ page }: Props) {
     <header className="landing-header">
       <div className="landing-content flexRow gapLarge">
         <div className="flex1 flexRow alignItemsCenter">
+          {onSidebarToggle && (
+            <BfDsButton
+              variant="ghost"
+              icon={sidebarOpen ? "sidebarClose" : "sidebarOpen"}
+              iconOnly
+              size="small"
+              onClick={onSidebarToggle}
+              style={{ marginRight: "1rem" }}
+            />
+          )}
           <div
             className="header-logo clickable"
             onClick={() => navigate("/")}

@@ -30,7 +30,7 @@ export const Home = iso(`
   return (
     <div className="landing-page">
       {/* Navigation Header */}
-      <Nav />
+      <Nav page="home" />
 
       {/* Hero Section */}
       <main className="hero-section flexColumn" ref={heroRef}>
