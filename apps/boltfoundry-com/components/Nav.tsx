@@ -91,7 +91,21 @@ export function Nav({ page, onSidebarToggle, sidebarOpen }: Props) {
   };
 
   return (
-    <header className="landing-header">
+    <header className="landing-header flexRow">
+      <div className="flex1 selfAlignCenter">
+        {onSidebarToggle && (
+          <div className="landing-header-sidebar-button">
+            <BfDsButton
+              variant="ghost"
+              icon={sidebarOpen ? "sidebarClose" : "sidebarOpen"}
+              iconOnly
+              size="medium"
+              onClick={onSidebarToggle}
+              style={{ marginRight: "1rem" }}
+            />
+          </div>
+        )}
+      </div>
       <div className="landing-content flexRow gapLarge">
         <div className="flex1 flexRow alignItemsCenter">
           {onSidebarToggle && (
@@ -150,6 +164,7 @@ export function Nav({ page, onSidebarToggle, sidebarOpen }: Props) {
           </div>
         )}
       </div>
+      <div className="flex1 selfAlignCenter" />
     </header>
   );
 }
