@@ -25,45 +25,59 @@ codebase.
 - Uses sapling within the container to commit and push changes to GitHub
 - Automatic cleanup with optional `--keep` flag for debugging
 
-### Technology Choice: macOS 26 Container Command
+### Technology Choice: Apple Container with Dockerfile
 
-**Decision**: Use Apple's native `container` command for initial prototype
+**Decision**: Use Apple's native `container` command with Dockerfile for
+building
 
 **Rationale**:
 
-- Better resource efficiency and native macOS integration
-- Enhanced security with VM-level isolation per container
-- Prototype can validate concept before broader deployment
-- Author can be guinea pig on macOS 26 beta before stable release
+- Apple's container command supports building from Dockerfiles via
+  `container build`
+- Works around the direct container usage bug while still using native tooling
+- NixOS base image in Dockerfile provides reproducible builds
+- Native Swift implementation optimized for Apple Silicon
+- Full OCI compliance for compatibility
 
 **Tradeoffs**:
 
-- ✅ Native integration, better performance
-- ✅ Enhanced security model
+- ✅ Native macOS integration with better performance
+- ✅ Works with Dockerfiles to bypass direct container bug
+- ✅ Leverages existing Nix infrastructure via Dockerfile
+- ✅ Better resource efficiency on Apple Silicon
 - ❌ Limited to macOS 26+ (beta only)
-- ❌ Less proven ecosystem than Docker
+- ❌ Less mature than Docker ecosystem
 
 ## Implementation Plan
 
 ### Phase 1: Basic Container Setup
 
-1. **Nix-based Container Image Creation**
-   - Extend existing `flake.nix` to output OCI-compliant container image
-   - Include development shell dependencies (Deno, Sapling, Claude Code CLI)
-   - Leverage existing Nix infrastructure and FlakeHub caching
+1. **Dockerfile with NixOS Base Image Creation**
+   - Create `infra/apps/codebot/Dockerfile` using NixOS base image
+   - Install Nix package manager in container
+   - Use Nix to install development shell dependencies (Deno, Sapling, Claude
+     Code CLI)
+   - No ENTRYPOINT - BFT will pass commands directly
+   - Build process: `container build -t bft-codebot infra/apps/codebot/`
 
 2. **Codebase Integration Strategy**
-   - Copy current working directory state into container at runtime
+   - Copy current working directory to workspace before container starts:
+     - Simple recursive copy: `cp -r . .bft/container/workspaces/{id}/`
+     - Preserves current state including uncommitted changes
+   - Each container gets independent workspace directory:
+     - Named containers: `.bft/container/workspaces/{name}/`
+     - Anonymous containers: `.bft/container/workspaces/{random-id}/`
+     - Mount as `-v "$(pwd)/.bft/container/workspaces/{id}:/workspace:rw"`
+   - Simple permission model (accepting trade-offs):
+     - Container has full read-write access
+     - Host can read and technically write (but shouldn't)
+     - Rely on user discipline to treat as read-only
+     - No complex permission management needed
    - Use Nix-built base image with development environment dependencies
    - Handle .gitignore/.saplingignore/.flakeignore patterns appropriately
-   - One-way periodic sync from container to host temp directory for monitoring
-     - Sync frequency: Every second if changes detected
-     - Anonymous: `/tmp/bft-codebot-{random-id}/`
-     - Text descriptions: Auto-sanitized to filesystem-safe names (lowercase,
-       spaces→hyphens, alphanumeric only)
-     - Explicit names: `/tmp/bft-codebot-{name}/` with `--name` flag
-     - Enables host tools (VSCode, editors) for read-only code browsing
-     - Container remains source of truth, prevents conflicts
+   - `.bft/container/` is gitignored to prevent committing container state
+   - Enables host tools (VSCode, editors) for code browsing
+   - Each container remains isolated with its own workspace
 
 3. **BFT Integration**
    - Add `bft codebot` command to existing BFT task system
@@ -72,32 +86,46 @@ codebase.
 
 ### Phase 2: Claude Code Integration
 
-1. **Container Image Loading**
-   - Build container image: `nix build .#codebot-container`
-   - Load into container runtime:
-     `container load < $(nix build .#codebot-container --print-out-paths)`
-   - Manage image references and cleanup
+1. **Container Image Building and Management**
+   - Build container image: `container build -t bft-codebot infra/apps/codebot/`
+   - Use Apple's container image management
+   - Tag images with versions for tracking
+   - Clean up old images periodically
 
 2. **Container Orchestration**
-   - Launch container with copied codebase using volume mounts
+   - Pre-launch validation:
+     - Check if `CLAUDE_CODE_OAUTH_TOKEN` environment variable exists
+     - Exit with error message if token is missing
+     - First-time setup: User runs `claude setup-token` on host to obtain token
+   - Launch container with mounted volumes:
+     - `-v "$(pwd)/.bft/container/workspaces/{id}:/workspace:rw"` for workspace
+     - `-v "$HOME/.ssh:/root/.ssh:ro"` for SSH keys
+     - `-v "$HOME/.config/gh:/root/.config/gh:ro"` for GitHub CLI
+     - `-v "$HOME/Library/Preferences/sapling:/root/Library/Preferences/sapling:ro"`
+       for Sapling config
+   - Pass environment variables:
+     - `-e CLAUDE_CODE_OAUTH_TOKEN=$CLAUDE_CODE_OAUTH_TOKEN`
+     - `-e TERM=$TERM` for proper terminal support
+     - `-e GH_REPO=bolt-foundry/bolt-foundry` for GitHub CLI default repo
+   - Set working directory: `-w /workspace`
+   - Workspace already copied to host directory before container start
+   - BFT passes command directly to container (no Dockerfile ENTRYPOINT)
    - Support multiple execution modes:
-     - **Default**: Start Claude Code CLI within container environment
-     - **Shell mode (`--bash`)**: Open interactive bash shell for debugging
+     - **Default**: Start Claude Code CLI with command:
+       `claude --dangerously-skip-permissions [description]` where
+       `[description]` is the session description if provided
+     - **Shell mode (`--shell`)**: Open interactive shell for debugging
      - **Exec mode (`--exec`)**: Run single command and exit, preserve container
    - Pass through terminal I/O for interactive sessions
-
-3. **Credential Management**
-   - Mount authentication files via read-only volumes:
-     `-v "$HOME/.anthropic:/root/.anthropic:ro"`
-   - Handle SSH keys securely: `-v "$HOME/.ssh:/root/.ssh:ro"`
-   - Use volume mounts instead of copying for security
 
 ### Phase 3: Version Control Integration
 
 1. **Sapling Setup**
-   - Initialize sapling workspace within container
-   - Configure remote repositories and authentication
-   - Handle branch creation and management
+   - Sapling should work automatically with mounted configs
+   - User identity comes from host's
+     `~/Library/Preferences/sapling/sapling.conf`
+   - GitHub authentication via mounted `~/.config/gh/` directory
+   - SSH authentication via mounted `~/.ssh/` keys
 
 2. **Change Management**
    - Enable Claude Code to commit changes within container
@@ -108,8 +136,12 @@ codebase.
 
 1. **Lifecycle Management**
    - Automatic container cleanup on completion (default)
-   - `--keep` flag to preserve containers for debugging
+   - `--keep` flag to preserve containers and workspace directories for
+     debugging
    - `--exec` mode automatically preserves containers for future commands
+   - Workspace cleanup: Remove `.bft/container/workspaces/{id}/` on container
+     removal
+   - Workspace listing: `ls .bft/container/workspaces/`
    - Resource monitoring and cleanup policies
 
 2. **Error Handling**
@@ -123,13 +155,16 @@ codebase.
 
 ```bash
 bft codebot                           # Anonymous session with random ID
-bft codebot "Let's work on rlhf"      # Named session: /tmp/bft-codebot-work-on-rlhf/
-bft codebot "Fix authentication bug"  # Named session: /tmp/bft-codebot-fix-authentication-bug/
+bft codebot "Let's work on rlhf"      # Named session: lets-work-on-rlhf
+bft codebot "Fix authentication bug"  # Named session: fix-authentication-bug
 ```
 
-- Creates isolated container with current codebase
-- Launches Claude Code CLI interactively
-- Automatically cleans up container on exit
+- Creates isolated container with independent workspace directory
+- Workspace visible at `.bft/container/workspaces/{id}/` for host browsing
+- Launches Claude Code CLI interactively with `--dangerously-skip-permissions`
+  flag
+- Session description passed as initial prompt to Claude (if provided)
+- Automatically cleans up container and workspace on exit
 - Text descriptions auto-converted to filesystem-safe names
 
 ### Advanced Options
@@ -137,7 +172,7 @@ bft codebot "Fix authentication bug"  # Named session: /tmp/bft-codebot-fix-auth
 ```bash
 bft codebot --keep           # Preserve container after completion
 bft codebot --name <name>    # Explicit name override
-bft codebot --bash           # Open bash shell instead of Claude Code
+bft codebot --shell          # Open interactive shell instead of Claude Code
 bft codebot --exec <cmd>     # Run single command and exit, but keep container running
 bft codebot --help           # Show usage information
 ```
@@ -146,7 +181,7 @@ bft codebot --help           # Show usage information
 
 ```bash
 # Interactive shell access for debugging
-bft codebot --bash "Debug container"
+bft codebot --shell "Debug container"
 
 # Execute single commands with persistent containers
 bft codebot --exec "deno test"                    # Run tests and exit
@@ -169,7 +204,8 @@ bft codebot --docker        # Fallback to Docker if available
 - Apple's `container` command installed and system services started
   (`container system start`)
 - Sapling SCM configured for the repository
-- Nix package manager with flakes support
+- Nix package manager with flakes support (for development)
+- Claude Code CLI available (will authenticate within container)
 
 ### Dependencies
 
@@ -177,6 +213,7 @@ bft codebot --docker        # Fallback to Docker if available
 - Nix flakes infrastructure and FlakeHub integration
 - Current development shell configuration in `flake.nix`
 - Proper authentication setup for GitHub/sapling integration
+- `CLAUDE_CODE_OAUTH_TOKEN` environment variable must be set
 
 ### Performance Considerations
 
@@ -203,8 +240,6 @@ bft codebot --docker        # Fallback to Docker if available
   environment
 - **Automated Testing**: All container builds tested on every PR via
   `.github/workflows/ci.yml`
-- **Registry Integration**: Built containers can be pushed to GitHub Container
-  Registry (ghcr.io)
 
 ### Unit Tests
 
@@ -212,11 +247,87 @@ bft codebot --docker        # Fallback to Docker if available
 - Codebase copying functionality
 - BFT integration points
 
+Example test structure for `infra/apps/codebot/codebot.test.ts`:
+
+```typescript
+import { assertEquals } from "@std/assert";
+import { exec } from "@bfmono/packages/exec";
+
+Deno.test("bft codebot - creates workspace directory", async () => {
+  const workspaceId = "test-" + crypto.randomUUID();
+  const workspacePath = `.bft/container/workspaces/${workspaceId}`;
+
+  // Clean up before test
+  await Deno.remove(workspacePath, { recursive: true }).catch(() => {});
+
+  // Run codebot setup (without actually starting container)
+  const result = await exec("bft", [
+    "codebot",
+    "--dry-run",
+    "--name",
+    workspaceId,
+  ]);
+
+  // Verify workspace was created
+  const stat = await Deno.stat(workspacePath);
+  assertEquals(stat.isDirectory, true);
+
+  // Clean up
+  await Deno.remove(workspacePath, { recursive: true });
+});
+
+Deno.test("bft codebot - mounts volumes correctly", async () => {
+  // Test that volume mount commands are generated correctly
+  const result = await exec("bft", ["codebot", "--dry-run", "--show-mounts"]);
+
+  // Verify all expected mounts are present
+  assert(result.stdout.includes("-v $(pwd)/.bft/container/workspaces/"));
+  assert(result.stdout.includes("-v $HOME/.ssh:/root/.ssh:ro"));
+  assert(result.stdout.includes("-e CLAUDE_CODE_OAUTH_TOKEN="));
+});
+```
+
 ### Integration Tests
 
 - End-to-end workflow validation
 - Sapling integration testing
 - Multiple container scenarios
+
+Integration test example:
+
+```typescript
+Deno.test("bft codebot - full container lifecycle", async (t) => {
+  const workspaceId = "integration-test-" + Date.now();
+
+  await t.step("create and start container", async () => {
+    // Start container in background
+    const proc = new Deno.Command("bft", {
+      args: ["codebot", "--name", workspaceId, "--exec", "echo 'test'"],
+      stdout: "piped",
+    }).spawn();
+
+    const output = await proc.output();
+    assertEquals(output.success, true);
+  });
+
+  await t.step("verify workspace exists", async () => {
+    const workspacePath = `.bft/container/workspaces/${workspaceId}`;
+    const stat = await Deno.stat(workspacePath);
+    assertEquals(stat.isDirectory, true);
+
+    // Check that source was copied
+    const denoJson = await Deno.stat(`${workspacePath}/deno.json`);
+    assertEquals(denoJson.isFile, true);
+  });
+
+  await t.step("cleanup", async () => {
+    await exec("container", ["rm", "-f", `bft-codebot-${workspaceId}`]);
+    await Deno.remove(`.bft/container/workspaces/${workspaceId}`, {
+      recursive: true,
+    });
+  });
+});
+```
 
 ### Manual Testing
 
@@ -224,77 +335,39 @@ bft codebot --docker        # Fallback to Docker if available
 - Performance and resource monitoring
 - Error condition handling
 
-## Rollout Plan
-
-### Phase 1: Author-Only Prototype (Current)
-
-- Build and test on macOS 26 beta
-- Validate core functionality and user experience
-- Iterate on implementation based on usage
-
-### Phase 2: Stable Release Preparation
-
-- Wait for macOS 26 stable release
-- Add Docker fallback for broader compatibility
-- Documentation and onboarding materials
-
-### Phase 3: Team Rollout
-
-- Deploy to team members with updated macOS
-- Collect feedback and usage patterns
-- Optimize based on real-world usage
-
-## Success Metrics
-
-- **Functionality**: Successful isolation of Claude Code instances
-- **Performance**: Container startup time <2 seconds (leveraging Apple's native
-  container performance)
-- **Reliability**: <1% failure rate in container operations
-- **Usability**: Intuitive command interface requiring minimal configuration
-
-## Open Questions
-
-1. **Codebase State**: Should containers start from current working directory
-   state or clean checkout?
-   - **Decision Needed**: Determine default behavior and potential flag options
-
-2. **Container Networking**: How should multiple containers communicate if
-   needed?
-   - **Future Consideration**: May not be needed for initial implementation
-
-3. **Resource Limits**: What limits should be placed on container resource
-   usage?
-   - **Implementation Detail**: Monitor and adjust based on usage patterns
-
 ## Files to Modify/Create
 
 ### New Files
 
-- `infra/bft/tasks/codebot.ts` - Main implementation
-- `infra/bft/tasks/codebot.bft.deck.md` - Task documentation
-- Container output configuration in `flake.nix` for OCI image generation
+- `infra/apps/codebot/` - Main implementation directory
+- `infra/bft/tasks/codebot.bft.deck.md` - BFT task wrapper
+- `infra/apps/codebot/Dockerfile` - NixOS-based Docker image definition
 
 ### Modified Files
 
 - Update BFT help system to include codebot command
 - Integration with existing task loading infrastructure
+- Add `.bft/container/` to `.gitignore` to exclude container workspaces
 
 ## Implementation Phases
 
 ### Phase 1: Basic Container Setup ✅
 
-- Nix-based OCI container image generation using existing flake infrastructure
-- Reproducible development environment with all required dependencies
+- Dockerfile with NixOS base image for container creation
+- Build using Apple's `container build` command from Dockerfile
+- Reproducible development environment with all required dependencies via Nix
 - BFT integration following existing task patterns
-- **CI Integration**: Container image building validated automatically via
-  GitHub Actions
 
 ### Phase 2: Claude Code Integration
 
 - Container image loading and management
 - Container orchestration and lifecycle management
 - Interactive terminal I/O passthrough
-- Credential mounting via read-only volumes for authentication
+- Credential management via environment variable:
+  - User runs `claude setup-token` once on host to get OAuth token
+  - Store token in shell profile or environment:
+    `export CLAUDE_CODE_OAUTH_TOKEN=...`
+  - Pass to containers via `-e CLAUDE_CODE_OAUTH_TOKEN=$CLAUDE_CODE_OAUTH_TOKEN`
 
 ### Phase 3: Version Control Integration
 
