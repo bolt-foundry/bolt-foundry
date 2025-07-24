@@ -53,7 +53,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": ".claude/post-update-hook.ts"
+            "command": "bft post-update"
           }
         ]
       }
