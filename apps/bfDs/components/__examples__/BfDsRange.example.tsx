@@ -21,12 +21,20 @@ export function BfDsRangeExample() {
       <h2 className="bfds-example__title">BfDsRange Examples</h2>
 
       <section className="bfds-example__section">
-        <h3 className="bfds-example__subtitle">Basic Range</h3>
-        <BfDsRange
-          label="Basic Range"
-          value={value}
-          onChange={(e) => setValue(Number(e.target.value))}
-        />
+        <h3 className="bfds-example__subtitle">Controlled vs Uncontrolled</h3>
+        <div className="bfds-example__items">
+          <BfDsRange
+            label="Controlled Range"
+            value={value}
+            onChange={(e) => setValue(Number(e.target.value))}
+            helpText={`Current value: ${value}`}
+          />
+          <BfDsRange
+            label="Uncontrolled Range"
+            defaultValue={30}
+            helpText="Manages its own state internally"
+          />
+        </div>
       </section>
 
       <section className="bfds-example__section">
@@ -35,20 +43,17 @@ export function BfDsRangeExample() {
           <BfDsRange
             label="Small"
             size="small"
-            value={30}
-            onChange={() => {}}
+            defaultValue={30}
           />
           <BfDsRange
             label="Medium (default)"
             size="medium"
-            value={50}
-            onChange={() => {}}
+            defaultValue={50}
           />
           <BfDsRange
             label="Large"
             size="large"
-            value={70}
-            onChange={() => {}}
+            defaultValue={70}
           />
         </div>
       </section>
@@ -58,29 +63,25 @@ export function BfDsRangeExample() {
         <div className="bfds-example__items">
           <BfDsRange
             label="Default State"
-            value={25}
-            onChange={() => {}}
+            defaultValue={25}
             helpText="This is a help text"
           />
           <BfDsRange
             label="Error State"
             state="error"
-            value={50}
-            onChange={() => {}}
+            defaultValue={50}
             errorMessage="Value must be between 0 and 40"
           />
           <BfDsRange
             label="Success State"
             state="success"
-            value={75}
-            onChange={() => {}}
+            defaultValue={75}
             successMessage="Perfect value!"
           />
           <BfDsRange
             label="Disabled State"
             disabled
-            value={50}
-            onChange={() => {}}
+            defaultValue={50}
           />
         </div>
       </section>
@@ -119,8 +120,7 @@ export function BfDsRangeExample() {
             min={-100}
             max={100}
             step={10}
-            value={0}
-            onChange={() => {}}
+            defaultValue={0}
             showTicks
             tickLabels={[
               { value: -100, label: "-100" },
@@ -135,8 +135,7 @@ export function BfDsRangeExample() {
             min={-50}
             max={50}
             step={5}
-            value={-20}
-            onChange={() => {}}
+            defaultValue={-20}
             formatValue={(val) => val > 0 ? `+${val}` : `${val}`}
           />
         </div>
@@ -148,8 +147,7 @@ export function BfDsRangeExample() {
           <BfDsRange
             label="Auto-generated Ticks"
             showTicks
-            value={50}
-            onChange={() => {}}
+            defaultValue={50}
           />
           <BfDsRange
             label="Custom Tick Labels"
@@ -161,8 +159,7 @@ export function BfDsRangeExample() {
               { value: 75, label: "High" },
               { value: 100, label: "Full" },
             ]}
-            value={50}
-            onChange={() => {}}
+            defaultValue={50}
           />
         </div>
       </section>
@@ -173,14 +170,12 @@ export function BfDsRangeExample() {
           <BfDsRange
             label="With Value Display (default)"
             showValue
-            value={75}
-            onChange={() => {}}
+            defaultValue={75}
           />
           <BfDsRange
             label="Without Value Display"
             showValue={false}
-            value={25}
-            onChange={() => {}}
+            defaultValue={25}
           />
         </div>
       </section>
@@ -191,20 +186,17 @@ export function BfDsRangeExample() {
           <BfDsRange
             label="Red Range"
             color="#ef4444"
-            value={60}
-            onChange={() => {}}
+            defaultValue={60}
           />
           <BfDsRange
             label="Green Range"
             color="#10b981"
-            value={40}
-            onChange={() => {}}
+            defaultValue={40}
           />
           <BfDsRange
             label="Purple Range"
             color="#8b5cf6"
-            value={80}
-            onChange={() => {}}
+            defaultValue={80}
             showTicks
           />
         </div>

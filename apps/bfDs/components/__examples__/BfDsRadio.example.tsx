@@ -41,17 +41,25 @@ export function BfDsRadioExample() {
       <h2>BfDsRadio Examples</h2>
 
       <div className="bfds-example__section">
-        <h3>Standalone Radio Group</h3>
+        <h3>Controlled vs Uncontrolled</h3>
         <div className="bfds-example__group">
           <BfDsRadio
-            name="standalone-size"
-            label="Size Selection"
+            name="controlled-radio"
+            label="Controlled Radio Group"
             options={sizeOptions}
             value={standaloneValue}
             onChange={setStandaloneValue}
             required
           />
           <p>Selected: {standaloneValue || "None"}</p>
+
+          <BfDsRadio
+            name="uncontrolled-radio"
+            label="Uncontrolled Radio Group (starts with Medium)"
+            options={sizeOptions}
+            defaultValue="medium"
+          />
+          <p>This radio group manages its own state internally</p>
         </div>
       </div>
 
@@ -112,6 +120,7 @@ export function BfDsRadioExample() {
             label="Vertical Layout (default)"
             options={themeOptions}
             orientation="vertical"
+            defaultValue="light"
           />
 
           <BfDsRadio
@@ -119,6 +128,7 @@ export function BfDsRadioExample() {
             label="Horizontal Layout"
             options={themeOptions}
             orientation="horizontal"
+            defaultValue="dark"
           />
         </div>
       </div>
@@ -131,18 +141,21 @@ export function BfDsRadioExample() {
             label="Small Size"
             options={[{ value: "small", label: "Small" }]}
             size="small"
+            defaultValue="small"
           />
           <BfDsRadio
             name="medium-example"
             label="Medium Size"
             options={[{ value: "medium", label: "Medium" }]}
             size="medium"
+            defaultValue="medium"
           />
           <BfDsRadio
             name="large-example"
             label="Large Size"
             options={[{ value: "large", label: "Large" }]}
             size="large"
+            defaultValue="large"
           />
         </div>
       </div>
