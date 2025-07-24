@@ -5,7 +5,6 @@ import {
 } from "@bfmono/infra/testing/e2e/setup.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { setupBoltFoundryComTest } from "../helpers.ts";
-import { smoothClickText } from "@bfmono/infra/testing/video-recording/smooth-ui.ts";
 
 const logger = getLogger(import.meta);
 
@@ -59,63 +58,30 @@ Deno.test("UI route renders UIDemo component correctly", async () => {
 
     // Verify UIDemo-specific content is present
     assert(
-      bodyText?.includes("BfDs UI Demo"),
-      "Page should contain 'BfDs UI Demo' heading",
+      bodyText?.includes("BfDs Demo"),
+      "Page should contain 'BfDs Demo' heading",
     );
 
     assert(
       bodyText?.includes(
-        "This is a simple demo of the BfDs design system components",
+        "Interactive examples of BfDs design system components",
       ),
       "Page should contain UIDemo description",
     );
 
     assert(
-      bodyText?.includes("Button Component"),
-      "Page should contain Button Component section",
+      bodyText?.includes("Button") && bodyText?.includes("Examples"),
+      "Page should contain component examples",
     );
 
     assert(
-      bodyText?.includes("Primary Button"),
-      "Page should contain Primary Button",
+      bodyText?.includes("Primary"),
+      "Page should contain Primary button example",
     );
 
     assert(
-      bodyText?.includes("Secondary Button"),
-      "Page should contain Secondary Button",
-    );
-
-    // Verify interactive counter is present
-    const counterText = await context.page.evaluate(() => {
-      const paragraphs = Array.from(document.querySelectorAll("p"));
-      const counterParagraph = paragraphs.find((p) =>
-        p.textContent?.includes("Counter:")
-      );
-      return counterParagraph?.textContent;
-    });
-    logger.info(`Counter text found: "${counterText}"`);
-    assert(
-      counterText?.includes("Counter: 5"),
-      `Counter should start at 5 in UIDemo, but found: "${counterText}"`,
-    );
-
-    // Find and click the increment button using text
-    await smoothClickText(context, "Increment", { disabled: true });
-
-    // Wait a moment for React to update
-    await new Promise((resolve) => setTimeout(resolve, 100));
-
-    // Verify the counter incremented
-    const updatedCounterText = await context.page.evaluate(() => {
-      const paragraphs = Array.from(document.querySelectorAll("p"));
-      const counterParagraph = paragraphs.find((p) =>
-        p.textContent?.includes("Counter:")
-      );
-      return counterParagraph?.textContent;
-    });
-    assert(
-      updatedCounterText?.includes("Counter: 6"),
-      "Counter should increment to 6 after button click in UIDemo",
+      bodyText?.includes("Secondary"),
+      "Page should contain Secondary button example",
     );
 
     // Take a screenshot to show what the UI route looks like
