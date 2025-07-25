@@ -156,6 +156,112 @@
               cp build/boltfoundry-com $out/bin/ || echo "No boltfoundry-com binary found"
             '';
           };
+
+          # Claude CLI script
+          claude-cli = pkgs.writeShellScriptBin "claude" ''
+            # Check for --upgrade or --update flags
+            if [[ "$1" == "--upgrade" ]] || [[ "$1" == "--update" ]]; then
+                echo "Upgrading Claude Code..."
+                deno install --allow-scripts=npm:@anthropic-ai/claude-code npm:@anthropic-ai/claude-code
+                echo "Claude Code has been upgraded successfully!"
+                exit 0
+            fi
+
+            # Run Claude Code normally
+            deno run -A npm:@anthropic-ai/claude-code "$@"
+          '';
+
+          # Profile script setup using runCommand to create proper structure
+          codebot-profile = pkgs.runCommand "codebot-profile-setup" {} ''
+            mkdir -p $out/etc/profile.d
+            cat > $out/etc/profile.d/codebot-init.sh << 'EOF'
+            # Claude Code environment initialization
+            if [ "$CODEBOT_INITIALIZED" != "1" ]; then
+              export CODEBOT_INITIALIZED=1
+              
+              # Set up Claude config files if they exist in workspace
+              if [ -f "/workspace/claude.json" ]; then
+                ln -sf /workspace/claude.json /root/.claude.json
+              fi
+              
+              if [ -d "/workspace/claude" ]; then
+                ln -sf /workspace/claude /root/.claude
+              fi
+              
+              # Change to workspace directory
+              if [ -d "/workspace" ]; then
+                cd /workspace
+              fi
+            fi
+            EOF
+          '';
+
+          # Container environment package (for nix profile install compatibility)
+          codebot-env = pkgs.buildEnv {
+            name = "codebot-environment";
+            paths = (mkBaseDeps { inherit pkgs system; }) ++ everythingExtra ++ [ claude-cli ];
+          };
         };
-      });
+      }) //
+    
+    # NixOS configurations for proper container system setup
+    {
+      nixosConfigurations.codebot-container = nixpkgs.lib.nixosSystem {
+        system = "aarch64-linux";
+        modules = [
+          ({ pkgs, ... }: {
+            boot.isContainer = true;
+            
+            # Allow unfree packages
+            nixpkgs.config.allowUnfree = true;
+            
+            # Import our package set as system packages
+            environment.systemPackages = let
+              pkgs = nixpkgs.legacyPackages.aarch64-linux;
+            in (mkBaseDeps { inherit pkgs; system = "aarch64-linux"; }) ++ 
+               (mkEverythingExtra { inherit pkgs; system = "aarch64-linux"; }) ++ 
+               [ (pkgs.writeShellScriptBin "claude" ''
+                   if [[ "$1" == "--upgrade" ]] || [[ "$1" == "--update" ]]; then
+                       echo "Upgrading Claude Code..."
+                       deno install --allow-scripts=npm:@anthropic-ai/claude-code npm:@anthropic-ai/claude-code
+                       echo "Claude Code has been upgraded successfully!"
+                       exit 0
+                   fi
+                   deno run -A npm:@anthropic-ai/claude-code "$@"
+                 '') ];
+            
+            # Create /etc/profile.d script for Claude setup
+            environment.etc."profile.d/codebot-init.sh" = {
+              text = ''
+                # Claude Code environment initialization
+                if [ "$CODEBOT_INITIALIZED" != "1" ]; then
+                  export CODEBOT_INITIALIZED=1
+                  
+                  # Set up Claude config files if they exist in workspace
+                  if [ -f "/workspace/claude.json" ]; then
+                    ln -sf /workspace/claude.json /root/.claude.json
+                  fi
+                  
+                  if [ -d "/workspace/claude" ]; then
+                    ln -sf /workspace/claude /root/.claude
+                  fi
+                  
+                  # Change to workspace directory
+                  if [ -d "/workspace" ]; then
+                    cd /workspace
+                  fi
+                fi
+              '';
+              mode = "0644";
+            };
+            
+            # Disable unnecessary services for containers
+            services.udisks2.enable = false;
+            security.polkit.enable = false;
+            documentation.nixos.enable = false;
+            programs.command-not-found.enable = false;
+          })
+        ];
+      };
+    };
 }
