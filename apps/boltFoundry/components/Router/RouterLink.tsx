@@ -1,13 +1,9 @@
 import { useRouter } from "@bfmono/apps/boltFoundry/contexts/RouterContext.tsx";
 
-type LinkProps =
-  & {
-    to: string;
-  }
-  & React.DetailedHTMLProps<
-    React.AnchorHTMLAttributes<HTMLAnchorElement>,
-    HTMLAnchorElement
-  >;
+type LinkProps = {
+  to: string;
+  children?: React.ReactNode;
+} & Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, "href" | "onClick">;
 
 export function RouterLink({ to, children, ...props }: LinkProps) {
   const { navigate } = useRouter();
