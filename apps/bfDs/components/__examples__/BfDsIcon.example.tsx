@@ -39,7 +39,7 @@ export function BfDsIconExample() {
     }
   });
 
-  const filteredIcons = allIconNames.filter(({ name, _isAlias, aliasOf }) => {
+  const filteredIcons = allIconNames.filter(({ name, aliasOf }) => {
     // Check if name matches search term
     const matchesSearch = name.toLowerCase().includes(searchTerm.toLowerCase());
 
