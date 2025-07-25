@@ -474,6 +474,84 @@ a:not(.bfds-button).dark:visited {
   padding-right: 48px;
 }
 
+/* BfDsListBar styles */
+.bfds-list-bar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: var(--bfds-background);
+  border: 1px solid var(--bfds-border);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  transition: all 0.2s ease;
+  width: 100%;
+  text-align: left;
+  box-sizing: border-box;
+  color: var(--bfds-text);
+}
+
+.bfds-list-bar--clickable {
+  cursor: pointer;
+}
+
+.bfds-list-bar--clickable:hover {
+  background: var(--bfds-background-hover);
+  border-color: var(--bfds-border-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.bfds-list-bar--active {
+  background: var(--bfds-background-selected);
+  border-color: var(--bfds-primary);
+}
+
+.bfds-list-bar--clickable:focus {
+  outline: 2px solid var(--bfds-focus);
+  outline-offset: 2px;
+}
+
+.bfds-list-bar__left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+.bfds-list-bar__center {
+  flex: 1;
+  min-width: 0;
+  padding: 0 16px;
+}
+
+.bfds-list-bar__right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 0 0 auto;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .bfds-list-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  
+  .bfds-list-bar__center {
+    padding: 0;
+  }
+  
+  .bfds-list-bar__right {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+}
+
 /* Icon */
 
 .bfds-icon {
