@@ -132,7 +132,10 @@ as part of the 2025-06-25 design system migration.
   - [x] ~~Pill~~ ✅ **Completed** (BfDsPill with labels, icons, and actions)
   - [x] ~~Range~~ ✅ **Completed** (BfDsRange with value display, ticks, and
         custom formatting)
-  - [ ] Modal
+  - [x] ~~Modal~~ ✅ **Completed** (BfDsModal with multiple sizes, animations,
+        and focus management)
+  - [x] ~~List Bar~~ ✅ **Completed** (BfDsListBar with horizontal layout and
+        flexible content sections)
 - [x] **Enhanced List components**:
   - [x] ~~Expandable/collapsible list sections~~ ✅ **Completed** (BfDsListItem
         with `expandContents` prop)
@@ -184,6 +187,9 @@ apps/bfDs/
 │   ├── BfDsPill.tsx (compact pills with labels, icons, actions)
 │   ├── BfDsSpinner.tsx (loading spinners with animations)
 │   ├── BfDsCopyButton.tsx (clipboard copy functionality)
+│   ├── BfDsRange.tsx (range slider with formatting)
+│   ├── BfDsModal.tsx (overlay dialog with animations)
+│   ├── BfDsListBar.tsx (horizontal bars with flexible sections)
 │   ├── __tests__/
 │   │   ├── BfDsButton.test.tsx
 │   │   ├── BfDsIcon.test.tsx
@@ -203,7 +209,10 @@ apps/bfDs/
 │   │   ├── BfDsSpinner.test.tsx
 │   │   ├── BfDsCopyButton.test.tsx
 │   │   ├── BfDsCallout.test.tsx
-│   │   └── BfDsToastProvider.test.tsx
+│   │   ├── BfDsToastProvider.test.tsx
+│   │   ├── BfDsRange.test.tsx
+│   │   ├── BfDsModal.test.tsx
+│   │   └── BfDsListBar.test.tsx
 │   └── __examples__/
 │       ├── BfDsButton.example.tsx
 │       ├── BfDsIcon.example.tsx
@@ -222,7 +231,10 @@ apps/bfDs/
 │       ├── BfDsToast.example.tsx
 │       ├── BfDsPill.example.tsx
 │       ├── BfDsSpinner.example.tsx
-│       └── BfDsCopyButton.example.tsx
+│       ├── BfDsCopyButton.example.tsx
+│       ├── BfDsRange.example.tsx
+│       ├── BfDsModal.example.tsx
+│       └── BfDsListBar.example.tsx
 ├── lib/
 │   └── icons.ts (80+ icon definitions)
 ├── demo/
@@ -446,6 +458,41 @@ CSS: static/bfDsStyle.css (comprehensive styling with form states and notificati
 - ✅ **18 comprehensive tests** covering all functionality and edge cases
 - ✅ **Demo integration** with extensive examples showcasing all features
 - ✅ **Production ready** following established BfDs patterns and conventions
+
+## Recent Achievements (2025-07-24 - BfDsModal Component)
+
+- ✅ **BfDsModal component** implemented with comprehensive features
+- ✅ **Multiple size variants** (small, medium, large, fullscreen)
+- ✅ **Focus management** with trap and restoration
+- ✅ **Smooth animations** for backdrop and modal entrance
+- ✅ **Keyboard support** with Escape key handling
+- ✅ **Body scroll prevention** when modal is open
+- ✅ **Flexible content** with optional header, body, and footer
+- ✅ **Backdrop click control** with configurable behavior
+- ✅ **ARIA compliance** with proper dialog attributes
+- ✅ **13 comprehensive tests** covering all functionality
+- ✅ **Example component** demonstrating all modal patterns
+- ✅ **CSS animations** with cubic-bezier easing
+- ✅ **Production ready** following established BfDs conventions
+
+## Recent Achievements (2025-07-25 - BfDsListBar Component)
+
+- ✅ **BfDsListBar component** implemented for horizontal layout patterns
+- ✅ **Flexible content sections** with left, center, and right areas
+- ✅ **Interactive states** including clickable and active variants
+- ✅ **Responsive design** with mobile-first approach and proper overflow
+  handling
+- ✅ **CSS box-sizing fixes** ensuring proper width calculations with
+  padding/borders
+- ✅ **Color inheritance** with automatic text color styling using CSS variables
+- ✅ **Complete test coverage** with 8 comprehensive tests covering all
+  functionality
+- ✅ **Rich example component** demonstrating all use cases and patterns
+- ✅ **Demo integration** added to navigation section of component showcase
+- ✅ **Production ready** following established BfDs patterns and conventions
+- ✅ **Evals UI integration** successfully implemented for deck display with
+  horizontal bars
+- ✅ **TypeScript safety** with proper prop interfaces and component typing
 
 ## Notes
 
