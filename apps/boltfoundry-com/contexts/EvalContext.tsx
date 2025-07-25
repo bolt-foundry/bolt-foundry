@@ -2,6 +2,7 @@ import { createContext, useContext, useState } from "react";
 import type { ReactNode } from "react";
 
 type MainView = "Decks" | "Analyze" | "Chat";
+type ChatMode = null | "createDeck";
 
 interface EvalContextType {
   leftSidebarOpen: boolean;
@@ -9,11 +10,15 @@ interface EvalContextType {
   activeMainContent: MainView;
   rightSidebarContent: string | null;
   leftSidebarStateBeforeRightOpen: boolean;
+  chatMode: ChatMode;
+  chatBackTarget: MainView | null;
 
   setLeftSidebarOpen: (open: boolean) => void;
   setActiveMainContent: (content: MainView) => void;
   openRightSidebar: (content: string) => void;
   closeRightSidebar: () => void;
+  startDeckCreation: () => void;
+  exitChatMode: () => void;
 }
 
 const EvalContext = createContext<EvalContextType | undefined>(undefined);
@@ -35,6 +40,8 @@ export function EvalProvider({ children }: { children: ReactNode }) {
   );
   const [leftSidebarStateBeforeRightOpen, setLeftSidebarStateBeforeRightOpen] =
     useState(false);
+  const [chatMode, setChatMode] = useState<ChatMode>(null);
+  const [chatBackTarget, setChatBackTarget] = useState<MainView | null>(null);
 
   const setLeftSidebarOpen = (open: boolean) => {
     setLeftSidebarOpenState(open);
@@ -58,6 +65,22 @@ export function EvalProvider({ children }: { children: ReactNode }) {
     setLeftSidebarOpenState(leftSidebarStateBeforeRightOpen);
   };
 
+  const startDeckCreation = () => {
+    setChatBackTarget(activeMainContent);
+    setChatMode("createDeck");
+    setActiveMainContent("Chat");
+    openRightSidebar("Deck Creation");
+  };
+
+  const exitChatMode = () => {
+    setChatMode(null);
+    closeRightSidebar();
+    if (chatBackTarget) {
+      setActiveMainContent(chatBackTarget);
+      setChatBackTarget(null);
+    }
+  };
+
   return (
     <EvalContext.Provider
       value={{
@@ -66,10 +89,14 @@ export function EvalProvider({ children }: { children: ReactNode }) {
         activeMainContent,
         rightSidebarContent,
         leftSidebarStateBeforeRightOpen,
+        chatMode,
+        chatBackTarget,
         setLeftSidebarOpen,
         setActiveMainContent,
         openRightSidebar,
         closeRightSidebar,
+        startDeckCreation,
+        exitChatMode,
       }}
     >
       {children}
