@@ -58,6 +58,9 @@ export { BfDsList } from "./components/BfDsList.tsx";
 export { BfDsListItem } from "./components/BfDsListItem.tsx";
 export type { BfDsListItemProps } from "./components/BfDsListItem.tsx";
 
+export { BfDsListBar } from "./components/BfDsListBar.tsx";
+export type { BfDsListBarProps } from "./components/BfDsListBar.tsx";
+
 export { BfDsSelect } from "./components/BfDsSelect.tsx";
 export type {
   BfDsSelectOption,
