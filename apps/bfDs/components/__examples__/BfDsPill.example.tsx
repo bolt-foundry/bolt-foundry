@@ -126,7 +126,7 @@ export function BfDsPillExample() {
 
           <BfDsPill
             label="Warning"
-            text="Yellow theme"
+            text="Orange theme"
             variant="warning"
           />
 
@@ -212,7 +212,7 @@ export function BfDsPillExample() {
 
             <BfDsPill
               label="Warning"
-              text="Yellow theme"
+              text="Orange theme"
               variant="warning"
             />
 
