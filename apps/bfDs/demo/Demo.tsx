@@ -23,6 +23,7 @@ import { BfDsModalExample } from "../components/__examples__/BfDsModal.example.t
 import { BfDsEmptyStateExample } from "../components/__examples__/BfDsEmptyState.example.tsx";
 import { BfDsCardExample } from "../components/__examples__/BfDsCard.example.tsx";
 import { BfDsBadgeExample } from "../components/__examples__/BfDsBadge.example.tsx";
+import { BfDsListBarExample } from "../components/__examples__/BfDsListBar.example.tsx";
 
 type ComponentSection = {
   id: string;
@@ -94,6 +95,13 @@ const componentSections: Array<ComponentSection> = [
     name: "List Item",
     description: "Individual list items with states and interactions",
     component: BfDsListItemExample,
+    category: "Navigation",
+  },
+  {
+    id: "list-bar",
+    name: "List Bar",
+    description: "Horizontal bars with left, center, and right sections",
+    component: BfDsListBarExample,
     category: "Navigation",
   },
   {
