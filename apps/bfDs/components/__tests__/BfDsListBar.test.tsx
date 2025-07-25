@@ -33,9 +33,18 @@ Deno.test("BfDsListBar - renders center and right content when provided", () => 
     />,
   );
 
-  assertEquals(doc?.querySelector(".bfds-list-bar__left span")?.textContent, "Left content");
-  assertEquals(doc?.querySelector(".bfds-list-bar__center span")?.textContent, "Center content");
-  assertEquals(doc?.querySelector(".bfds-list-bar__right span")?.textContent, "Right content");
+  assertEquals(
+    doc?.querySelector(".bfds-list-bar__left span")?.textContent,
+    "Left content",
+  );
+  assertEquals(
+    doc?.querySelector(".bfds-list-bar__center span")?.textContent,
+    "Center content",
+  );
+  assertEquals(
+    doc?.querySelector(".bfds-list-bar__right span")?.textContent,
+    "Right content",
+  );
 });
 
 Deno.test("BfDsListBar - applies active class when active", () => {
