@@ -44,6 +44,8 @@
           pkgs._1password-cli
           pkgs.typescript-language-server
           pkgs.ffmpeg
+          pkgs.nettools
+          pkgs.iproute2
         ] ++ lib.optionals (!pkgs.stdenv.isDarwin) [
           # Linux-only packages
           pkgs.chromium
