@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import { hydrateRoot } from "react-dom/client";
 import { getLogger } from "@bolt-foundry/logger";
 import App from "./src/App.tsx";
@@ -32,6 +33,7 @@ export function rehydrate(environment: Record<string, unknown>) {
   }
 }
 
+// @ts-expect-error Vite DEV property not in global types
 const isDev = import.meta.env?.DEV;
 
 if (isDev) {

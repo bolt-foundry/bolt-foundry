@@ -21,7 +21,7 @@ declare namespace Deno {
   }
 }
 
-// For import.meta.env compatibility (if needed for Vite-based apps)
+// For import.meta.env compatibility (if needed for non-Vite apps)
 interface ImportMetaEnv {
   // OpenAI Configuration
   readonly OPENAI_API_KEY?: string;
