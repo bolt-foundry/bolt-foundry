@@ -149,19 +149,30 @@ EXAMPLES:
 
       const dnsServerPath = "./infra/apps/codebot/dns-server.ts";
       const dnsCmd = new Deno.Command("deno", {
-        args: ["run", "--allow-net", "--allow-run", dnsServerPath],
+        args: ["run", "--allow-net", "--allow-run", "--allow-env", dnsServerPath],
         stdout: "null",
         stderr: "null",
       });
 
       // Start DNS server in background
       const dnsChild = dnsCmd.spawn();
-      dnsChild.unref(); // Don't wait for it to finish
-
-      // Give it a moment to start
+      
+      // Give it a moment to start and check if it's still running
       await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      ui.output("✅ DNS server started for *.codebot.local domains");
+      
+      // Verify DNS server started successfully
+      const verifyCmd = new Deno.Command("pgrep", {
+        args: ["-f", "dns-server.ts"],
+      });
+      const verifyResult = await verifyCmd.output();
+      
+      if (verifyResult.success) {
+        ui.output("✅ DNS server started for *.codebot.local domains");
+        dnsChild.unref(); // Don't wait for it to finish
+      } else {
+        ui.output("⚠️ DNS server may have failed to start");
+        // Don't fail the entire command, but warn user
+      }
     } else {
       ui.output("✅ DNS server already running");
     }
@@ -375,8 +386,11 @@ EXAMPLES:
     }
 
     let needsRebuild = parsed["force-rebuild"];
+    let rebuildReason = "";
 
-    if (!needsRebuild) {
+    if (needsRebuild) {
+      rebuildReason = "Force rebuild flag (--force-rebuild) was specified";
+    } else {
       // Check if image exists
       const inspectCmd = new Deno.Command("container", {
         args: ["images", "inspect", "codebot"],
@@ -386,8 +400,9 @@ EXAMPLES:
         .trim();
 
       if (!inspectResult.success || inspectOutput === "[]") {
-        ui.output("📦 Container image not found");
         needsRebuild = true;
+        rebuildReason = "Container image 'codebot' not found";
+        ui.output("📦 Container image not found - rebuild required");
       } else {
         // Check if flake files have changed since image was built
         try {
@@ -399,6 +414,7 @@ EXAMPLES:
 
           if (imageCreatedStr) {
             const imageCreated = new Date(imageCreatedStr);
+            ui.output(`📅 Container image created: ${imageCreated.toISOString()}`);
 
             // Check modification times of flake files and Dockerfile
             const flakeNixStat = await Deno.stat("flake.nix");
@@ -407,27 +423,40 @@ EXAMPLES:
               "infra/apps/codebot/Dockerfile",
             );
 
-            if (
-              flakeNixStat.mtime && flakeNixStat.mtime > imageCreated ||
-              flakeLockStat.mtime && flakeLockStat.mtime > imageCreated ||
-              dockerfileStat.mtime && dockerfileStat.mtime > imageCreated
-            ) {
-              ui.output("🔄 Build files newer than container image");
+            const modifiedFiles = [];
+            if (flakeNixStat.mtime && flakeNixStat.mtime > imageCreated) {
+              modifiedFiles.push(`flake.nix (${flakeNixStat.mtime.toISOString()})`);
+            }
+            if (flakeLockStat.mtime && flakeLockStat.mtime > imageCreated) {
+              modifiedFiles.push(`flake.lock (${flakeLockStat.mtime.toISOString()})`);
+            }
+            if (dockerfileStat.mtime && dockerfileStat.mtime > imageCreated) {
+              modifiedFiles.push(`Dockerfile (${dockerfileStat.mtime.toISOString()})`);
+            }
+
+            if (modifiedFiles.length > 0) {
               needsRebuild = true;
+              rebuildReason = `Build files newer than container image: ${modifiedFiles.join(", ")}`;
+              ui.output(`🔄 Files modified since image creation: ${modifiedFiles.join(", ")}`);
+            } else {
+              ui.output("✅ All build files are older than container image");
             }
           } else {
-            ui.output("⚠️ Could not determine image creation time, rebuilding");
             needsRebuild = true;
+            rebuildReason = "Could not determine image creation time from container metadata";
+            ui.output("⚠️ Could not determine image creation time - rebuild required");
           }
-        } catch {
-          ui.output("⚠️ Failed to parse image info, rebuilding");
+        } catch (error) {
           needsRebuild = true;
+          rebuildReason = `Failed to parse image metadata: ${error instanceof Error ? error.message : String(error)}`;
+          ui.output("⚠️ Failed to parse image info - rebuild required");
         }
       }
     }
 
     if (needsRebuild) {
-      ui.output("🔨 Rebuilding container image...");
+      ui.output(`🔨 Rebuilding container image...`);
+      ui.output(`📝 Reason: ${rebuildReason}`);
       const buildCmd = new Deno.Command("container", {
         args: [
           "build",
@@ -447,7 +476,7 @@ EXAMPLES:
         abortController.abort(); // Cancel workspace copy if still running
         throw new Error("Failed to rebuild container");
       }
-      ui.output("🔨 Container rebuild complete");
+      ui.output("✅ Container rebuild complete");
     } else {
       ui.output("📦 Container image up to date");
     }

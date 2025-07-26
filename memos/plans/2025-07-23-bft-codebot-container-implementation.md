@@ -111,7 +111,20 @@ building
 
 ### Phase 2: Claude Code Integration ✅ COMPLETED
 
-1. **Container Image Building and Management** ✅ COMPLETED
+1. **DNS Server for *.codebot.local Resolution** ✅ COMPLETED
+   - ✅ DNS server implementation in `infra/apps/codebot/dns-server.ts`
+   - ✅ Listens on port 15353 for DNS queries
+   - ✅ Automatically resolves `<container-name>.codebot.local` to container IP addresses
+   - ✅ macOS resolver configuration at `/etc/resolver/codebot.local`:
+     ```
+     nameserver 127.0.0.1
+     port 15353
+     ```
+   - ✅ Automatic DNS server startup via `bft codebot` command
+   - ✅ Container IP discovery using `container list` and `container exec ifconfig`
+   - ✅ Updates container mappings every 10 seconds automatically
+
+2. **Container Image Building and Management** ✅ COMPLETED
    - ✅ Build container image:
      `container build -t codebot -f infra/apps/codebot/Dockerfile .`
    - ✅ Smart rebuild detection using `container images inspect`
