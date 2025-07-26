@@ -46,6 +46,8 @@
           pkgs.typescript-language-server
           pkgs.ffmpeg
           pkgs.nettools
+          pkgs.ripgrep
+          pkgs.fd
         ] ++ lib.optionals (!pkgs.stdenv.isDarwin) [
           # Linux-only packages
           pkgs.chromium
