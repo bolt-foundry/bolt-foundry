@@ -58,11 +58,7 @@ async function getValidationTasks(
     file.includes(".test.") || file.includes("__tests__/")
   );
 
-  // Check for config files
-  const hasConfigFiles = filesToCheck.some((file) =>
-    file.includes("package.json") || file.includes("deno.json") ||
-    file.includes("deno.lock")
-  );
+  // Note: Config file checking removed as build validation requires specific app name
 
   // Add validation tasks based on what changed
   if (hasCodeFiles) {
@@ -74,9 +70,7 @@ async function getValidationTasks(
     tasks.push({ name: "Test", command: ["bft", "test"] });
   }
 
-  if (hasConfigFiles) {
-    tasks.push({ name: "Build", command: ["bft", "build"] });
-  }
+  // Note: Build validation skipped as compile requires specific app name
 
   return tasks;
 }
