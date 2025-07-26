@@ -32,13 +32,13 @@ COPY <<EOF /home/claude/.bashrc
 if [ "\$CODEBOT_INITIALIZED" != "1" ]; then
   export CODEBOT_INITIALIZED=1
   
-  # Set up Claude config files if they exist in workspace
-  if [ -f "/workspace/claude.json" ]; then
-    ln -sf /workspace/claude.json /home/claude/.claude.json
+  # Set up Claude config files if they exist in workspace/tmp
+  if [ -f "/workspace/tmp/claude.json" ]; then
+    ln -sf /workspace/tmp/claude.json /home/claude/.claude.json
   fi
   
-  if [ -d "/workspace/claude" ]; then
-    ln -sf /workspace/claude /home/claude/.claude
+  if [ -d "/workspace/tmp/claude" ]; then
+    ln -sf /workspace/tmp/claude /home/claude/.claude
   fi
   
   # Change to workspace directory
