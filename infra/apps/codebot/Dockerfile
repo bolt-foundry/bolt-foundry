@@ -55,8 +55,8 @@ if [ "\$CODEBOT_INITIALIZED" != "1" ]; then
   fi
 fi
 
-# Add Nix to PATH
-export PATH="/nix/var/nix/profiles/default/bin:\$PATH"
+# Add Nix and bft to PATH
+export PATH="/workspace/infra/bin:/nix/var/nix/profiles/default/bin:\$PATH"
 EOF
 
 ENTRYPOINT ["/bin/bash", "-l"]
