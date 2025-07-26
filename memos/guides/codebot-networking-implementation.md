@@ -9,7 +9,7 @@
 - **DNS Service** (`start-dns.ts` + `dnsmasq.conf`) - Resolves `*.codebot.local`
   to localhost
 - **Container Discovery** - File watcher monitors
-  `.bft/container/comm/*/status.json` for dynamic routing
+  `./tmp/codebot-workspaces/*/status.json` for dynamic routing
 - **Simpsons Naming** - Ready to replace numeric IDs with guest star names
 
 ### Manual Verification ✅
