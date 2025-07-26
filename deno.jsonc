@@ -1,5 +1,5 @@
 {
-  "unstable": ["temporal", "webgpu"],
+  "unstable": ["temporal", "webgpu", "net"],
   "nodeModulesDir": "manual",
   "imports": {
     "@anthropic-ai/claude-code": "npm:@anthropic-ai/claude-code@^1.0.61",
