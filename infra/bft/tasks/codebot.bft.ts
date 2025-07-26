@@ -6,20 +6,58 @@ import { parseArgs } from "@std/cli/parse-args";
 import { ui } from "@bfmono/packages/cli-ui/cli-ui.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
+const logger = getLogger(import.meta);
+
 interface CodebotArgs {
   shell?: boolean;
   exec?: string;
   help?: boolean;
   "force-rebuild"?: boolean;
   cleanup?: boolean;
+  "cleanup-containers"?: boolean;
+  workspace?: string;
+}
+
+async function generateRandomName(): Promise<string> {
+  try {
+    const namesFile = await Deno.readTextFile(
+      "./infra/bft/tasks/codebot-names.txt",
+    );
+    const names = namesFile.trim().split("\n");
+
+    // Split each name into first-last parts
+    const nameParts = names.map((name) => {
+      const [first, ...rest] = name.split("-");
+      const last = rest.length > 0 ? rest.join("-") : first;
+      return { first, last };
+    });
+
+    // Pick random first and last from different entries
+    const randomFirst =
+      nameParts[Math.floor(Math.random() * nameParts.length)].first;
+    const randomLast =
+      nameParts[Math.floor(Math.random() * nameParts.length)].last;
+
+    return `${randomFirst}-${randomLast}`;
+  } catch (error) {
+    logger.error("Error generating random name:", error);
+    // Fallback to timestamp-based name
+    return `workspace-${Date.now()}`;
+  }
 }
 
 async function codebot(args: Array<string>): Promise<number> {
   const logger = getLogger("codebot");
 
   const parsed = parseArgs(args, {
-    boolean: ["shell", "help", "force-rebuild", "cleanup"],
-    string: ["exec"],
+    boolean: [
+      "shell",
+      "help",
+      "force-rebuild",
+      "cleanup",
+      "cleanup-containers",
+    ],
+    string: ["exec", "workspace"],
     alias: { h: "help" },
   }) as CodebotArgs;
 
@@ -30,21 +68,130 @@ Usage: bft codebot [OPTIONS]
 Run Claude Code in an isolated container environment.
 
 By default, starts Claude Code CLI and preserves the workspace for debugging.
+Automatically cleans up stopped containers to prevent disk space issues.
 
 OPTIONS:
-  --shell           Enter container shell for debugging
-  --exec CMD        Execute command in container
-  --cleanup         Remove workspace after completion (default: keep)
-  --force-rebuild   Force rebuild container image before starting
-  --help            Show this help message
+  --shell              Enter container shell for debugging
+  --exec CMD           Execute command in container
+  --workspace NAME     Reuse existing workspace or create new one with specific name
+  --cleanup            Remove workspace after completion (default: keep)
+  --force-rebuild      Force rebuild container image before starting
+  --help               Show this help message
 
 EXAMPLES:
-  bft codebot                 # Start Claude Code CLI (keeps workspace)
-  bft codebot --cleanup       # Start Claude Code CLI and cleanup when done
-  bft codebot --shell         # Open container shell (keeps workspace)
-  bft codebot --exec "ls -la" # Run command and exit (keeps workspace)
+  bft codebot                           # Start Claude Code CLI (new workspace)
+  bft codebot --workspace fuzzy-goat    # Reuse existing workspace
+  bft codebot --cleanup                 # Start and cleanup workspace when done
+  bft codebot --shell                   # Open container shell for debugging
+  bft codebot --exec "ls -la"           # Run command and exit
 `);
     return 0;
+  }
+
+  // Automatically clean up stopped containers (except running ones)
+  try {
+    ui.output("🧹 Cleaning up stopped containers...");
+    const listCmd = new Deno.Command("container", {
+      args: ["list", "--all", "--quiet"],
+    });
+    const listResult = await listCmd.output();
+
+    if (listResult.success) {
+      const containerIds = new TextDecoder().decode(listResult.stdout)
+        .trim().split("\n").filter((id) => id.length > 0);
+
+      if (containerIds.length > 0) {
+        // Filter out running containers
+        const runningCmd = new Deno.Command("container", {
+          args: ["list", "--quiet"],
+        });
+        const runningResult = await runningCmd.output();
+        const runningIds = new TextDecoder().decode(runningResult.stdout)
+          .trim().split("\n").filter((id) => id.length > 0);
+
+        const stoppedIds = containerIds.filter((id) =>
+          !runningIds.includes(id)
+        );
+
+        if (stoppedIds.length > 0) {
+          const deleteCmd = new Deno.Command("container", {
+            args: ["delete", ...stoppedIds],
+          });
+          await deleteCmd.output();
+          ui.output(`✅ Cleaned up ${stoppedIds.length} stopped containers`);
+        } else {
+          ui.output("✅ No stopped containers to clean up");
+        }
+      }
+    }
+  } catch (error) {
+    // Don't fail the entire command if cleanup fails
+    ui.output(
+      `⚠️ Container cleanup failed: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+    );
+  }
+
+  // Ensure DNS server is running for *.codebot.local resolution
+  try {
+    ui.output("🌐 Checking DNS server for *.codebot.local...");
+
+    // Check if DNS server is already running
+    const psCmd = new Deno.Command("pgrep", {
+      args: ["-f", "dns-server.ts"],
+    });
+    const psResult = await psCmd.output();
+
+    if (!psResult.success) {
+      // DNS server not running, start it
+      ui.output("🚀 Starting DNS server for *.codebot.local resolution...");
+
+      const dnsServerPath = "./infra/apps/codebot/dns-server.ts";
+      const dnsCmd = new Deno.Command("deno", {
+        args: [
+          "run",
+          "--allow-net",
+          "--allow-run",
+          "--allow-env",
+          dnsServerPath,
+        ],
+        stdout: "null",
+        stderr: "null",
+      });
+
+      // Start DNS server in background
+      const dnsChild = dnsCmd.spawn();
+
+      // Give it a moment to start and check if it's still running
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Verify DNS server started successfully
+      const verifyCmd = new Deno.Command("pgrep", {
+        args: ["-f", "dns-server.ts"],
+      });
+      const verifyResult = await verifyCmd.output();
+
+      if (verifyResult.success) {
+        ui.output("✅ DNS server started for *.codebot.local domains");
+        dnsChild.unref(); // Don't wait for it to finish
+      } else {
+        ui.output("⚠️ DNS server may have failed to start");
+        // Don't fail the entire command, but warn user
+      }
+    } else {
+      ui.output("✅ DNS server already running");
+    }
+  } catch (error) {
+    // Don't fail the entire command if DNS server fails
+    ui.output(
+      `⚠️ DNS server setup failed: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+    );
+    ui.output(
+      "📝 You may need to manually configure DNS for *.codebot.local domains",
+    );
   }
 
   // Check for required Claude Code OAuth token
@@ -55,122 +202,172 @@ EXAMPLES:
     return 1;
   }
 
-  // Create workspace ID and directory with existence checking
-  let workspaceId = `workspace-${Date.now()}`;
-  let workspacePath = `./tmp/codebot-workspaces/${workspaceId}`;
+  // Handle workspace selection
+  let workspaceId: string;
+  let workspacePath: string;
+  let reusingWorkspace = false;
 
-  // Ensure ./tmp/codebot-workspaces directory exists
-  await Deno.mkdir("./tmp/codebot-workspaces", { recursive: true });
+  if (parsed.workspace) {
+    // Use existing workspace
+    workspaceId = parsed.workspace;
+    workspacePath = `./tmp/codebot-workspaces/${workspaceId}`;
 
-  // Check if workspace already exists and find a unique one
-  let counter = 1;
-  while (true) {
     try {
       await Deno.stat(workspacePath);
-      // Directory exists, try with a suffix
-      ui.output(
-        "🔍 TRACE: Workspace already exists, indicating duplicate execution",
-      );
-      ui.output(new Error().stack || "No stack trace available");
-      ui.output(
-        `⚠️ Workspace ${workspaceId} already exists, trying ${workspaceId}-${counter}`,
-      );
-      workspaceId = `workspace-${Date.now()}-${counter}`;
-      workspacePath = `./tmp/codebot-workspaces/${workspaceId}`;
-      counter++;
-      if (counter > 10) {
-        ui.error("❌ Unable to find unique workspace name after 10 attempts");
-        return 1;
-      }
+      reusingWorkspace = true;
+      ui.output(`🔄 Reusing existing workspace: ${workspaceId}`);
     } catch {
-      // Directory doesn't exist, we can use this name
-      break;
+      ui.error(`❌ Workspace '${workspaceId}' not found at ${workspacePath}`);
+      ui.output("Available workspaces:");
+      try {
+        for await (const entry of Deno.readDir("./tmp/codebot-workspaces")) {
+          if (entry.isDirectory) {
+            ui.output(`  - ${entry.name}`);
+          }
+        }
+      } catch {
+        ui.output("  (no workspaces found)");
+      }
+      return 1;
     }
+  } else {
+    // Create new workspace
+    workspaceId = await generateRandomName();
+    workspacePath = `./tmp/codebot-workspaces/${workspaceId}`;
+
+    // Ensure ./tmp/codebot-workspaces directory exists
+    await Deno.mkdir("./tmp/codebot-workspaces", { recursive: true });
   }
 
-  ui.output(`📁 Creating workspace: ${workspaceId}`);
+  if (!reusingWorkspace) {
+    // Check if workspace already exists and find a unique one
+    let counter = 1;
+    while (true) {
+      try {
+        await Deno.stat(workspacePath);
+        // Directory exists, try with a suffix
+        ui.output(
+          "🔍 TRACE: Workspace already exists, indicating duplicate execution",
+        );
+        ui.output(new Error().stack || "No stack trace available");
+        ui.output(
+          `⚠️ Workspace ${workspaceId} already exists, trying ${workspaceId}-${counter}`,
+        );
+        workspaceId = `${await generateRandomName()}-${counter}`;
+        workspacePath = `./tmp/codebot-workspaces/${workspaceId}`;
+        counter++;
+        if (counter > 10) {
+          ui.error("❌ Unable to find unique workspace name after 10 attempts");
+          return 1;
+        }
+      } catch {
+        // Directory doesn't exist, we can use this name
+        break;
+      }
+    }
+
+    ui.output(`📁 Creating workspace: ${workspaceId}`);
+  }
 
   // Create abort controller for cancelling operations
   const abortController = new AbortController();
 
   // Start workspace copying and container preparation in parallel
-  const copyWorkspacePromise = (async () => {
-    // Create the workspace directory first to avoid race conditions
-    await Deno.mkdir(workspacePath, { recursive: true });
+  const copyWorkspacePromise = reusingWorkspace
+    ? Promise.resolve()
+    : (async () => {
+      // Create the workspace directory first to avoid race conditions
+      await Deno.mkdir(workspacePath, { recursive: true });
 
-    // Copy Claude config files using CoW to workspace if they exist
-    const homeDir = getConfigurationVariable("HOME");
+      // Copy Claude config files using CoW to workspace if they exist
+      const homeDir = getConfigurationVariable("HOME");
 
-    // Create tmp directory for Claude config
-    await Deno.mkdir(`${workspacePath}/tmp`, { recursive: true });
+      // Create tmp directory for Claude config
+      await Deno.mkdir(`${workspacePath}/tmp`, { recursive: true });
 
-    try {
-      await Deno.stat(`${homeDir}/.claude.json`);
-      const copyClaudeJson = new Deno.Command("cp", {
-        args: [
-          "--reflink=auto",
-          `${homeDir}/.claude.json`,
-          `${workspacePath}/tmp/claude.json`,
-        ],
-      });
-      await copyClaudeJson.output();
-      ui.output("📋 CoW copied .claude.json to workspace/tmp/claude.json");
-    } catch {
-      // File doesn't exist, skip
-    }
-
-    try {
-      await Deno.stat(`${homeDir}/.claude`);
-      const copyClaudeDir = new Deno.Command("cp", {
-        args: [
-          "--reflink=auto",
-          "-R",
-          `${homeDir}/.claude`,
-          `${workspacePath}/tmp/claude`,
-        ],
-      });
-      await copyClaudeDir.output();
-      ui.output("📂 CoW copied .claude directory to workspace/tmp/claude");
-    } catch {
-      // Directory doesn't exist, skip
-    }
-
-    // Copy entire directory using CoW (copy-on-write) for instant copying
-    // Use Deno native fs to list directory contents and parallel cp --reflink
-    const copyPromises = [];
-
-    for await (const entry of Deno.readDir(".")) {
-      // Skip .bft and tmp directories entirely
-      if (entry.name === ".bft" || entry.name === "tmp") continue;
-
-      const copyCmd = new Deno.Command("cp", {
-        args: ["--reflink=auto", "-R", entry.name, `${workspacePath}/`],
-      });
-
-      copyPromises.push(copyCmd.output());
-    }
-
-    // Run all copies in parallel
-    const copyResults = await Promise.all(copyPromises);
-
-    // Check if any copies failed
-    for (const result of copyResults) {
-      if (!result.success) {
-        const errorText = new TextDecoder().decode(result.stderr);
-        logger.info(
-          "🔍 WORKSPACE COPY FAILURE STACK TRACE:",
-          new Error().stack || "No stack trace available",
-        );
-        ui.output(
-          "🔍 TRACE: Workspace copy failed, indicating duplicate execution",
-        );
-        abortController.abort(); // Cancel container build
-        throw new Error(`💥 CRITICAL: Workspace copy failed - ${errorText}`);
+      try {
+        await Deno.stat(`${homeDir}/.claude.json`);
+        const copyClaudeJson = new Deno.Command("cp", {
+          args: [
+            "--reflink=auto",
+            `${homeDir}/.claude.json`,
+            `${workspacePath}/tmp/claude.json`,
+          ],
+        });
+        await copyClaudeJson.output();
+        ui.output("📋 CoW copied .claude.json to workspace/tmp/claude.json");
+      } catch {
+        // File doesn't exist, skip
       }
-    }
 
-    ui.output("📂 Workspace copy complete");
-  })();
+      try {
+        await Deno.stat(`${homeDir}/.claude`);
+        const copyClaudeDir = new Deno.Command("cp", {
+          args: [
+            "--reflink=auto",
+            "-R",
+            `${homeDir}/.claude`,
+            `${workspacePath}/tmp/claude`,
+          ],
+        });
+        await copyClaudeDir.output();
+        ui.output("📂 CoW copied .claude directory to workspace/tmp/claude");
+      } catch {
+        // Directory doesn't exist, skip
+      }
+
+      try {
+        await Deno.stat(`${homeDir}/.config/gh`);
+        const copyGhDir = new Deno.Command("cp", {
+          args: [
+            "--reflink=auto",
+            "-R",
+            `${homeDir}/.config/gh`,
+            `${workspacePath}/tmp/gh`,
+          ],
+        });
+        await copyGhDir.output();
+        ui.output("📂 CoW copied .config/gh directory to workspace/tmp/gh");
+      } catch {
+        // Directory doesn't exist, skip
+      }
+
+      // Copy entire directory using CoW (copy-on-write) for instant copying
+      // Use Deno native fs to list directory contents and parallel cp --reflink
+      const copyPromises = [];
+
+      for await (const entry of Deno.readDir(".")) {
+        // Skip .bft and tmp directories entirely
+        if (entry.name === ".bft" || entry.name === "tmp") continue;
+
+        const copyCmd = new Deno.Command("cp", {
+          args: ["--reflink=auto", "-R", entry.name, `${workspacePath}/`],
+        });
+
+        copyPromises.push(copyCmd.output());
+      }
+
+      // Run all copies in parallel
+      const copyResults = await Promise.all(copyPromises);
+
+      // Check if any copies failed
+      for (const result of copyResults) {
+        if (!result.success) {
+          const errorText = new TextDecoder().decode(result.stderr);
+          logger.info(
+            "🔍 WORKSPACE COPY FAILURE STACK TRACE:",
+            new Error().stack || "No stack trace available",
+          );
+          ui.output(
+            "🔍 TRACE: Workspace copy failed, indicating duplicate execution",
+          );
+          abortController.abort(); // Cancel container build
+          throw new Error(`💥 CRITICAL: Workspace copy failed - ${errorText}`);
+        }
+      }
+
+      ui.output("📂 Workspace copy complete");
+    })();
 
   // Container preparation (check if rebuild needed)
   const containerReadyPromise = (async () => {
@@ -211,8 +408,11 @@ EXAMPLES:
     }
 
     let needsRebuild = parsed["force-rebuild"];
+    let rebuildReason = "";
 
-    if (!needsRebuild) {
+    if (needsRebuild) {
+      rebuildReason = "Force rebuild flag (--force-rebuild) was specified";
+    } else {
       // Check if image exists
       const inspectCmd = new Deno.Command("container", {
         args: ["images", "inspect", "codebot"],
@@ -222,8 +422,9 @@ EXAMPLES:
         .trim();
 
       if (!inspectResult.success || inspectOutput === "[]") {
-        ui.output("📦 Container image not found");
         needsRebuild = true;
+        rebuildReason = "Container image 'codebot' not found";
+        ui.output("📦 Container image not found - rebuild required");
       } else {
         // Check if flake files have changed since image was built
         try {
@@ -235,6 +436,9 @@ EXAMPLES:
 
           if (imageCreatedStr) {
             const imageCreated = new Date(imageCreatedStr);
+            ui.output(
+              `📅 Container image created: ${imageCreated.toISOString()}`,
+            );
 
             // Check modification times of flake files and Dockerfile
             const flakeNixStat = await Deno.stat("flake.nix");
@@ -243,27 +447,57 @@ EXAMPLES:
               "infra/apps/codebot/Dockerfile",
             );
 
-            if (
-              flakeNixStat.mtime && flakeNixStat.mtime > imageCreated ||
-              flakeLockStat.mtime && flakeLockStat.mtime > imageCreated ||
-              dockerfileStat.mtime && dockerfileStat.mtime > imageCreated
-            ) {
-              ui.output("🔄 Build files newer than container image");
+            const modifiedFiles = [];
+            if (flakeNixStat.mtime && flakeNixStat.mtime > imageCreated) {
+              modifiedFiles.push(
+                `flake.nix (${flakeNixStat.mtime.toISOString()})`,
+              );
+            }
+            if (flakeLockStat.mtime && flakeLockStat.mtime > imageCreated) {
+              modifiedFiles.push(
+                `flake.lock (${flakeLockStat.mtime.toISOString()})`,
+              );
+            }
+            if (dockerfileStat.mtime && dockerfileStat.mtime > imageCreated) {
+              modifiedFiles.push(
+                `Dockerfile (${dockerfileStat.mtime.toISOString()})`,
+              );
+            }
+
+            if (modifiedFiles.length > 0) {
               needsRebuild = true;
+              rebuildReason = `Build files newer than container image: ${
+                modifiedFiles.join(", ")
+              }`;
+              ui.output(
+                `🔄 Files modified since image creation: ${
+                  modifiedFiles.join(", ")
+                }`,
+              );
+            } else {
+              ui.output("✅ All build files are older than container image");
             }
           } else {
-            ui.output("⚠️ Could not determine image creation time, rebuilding");
             needsRebuild = true;
+            rebuildReason =
+              "Could not determine image creation time from container metadata";
+            ui.output(
+              "⚠️ Could not determine image creation time - rebuild required",
+            );
           }
-        } catch {
-          ui.output("⚠️ Failed to parse image info, rebuilding");
+        } catch (error) {
           needsRebuild = true;
+          rebuildReason = `Failed to parse image metadata: ${
+            error instanceof Error ? error.message : String(error)
+          }`;
+          ui.output("⚠️ Failed to parse image info - rebuild required");
         }
       }
     }
 
     if (needsRebuild) {
-      ui.output("🔨 Rebuilding container image...");
+      ui.output(`🔨 Rebuilding container image...`);
+      ui.output(`📝 Reason: ${rebuildReason}`);
       const buildCmd = new Deno.Command("container", {
         args: [
           "build",
@@ -283,7 +517,7 @@ EXAMPLES:
         abortController.abort(); // Cancel workspace copy if still running
         throw new Error("Failed to rebuild container");
       }
-      ui.output("🔨 Container rebuild complete");
+      ui.output("✅ Container rebuild complete");
     } else {
       ui.output("📦 Container image up to date");
     }
@@ -313,8 +547,12 @@ EXAMPLES:
         "run",
         "--rm",
         "-it",
+        "--name",
+        workspaceId,
         "-e",
         `CLAUDE_CODE_OAUTH_TOKEN=${claudeToken}`,
+        "-e",
+        `GITHUB_TOKEN=$(gh auth token 2>/dev/null || echo "")`,
         "--mount",
         `type=bind,source=${currentDir}/${workspacePath},target=/workspace`,
         "codebot",
@@ -341,8 +579,12 @@ EXAMPLES:
       args: [
         "run",
         "--rm",
+        "--name",
+        workspaceId,
         "-e",
         `CLAUDE_CODE_OAUTH_TOKEN=${claudeToken}`,
+        "-e",
+        `GITHUB_TOKEN=$(gh auth token 2>/dev/null || echo "")`,
         "--mount",
         `type=bind,source=${currentDir}/${workspacePath},target=/workspace`,
         "codebot",
@@ -367,18 +609,25 @@ EXAMPLES:
 
   // Default mode: Start Claude Code CLI
   ui.output("🤖 Starting Claude Code...");
+  ui.output(
+    `📡 Workspace will be available at: http://${workspaceId}.codebot.local:8000`,
+  );
   const child = new Deno.Command("container", {
     args: [
       "run",
       "--rm",
       "-it",
+      "--name",
+      workspaceId,
       "-e",
       `CLAUDE_CODE_OAUTH_TOKEN=${claudeToken}`,
+      "-e",
+      `GITHUB_TOKEN=$(gh auth token 2>/dev/null || echo "")`,
       "--mount",
       `type=bind,source=${currentDir}/${workspacePath},target=/workspace`,
       "codebot",
       "-c",
-      "claude; exec /bin/bash",
+      "claude --dangerously-skip-permissions; exec /bin/bash",
     ],
     stdin: "inherit",
     stdout: "inherit",
