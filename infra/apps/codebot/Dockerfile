@@ -33,9 +33,9 @@ if [ "\$CODEBOT_INITIALIZED" != "1" ]; then
   export CODEBOT_INITIALIZED=1
   
   # .claude directory is mounted directly from host
-  # Copy .claude.json from workspace if it exists
-  if [ -f "/workspace/.claude.json" ]; then
-    cp /workspace/.claude.json /home/codebot/.claude.json
+  # Copy .claude.json from workspace/tmp if it exists
+  if [ -f "/workspace/tmp/.claude.json" ]; then
+    cp /workspace/tmp/.claude.json /home/codebot/.claude.json
   fi
   
   # Configure Sapling identity for codebot
@@ -57,6 +57,11 @@ fi
 
 # Add Nix to PATH
 export PATH="/nix/var/nix/profiles/default/bin:\$PATH"
+
+# Source shared environment setup
+if [ -f "/workspace/infra/env-setup.sh" ]; then
+  source /workspace/infra/env-setup.sh
+fi
 EOF
 
 ENTRYPOINT ["/bin/bash", "-l"]
