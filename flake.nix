@@ -182,6 +182,9 @@
             if [ "$CODEBOT_INITIALIZED" != "1" ]; then
               export CODEBOT_INITIALIZED=1
               
+              # Add bft to PATH
+              export PATH="/workspace/infra/bin:$PATH"
+              
               # Set up Claude config files if they exist in workspace
               if [ -f "/workspace/claude.json" ]; then
                 ln -sf /workspace/claude.json /root/.claude.json
@@ -239,6 +242,9 @@
                 # Claude Code environment initialization
                 if [ "$CODEBOT_INITIALIZED" != "1" ]; then
                   export CODEBOT_INITIALIZED=1
+                  
+                  # Add bft to PATH
+                  export PATH="/workspace/infra/bin:$PATH"
                   
                   # Set up Claude config files if they exist in workspace
                   if [ -f "/workspace/claude.json" ]; then
