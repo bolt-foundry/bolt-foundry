@@ -1,16 +1,14 @@
-FROM debian:12-slim
+FROM alpine:latest
 
 # Install minimal runtime dependencies
-RUN apt-get update && apt-get install -y \
-    ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache ca-certificates
 
 # Copy the compiled binary
 COPY build/boltfoundry-com /usr/local/bin/boltfoundry-com
 RUN chmod +x /usr/local/bin/boltfoundry-com
 
 # Non-root user for security
-RUN useradd -r -s /bin/false app
+RUN adduser -D -s /bin/false app
 USER app
 
 EXPOSE 8000

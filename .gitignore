@@ -13,6 +13,7 @@ vendor
 .config
 .git
 .sl
+.deno
 .config/sapling
 tmp/*
 !**/.gitkeep
