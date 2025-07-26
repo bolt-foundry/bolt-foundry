@@ -74,16 +74,8 @@
           base:${toString (map (p: p.name or "<pkg>") baseDeps)}  \
           extras:${toString (map (p: p.name or "<pkg>") extras)}"
 
-          # --- your custom logic ---
-          export PATH="$PWD/infra/bin:$PATH"   # prepend ./infra/bin
-          if ! command -v deno >/dev/null; then
-            echo "Installing deno user tools…"
-            # runs once per machine-wide cache; cheap if already installed
-            deno install --allow-read --allow-write --allow-env -q -f https://deno.land/x/denon/denon.ts
-          fi
-
-          # Set DENO_DIR to keep cache out of repo
-          export DENO_DIR="${builtins.getEnv "HOME"}/.cache/deno"
+          # Source shared environment setup
+          source ./infra/env-setup.sh
 
           # Load .env.local if it exists
           if [ -f ".env.local" ]; then

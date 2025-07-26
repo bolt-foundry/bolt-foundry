@@ -346,11 +346,11 @@ FIRST TIME SETUP:
           args: [
             "--reflink=auto",
             claudeJsonPath,
-            `${workspacePath}/.claude.json`,
+            `${workspacePath}/tmp/.claude.json`,
           ],
         });
         await copyClaudeJson.output();
-        ui.output("📋 CoW copied .claude.json to workspace");
+        ui.output("📋 CoW copied .claude.json to workspace/tmp");
       } catch {
         // File doesn't exist, skip
       }
