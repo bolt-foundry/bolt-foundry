@@ -57,10 +57,10 @@ EXAMPLES:
 
   // Create workspace ID and directory with existence checking
   let workspaceId = `workspace-${Date.now()}`;
-  let workspacePath = `.bft/container/workspaces/${workspaceId}`;
+  let workspacePath = `./tmp/codebot-workspaces/${workspaceId}`;
 
-  // Ensure .bft/container/workspaces directory exists
-  await Deno.mkdir(".bft/container/workspaces", { recursive: true });
+  // Ensure ./tmp/codebot-workspaces directory exists
+  await Deno.mkdir("./tmp/codebot-workspaces", { recursive: true });
 
   // Check if workspace already exists and find a unique one
   let counter = 1;
@@ -76,7 +76,7 @@ EXAMPLES:
         `⚠️ Workspace ${workspaceId} already exists, trying ${workspaceId}-${counter}`,
       );
       workspaceId = `workspace-${Date.now()}-${counter}`;
-      workspacePath = `.bft/container/workspaces/${workspaceId}`;
+      workspacePath = `./tmp/codebot-workspaces/${workspaceId}`;
       counter++;
       if (counter > 10) {
         ui.error("❌ Unable to find unique workspace name after 10 attempts");
@@ -101,17 +101,20 @@ EXAMPLES:
     // Copy Claude config files using CoW to workspace if they exist
     const homeDir = getConfigurationVariable("HOME");
 
+    // Create tmp directory for Claude config
+    await Deno.mkdir(`${workspacePath}/tmp`, { recursive: true });
+
     try {
       await Deno.stat(`${homeDir}/.claude.json`);
       const copyClaudeJson = new Deno.Command("cp", {
         args: [
           "--reflink=auto",
           `${homeDir}/.claude.json`,
-          `${workspacePath}/claude.json`,
+          `${workspacePath}/tmp/claude.json`,
         ],
       });
       await copyClaudeJson.output();
-      ui.output("📋 CoW copied .claude.json to workspace/claude.json");
+      ui.output("📋 CoW copied .claude.json to workspace/tmp/claude.json");
     } catch {
       // File doesn't exist, skip
     }
@@ -123,11 +126,11 @@ EXAMPLES:
           "--reflink=auto",
           "-R",
           `${homeDir}/.claude`,
-          `${workspacePath}/claude`,
+          `${workspacePath}/tmp/claude`,
         ],
       });
       await copyClaudeDir.output();
-      ui.output("📂 CoW copied .claude directory to workspace/claude");
+      ui.output("📂 CoW copied .claude directory to workspace/tmp/claude");
     } catch {
       // Directory doesn't exist, skip
     }
@@ -137,8 +140,8 @@ EXAMPLES:
     const copyPromises = [];
 
     for await (const entry of Deno.readDir(".")) {
-      // Skip .bft directory entirely
-      if (entry.name === ".bft") continue;
+      // Skip .bft and tmp directories entirely
+      if (entry.name === ".bft" || entry.name === "tmp") continue;
 
       const copyCmd = new Deno.Command("cp", {
         args: ["--reflink=auto", "-R", entry.name, `${workspacePath}/`],
@@ -171,6 +174,42 @@ EXAMPLES:
 
   // Container preparation (check if rebuild needed)
   const containerReadyPromise = (async () => {
+    // Ensure container system is running
+    try {
+      const statusCmd = new Deno.Command("container", {
+        args: ["system", "status"],
+      });
+      const statusResult = await statusCmd.output();
+
+      if (!statusResult.success) {
+        ui.output("🚀 Starting container system...");
+        const startCmd = new Deno.Command("container", {
+          args: ["system", "start"],
+          stdout: "inherit",
+          stderr: "inherit",
+        });
+        const startResult = await startCmd.output();
+
+        if (!startResult.success) {
+          throw new Error("Failed to start container system");
+        }
+        ui.output("✅ Container system started");
+      }
+    } catch {
+      ui.output("🚀 Starting container system...");
+      const startCmd = new Deno.Command("container", {
+        args: ["system", "start"],
+        stdout: "inherit",
+        stderr: "inherit",
+      });
+      const startResult = await startCmd.output();
+
+      if (!startResult.success) {
+        throw new Error("Failed to start container system");
+      }
+      ui.output("✅ Container system started");
+    }
+
     let needsRebuild = parsed["force-rebuild"];
 
     if (!needsRebuild) {
@@ -276,8 +315,8 @@ EXAMPLES:
         "-it",
         "-e",
         `CLAUDE_CODE_OAUTH_TOKEN=${claudeToken}`,
-        "-v",
-        `${currentDir}/${workspacePath}:/workspace:rw`,
+        "--mount",
+        `type=bind,source=${currentDir}/${workspacePath},target=/workspace`,
         "codebot",
       ],
       stdin: "inherit",
@@ -304,8 +343,8 @@ EXAMPLES:
         "--rm",
         "-e",
         `CLAUDE_CODE_OAUTH_TOKEN=${claudeToken}`,
-        "-v",
-        `${currentDir}/${workspacePath}:/workspace:rw`,
+        "--mount",
+        `type=bind,source=${currentDir}/${workspacePath},target=/workspace`,
         "codebot",
         parsed.exec,
       ],
@@ -335,10 +374,11 @@ EXAMPLES:
       "-it",
       "-e",
       `CLAUDE_CODE_OAUTH_TOKEN=${claudeToken}`,
-      "-v",
-      `${currentDir}/${workspacePath}:/workspace:rw`,
+      "--mount",
+      `type=bind,source=${currentDir}/${workspacePath},target=/workspace`,
       "codebot",
-      "claude",
+      "-c",
+      "claude; exec /bin/bash",
     ],
     stdin: "inherit",
     stdout: "inherit",
