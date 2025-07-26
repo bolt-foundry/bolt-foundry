@@ -78,7 +78,7 @@ building
      ```typescript
      // Parallel CoW copying in codebot.bft.ts
      for await (const entry of Deno.readDir(".")) {
-       if (entry.name === ".bft") continue; // Skip container management directory
+       if (entry.name === ".bft" || entry.name === "tmp") continue; // Skip container management directory
        const copyCmd = new Deno.Command("cp", {
          args: ["--reflink=auto", "-R", entry.name, workspacePath],
        });
@@ -93,11 +93,11 @@ building
      - **Better Isolation**: Complete workspace independence without shared
        state
      - **Easier Debugging**: Full workspace visible at
-       `.bft/container/workspaces/{id}/`
+       `./tmp/codebot-workspaces/{id}/`
    - **Volume Mounting Strategy**:
      - Single clean mount: `-v "${currentDir}/${workspacePath}:/workspace:rw"`
      - Container operates on complete isolated copy
-   - **Cleanup**: Remove `.bft/container/workspaces/{id}/` on container exit
+   - **Cleanup**: Remove `./tmp/codebot-workspaces/{id}/` on container exit
 
 3. **BFT Integration** ✅ COMPLETED
    - ✅ Added `bft codebot` command via `infra/bft/tasks/codebot.bft.ts`
@@ -142,7 +142,7 @@ building
    - ✅ **Workspace lifecycle**:
      - ✅ Parallel workspace copying using CoW for performance
      - ✅ Automatic cleanup of workspace on container exit
-     - ✅ Workspace visible at `.bft/container/workspaces/{workspace-id}/`
+     - ✅ Workspace visible at `./tmp/codebot-workspaces/{workspace-id}/`
 
 3. **Claude Code Integration** ✅ COMPLETED
    - ✅ **Claude CLI availability**: `infra/bin/claude` script in container
@@ -171,9 +171,9 @@ building
    - `--cleanup` flag to remove containers and workspace directories after
      completion
    - All modes preserve workspaces by default for better debugging experience
-   - Manual workspace cleanup: Remove `.bft/container/workspaces/{id}/` when
+   - Manual workspace cleanup: Remove `./tmp/codebot-workspaces/{id}/` when
      desired
-   - Workspace listing: `ls .bft/container/workspaces/`
+   - Workspace listing: `ls ./tmp/codebot-workspaces/`
    - Resource monitoring and cleanup policies
 
 2. **Error Handling**
@@ -192,7 +192,7 @@ bft codebot "Fix authentication bug"  # Named session: fix-authentication-bug
 ```
 
 - Creates isolated container with independent workspace directory
-- Workspace visible at `.bft/container/workspaces/{id}/` for host browsing
+- Workspace visible at `./tmp/codebot-workspaces/{id}/` for host browsing
 - Launches Claude Code CLI interactively with `--dangerously-skip-permissions`
   flag
 - Session description passed as initial prompt to Claude (if provided)
@@ -299,7 +299,7 @@ import { exec } from "@bfmono/packages/exec";
 
 Deno.test("bft codebot - creates workspace directory", async () => {
   const workspaceId = "test-" + crypto.randomUUID();
-  const workspacePath = `.bft/container/workspaces/${workspaceId}`;
+  const workspacePath = `./tmp/codebot-workspaces/${workspaceId}`;
 
   // Clean up before test
   await Deno.remove(workspacePath, { recursive: true }).catch(() => {});
@@ -325,7 +325,7 @@ Deno.test("bft codebot - mounts volumes correctly", async () => {
   const result = await exec("bft", ["codebot", "--dry-run", "--show-mounts"]);
 
   // Verify all expected mounts are present
-  assert(result.stdout.includes("-v $(pwd)/.bft/container/workspaces/"));
+  assert(result.stdout.includes("-v $(pwd)/./tmp/codebot-workspaces/"));
   assert(result.stdout.includes("-v $HOME/.ssh:/root/.ssh:ro"));
   assert(result.stdout.includes("-e CLAUDE_CODE_OAUTH_TOKEN="));
 });
@@ -355,7 +355,7 @@ Deno.test("bft codebot - full container lifecycle", async (t) => {
   });
 
   await t.step("verify workspace exists", async () => {
-    const workspacePath = `.bft/container/workspaces/${workspaceId}`;
+    const workspacePath = `./tmp/codebot-workspaces/${workspaceId}`;
     const stat = await Deno.stat(workspacePath);
     assertEquals(stat.isDirectory, true);
 
@@ -366,7 +366,7 @@ Deno.test("bft codebot - full container lifecycle", async (t) => {
 
   await t.step("cleanup", async () => {
     await exec("container", ["rm", "-f", `bft-codebot-${workspaceId}`]);
-    await Deno.remove(`.bft/container/workspaces/${workspaceId}`, {
+    await Deno.remove(`./tmp/codebot-workspaces/${workspaceId}`, {
       recursive: true,
     });
   });
@@ -392,8 +392,8 @@ Deno.test("bft codebot - full container lifecycle", async (t) => {
 - ✅ `flake.nix` - Added `codebot-env` package using `pkgs.buildEnv`
 - ✅ BFT help system automatically includes codebot command via autodiscovery
 - ✅ Integration with existing task loading infrastructure works automatically
-- ❌ **TODO**: Add `.bft/container/` to `.gitignore` when workspace feature is
-  implemented
+- ❌ **TODO**: Add `./tmp/codebot-workspaces/` to `.gitignore` when workspace
+  feature is implemented
 
 ## Current Implementation Status
 

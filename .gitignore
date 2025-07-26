@@ -33,4 +33,4 @@ generated-icon.png
 .claude/commands/bft/
 
 # BFT container workspaces
-.bft/container/
+tmp/codebot-workspaces/
