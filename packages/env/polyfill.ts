@@ -1,3 +1,5 @@
+import { parseEnvFile } from "./utils.ts";
+
 // Deno polyfill for import.meta.env
 if (typeof Deno !== "undefined" && !import.meta.env) {
   const env = loadEnvironmentVariables();
@@ -42,27 +44,4 @@ function loadEnvironmentVariables(): Record<string, string> {
   Object.assign(env, Deno.env.toObject());
 
   return env;
-}
-
-function parseEnvFile(content: string): Record<string, string> {
-  const vars: Record<string, string> = {};
-
-  for (const line of content.split("\n")) {
-    const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith("#")) continue;
-
-    const [key, ...valueParts] = trimmed.split("=");
-    if (key) {
-      let value = valueParts.join("=");
-      if (
-        (value.startsWith('"') && value.endsWith('"')) ||
-        (value.startsWith("'") && value.endsWith("'"))
-      ) {
-        value = value.slice(1, -1);
-      }
-      vars[key] = value;
-    }
-  }
-
-  return vars;
 }
