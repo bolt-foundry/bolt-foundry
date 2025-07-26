@@ -7,9 +7,9 @@ const logger = getLogger(import.meta);
 export async function checkCommand(options: Array<string>): Promise<number> {
   logger.info("Running Deno type check...");
 
-  const args = ["deno", "check"];
+  const args = ["deno", "check", "--quiet"];
 
-  // Add all arguments (no custom flags needed for basic check)
+  // Add all arguments
   args.push(...options);
 
   const result = await runShellCommand(args);
