@@ -2,6 +2,7 @@ import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 import { defineConfig } from "vite";
 import deno from "@deno/vite-plugin";
 import react from "@vitejs/plugin-react";
+import { boltFoundryEnvPlugin } from "@bfmono/packages/env/vite-plugin.ts";
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -12,6 +13,7 @@ export default defineConfig({
         babelrc: true,
       },
     }),
+    boltFoundryEnvPlugin(),
   ],
   server: {
     hmr: (() => {

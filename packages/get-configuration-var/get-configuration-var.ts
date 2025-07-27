@@ -39,8 +39,15 @@ const getEnv = (name: string): string | undefined =>
 /**
  * Get a configuration variable from environment.
  * Returns undefined if not found.
+ * @deprecated Use import.meta.env.VARIABLE_NAME instead
  */
 export function getConfigurationVariable(name: string): string | undefined {
+  if (isDeno && import.meta.env?.DEV) {
+    console.warn(
+      `getConfigurationVariable("${name}") is deprecated. ` +
+        `Use import.meta.env.${name} instead.`,
+    );
+  }
   return getEnv(name);
 }
 
@@ -48,8 +55,15 @@ export function getConfigurationVariable(name: string): string | undefined {
  * Get a secret from environment (synchronous).
  * This is now just an alias for getConfigurationVariable.
  * Returns undefined if not found.
+ * @deprecated Use import.meta.env.VARIABLE_NAME instead
  */
 export function getSecret(key: string): string | undefined {
+  if (isDeno && import.meta.env?.DEV) {
+    console.warn(
+      `getSecret("${key}") is deprecated. ` +
+        `Use import.meta.env.${key} instead.`,
+    );
+  }
   return getEnv(key);
 }
 
