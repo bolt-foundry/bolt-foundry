@@ -50,15 +50,17 @@
 
 .sidebar-nav {
   position: absolute;
-  top: 0px;
+  top: var(--header-height);
   right: 0px;
-  border: 1px solid var(--bfds-primary);
   border-top: none;
   border-right: none;
   border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  border-bottom: 2px solid var(--bfds-primary);
   box-sizing: border-box;
-  background: var(--bfds-background);
-  width: 150px;
+  background: var(--bfds-background-09);
+  justify-content: center;
+  width: 100%;
   padding: 16px 24px;
   z-index: 1001;
 }
