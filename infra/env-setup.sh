@@ -17,4 +17,7 @@ export PATH="$BF_ROOT/infra/bin:$PATH"
 # Set DENO_DIR to keep cache out of repo
 export DENO_DIR="${HOME}/.cache/deno"
 
+# Set GitHub repository for gh CLI commands
+export GH_REPO="bolt-foundry/bolt-foundry"
+
 # Additional environment-specific setup can be added after sourcing this file
