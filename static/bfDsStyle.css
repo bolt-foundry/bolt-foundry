@@ -100,6 +100,8 @@
   --fontFamily: "DM Sans", "sans-serif";
   --marketingFontFamily: "Bebas Neue", "sans-serif";
   --fontFamilyMono: "DM Mono", "monospace";
+
+  --header-height: 68px;
 }
 
 #root {
@@ -256,9 +258,15 @@ a:not(.bfds-button).dark:visited {
 .mobile-show {
   display: none;
 }
+.mobile-show-opacity {
+  opacity: 0;
+}
 
 .mobile-hide {
   display: initial;
+}
+.mobile-hide-opacity {
+  opacity: 1;
 }
 
 .row-column {
@@ -279,12 +287,22 @@ a:not(.bfds-button).dark:visited {
 }
 
 @media (max-width: 1024px) {
+  :root {
+    --header-height: 42px;
+  }
+  
   .mobile-show {
     display: initial;
+  }
+  .mobile-show-opacity {
+    opacity: 1;
   }
 
   .mobile-hide {
     display: none;
+  }
+  .mobile-hide-opacity {
+    opacity: 0;
   }
 
   .row-column {

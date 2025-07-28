@@ -33,7 +33,6 @@ export function rehydrate(environment: Record<string, unknown>) {
   }
 }
 
-// @ts-expect-error Vite DEV property not in global types
 const isDev = import.meta.env?.DEV;
 
 if (isDev) {

@@ -50,27 +50,30 @@
 
 .sidebar-nav {
   position: absolute;
-  top: 0px;
+  top: var(--header-height);
   right: 0px;
-  border: 1px solid var(--bfds-primary);
   border-top: none;
   border-right: none;
   border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  border-bottom: 2px solid var(--bfds-primary);
   box-sizing: border-box;
-  background: var(--bfds-background);
-  width: 150px;
+  background: var(--bfds-background-09);
+  justify-content: center;
+  width: 100%;
   padding: 16px 24px;
   z-index: 1001;
 }
 
 header.landing-header {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   backdrop-filter: blur(3px);
   background: var(--bfds-background-06);
   z-index: 1000;
+  height: var(--header-height);
 }
 
 .navSeparator {

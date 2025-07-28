@@ -1,5 +1,6 @@
 #!/usr/bin/env deno run --allow-net --allow-run
 // Simple DNS server for *.codebot.local resolution
+/// <reference lib="deno.unstable" />
 
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 

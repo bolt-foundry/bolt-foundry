@@ -101,7 +101,7 @@ export function ChatMessage(
             )}
             {message.metadata?.flagged && (
               <BfDsBadge variant="warning" size="small">
-                <BfDsIcon name="flag" size="small" />
+                <BfDsIcon name="flagSolid" size="small" />
                 Flagged
               </BfDsBadge>
             )}
@@ -126,7 +126,7 @@ export function ChatMessage(
                 variant="ghost"
                 size="small"
                 iconOnly
-                icon={message.metadata?.flagged ? "flag" : "flagOutline"}
+                icon={message.metadata?.flagged ? "flagSolid" : "flag"}
                 onClick={() => onAction("flag")}
                 title={message.metadata?.flagged
                   ? "Unflag message"
