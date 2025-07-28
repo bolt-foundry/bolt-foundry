@@ -127,7 +127,7 @@ OUTPUT FORMAT:
   });
 
   const results = await Promise.all(comparePromises);
-  
+
   let hasChanges = false;
   for (const { changes } of results) {
     if (changes > 0) {
@@ -184,7 +184,6 @@ async function compareWorkspace(
     return 0;
   }
 }
-
 
 async function fileDiffComparison(
   _workspaceName: string,
