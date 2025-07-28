@@ -64,13 +64,14 @@
 }
 
 header.landing-header {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   backdrop-filter: blur(3px);
   background: var(--bfds-background-06);
   z-index: 1000;
+  height: var(--header-height);
 }
 
 .navSeparator {

@@ -11,7 +11,6 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  margin-top: 68px;
   overflow: hidden;
 }
 
@@ -68,9 +67,9 @@
 .eval-left-sidebar-side-by-side {
   width: 280px;
   position: absolute;
-  top: 0;
+  top: var(--header-height);
   left: 0;
-  height: 100%;
+  height: calc(100% - var(--header-height));
   z-index: 1;
   transform: translateX(0);
   transition: transform 0.3s ease;
@@ -85,9 +84,9 @@
 .eval-left-sidebar-overlay {
   width: 280px;
   position: fixed;
-  top: 68px;
+  top: var(--header-height);
   left: 0;
-  height: calc(100vh - 68px);
+  height: calc(100vh - var(--header-height));
   z-index: 1000;
   box-shadow: 2px 0 8px var(--bfds-background-08);
   transform: translateX(0);
@@ -140,7 +139,7 @@
 
 .eval-main-content {
   flex: 1;
-  padding: 2rem;
+  padding: calc(var(--header-height) + 2rem) 2rem 2rem 2rem;
   overflow-y: auto; /* Allow scrolling for other views */
   transition: all 0.3s ease;
 }
@@ -203,9 +202,9 @@
 .eval-right-sidebar {
   width: 320px;
   position: absolute;
-  top: 0;
+  top: var(--header-height);
   right: 0;
-  height: 100%;
+  height: calc(100% - var(--header-height));
   z-index: 1;
   background: var(--bfds-background);
   border-left: 1px solid var(--bfds-border);
@@ -263,9 +262,9 @@
   .eval-left-sidebar-side-by-side,
   .eval-left-sidebar-overlay {
     position: fixed;
-    top: 68px;
+    top: var(--header-height);
     left: 0;
-    height: calc(100vh - 68px);
+    height: calc(100vh - var(--header-height));
     z-index: 1000;
     box-shadow: 2px 0 8px var(--bfds-background-08);
   }
@@ -293,15 +292,15 @@
   
   .eval-right-sidebar {
     position: fixed;
-    top: 68px;
+    top: var(--header-height);
     right: 0;
-    height: calc(100vh - 68px);
+    height: calc(100vh - var(--header-height));
     z-index: 1001;
     box-shadow: -2px 0 8px var(--bfds-background-08);
   }
   
   .eval-main-content {
-    padding: 1rem;
+    padding: calc(var(--header-height) + 1rem) 1rem 1rem 1rem;
   }
   
   .eval-main-buttons {
