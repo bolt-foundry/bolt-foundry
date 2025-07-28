@@ -1,3 +1,4 @@
+/// <reference lib="deno.unstable" />
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import * as OriginalReact from "react";
 import * as ReactDOMServer from "react-dom/server";

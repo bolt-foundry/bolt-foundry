@@ -1,17 +1,22 @@
 # Guide: How the Configuration System Works
 
-This guide explains how Bolt Foundry's configuration system works, using a standards-based `import.meta.env` approach for managing environment variables and secrets.
+This guide explains how Bolt Foundry's configuration system works, using a
+standards-based `import.meta.env` approach for managing environment variables
+and secrets.
 
 ## Current Status
 
-**Partially Implemented** - The server-side polyfill exists, but the complete system needs additional components:
+**Partially Implemented** - The server-side polyfill exists, but the complete
+system needs additional components:
 
 ### ✅ What's Already Built
+
 - `packages/env/polyfill.ts` - Deno polyfill that enables `import.meta.env`
 - Support for loading from `.env.client`, `.env.server`, and `.env.local` files
 - Basic environment variable parsing with proper precedence
 
 ### ❌ What Still Needs Implementation
+
 - **Vite plugin** (`packages/env/vite-plugin.ts`) for client-side support
 - **BFT command** (`bft secrets sync`) for 1Password synchronization
 - **Example files** (`.env.client.example` and `.env.server.example`)
@@ -35,6 +40,7 @@ const clientId = import.meta.env.GOOGLE_OAUTH_CLIENT_ID;
 ## System Architecture
 
 ### Core Components
+
 - **Single sync command**: `bft secrets sync` fetches all secrets
 - **Standard API**: Uses web-standard `import.meta.env`
 - **Security separation**: Clear client/server variable boundaries
@@ -48,6 +54,7 @@ const clientId = import.meta.env.GOOGLE_OAUTH_CLIENT_ID;
 The system uses example files to define all environment variables:
 
 **`.env.client.example`** (Client-safe variables):
+
 ```bash
 # Variables safe to expose in browser bundles
 GOOGLE_OAUTH_CLIENT_ID=123456789.apps.googleusercontent.com
@@ -58,6 +65,7 @@ LOG_LOGGERS_TO_ENABLE=auth,database
 ```
 
 **`.env.server.example`** (Server-only variables):
+
 ```bash
 # Variables that must never reach the browser
 DATABASE_URL=postgresql://localhost:5432/boltfoundry
@@ -175,7 +183,9 @@ The `bft secrets sync` command in `infra/bft/tasks/secrets.bft.ts`:
 #!/usr/bin/env -S bft run
 
 // Core sync functionality
-async function syncSecretsFromOnePassword(args: Array<string>): Promise<number> {
+async function syncSecretsFromOnePassword(
+  args: Array<string>,
+): Promise<number> {
   const clientKeys = await getExampleKeys(".env.client.example");
   const serverKeys = await getExampleKeys(".env.server.example");
 
@@ -215,11 +225,19 @@ export function generateEnvTypes(): string {
 
   return `// Auto-generated - do not edit
 interface ClientEnvVars {
-${Object.keys(clientVars).map(key => `  readonly ${key}?: string;`).join('\n')}
+${
+    Object.keys(clientVars).map((key) => `  readonly ${key}?: string;`).join(
+      "\n",
+    )
+  }
 }
 
 interface ServerEnvVars {
-${Object.keys(serverVars).map(key => `  readonly ${key}?: string;`).join('\n')}
+${
+    Object.keys(serverVars).map((key) => `  readonly ${key}?: string;`).join(
+      "\n",
+    )
+  }
 }
 
 declare interface ImportMeta {
@@ -233,6 +251,7 @@ declare interface ImportMeta {
 ### 6. Using the Configuration System
 
 #### For Deno/Server Code:
+
 ```typescript
 // Add to your main entry point or deno.jsonc tasks
 import "packages/env/polyfill.ts";
@@ -243,6 +262,7 @@ const apiKey = import.meta.env.OPENAI_API_KEY;
 ```
 
 #### For Vite/Client Code:
+
 ```typescript
 // vite.config.ts
 import { boltFoundryEnvPlugin } from "packages/env/vite-plugin.ts";
@@ -258,6 +278,7 @@ export default {
 ## Migration Checklist
 
 ### Phase 1: Setup New System
+
 - [ ] Create `.env.client.example` with all client-safe variables
 - [ ] Create `.env.server.example` with all server-only variables
 - [ ] Implement `packages/env/polyfill.ts`
@@ -266,12 +287,14 @@ export default {
 - [ ] Test with a sample application
 
 ### Phase 2: Migrate Applications
+
 - [ ] Update all `getConfigurationVariable()` calls to `import.meta.env`
 - [ ] Add polyfill import to Deno entry points
 - [ ] Update Vite configs to use new plugin
 - [ ] Remove old configuration imports
 
 ### Phase 3: Cleanup
+
 - [ ] Remove old BFF commands
 - [ ] Delete generated `configKeys.ts` files
 - [ ] Remove shell integration scripts
@@ -280,6 +303,7 @@ export default {
 ## Common Patterns
 
 ### Development Workflow
+
 ```bash
 # Initial setup
 bft secrets sync
@@ -291,11 +315,13 @@ echo "LOG_LEVEL=debug" > .env.local
 ```
 
 ### Adding New Variables
+
 1. Add to appropriate `.env.*.example` file
 2. Run `bft secrets sync` to regenerate types
 3. TypeScript now knows about the new variable
 
 ### Production Deployment
+
 ```dockerfile
 # Container startup script
 RUN bft secrets sync --production
@@ -305,23 +331,26 @@ CMD ["deno", "run", "--preload=packages/env/polyfill.ts", "main.ts"]
 ## Security Best Practices
 
 1. **Never commit `.env.*` files** (except `.env.*.example`)
-2. **Always separate client/server variables** 
+2. **Always separate client/server variables**
 3. **Use TypeScript** - It prevents accessing server vars in client code
 4. **Audit `.env.client`** - Ensure no secrets leak to browser
 
 ## Troubleshooting
 
 ### "Variable undefined" in browser
+
 - Check variable is in `.env.client.example` (not `.env.server.example`)
 - Run `bft secrets sync` to update `.env.client`
 - Restart Vite dev server
 
 ### "Variable undefined" in Deno
+
 - Ensure polyfill is loaded: `--preload=packages/env/polyfill.ts`
 - Check variable exists in `.env.client` or `.env.server`
 - System env vars override file values
 
 ### Type errors after adding variables
+
 - Run `bft secrets sync` to regenerate types
 - Restart TypeScript language server
 
@@ -333,36 +362,46 @@ CMD ["deno", "run", "--preload=packages/env/polyfill.ts", "main.ts"]
 4. **Standard API** - Uses web standard `import.meta.env`
 5. **Unified workflow** - One command syncs everything
 
-The configuration system provides a secure, type-safe way to manage environment variables across client and server environments.
+The configuration system provides a secure, type-safe way to manage environment
+variables across client and server environments.
 
 ## Next Steps for Implementation
 
 ### 1. Create Example Environment Files
+
 Define which variables belong in client vs server contexts:
+
 - Create `.env.client.example` with public variables
 - Create `.env.server.example` with private variables
 - Document each variable's purpose
 
 ### 2. Build the Vite Plugin
+
 Implement `packages/env/vite-plugin.ts` to:
+
 - Load only client-safe variables
 - Inject them at build time
 - Ensure server variables never reach the browser
 
 ### 3. Implement BFT Secrets Command
+
 Create `infra/bft/tasks/secrets.bft.ts` to:
+
 - Read variables from example files
 - Fetch from 1Password using `op` CLI
 - Write to appropriate `.env.*` files
 - Generate TypeScript definitions
 
 ### 4. Add Type Generation
+
 Build `packages/env/generate-types.ts` to:
+
 - Parse example files
 - Generate environment-aware TypeScript interfaces
 - Create `env.d.ts` at monorepo root
 
 ### 5. Migrate Existing Code
+
 - Identify current configuration system usage
 - Update imports to use polyfill
 - Replace configuration calls with `import.meta.env`

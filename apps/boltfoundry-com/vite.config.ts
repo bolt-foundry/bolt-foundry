@@ -2,6 +2,7 @@ import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 import { defineConfig } from "vite";
 import deno from "@deno/vite-plugin";
 import react from "@vitejs/plugin-react";
+import { boltFoundryEnvPlugin } from "@bfmono/packages/env/vite-plugin.ts";
 
 const replitDomain = getConfigurationVariable("REPLIT_DEV_DOMAIN");
 const allowedHosts = replitDomain ? [replitDomain] : undefined;
@@ -12,6 +13,7 @@ export default defineConfig({
   plugins: [
     deno(),
     react({ babel: { babelrc: true } }),
+    boltFoundryEnvPlugin(),
   ],
   define: {
     "globalThis.__ENVIRONMENT__": JSON.stringify({
