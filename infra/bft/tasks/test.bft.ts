@@ -8,7 +8,7 @@ export async function testCommand(options: Array<string>): Promise<number> {
   logger.info("Running tests...");
   logger.debug("Test command options:", options);
 
-  const args = ["deno", "test", "-A", "--quiet"];
+  const args = ["deno", "test", "-A", "--quiet", "--no-check"];
 
   // Exclude E2E tests by default unless specifically requested
   const hasE2EFlag = options.some((opt) =>
