@@ -16,6 +16,8 @@ interface CodebotArgs {
   cleanup?: boolean;
   "cleanup-containers"?: boolean;
   workspace?: string;
+  memory?: string;
+  cpus?: string;
 }
 
 async function generateRandomName(): Promise<string> {
@@ -57,9 +59,59 @@ async function codebot(args: Array<string>): Promise<number> {
       "cleanup",
       "cleanup-containers",
     ],
-    string: ["exec", "workspace"],
+    string: ["exec", "workspace", "memory", "cpus"],
     alias: { h: "help" },
   }) as CodebotArgs;
+
+  // Auto-calculate maximum resources if not specified
+  let autoMemory = "1g";
+  let autoCpus = "4";
+
+  if (!parsed.memory || !parsed.cpus) {
+    try {
+      // Get total system memory in bytes
+      const memCmd = new Deno.Command("sysctl", {
+        args: ["-n", "hw.memsize"],
+        stdout: "piped",
+      });
+      const memResult = await memCmd.output();
+
+      if (memResult.success) {
+        const totalMemBytes = parseInt(
+          new TextDecoder().decode(memResult.stdout).trim(),
+        );
+        // Use 80% of total memory, leaving 20% for host system
+        const containerMemGb = Math.floor(
+          (totalMemBytes / 1024 / 1024 / 1024) * 0.8,
+        );
+        autoMemory = `${containerMemGb}g`;
+      }
+
+      // Get total CPU cores
+      const cpuCmd = new Deno.Command("sysctl", {
+        args: ["-n", "hw.ncpu"],
+        stdout: "piped",
+      });
+      const cpuResult = await cpuCmd.output();
+
+      if (cpuResult.success) {
+        const totalCpus = parseInt(
+          new TextDecoder().decode(cpuResult.stdout).trim(),
+        );
+        // Use all available CPUs (container framework handles scheduling)
+        autoCpus = totalCpus.toString();
+      }
+
+      logger.info(
+        `Auto-detected system resources: ${autoMemory} RAM, ${autoCpus} CPUs`,
+      );
+    } catch (error) {
+      logger.warn(
+        "Failed to auto-detect system resources, using defaults",
+        error,
+      );
+    }
+  }
 
   if (parsed.help) {
     ui.output(`
@@ -76,6 +128,8 @@ OPTIONS:
   --workspace NAME     Reuse existing workspace or create new one with specific name
   --cleanup            Remove workspace after completion (default: keep)
   --force-rebuild      Force rebuild container image before starting
+  --memory SIZE        Container memory limit (e.g., 4g, 8g, 16g) (default: auto-detect 80% of system RAM)
+  --cpus COUNT         Number of CPUs (e.g., 2, 4, 8) (default: auto-detect all available CPUs)
   --help               Show this help message
 
 EXAMPLES:
@@ -84,6 +138,7 @@ EXAMPLES:
   bft codebot --cleanup                 # Start and cleanup workspace when done
   bft codebot --shell                   # Open container shell for debugging
   bft codebot --exec "ls -la"           # Run command and exit
+  bft codebot --memory 8g --cpus 8      # Run with 8GB RAM and 8 CPUs
 
 FIRST TIME SETUP:
   On first run, you'll need to authenticate inside the container:
@@ -571,6 +626,12 @@ FIRST TIME SETUP:
       "-it",
       "--name",
       workspaceId,
+      "--memory",
+      parsed.memory || autoMemory,
+      "--cpus",
+      parsed.cpus || autoCpus,
+      "--hostname",
+      `${workspaceId}.codebot.local`,
       "--volume",
       `${claudeDir}:/home/codebot/.claude`,
       "--volume",
@@ -605,6 +666,12 @@ FIRST TIME SETUP:
       "--rm",
       "--name",
       workspaceId,
+      "--memory",
+      parsed.memory || autoMemory,
+      "--cpus",
+      parsed.cpus || autoCpus,
+      "--hostname",
+      `${workspaceId}.codebot.local`,
       "--volume",
       `${claudeDir}:/home/codebot/.claude`,
       "--volume",
@@ -640,6 +707,11 @@ FIRST TIME SETUP:
   ui.output(
     `📡 Workspace will be available at: http://${workspaceId}.codebot.local:8000`,
   );
+  ui.output(
+    `💾 Memory: ${parsed.memory || autoMemory} | CPUs: ${
+      parsed.cpus || autoCpus
+    }`,
+  );
 
   // Check if this is first run (no credentials)
   try {
@@ -656,6 +728,12 @@ FIRST TIME SETUP:
     "-it",
     "--name",
     workspaceId,
+    "--memory",
+    parsed.memory || autoMemory,
+    "--cpus",
+    parsed.cpus || autoCpus,
+    "--hostname",
+    `${workspaceId}.codebot.local`,
     "--volume",
     `${claudeDir}:/home/codebot/.claude`,
     "--volume",
