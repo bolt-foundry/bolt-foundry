@@ -11,7 +11,12 @@ Deno.test(
     function startGuiCommand(
       args: Array<string>,
     ): Deno.ChildProcess {
-      const command = new Deno.Command("aibff", {
+      // Try to find aibff in PATH or use relative path
+      const aibffPath = Deno.env.get("GITHUB_WORKSPACE")
+        ? `${Deno.env.get("GITHUB_WORKSPACE")}/infra/bin/aibff`
+        : new URL(import.meta.resolve("../../../../infra/bin/aibff")).pathname;
+
+      const command = new Deno.Command(aibffPath, {
         args: [
           "gui",
           ...args,
@@ -120,7 +125,12 @@ Deno.test(
     function startGuiDevCommand(
       args: Array<string>,
     ): Deno.ChildProcess {
-      const command = new Deno.Command("aibff", {
+      // Try to find aibff in PATH or use relative path
+      const aibffPath = Deno.env.get("GITHUB_WORKSPACE")
+        ? `${Deno.env.get("GITHUB_WORKSPACE")}/infra/bin/aibff`
+        : new URL(import.meta.resolve("../../../../infra/bin/aibff")).pathname;
+
+      const command = new Deno.Command(aibffPath, {
         args: [
           "gui",
           "--dev",

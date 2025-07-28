@@ -17,7 +17,12 @@ Deno.test("gui command starts server and responds to health check", async () => 
   function startGuiCommand(
     args: Array<string>,
   ): Deno.ChildProcess {
-    const command = new Deno.Command("aibff", {
+    // Try to find aibff in PATH or use relative path
+    const aibffPath = Deno.env.get("GITHUB_WORKSPACE")
+      ? `${Deno.env.get("GITHUB_WORKSPACE")}/infra/bin/aibff`
+      : new URL(import.meta.resolve("../../../../infra/bin/aibff")).pathname;
+
+    const command = new Deno.Command(aibffPath, {
       args: [
         "gui",
         ...args,
@@ -132,16 +137,13 @@ Deno.test("gui command --dev starts vite dev server and proxies requests", async
   function startGuiDevCommand(
     args: Array<string>,
   ): Deno.ChildProcess {
-    const mainPath = new URL(import.meta.resolve("../../main.ts")).pathname;
-    const command = new Deno.Command("deno", {
+    // Try to find aibff in PATH or use relative path
+    const aibffPath = Deno.env.get("GITHUB_WORKSPACE")
+      ? `${Deno.env.get("GITHUB_WORKSPACE")}/infra/bin/aibff`
+      : new URL(import.meta.resolve("../../../../infra/bin/aibff")).pathname;
+
+    const command = new Deno.Command(aibffPath, {
       args: [
-        "run",
-        "--allow-env",
-        "--allow-read",
-        "--allow-write",
-        "--allow-net",
-        "--allow-run",
-        mainPath,
         "gui",
         "--dev",
         ...args,
