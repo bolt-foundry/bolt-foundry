@@ -147,6 +147,8 @@ console.log(JSON.stringify({
       "run",
       "--allow-read",
       "--allow-env",
+      "--import-map",
+      join(Deno.cwd(), "deno.jsonc"),
       "test-env-wrapper.ts",
     ]);
     assertEquals(result.code, 0, `Script failed: ${result.stderr}`);

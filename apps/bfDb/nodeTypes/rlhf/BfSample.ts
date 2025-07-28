@@ -8,41 +8,42 @@ import type { BfGid } from "@bfmono/lib/types.ts";
 export type BfSampleCollectionMethod = "manual" | "telemetry";
 
 /**
- * Completion data that combines the OpenAI ChatCompletion response with the original request parameters
+ * Completion data in telemetry format - captures full request/response details
  * This interface is designed to be JSON-serializable for database storage
  */
 export interface BfSampleCompletionData {
-  // OpenAI ChatCompletion fields
-  id: string;
-  object: string;
-  created: number;
-  model: string;
-  choices: Array<{
-    index: number;
-    message: {
-      role: string;
-      content: string;
-    };
-    finish_reason: string;
-  }>;
-  usage?: {
-    prompt_tokens: number;
-    completion_tokens: number;
-    total_tokens: number;
+  // Timing and metadata
+  timestamp?: string;
+  duration?: number;
+  provider: string;
+  providerApiVersion?: string;
+  sessionId?: string;
+  userId?: string;
+  
+  // Full request details
+  request: {
+    url: string;
+    method: string;
+    headers: Record<string, string>;
+    body: any; // Provider-specific request format (OpenAI, Anthropic, etc.)
   };
-
-  // Original request parameters
-  messages: Array<{
-    role: string;
-    content: string;
-  }>;
-  temperature?: number;
-  max_tokens?: number;
-  top_p?: number;
-  frequency_penalty?: number;
-  presence_penalty?: number;
-  stop?: string | Array<string>;
-  stream?: boolean;
+  
+  // Full response details
+  response: {
+    status: number;
+    headers: Record<string, string>;
+    body: any; // Provider-specific response format
+  };
+  
+  // Additional context from deck rendering
+  contextVariables?: Record<string, unknown>;
+  
+  // Optional deck metadata
+  bfMetadata?: {
+    deckName: string;
+    deckContent: string;
+    contextVariables: Record<string, unknown>;
+  };
 }
 
 /**

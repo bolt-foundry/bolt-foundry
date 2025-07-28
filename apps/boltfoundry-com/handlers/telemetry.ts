@@ -1,6 +1,6 @@
 import { CurrentViewer } from "@bfmono/apps/bfDb/classes/CurrentViewer.ts";
 import { BfDeck } from "@bfmono/apps/bfDb/nodeTypes/rlhf/BfDeck.ts";
-import { BfSample } from "@bfmono/apps/bfDb/nodeTypes/rlhf/BfSample.ts";
+import { BfSample, type BfSampleCompletionData } from "@bfmono/apps/bfDb/nodeTypes/rlhf/BfSample.ts";
 import { BfOrganization } from "@bfmono/apps/bfDb/nodeTypes/BfOrganization.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { generateDeckSlug } from "@bfmono/apps/bfDb/utils/slugUtils.ts";
@@ -144,13 +144,18 @@ export async function handleTelemetryRequest(
       logger.info(`Created new deck: ${deckName} (slug: ${slug})`);
     }
 
-    // Create the sample
-    const completionData = {
+    // Store telemetry data directly in the new format
+    const completionData: BfSampleCompletionData = {
+      timestamp: telemetryData.timestamp,
+      duration: telemetryData.duration,
+      provider: telemetryData.provider,
+      providerApiVersion: telemetryData.providerApiVersion,
+      sessionId: telemetryData.sessionId,
+      userId: telemetryData.userId,
       request: telemetryData.request,
       response: telemetryData.response,
-      provider: telemetryData.provider,
-      duration: telemetryData.duration,
       contextVariables,
+      bfMetadata: telemetryData.bfMetadata,
     };
 
     const sample = await deck.createTargetNode(BfSample, {
