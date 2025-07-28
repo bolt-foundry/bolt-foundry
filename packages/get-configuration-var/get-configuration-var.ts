@@ -17,7 +17,7 @@
 import {
   PRIVATE_CONFIG_KEYS,
   PUBLIC_CONFIG_KEYS,
-} from "../../apps/boltFoundry/__generated__/configKeys.ts";
+} from "@bfmono/apps/boltFoundry/__generated__/configKeys.ts";
 
 /* ─── environment helpers ─────────────────────────────────────────────────── */
 const isDeno = typeof Deno !== "undefined" && !!Deno?.version?.deno;
