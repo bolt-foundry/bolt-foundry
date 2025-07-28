@@ -37,7 +37,7 @@ export function BfDsCopyButton({
   };
 
   const displayText = copied ? copiedText : buttonText;
-  const displayIcon = copied ? "check" : icon;
+  const displayIcon = copied ? "clipboardCheck" : icon;
 
   return (
     <BfDsButton
