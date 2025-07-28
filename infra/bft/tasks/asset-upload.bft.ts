@@ -32,7 +32,11 @@ Examples:
       }
       return 0;
     } catch (error) {
-      ui.error(`Debug failed: ${error instanceof Error ? error.message : String(error)}`);
+      ui.error(
+        `Debug failed: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+      );
       return 1;
     }
   }
@@ -58,7 +62,7 @@ Examples:
     }
     return 0;
   } catch (error) {
-    console.error("Full error details:", error);
+    ui.debug(`Full error details: ${error}`);
     ui.error(
       `Upload failed: ${
         error instanceof Error ? error.message : String(error)
@@ -111,8 +115,10 @@ async function processFile(filePath: string, verbose: boolean): Promise<void> {
 // S3 configuration
 const S3_CONFIG = {
   region: getConfigurationVariable("ASSET_STORAGE_REGION") || "us-east-1",
-  host: getConfigurationVariable("ASSET_STORAGE_HOST") || "hel1.your-objectstorage.com",
-  bucket: getConfigurationVariable("ASSET_STORAGE_BUCKET") || "bolt-foundry-assets",
+  host: getConfigurationVariable("ASSET_STORAGE_HOST") ||
+    "hel1.your-objectstorage.com",
+  bucket: getConfigurationVariable("ASSET_STORAGE_BUCKET") ||
+    "bolt-foundry-assets",
 };
 
 // Helper function to create HMAC
@@ -122,17 +128,25 @@ async function hmac(key: Uint8Array, data: string): Promise<Uint8Array> {
     key,
     { name: "HMAC", hash: "SHA-256" },
     false,
-    ["sign"]
+    ["sign"],
   );
-  const signature = await crypto.subtle.sign("HMAC", cryptoKey, new TextEncoder().encode(data));
+  const signature = await crypto.subtle.sign(
+    "HMAC",
+    cryptoKey,
+    new TextEncoder().encode(data),
+  );
   return new Uint8Array(signature);
 }
 
 // Helper function to hash with SHA256
 async function sha256(data: string | Uint8Array): Promise<string> {
-  const bytes = typeof data === "string" ? new TextEncoder().encode(data) : data;
+  const bytes = typeof data === "string"
+    ? new TextEncoder().encode(data)
+    : data;
   const hash = await crypto.subtle.digest("SHA-256", bytes);
-  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+  return Array.from(new Uint8Array(hash)).map((b) =>
+    b.toString(16).padStart(2, "0")
+  ).join("");
 }
 
 // Create AWS v4 signature
@@ -152,50 +166,59 @@ async function createAwsSignature(
   }
 
   const now = new Date();
-  const timestamp = now.toISOString().replace(/[:\-]|\.\d{3}/g, '');
+  const timestamp = now.toISOString().replace(/[:\-]|\.\d{3}/g, "");
   const date = timestamp.substr(0, 8);
-  
+
   const payloadHash = await sha256(payload);
-  
+
   // Add required headers
   headers["host"] = S3_CONFIG.host;
   headers["x-amz-date"] = timestamp;
   headers["x-amz-content-sha256"] = payloadHash;
-  
+
   // Create canonical request
   const canonicalHeaders = Object.keys(headers)
     .sort()
-    .map(key => `${key.toLowerCase()}:${headers[key]}`)
-    .join('\n') + '\n';
-  
+    .map((key) => `${key.toLowerCase()}:${headers[key]}`)
+    .join("\n") + "\n";
+
   const signedHeaders = Object.keys(headers)
     .sort()
-    .map(key => key.toLowerCase())
-    .join(';');
-  
-  const canonicalRequest = `${method}\n${path}\n\n${canonicalHeaders}\n${signedHeaders}\n${payloadHash}`;
-  
+    .map((key) => key.toLowerCase())
+    .join(";");
+
+  const canonicalRequest =
+    `${method}\n${path}\n\n${canonicalHeaders}\n${signedHeaders}\n${payloadHash}`;
+
   // Create string to sign
   const algorithm = "AWS4-HMAC-SHA256";
   const credentialScope = `${date}/${S3_CONFIG.region}/s3/aws4_request`;
-  const stringToSign = `${algorithm}\n${timestamp}\n${credentialScope}\n${await sha256(canonicalRequest)}`;
-  
+  const stringToSign =
+    `${algorithm}\n${timestamp}\n${credentialScope}\n${await sha256(
+      canonicalRequest,
+    )}`;
+
   // Calculate signature
-  const dateKey = await hmac(new TextEncoder().encode(`AWS4${secretKey}`), date);
+  const dateKey = await hmac(
+    new TextEncoder().encode(`AWS4${secretKey}`),
+    date,
+  );
   const dateRegionKey = await hmac(dateKey, S3_CONFIG.region);
   const dateRegionServiceKey = await hmac(dateRegionKey, "s3");
   const signingKey = await hmac(dateRegionServiceKey, "aws4_request");
   const signature = await hmac(signingKey, stringToSign);
-  const signatureHex = Array.from(signature).map(b => b.toString(16).padStart(2, '0')).join('');
-  
+  const signatureHex = Array.from(signature).map((b) =>
+    b.toString(16).padStart(2, "0")
+  ).join("");
+
   return `${algorithm} Credential=${accessKey}/${credentialScope}, SignedHeaders=${signedHeaders}, Signature=${signatureHex}`;
 }
 
 // List buckets for debug
-async function listBuckets(): Promise<string[]> {
+async function listBuckets(): Promise<Array<string>> {
   const headers: Record<string, string> = {};
   const authorization = await createAwsSignature("GET", "/", headers);
-  
+
   const response = await fetch(`https://${S3_CONFIG.host}/`, {
     method: "GET",
     headers: {
@@ -203,18 +226,20 @@ async function listBuckets(): Promise<string[]> {
       "Authorization": authorization,
     },
   });
-  
+
   if (!response.ok) {
-    throw new Error(`Failed to list buckets: ${response.status} ${response.statusText}`);
+    throw new Error(
+      `Failed to list buckets: ${response.status} ${response.statusText}`,
+    );
   }
-  
+
   const text = await response.text();
-  const buckets: string[] = [];
+  const buckets: Array<string> = [];
   const bucketMatches = text.matchAll(/<Name>([^<]+)<\/Name>/g);
   for (const match of bucketMatches) {
     buckets.push(match[1]);
   }
-  
+
   return buckets;
 }
 
@@ -237,7 +262,7 @@ async function checkAssetExists(
     });
 
     return response.ok;
-  } catch (error) {
+  } catch (_error) {
     return false;
   }
 }
@@ -255,12 +280,12 @@ async function uploadToS3(
   const key = `assets/${hash}/${fileName}`;
   const path = `/${S3_CONFIG.bucket}/${key}`;
   const contentType = getMimeType(fileName);
-  
+
   const headers: Record<string, string> = {
     "content-type": contentType,
     "cache-control": "public, max-age=31536000, immutable",
   };
-  
+
   const authorization = await createAwsSignature("PUT", path, headers, data);
 
   const response = await fetch(`https://${S3_CONFIG.host}${path}`, {
@@ -274,7 +299,9 @@ async function uploadToS3(
 
   if (!response.ok) {
     const errorText = await response.text();
-    throw new Error(`Upload failed: ${response.status} ${response.statusText}\n${errorText}`);
+    throw new Error(
+      `Upload failed: ${response.status} ${response.statusText}\n${errorText}`,
+    );
   }
 
   if (verbose) {
