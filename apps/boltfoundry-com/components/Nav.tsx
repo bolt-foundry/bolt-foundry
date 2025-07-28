@@ -93,7 +93,7 @@ export function Nav({ page, onSidebarToggle, sidebarOpen }: Props) {
         {onSidebarToggle && (
           <div className="landing-header-sidebar-button">
             <BfDsButton
-              variant="ghost"
+              variant={sidebarOpen ? "primary" : "ghost"}
               icon={sidebarOpen ? "sidebarClose" : "sidebarOpen"}
               iconOnly
               size="medium"
@@ -127,27 +127,16 @@ export function Nav({ page, onSidebarToggle, sidebarOpen }: Props) {
         </div>
         <nav className="mobile-show">
           <BfDsButton
-            variant="ghost"
+            variant={showMenu ? "primary" : "ghost"}
             icon="menu"
             onClick={() => {
-              setShowMenu(true);
+              setShowMenu(!showMenu);
             }}
           />
         </nav>
         {showMenu && (
-          <div className="mobile-show">
-            <div className="flexColumn gapLarge sidebar-nav">
-              <div className="selfAlignEnd">
-                <BfDsButton
-                  variant="ghost"
-                  icon="cross"
-                  onClick={() => {
-                    setShowMenu(false);
-                  }}
-                />
-              </div>
-              <NavButtons />
-            </div>
+          <div className="flexRow gapLarge sidebar-nav mobile-show-opacity">
+            <NavButtons />
           </div>
         )}
       </div>
