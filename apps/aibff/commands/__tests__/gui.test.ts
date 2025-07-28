@@ -12,23 +12,18 @@ Deno.test("gui command exists with correct properties", async () => {
   assertEquals(guiCommand.description, "Launch the aibff GUI web interface");
 });
 
-Deno.test("gui command starts server and responds to health check", {
-  ignore: true,
-}, async () => {
+Deno.test("gui command starts server and responds to health check", async () => {
   // Helper to start GUI command in subprocess
   function startGuiCommand(
     args: Array<string>,
   ): Deno.ChildProcess {
-    const mainPath = new URL(import.meta.resolve("../../main.ts")).pathname;
-    const command = new Deno.Command("deno", {
+    // Try to find aibff in PATH or use relative path
+    const aibffPath = Deno.env.get("GITHUB_WORKSPACE")
+      ? `${Deno.env.get("GITHUB_WORKSPACE")}/infra/bin/aibff`
+      : new URL(import.meta.resolve("../../../../infra/bin/aibff")).pathname;
+
+    const command = new Deno.Command(aibffPath, {
       args: [
-        "run",
-        "--allow-env",
-        "--allow-read",
-        "--allow-write",
-        "--allow-net",
-        "--allow-run",
-        mainPath,
         "gui",
         ...args,
       ],
@@ -58,7 +53,7 @@ Deno.test("gui command starts server and responds to health check", {
             if (done) break;
             stderrOutput += decoder.decode(value);
           }
-        } catch (_e) {
+        } catch {
           // Reader closed
         }
       })();
@@ -137,23 +132,18 @@ Deno.test("gui command --build runs vite build", async () => {
   assert(distExists, "dist directory should exist after build");
 });
 
-Deno.test("gui command --dev starts vite dev server and proxies requests", {
-  ignore: true,
-}, async () => {
+Deno.test("gui command --dev starts vite dev server and proxies requests", async () => {
   // Helper to start GUI command in subprocess
   function startGuiDevCommand(
     args: Array<string>,
   ): Deno.ChildProcess {
-    const mainPath = new URL(import.meta.resolve("../../main.ts")).pathname;
-    const command = new Deno.Command("deno", {
+    // Try to find aibff in PATH or use relative path
+    const aibffPath = Deno.env.get("GITHUB_WORKSPACE")
+      ? `${Deno.env.get("GITHUB_WORKSPACE")}/infra/bin/aibff`
+      : new URL(import.meta.resolve("../../../../infra/bin/aibff")).pathname;
+
+    const command = new Deno.Command(aibffPath, {
       args: [
-        "run",
-        "--allow-env",
-        "--allow-read",
-        "--allow-write",
-        "--allow-net",
-        "--allow-run",
-        mainPath,
         "gui",
         "--dev",
         ...args,
@@ -184,7 +174,7 @@ Deno.test("gui command --dev starts vite dev server and proxies requests", {
             if (done) break;
             stderrOutput += decoder.decode(value);
           }
-        } catch (_e) {
+        } catch {
           // Reader closed
         }
       })();
