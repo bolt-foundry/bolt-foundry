@@ -1,4 +1,8 @@
 // infra/bff/friends/plugins/lint-plugin-bolt-foundry.ts
+/// <reference lib="deno.unstable" />
+
+// deno-lint-ignore-file no-explicit-any
+
 const IMPORT_TEXT =
   'import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";\n';
 
@@ -6,15 +10,15 @@ const IMPORT_TEXT =
 /*  Helper: add the import once (idempotent)                                  */
 /* -------------------------------------------------------------------------- */
 function ensureImport(
-  sourceCode: Deno.lint.SourceCode,
-  fixer: Deno.lint.Fixer,
-): Array<Deno.lint.Fix> {
+  sourceCode: any,
+  fixer: any,
+): Array<any> {
   const hasImport = sourceCode.ast.body.some(
-    (n) =>
+    (n: any) =>
       n.type === "ImportDeclaration" &&
       n.source.value === "@bolt-foundry/get-configuration-var" &&
       n.specifiers.some(
-        (s) =>
+        (s: any) =>
           (s.type === "ImportSpecifier" ||
             s.type === "ImportNamespaceSpecifier") &&
           s.local.name === "getConfigurationVariable",
@@ -31,25 +35,25 @@ function ensureImport(
 /* -------------------------------------------------------------------------- */
 /*  Plugin                                                                    */
 /* -------------------------------------------------------------------------- */
-const plugin: Deno.lint.Plugin = {
+const plugin: any = {
   name: "bolt-foundry",
   rules: {
     /* ────────────────────────────────────────────────────────────────────── */
     /*  1. Deno.env → getConfigurationVariable                              */
     /* ────────────────────────────────────────────────────────────────────── */
     "no-env-direct-access": {
-      create(context) {
+      create(context: any) {
         const { sourceCode } = context;
 
         return {
           'CallExpression[callee.property.name="get"][callee.object.property.name="env"][callee.object.object.name="Deno"]'(
-            node,
+            node: any,
           ) {
             context.report({
               node,
               message:
                 "avoid Deno.env – use getConfigurationVariable() instead.",
-              fix(fixer) {
+              fix(fixer: any) {
                 return [
                   fixer.replaceText(
                     node,
@@ -70,13 +74,11 @@ const plugin: Deno.lint.Plugin = {
     /*  2. bfNodeSpec must NOT be the first static field                     */
     /* ────────────────────────────────────────────────────────────────────── */
     "no-bfnodespec-first-static": {
-      create(context) {
+      create(context: any) {
         /** Check each class (declaration or expression). */
-        // deno-lint-ignore no-explicit-any
         function checkClass(node: any) {
           // Get static members in source order
           const staticMembers = node.body.body.filter(
-            // deno-lint-ignore no-explicit-any
             (m: any) => m.static,
           );
           if (staticMembers.length === 0) return;
@@ -108,7 +110,7 @@ const plugin: Deno.lint.Plugin = {
     /*  3. Rename _logger to logger when it's being used                     */
     /* ────────────────────────────────────────────────────────────────────── */
     "no-underscore-logger-when-used": {
-      create(context) {
+      create(context: any) {
         const { sourceCode } = context;
 
         // Track _logger declarations and usages
@@ -116,7 +118,7 @@ const plugin: Deno.lint.Plugin = {
 
         return {
           // Find _logger declarations
-          'VariableDeclarator[id.name="_logger"]'(node) {
+          'VariableDeclarator[id.name="_logger"]'(node: any) {
             // Check if it's created by getLogger
             if (
               node.init &&
@@ -144,7 +146,7 @@ const plugin: Deno.lint.Plugin = {
                   node: node.id,
                   message:
                     "_logger is being used and should be renamed to logger",
-                  fix(fixer) {
+                  fix(fixer: any) {
                     const fixes = [];
 
                     // Replace the declaration
@@ -185,17 +187,17 @@ const plugin: Deno.lint.Plugin = {
     /*  4. Prefer Array<Type> over Type[] syntax                             */
     /* ────────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
     "prefer-generic-array-syntax": {
-      create(context) {
+      create(context: any) {
         const { sourceCode } = context;
 
         return {
           // Match array type annotations like Type[]
-          TSArrayType(node) {
+          TSArrayType(node: any) {
             context.report({
               node,
               message:
                 "Use Array<Type> instead of Type[] for array type annotations",
-              fix(fixer) {
+              fix(fixer: any) {
                 // Get the element type text
                 const elementType = sourceCode.getText(node.elementType);
 
@@ -221,17 +223,17 @@ const plugin: Deno.lint.Plugin = {
     /*  5. Prevent logger.setLevel from being committed                      */
     /* ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
     "no-logger-set-level": {
-      create(context) {
+      create(context: any) {
         const { sourceCode } = context;
 
         // Check if this file imports getLogger from our logger package
         function hasLoggerImport() {
           return sourceCode.ast.body.some(
-            (n) =>
+            (n: any) =>
               n.type === "ImportDeclaration" &&
               n.source.value.includes("logger/logger.ts") &&
               n.specifiers.some(
-                (s) =>
+                (s: any) =>
                   (s.type === "ImportSpecifier" ||
                     s.type === "ImportNamespaceSpecifier") &&
                   s.local.name === "getLogger",
@@ -241,7 +243,7 @@ const plugin: Deno.lint.Plugin = {
 
         return {
           // Match any call to setLevel()
-          'CallExpression[callee.property.name="setLevel"]'(node) {
+          'CallExpression[callee.property.name="setLevel"]'(node: any) {
             // Get the object the method is called on
             const objectNode = node.callee.object;
 
@@ -273,7 +275,7 @@ const plugin: Deno.lint.Plugin = {
                 node,
                 message:
                   "Avoid committing logger.setLevel() - this should be managed through environment variables.",
-                fix(fixer) {
+                fix(fixer: any) {
                   // Comment out the line rather than removing it completely
                   return [
                     fixer.insertTextBefore(
@@ -293,7 +295,7 @@ const plugin: Deno.lint.Plugin = {
     /*  6. Ensure files end with a newline                                   */
     /* ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
     "ensure-file-ends-with-newline": {
-      create(context) {
+      create(context: any) {
         const { sourceCode } = context;
 
         return {
@@ -313,7 +315,7 @@ const plugin: Deno.lint.Plugin = {
               context.report({
                 range: [lastPosition, lastPosition],
                 message: "File must end with a newline character",
-                fix(fixer) {
+                fix(fixer: any) {
                   // Insert newline at the end of the file
                   return [
                     fixer.insertTextAfterRange(
@@ -333,7 +335,7 @@ const plugin: Deno.lint.Plugin = {
     /*  7. Enforce @ts-expect-error has a description                         */
     /* ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
     "ts-expect-error-description": {
-      create(context) {
+      create(context: any) {
         const { sourceCode } = context;
         const text = sourceCode.getText();
         const lines = text.split("\n");
@@ -341,7 +343,7 @@ const plugin: Deno.lint.Plugin = {
         return {
           "Program:exit"() {
             // Find all @ts-expect-error comments
-            lines.forEach((line, lineIndex) => {
+            lines.forEach((line: any, lineIndex: any) => {
               const tsExpectErrorMatch = line.match(
                 /^\s*(\/\/\s*@ts-expect-error)(\s*[:\-–]?\s*(.+))?/,
               );
@@ -374,7 +376,7 @@ const plugin: Deno.lint.Plugin = {
     /*  8. No parent directory traversal - enforce repository-relative URLs   */
     /* ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
     "no-parent-directory-traversal": {
-      create(context) {
+      create(context: any) {
         const { filename } = context;
 
         // Helper to convert relative path to repository-relative
@@ -415,7 +417,7 @@ const plugin: Deno.lint.Plugin = {
 
         // For TypeScript/JavaScript files only
         return {
-          ImportDeclaration(node) {
+          ImportDeclaration(node: any) {
             const importPath = node.source.value;
             if (
               typeof importPath === "string" && importPath.includes("../..")
@@ -424,7 +426,7 @@ const plugin: Deno.lint.Plugin = {
                 node: node.source,
                 message:
                   "Use repository-relative imports instead of parent directory traversal",
-                fix(fixer) {
+                fix(fixer: any) {
                   const newPath = convertToRepoRelative(importPath, filename);
                   return [
                     fixer.replaceText(
@@ -437,7 +439,7 @@ const plugin: Deno.lint.Plugin = {
             }
           },
           // Also check dynamic imports
-          'CallExpression[callee.name="import"]'(node) {
+          'CallExpression[callee.name="import"]'(node: any) {
             if (
               node.arguments.length > 0 && node.arguments[0].type === "Literal"
             ) {
@@ -449,7 +451,7 @@ const plugin: Deno.lint.Plugin = {
                   node: node.arguments[0],
                   message:
                     "Use repository-relative imports instead of parent directory traversal",
-                  fix(fixer) {
+                  fix(fixer: any) {
                     const newPath = convertToRepoRelative(importPath, filename);
                     return [
                       fixer.replaceText(
@@ -470,13 +472,13 @@ const plugin: Deno.lint.Plugin = {
     /*  9. Enforce @bfmono/ prefix for cornercased imports                    */
     /* ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
     "no-cornercased-imports": {
-      create(context) {
+      create(context: any) {
         // Pattern to match cornercased imports (apps/, packages/, infra/, etc.)
         const cornercasedPattern =
           /^(apps|packages|infra|lib|util|experimental|content|docs|static|tmp)\//;
 
         return {
-          ImportDeclaration(node) {
+          ImportDeclaration(node: any) {
             const importPath = node.source.value;
 
             if (
@@ -489,7 +491,7 @@ const plugin: Deno.lint.Plugin = {
                   `Use @bfmono/ prefix for internal imports instead of bare "${
                     importPath.split("/")[0]
                   }/" paths`,
-                fix(fixer) {
+                fix(fixer: any) {
                   const newPath = "@bfmono/" + importPath;
                   return [
                     fixer.replaceText(node.source, `"${newPath}"`),
@@ -500,7 +502,7 @@ const plugin: Deno.lint.Plugin = {
           },
 
           // Also check dynamic imports
-          'CallExpression[callee.name="import"]'(node) {
+          'CallExpression[callee.name="import"]'(node: any) {
             if (
               node.arguments.length > 0 && node.arguments[0].type === "Literal"
             ) {
@@ -516,7 +518,7 @@ const plugin: Deno.lint.Plugin = {
                     `Use @bfmono/ prefix for internal imports instead of bare "${
                       importPath.split("/")[0]
                     }/" paths`,
-                  fix(fixer) {
+                  fix(fixer: any) {
                     const newPath = "@bfmono/" + importPath;
                     return [
                       fixer.replaceText(node.arguments[0], `"${newPath}"`),
