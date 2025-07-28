@@ -8,6 +8,17 @@ const logger = getLogger(import.meta);
 export async function postUpdateCommand(
   filePaths: Array<string>,
 ): Promise<number> {
+  // If no file paths provided via args, try to read from stdin (Claude hook context)
+  if (filePaths.length === 0) {
+    const hookInput = await readHookInput();
+    if (hookInput) {
+      const extractedPath = extractFilePathFromHookInput(hookInput);
+      if (extractedPath) {
+        filePaths = [extractedPath];
+      }
+    }
+  }
+
   if (filePaths.length === 0) {
     ui.error("No file paths provided");
     return 1;
@@ -32,15 +43,80 @@ export async function postUpdateCommand(
   return overallResult;
 }
 
+interface HookInput {
+  tool_input?: {
+    file_path?: string;
+    path?: string;
+  };
+  tool_response?: {
+    filePath?: string;
+  };
+}
+
+async function readHookInput(): Promise<HookInput | null> {
+  try {
+    const decoder = new TextDecoder();
+    let input = "";
+
+    // Read from stdin
+    for await (const chunk of Deno.stdin.readable) {
+      input += decoder.decode(chunk);
+    }
+
+    if (input.trim()) {
+      return JSON.parse(input);
+    }
+  } catch (error) {
+    logger.debug(`Failed to read hook input: ${error}`);
+  }
+  return null;
+}
+
+function extractFilePathFromHookInput(
+  hookInput: HookInput | null,
+): string | null {
+  if (!hookInput) {
+    return null;
+  }
+
+  try {
+    // Check tool_input first (for Write, Edit, MultiEdit)
+    if (hookInput.tool_input?.file_path) {
+      return hookInput.tool_input.file_path;
+    }
+
+    // Check tool_response (alternative location)
+    if (hookInput.tool_response?.filePath) {
+      return hookInput.tool_response.filePath;
+    }
+
+    // For Update tool, might be in a different location
+    if (hookInput.tool_input?.path) {
+      return hookInput.tool_input.path;
+    }
+  } catch (error) {
+    logger.debug(`Failed to extract file path from hook input: ${error}`);
+  }
+  return null;
+}
+
 function isTargetFile(filePath: string): boolean {
-  return filePath.endsWith(".md") || filePath.endsWith(".ts");
+  return filePath.endsWith(".md") || filePath.endsWith(".ts") ||
+    filePath.endsWith(".tsx");
 }
 
 async function runPostUpdateChecks(filePath: string): Promise<number> {
-  const commands = [
-    { name: "format", args: ["bft", "format", filePath] },
-    { name: "check", args: ["bft", "check", filePath] },
-  ];
+  const isTypeScript = filePath.endsWith(".ts") || filePath.endsWith(".tsx");
+
+  // Only run format for markdown files, both format and check for TypeScript
+  const commands = isTypeScript
+    ? [
+      { name: "format", args: ["bft", "format", filePath] },
+      { name: "check", args: ["bft", "check", filePath] },
+    ]
+    : [
+      { name: "format", args: ["bft", "format", filePath] },
+    ];
 
   const errors: Array<string> = [];
   let hasTypeErrors = false;
@@ -78,8 +154,9 @@ async function runPostUpdateChecks(filePath: string): Promise<number> {
       );
     }
   } else {
+    const checksRun = isTypeScript ? "(format, type check)" : "(format)";
     ui.output(
-      `\n✅ File ${filePath} passed all checks (format, type check)`,
+      `\n✅ File ${filePath} passed all checks ${checksRun}`,
     );
   }
 

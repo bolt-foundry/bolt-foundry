@@ -62,7 +62,7 @@ Examples:
     }
     return 0;
   } catch (error) {
-    // Full error details available in error variable
+    ui.debug(`Full error details: ${error}`);
     ui.error(
       `Upload failed: ${
         error instanceof Error ? error.message : String(error)
@@ -262,7 +262,7 @@ async function checkAssetExists(
     });
 
     return response.ok;
-  } catch {
+  } catch (_error) {
     return false;
   }
 }
