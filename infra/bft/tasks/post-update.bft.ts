@@ -75,6 +75,10 @@ async function readHookInput(): Promise<HookInput | null> {
 function extractFilePathFromHookInput(
   hookInput: HookInput | null,
 ): string | null {
+  if (!hookInput) {
+    return null;
+  }
+
   try {
     // Check tool_input first (for Write, Edit, MultiEdit)
     if (hookInput.tool_input?.file_path) {
