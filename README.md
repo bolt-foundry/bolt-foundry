@@ -1,7 +1,7 @@
 # Bolt Foundry - Customer Success Platform for AI
 
 **Make AI systems continuously improve through customer feedback, creating
-reliable, customer-centric AI that gets better every day.**
+reliable, customer-centric AI that gets better every day using RLHF workflows.**
 
 Most AI systems are built and deployed without meaningful connection to customer
 feedback. Companies launch AI features, get complaints, and struggle to

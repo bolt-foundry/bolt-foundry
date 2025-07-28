@@ -620,6 +620,15 @@ FIRST TIME SETUP:
   }
 
   if (parsed.shell) {
+    // Update Ghostty titlebar with container name
+    try {
+      await Deno.stdout.write(
+        new TextEncoder().encode(`\x1b]0;codebot shell: ${workspaceId}\x07`),
+      );
+    } catch {
+      // Ignore errors if not running in a terminal that supports title updates
+    }
+
     const containerArgs = [
       "run",
       "--rm",
@@ -630,8 +639,6 @@ FIRST TIME SETUP:
       parsed.memory || autoMemory,
       "--cpus",
       parsed.cpus || autoCpus,
-      "--hostname",
-      `${workspaceId}.codebot.local`,
       "--volume",
       `${claudeDir}:/home/codebot/.claude`,
       "--volume",
@@ -661,6 +668,15 @@ FIRST TIME SETUP:
   }
 
   if (parsed.exec) {
+    // Update Ghostty titlebar with container name
+    try {
+      await Deno.stdout.write(
+        new TextEncoder().encode(`\x1b]0;codebot exec: ${workspaceId}\x07`),
+      );
+    } catch {
+      // Ignore errors if not running in a terminal that supports title updates
+    }
+
     const containerArgs = [
       "run",
       "--rm",
@@ -670,8 +686,6 @@ FIRST TIME SETUP:
       parsed.memory || autoMemory,
       "--cpus",
       parsed.cpus || autoCpus,
-      "--hostname",
-      `${workspaceId}.codebot.local`,
       "--volume",
       `${claudeDir}:/home/codebot/.claude`,
       "--volume",
@@ -713,6 +727,15 @@ FIRST TIME SETUP:
     }`,
   );
 
+  // Update Ghostty titlebar with container name
+  try {
+    await Deno.stdout.write(
+      new TextEncoder().encode(`\x1b]0;codebot: ${workspaceId}\x07`),
+    );
+  } catch {
+    // Ignore errors if not running in a terminal that supports title updates
+  }
+
   // Check if this is first run (no credentials)
   try {
     await Deno.stat(`${claudeDir}/.credentials.json`);
@@ -732,8 +755,6 @@ FIRST TIME SETUP:
     parsed.memory || autoMemory,
     "--cpus",
     parsed.cpus || autoCpus,
-    "--hostname",
-    `${workspaceId}.codebot.local`,
     "--volume",
     `${claudeDir}:/home/codebot/.claude`,
     "--volume",
