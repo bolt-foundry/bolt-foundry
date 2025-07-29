@@ -109,12 +109,11 @@ OUTPUT FORMAT:
     );
   }
 
-  // Compare all workspaces
+  // Compare all workspaces in parallel for better performance
   ui.output(`🔍 Found ${workspaces.length} workspace(s):`);
   ui.output("");
 
-  let hasChanges = false;
-  for (const workspace of workspaces.sort()) {
+  const comparePromises = workspaces.sort().map(async (workspace) => {
     const workspacePath = `${workspacesDir}/${workspace}`;
     const changes = await compareWorkspace(
       workspace,
@@ -124,6 +123,13 @@ OUTPUT FORMAT:
       parsed["only-changed"] || false,
       parsed["exclude-patterns"] || [],
     );
+    return { workspace, changes };
+  });
+
+  const results = await Promise.all(comparePromises);
+
+  let hasChanges = false;
+  for (const { changes } of results) {
     if (changes > 0) {
       hasChanges = true;
     }
@@ -158,30 +164,15 @@ async function compareWorkspace(
       ui.output(`📁 ${workspaceName} (${lastModified})`);
     }
 
-    // Use git diff if both directories are git repos, otherwise use custom comparison
-    const currentIsGit = await isGitRepo(currentPath);
-    const workspaceIsGit = await isGitRepo(workspacePath);
-
-    let changes = 0;
-
-    if (currentIsGit && workspaceIsGit) {
-      changes = await gitDiffComparison(
-        workspaceName,
-        workspacePath,
-        currentPath,
-        format,
-        onlyChanged,
-      );
-    } else {
-      changes = await fileDiffComparison(
-        workspaceName,
-        workspacePath,
-        currentPath,
-        format,
-        onlyChanged,
-        excludePatterns,
-      );
-    }
+    // Use file-based comparison (workspaces are unlikely to be git repos, but use CoW efficiently)
+    const changes = await fileDiffComparison(
+      workspaceName,
+      workspacePath,
+      currentPath,
+      format,
+      onlyChanged,
+      excludePatterns,
+    );
 
     if (changes === 0 && !onlyChanged) {
       ui.output("   ✅ No changes detected");
@@ -191,72 +182,6 @@ async function compareWorkspace(
   } catch (error) {
     ui.error(`❌ Failed to compare workspace ${workspaceName}: ${error}`);
     return 0;
-  }
-}
-
-async function isGitRepo(path: string): Promise<boolean> {
-  try {
-    const gitDir = await Deno.stat(`${path}/.git`);
-    return gitDir.isDirectory;
-  } catch {
-    return false;
-  }
-}
-
-async function gitDiffComparison(
-  workspaceName: string,
-  workspacePath: string,
-  currentPath: string,
-  format: string,
-  onlyChanged: boolean,
-): Promise<number> {
-  // Use git to compare the two directories
-  const gitCmd = new Deno.Command("git", {
-    args: [
-      "diff",
-      "--name-status",
-      "--no-index",
-      currentPath,
-      workspacePath,
-    ],
-    stdout: "piped",
-    stderr: "piped",
-    cwd: currentPath,
-  });
-
-  try {
-    const result = await gitCmd.output();
-    const output = new TextDecoder().decode(result.stdout);
-    const lines = output.trim().split("\n").filter((line) => line.length > 0);
-
-    if (lines.length === 0 && !onlyChanged) {
-      return 0;
-    }
-
-    let changes = 0;
-    for (const line of lines) {
-      const [status, ...fileParts] = line.split("\t");
-      const filePath = fileParts.join("\t");
-
-      if (format === "long") {
-        ui.output(`   ${status} ${filePath}`);
-      } else {
-        ui.output(`   ${status} ${filePath}`);
-      }
-      changes++;
-    }
-
-    return changes;
-  } catch (error) {
-    logger.warn(`Git diff failed, falling back to file comparison: ${error}`);
-    return await fileDiffComparison(
-      workspaceName,
-      workspacePath,
-      currentPath,
-      format,
-      onlyChanged,
-      [],
-    );
   }
 }
 
