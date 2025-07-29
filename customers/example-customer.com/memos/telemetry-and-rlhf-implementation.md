@@ -120,6 +120,8 @@ The RLHF interface will:
 
 ### Phase 1: Backend Setup
 
+#### Tasks:
+
 - [ ] Create invoice extraction deck at
       `/workspace/customers/example-customer.com/decks/invoice-extraction-rlhf.deck.md`
 - [ ] Create accuracy grader at
@@ -129,18 +131,121 @@ The RLHF interface will:
 - [ ] Configure bolt-foundry SDK to use existing telemetry endpoint
 - [ ] Add `submitFeedback` mutation to BfSampleFeedback.ts
 
+#### Tests for Phase 1:
+
+**Test for submitFeedback Score Validation**
+
+```typescript
+// File: /workspace/apps/bfDb/nodeTypes/rlhf/__tests__/BfSampleFeedback.test.ts
+
+// Score validation is already tested in the existing BfSampleFeedback.test.ts
+// The mutation itself is simple enough that unit tests suffice
+```
+
+**Test for BfDeck.submitSample Method**
+
+```typescript
+// File: /workspace/apps/bfDb/nodeTypes/rlhf/__tests__/BfDeck.test.ts
+
+Deno.test("BfDeck.submitSample creates sample linked to deck", async () => {
+  // Setup: Create deck
+  // Test: Call deck.submitSample() with completion data
+  // Verify: Sample is created and linked to deck
+  // Verify: completionData is stored correctly
+  // Verify: collectionMethod is set
+});
+
+Deno.test("BfDeck.submitSample triggers async grading", async () => {
+  // Setup: Create deck with graders
+  // Test: Submit sample
+  // Verify: Grading job is queued (mock the queue)
+  // Future: Verify grader results are created
+});
+```
+
 ### Phase 2: Sample Integration
+
+#### Tasks:
 
 - [ ] Use existing BfSample.completionData JSON field for invoice data
 - [ ] Telemetry handler creates samples via deck metadata
 - [ ] Link samples to deck using existing edge relationships
+- [ ] Update SDK to support bfMetadata collection
+
+#### Tests for Phase 2:
+
+**Test for SDK bfMetadata Support**
+
+```typescript
+// File: /workspace/packages/bolt-foundry/__tests__/BfClient.test.ts
+
+Deno.test("BfClient includes bfMetadata when enabled globally", async () => {
+  // Setup: Create client with includeBfMetadata: true
+  // Test: Make a fetch call with deck render that includes bfMetadata
+  // Verify: Telemetry includes bfMetadata
+});
+
+Deno.test("BfClient respects per-render bfMetadata override", async () => {
+  // Setup: Client with includeBfMetadata: true
+  // Test: Render with includeBfMetadata: false
+  // Verify: No bfMetadata in telemetry
+});
+
+Deno.test("Deck.render includes bfMetadata when requested", async () => {
+  // Test: deck.render({}, { includeBfMetadata: true })
+  // Verify: Output includes bfMetadata with deckName, deckPath, contextVariables
+});
+```
+
+**Test for Telemetry Handler with bfMetadata**
+
+```typescript
+// File: /workspace/apps/boltfoundry-com/handlers/__tests__/telemetry.test.ts
+
+Deno.test("Telemetry handler creates deck from bfMetadata", async () => {
+  // Setup: Mock telemetry data with bfMetadata
+  // Test: POST to /api/telemetry
+  // Verify: Deck is created/found with correct name and content
+  // Verify: Sample is linked to deck
+});
+
+Deno.test("Telemetry handler handles missing bfMetadata gracefully", async () => {
+  // Test: POST without bfMetadata
+  // Verify: Sample is created without deck linkage
+});
+```
 
 ### Phase 3: UI Customization
+
+#### Tasks:
 
 - [ ] Create generic GroundTruthView component for any extraction type
 - [ ] Display data in a flexible format that adapts to content structure
 - [ ] Show source content (invoice markdown) alongside extracted data
 - [ ] Integrate with existing RLHF feedback form
+
+#### Tests for Phase 3:
+
+- UI component tests will be added as components are developed
+- Follow existing Isograph component testing patterns
+
+### Phase 4: Integration Testing
+
+#### Integration Test for Invoice Extraction Flow
+
+```typescript
+// File: /workspace/customers/example-customer.com/__tests__/invoice-extraction.integration.test.ts
+
+Deno.test("Invoice extraction RLHF complete flow", async () => {
+  // 1. Create invoice extraction deck and grader
+  // 2. Submit invoice sample via SDK
+  // 3. Verify sample is created with proper format
+  // 4. Submit human feedback
+  // 5. Verify feedback is stored
+  // 6. Run grader (manual trigger)
+  // 7. Compare grader result with human feedback
+});
+```
 
 ## Technical Decisions
 
