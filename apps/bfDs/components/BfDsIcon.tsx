@@ -12,12 +12,12 @@ type AliasNames = {
 }[BaseIconNames];
 
 export type BfDsIconName = BaseIconNames | AliasNames;
-export type BfDsIconSize = "small" | "medium" | "large" | "xlarge";
+export type BfDsIconSize = "small" | "medium" | "large" | "xlarge" | number;
 
 export type BfDsIconProps = {
   /** Name of the icon to display */
   name: BfDsIconName;
-  /** Size variant for icon */
+  /** Size variant for icon (predefined string or number in pixels) */
   size?: BfDsIconSize;
   /** Custom color override */
   color?: string;
@@ -53,11 +53,17 @@ export function BfDsIcon({
     return null;
   }
 
+  // Handle numeric size or predefined size
+  const isNumericSize = typeof size === "number";
   const classes = [
     "bfds-icon",
-    `bfds-icon--${size}`,
+    !isNumericSize && `bfds-icon--${size}`,
     className,
   ].filter(Boolean).join(" ");
+
+  const sizeStyle = isNumericSize
+    ? { width: `${size}px`, height: `${size}px` }
+    : {};
 
   return (
     <svg
@@ -67,6 +73,7 @@ export function BfDsIcon({
       fill={color || "currentColor"}
       xmlns="http://www.w3.org/2000/svg"
       style={{
+        ...sizeStyle,
         ...(color && { fill: color }),
         ...props.style,
       }}

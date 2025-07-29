@@ -4,7 +4,7 @@ import { AnalyzeView } from "../Analyze/AnalyzeView.tsx";
 import { ChatView } from "../Chat/ChatView.tsx";
 
 export function MainContent() {
-  const { activeMainContent } = useEvalContext();
+  const { activeMainContent, rightSidebarMode } = useEvalContext();
 
   const renderMainContent = () => {
     switch (activeMainContent) {
@@ -20,7 +20,11 @@ export function MainContent() {
   };
 
   return (
-    <div className="eval-main-area">
+    <div
+      className={`eval-main-area ${
+        rightSidebarMode === "grading" ? "eval-main-area--compressed" : ""
+      }`}
+    >
       <div
         className={`eval-main-content ${
           activeMainContent === "Chat" ? "chat-active" : ""
