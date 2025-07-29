@@ -1,8 +1,9 @@
 # Asset Hosting Implementation Plan
 
 **Date:** 2025-07-23\
-**Status:** Planning\
-**Priority:** High
+**Status:** Implemented\
+**Priority:** High\
+**Last Updated:** 2025-07-29
 
 ## Overview
 
@@ -558,4 +559,116 @@ The infrastructure will be deployed automatically via existing workflows:
 # For S3 access (obtain from Hetzner Cloud Console after bucket creation)
 S3_ACCESS_KEY=your-hetzner-s3-access-key
 S3_SECRET_KEY=your-hetzner-s3-secret-key
+
+# Optional (defaults provided in implementation)
+ASSET_STORAGE_REGION=hel1
+ASSET_STORAGE_HOST=https://hel1.your-objectstorage.com
+ASSET_STORAGE_BUCKET=bolt-foundry-assets
 ```
+
+## Implementation Status
+
+### ✅ Completed (as of 2025-07-29)
+
+1. **Infrastructure Setup**
+   - Hetzner S3 bucket configured via Terraform
+   - bltcdn.com DNS configured with Cloudflare proxy
+   - Public read access and CORS policies in place
+
+2. **Asset Upload Tool**
+   - `bft asset-upload` command fully implemented
+   - Content hashing for deduplication (SHA-256, first 8 chars)
+   - Duplicate detection to avoid re-uploads
+   - MIME type detection based on file extension
+   - Batch upload support for multiple files
+   - AWS v4 signature authentication
+
+3. **Developer Experience**
+   - Simple CLI: `bft asset-upload image.jpg`
+   - Returns CDN URL: `https://bltcdn.com/assets/{hash}/{filename}`
+   - Verbose mode for debugging: `--verbose` or `-v`
+   - Help documentation: `--help` or `-h`
+   - AI-safe command (marked as `aiSafe: true`)
+
+4. **Test Coverage**
+   - Unit tests implemented in
+     `/workspace/infra/bft/tasks/__tests__/asset-upload.test.ts`
+   - Mock S3 client for testing upload functionality
+   - Hash calculation and URL generation tests
+
+### 🚧 In Progress / Planned
+
+1. **E2E Test Integration**
+   - Existing E2E test infrastructure captures screenshots/videos to `tmp/`
+     directories
+   - Planned enhancement from memo (2025-07-21): Auto-upload test artifacts
+     during commit workflow
+   - Vision: `[demo:*]` tags in commits would trigger E2E tests and embed media
+     URLs in commit messages
+   - Current status: Manual process - developers need to run `bft asset-upload`
+     on test artifacts
+
+2. **Commit Workflow Enhancement**
+   - Plan exists to integrate asset uploads into `bft commit` workflow
+   - Would automatically:
+     - Run relevant E2E tests based on changed files
+     - Upload generated screenshots/videos
+     - Embed media URLs in commit message test plans
+   - Example future test plan format:
+     ```markdown
+     Test plan:
+
+     1. Run app with `bft devTools`
+     2. Navigate to dashboard
+     3. Create new feedback item
+        ![Demo video](https://bltcdn.com/assets/abc123/create-feedback-demo.mp4)
+     ```
+
+3. **Future Enhancements**
+   - Asset optimization pipeline (image resizing, WebP conversion)
+   - Video transcoding for multiple formats
+   - Web-based upload interface
+   - Asset management dashboard
+
+### Usage Examples
+
+**Upload single file:**
+
+```bash
+bft asset-upload hero-image.jpg
+# Output: https://bltcdn.com/assets/a1b2c3d4/hero-image.jpg
+```
+
+**Upload multiple files:**
+
+```bash
+bft asset-upload *.png *.jpg
+# Output: 
+# https://bltcdn.com/assets/a1b2c3d4/image1.png
+# https://bltcdn.com/assets/e5f6g7h8/image2.jpg
+```
+
+**Upload with verbose output:**
+
+```bash
+bft asset-upload screenshot.png --verbose
+# Processing: screenshot.png
+#   Hash: a1b2c3d4
+#   Size: 123456 bytes
+#   Uploading to S3...
+#   Upload complete
+# https://bltcdn.com/assets/a1b2c3d4/screenshot.png
+```
+
+**Upload E2E test artifacts:**
+
+```bash
+# After running E2E tests
+bft asset-upload tmp/screenshots/*.png tmp/videos/*.mp4
+```
+
+### Migration Status
+
+- Static assets can now be uploaded to CDN instead of checked into repository
+- No bulk migration of existing `/static/` assets completed yet
+- New assets should use the CDN going forward
