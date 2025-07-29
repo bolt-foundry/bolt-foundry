@@ -75,3 +75,42 @@ Deno.test("collects relations with cardinality", () => {
 
   assertEquals(relations.bestFriend.cardinality, "one");
 });
+
+/* -------------------------------------------------------------------------- */
+/*  3. Spec with enum fields                                                  */
+/* -------------------------------------------------------------------------- */
+
+// deno-lint-ignore ban-types
+const WithEnumSpec = makeBfDbSpec((f: FieldBuilder<{}, {}>) =>
+  f
+    .string("name")
+    .enum("status", ["pending", "active", "completed"] as const)
+    .enum("role", ["admin", "user", "guest"] as const)
+);
+
+/* compile-time assertions */
+type EnumFieldMap = typeof WithEnumSpec.fields;
+type EnumExpected = {
+  name: { kind: "string" };
+  status: { kind: "enum"; values: readonly ["pending", "active", "completed"] };
+  role: { kind: "enum"; values: readonly ["admin", "user", "guest"] };
+};
+const _enumCheck: EnumExpected = {} as EnumFieldMap;
+
+/* props type inference */
+type EnumProps = PropsFromFieldSpec<EnumFieldMap>;
+const _okEnum: EnumProps = { name: "Test", status: "active", role: "admin" };
+// @ts-expect-error invalid enum value
+const _notOkEnum: EnumProps = {
+  name: "Test",
+  status: "invalid",
+  role: "admin",
+};
+
+Deno.test("collects enum fields", () => {
+  assertEquals(WithEnumSpec.fields, {
+    name: { kind: "string" },
+    status: { kind: "enum", values: ["pending", "active", "completed"] },
+    role: { kind: "enum", values: ["admin", "user", "guest"] },
+  });
+});

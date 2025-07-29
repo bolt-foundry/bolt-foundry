@@ -627,6 +627,21 @@ export abstract class BfNode<TProps extends PropsBase = {}>
     );
   }
 
-  protected beforeCreate(): Promise<void> | void {}
+  protected beforeCreate(): Promise<void> | void {
+    // Validate enum fields
+    const spec = (this.constructor as typeof BfNode).bfNodeSpec;
+
+    for (const [fieldName, fieldSpec] of Object.entries(spec.fields)) {
+      if (fieldSpec.kind === "enum" && this._props[fieldName] !== undefined) {
+        const value = this._props[fieldName];
+        if (!fieldSpec.values.includes(value as string)) {
+          throw new Error(
+            `Invalid enum value "${value}" for field "${fieldName}". ` +
+              `Valid values: ${fieldSpec.values.join(", ")}`,
+          );
+        }
+      }
+    }
+  }
   protected afterCreate(): Promise<void> | void {}
 }

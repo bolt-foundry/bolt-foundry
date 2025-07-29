@@ -34,6 +34,11 @@ export type FieldBuilder<
     name: N,
   ): FieldBuilder<F & { [K in N]: { kind: "json" } }, R>;
 
+  enum<N extends string, const V extends readonly Array<string>>(
+    name: N,
+    values: V,
+  ): FieldBuilder<F & { [K in N]: { kind: "enum"; values: V } }, R>;
+
   one: RelationAdder<"out", "one", F, R>;
 
   readonly _spec: { fields: F; relations: R };
@@ -96,6 +101,15 @@ export function makeFieldBuilder<
   const json = <N extends string>(name: N) =>
     next({ ...out, fields: { ...out.fields, [name]: { kind: "json" } } });
 
+  const enumField = <N extends string, const V extends readonly Array<string>>(
+    name: N,
+    values: V,
+  ) =>
+    next({
+      ...out,
+      fields: { ...out.fields, [name]: { kind: "enum", values } },
+    });
+
   const addRel =
     <D extends Direction, C extends Cardinality>(direction: D, card: C) =>
     <
@@ -133,6 +147,7 @@ export function makeFieldBuilder<
     string,
     number,
     json,
+    enum: enumField,
     one: addRel("out", "one"),
     _spec: out,
   } as FieldBuilder<F, R>;
