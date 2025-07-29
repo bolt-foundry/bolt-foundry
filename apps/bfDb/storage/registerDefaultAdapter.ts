@@ -14,6 +14,10 @@ const logger = getLogger(import.meta);
 
 let registered = false; // guard so we don't double‑register accidentally
 
+export function resetRegistration() {
+  registered = false;
+}
+
 export function registerDefaultAdapter() {
   if (registered) return; // idempotent
 
@@ -25,7 +29,8 @@ export function registerDefaultAdapter() {
     // fallthrough – nothing registered yet
   }
 
-  const env = getConfigurationVariable("DB_BACKEND_TYPE")?.toLowerCase() ??
+  const env = (getConfigurationVariable("FORCE_DB_BACKEND")?.toLowerCase() ||
+    getConfigurationVariable("DB_BACKEND_TYPE")?.toLowerCase()) ??
     "memory";
   logger.info(`registerDefaultAdapter → selecting '${env}' backend`);
 

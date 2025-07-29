@@ -12,9 +12,9 @@ export const guiCommand: Command = {
   run: async (args: Array<string>) => {
     const flags = parseArgs(args, {
       boolean: ["dev", "build", "no-open", "help"],
-      string: ["port"],
+      string: ["port", "conversations-dir"],
       default: {
-        port: "3000",
+        port: "4000",
       },
     });
 
@@ -24,16 +24,18 @@ export const guiCommand: Command = {
 Launch the aibff GUI web interface
 
 Options:
-  --dev        Run in development mode with Vite HMR
-  --build      Build GUI assets without starting server
-  --port       Specify server port (default: 3000)
-  --no-open    Don't auto-open browser on startup
-  --help       Show this help message
+  --dev              Run in development mode with Vite HMR
+  --build            Build GUI assets without starting server
+  --port             Specify server port (default: 3000)
+  --conversations-dir Specify directory for storing conversations (default: ./aibff-conversations)
+  --no-open          Don't auto-open browser on startup
+  --help             Show this help message
 
 Examples:
-  aibff gui                    # Run GUI server
-  aibff gui --port 4000        # Run on port 4000
-  aibff gui --dev              # Run in development mode`);
+  aibff gui                                    # Run GUI server
+  aibff gui --port 4000                        # Run on port 4000
+  aibff gui --dev                              # Run in development mode
+  aibff gui --conversations-dir ./tmp/convos   # Store conversations in custom directory`);
       return;
     }
 
@@ -94,6 +96,10 @@ Examples:
         cwd: guiPath,
         stdout: "inherit",
         stderr: "inherit",
+        env: {
+          ...Deno.env.toObject(),
+          VITE_HMR_PORT: (vitePort + 1).toString(),
+        },
       });
 
       viteProcess = viteCommand.spawn();
@@ -117,6 +123,15 @@ Examples:
     // In dev mode, also pass the vite port for proxying
     if (flags.dev) {
       serverArgs.push("--vite-port", vitePort.toString());
+    }
+
+    // Pass conversations directory if specified (resolve relative paths here)
+    if (flags["conversations-dir"]) {
+      const conversationsDir = flags["conversations-dir"].startsWith("/")
+        ? flags["conversations-dir"] // Already absolute
+        : new URL(flags["conversations-dir"], `file://${Deno.cwd()}/`).pathname; // Resolve relative to current working directory
+
+      serverArgs.push("--conversations-dir", conversationsDir);
     }
 
     const serverCommand = new Deno.Command(guiServerPath, {

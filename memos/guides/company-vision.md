@@ -2,137 +2,158 @@
 
 ## Mission
 
-**Make LLM development as reliable and maintainable as traditional software
-engineering.**
+**Make AI systems continuously improve through customer feedback, creating
+reliable, customer-centric AI that gets better every day.**
 
 ## The problem we're solving
 
-Today's LLM development reflects earlier ages of programming. Developers write
-prompts as text strings instead of composing them from structured cards... the
-equivalent of writing SQL queries by hand instead of using an ORM, or building
-HTML by concatenating strings instead of using components.
+Today's AI systems are built and deployed without meaningful connection to
+customer feedback. Companies launch AI features, get complaints, and struggle to
+translate customer dissatisfaction into systematic improvements... the
+equivalent of building software without analytics, user testing, or iterative
+design.
 
 This creates four problems:
 
-- **Unreliable systems**: One small change breaks two other things
-- **Unmaintainable code**: No structure, no reusability, no clear interfaces
-- **Untestable components**: Can't verify individual pieces work correctly
-- **Scaling challenges**: Each new use case starts from scratch
+- **Disconnected systems**: AI behavior doesn't reflect actual customer needs
+- **Unmeasurable impact**: No clear connection between AI changes and customer
+  satisfaction
+- **Untestable improvements**: Can't verify if changes actually help customers
+- **Scaling challenges**: Each customer complaint requires manual investigation
+  and custom fixes
 
-LLM applications deserve the same engineering rigor as any other software
-system.
+AI applications deserve the same customer-centric improvement cycles as any
+other customer-facing system.
 
 ## Why we're working on this
 
 Our team has been building together for 7+ years, from our first company
 Vidpresso (acquired by Facebook) through Content Foundry and now Bolt Foundry.
-We discovered a consistent pattern: it's easy to build impressive LLM demos, but
-hard to scale them into reliable, repeatable systems.
+We discovered a consistent pattern: it's easy to build impressive AI demos, but
+hard to scale them into systems that truly serve customers well.
 
 Our team combines journalism, content creation, and technical expertise. The
-same principles that make great content (inverted pyramid, active voice, clear
-structure) make LLMs perform reliably.
+same principles that make great content (understanding your audience, clear
+structure, iterative improvement) make AI systems serve customers reliably.
 
-The timing is perfect. LLM model improvements have plateaued since GPT-4, but
-inference-side optimization is wide open. Most companies accept "good enough"
-reliability, but the ones who achieve 99% reliability will dominate their
-markets. We're building the infrastructure to make that possible.
+The timing is perfect. Model improvements have plateaued since GPT-4, but
+customer-driven improvement is wide open. Most companies accept "good enough"
+customer satisfaction, but the ones who achieve customer-driven AI excellence
+will dominate their markets. We're building the infrastructure to make that
+possible.
 
 _For the complete story of our journey and insights, see
 [Our Team Story](team-story.md)._
 
 ## Our vision
 
-**Bolt Foundry aims to be the operating system for LLMs**: the foundational
-infrastructure every LLM application needs for reliability, maintainability, and
-scale.
+**Bolt Foundry aims to be the customer success platform for AI**: the
+foundational infrastructure every AI application needs for continuous
+improvement through customer feedback.
 
-Microsoft became the standard by making computing accessible. We're doing the
-same for LLM development. Our card system abstracts away prompt engineering
-complexity, making LLM development predictable and scalable.
+Salesforce became the standard by making customer relationships manageable.
+We're doing the same for AI customer success. Our RLHF workflow abstracts away
+feedback processing complexity, making AI improvement predictable and scalable.
 
 ## How we see the future
 
-### Today: The SQL era
+### Today: The deployment-and-hope era
 
-- Developers manually craft text prompts
-- Each prompt ignores writing fundamentals: attention, organization, voice,
-  tone, second person, inverted pyramid, active voice
-- Testing takes hours, longer than writing the prompt
-- Knowledge stays trapped in individual heads
-- No clear upgrade paths or versioning
+- Companies launch AI features without systematic feedback collection
+- Each customer complaint is handled manually and individually
+- Improvements are ad-hoc and don't leverage patterns across customers
+- Success is measured by technical metrics, not customer satisfaction
+- No clear path from feedback to systematic improvement
 
-### Near-term vision: The framework era
+### Near-term vision: The customer-driven improvement era
 
-- Developers compose prompts using semantic APIs built from reusable cards
-- Reusable components with clear interfaces
-- Unit testing for individual prompt components
-- Automated testing and validation
-- Shared libraries of proven card patterns
-- Seamless updates and A/B testing
+- Companies systematically collect and process customer feedback on AI
+  interactions
+- Automated evaluation spec generation from customer feedback patterns
+- Structured RLHF workflows that turn feedback into measurable improvements
+- Customer satisfaction directly drives AI system optimization
+- Shared libraries of proven customer success patterns
 
-### Long-term vision: The operating system era
+### Long-term vision: The customer success platform era
 
-- Intelligent prompt optimization
-- Real-time performance insights
-- Automated quality assurance
-- Enterprise-grade reliability and security
-- Developer ecosystem around structured assistant cards
+- Intelligent customer feedback processing and response optimization
+- Real-time customer satisfaction insights
+- Automated customer success quality assurance
+- Enterprise-grade customer-driven AI improvement
+- Ecosystem around customer-centric AI development
 
-### The card system
+### The RLHF workflow system
 
-Just like trading cards have structured attributes and clear rules for
-combination, our assistant cards provide:
+Just like customer success platforms have structured processes for turning
+feedback into improvements, our **customer feedback → evaluation specs →
+improved AI responses** workflow provides:
 
-- **Persona cards**: Define who the LLM should be (traits, constraints, voice)
-- **Behavior cards**: Define what the LLM should do (goals, steps, outputs)
-- **Composability**: Mix and match cards to create new capabilities
-- **Collectibility**: Share proven card patterns across teams
+- **Feedback collection**: Systematic capture of customer interactions and
+  satisfaction signals through integrated feedback processing
+- **Evaluation specs**: Automated generation of evaluation criteria from
+  customer feedback patterns and satisfaction metrics
+- **Response optimization**: Continuous improvement of AI responses based on
+  customer success outcomes and feedback analysis
+- **Success tracking**: Measurable outcomes connecting customer satisfaction to
+  AI improvements through closed-loop feedback integration
 
 ## Why this matters
 
-### For developers
+### For customer success teams
 
-- Build faster with reusable components
-- Unit test and validate prompt behavior at the component level
-- Update systems without breaking everything
-- Share and improve prompt patterns across teams
+- Transform customer feedback into systematic AI improvements through our
+  **customer feedback → evaluation specs → improved AI responses** workflow
+- Measure and track customer satisfaction with AI interactions using structured
+  feedback processing
+- Identify patterns in customer needs and optimize AI responses based on success
+  metrics
+- Build customer-centric AI that continuously improves through RLHF integration
 
 ### For companies
 
-- LLM applications that work consistently
-- Systems that grow with business needs
-- Optimize prompt performance automatically
-- Predictable behavior in production
+- AI systems that truly serve customers better over time through continuous
+  feedback integration
+- Measurable ROI from customer satisfaction improvements using our RLHF workflow
+- Competitive advantage through customer-driven AI excellence and systematic
+  improvement
+- Predictable customer success outcomes via the **customer feedback → evaluation
+  specs → improved AI responses** workflow
 
 ### For the industry
 
-- Make advanced LLM techniques accessible
-- Establish best practices and conventions
-- Free developers to focus on unique value, not infrastructure
-- Enable LLM adoption in mission-critical applications
+- Make customer-centric AI development accessible through standardized RLHF
+  workflows
+- Establish best practices for customer-driven AI improvement via the **customer
+  feedback → evaluation specs → improved AI responses** workflow
+- Free companies to focus on unique value, not building feedback processing
+  infrastructure from scratch
+- Enable AI adoption in customer-critical applications through reliable,
+  continuously improving systems
 
 ## Our principles
 
-### Engineering first
+### Customer success first
 
-Great LLM applications are built, not discovered. They require the same
-discipline, testing, and structure as any reliable software system.
+Great AI systems are customer-driven, not just technically sound. They require
+the same discipline, measurement, and iteration as any customer-facing system.
 
 Our approach centers on
-[improving inference through structured rigor](improving-inference-philosophy.md),
-giving developers control at runtime, not just hoping the model behaves
-correctly.
+[improving AI through customer feedback](improving-inference-philosophy.md),
+giving companies control over customer satisfaction through the **customer
+feedback → evaluation specs → improved AI responses** workflow, not just hoping
+the AI behaves correctly.
 
-### Developer experience
+### Customer success team experience
 
-Tools feel natural to developers. We prioritize clarity, composability, and
-familiar patterns over clever abstractions.
+Tools feel natural to customer success teams. We prioritize clarity,
+measurability, and familiar workflows over technical abstractions.
 
 ### Gradual adoption
 
-Developers shouldn't have to rewrite everything. Our tools provide migration
-paths from existing text prompts to structured systems.
+Companies shouldn't have to rebuild everything. Our tools provide migration
+paths from existing manual feedback processes to automated customer success
+workflows through the **customer feedback → evaluation specs → improved AI
+responses** workflow.
 
 ### Open foundation
 
@@ -143,22 +164,26 @@ silos.
 
 We'll know we're succeeding when:
 
-- Developers prefer structured prompts over text strings for new projects
-- LLM applications achieve web-scale reliability (99.9%+ uptime)
-- Prompt engineering becomes teachable through clear patterns, conventions, and
-  unit testing practices
-- Enterprise adoption accelerates due to predictable, maintainable systems
-- An ecosystem emerges of shared components and best practices
+- Companies prefer customer-driven AI improvement over manual feedback handling
+- AI systems achieve customer success-scale satisfaction (99%+ positive customer
+  feedback)
+- Customer success for AI becomes teachable through clear patterns, conventions,
+  and measurable outcomes
+- Enterprise adoption accelerates due to predictable, customer-centric systems
+- An ecosystem emerges of shared customer success patterns and best practices
 
 ## The world we're building
 
 We're working toward a world where:
 
-- Writing raw text prompts feels as archaic as programming in assembly language
-- LLM applications have the same reliability expectations as web applications
-- Companies deploy LLM systems confidently in production
-- The next generation of AI applications is built on structured, semantic
-  foundations
+- Deploying AI without customer feedback integration feels as archaic as
+  launching products without analytics
+- AI systems have the same customer satisfaction expectations as any
+  customer-facing application
+- Companies deploy AI systems confidently knowing they'll improve through
+  customer feedback
+- The next generation of AI applications is built on customer-centric,
+  continuously improving foundations
 
 **Bolt Foundry is building the tools to make this happen.**
 

@@ -10,6 +10,7 @@ import { insertContactSchema, updateContactSchema } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 import { apiKeyAuth } from "./middleware/auth";
+import { rateLimitMiddleware, recordValidationFailure, getRateLimitStatus } from "./middleware/rateLimiter";
 import { isVerified, setupAuth } from "./auth";
 import {
   getWaitlistEmailTemplate,
@@ -18,6 +19,7 @@ import {
   setWaitlistEmailEnabled,
   updateWaitlistEmailTemplate,
 } from "./services/email";
+import { sendDiscordNotification } from "./services/discord";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up authentication
@@ -69,7 +71,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Create new contact
-  apiRouter.post("/contacts", async (req: Request, res: Response) => {
+  apiRouter.post("/contacts", rateLimitMiddleware, async (req: Request, res: Response) => {
     try {
       console.log("POST /api/contacts request received");
       console.log("Request body:", JSON.stringify(req.body));
@@ -139,6 +141,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
             // Refresh the contact data to include the updated status
             const updatedContact = await storage.getContact(newContact.id);
             if (updatedContact) {
+              // Send Discord notification for new contact
+              try {
+                await sendDiscordNotification(updatedContact);
+              } catch (discordError) {
+                console.error("Error sending Discord notification:", discordError);
+                // Continue with the response, don't fail contact creation if Discord notification fails
+              }
+
               console.log(
                 `Successfully created contact with ID ${updatedContact.id} and sent welcome email`,
               );
@@ -155,6 +165,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
 
+      // Send Discord notification for new contact (don't fail if it errors)
+      try {
+        await sendDiscordNotification(newContact);
+      } catch (discordError) {
+        console.error("Error sending Discord notification:", discordError);
+        // Continue with the response, don't fail contact creation if Discord notification fails
+      }
+
       console.log(`Successfully created contact with ID ${newContact.id}`);
       return res.status(201).json(newContact);
     } catch (error) {
@@ -164,6 +182,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           "Validation error creating contact:",
           validationError.message,
         );
+        // Record this as a validation failure for rate limiting
+        recordValidationFailure(req);
         return res.status(400).json({ message: validationError.message });
       }
       console.error("Error creating contact:", error);
@@ -225,6 +245,70 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Error updating contact:", error);
       return res.status(500).json({
         message: "Failed to update contact",
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  });
+
+  // Bulk delete contacts
+  apiRouter.delete("/contacts/bulk", rateLimitMiddleware, async (req: Request, res: Response) => {
+    try {
+      console.log("DELETE /api/contacts/bulk request received");
+      console.log("Request body:", JSON.stringify(req.body));
+
+      const { ids } = req.body;
+
+      // Validate the request
+      if (!Array.isArray(ids) || ids.length === 0) {
+        console.error("Invalid bulk delete request: ids must be a non-empty array");
+        return res.status(400).json({ message: "ids must be a non-empty array" });
+      }
+
+      if (ids.some(id => typeof id !== "number" || isNaN(id))) {
+        console.error("Invalid bulk delete request: all ids must be valid numbers");
+        return res.status(400).json({ message: "All ids must be valid numbers" });
+      }
+
+      console.log(`Bulk deleting ${ids.length} contacts: [${ids.join(", ")}]`);
+
+      const deletePromises = ids.map(async (id: number) => {
+        try {
+          const contact = await storage.getContact(id);
+          if (!contact) {
+            console.warn(`Contact with ID ${id} not found during bulk delete`);
+            return { id, success: false, error: "Contact not found" };
+          }
+
+          const result = await storage.deleteContact(id);
+          if (result) {
+            console.log(`Successfully deleted contact ${id}`);
+            return { id, success: true };
+          } else {
+            console.error(`Failed to delete contact ${id} - database operation did not affect any rows`);
+            return { id, success: false, error: "Database operation failed" };
+          }
+        } catch (error) {
+          console.error(`Error deleting contact ${id}:`, error);
+          return { id, success: false, error: error instanceof Error ? error.message : String(error) };
+        }
+      });
+
+      const results = await Promise.all(deletePromises);
+      const successful = results.filter(r => r.success);
+      const failed = results.filter(r => !r.success);
+
+      console.log(`Bulk delete completed: ${successful.length} successful, ${failed.length} failed`);
+
+      return res.status(200).json({
+        message: `Bulk delete completed: ${successful.length} successful, ${failed.length} failed`,
+        successful: successful.length,
+        failed: failed.length,
+        results: results
+      });
+    } catch (error) {
+      console.error("Error in bulk delete:", error);
+      return res.status(500).json({
+        message: "Failed to bulk delete contacts",
         error: error instanceof Error ? error.message : String(error),
       });
     }
@@ -447,6 +531,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Error sending email to contact:", error);
       return res.status(500).json({
         message: "Failed to send email to contact",
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  });
+
+  // Debug endpoint to monitor rate limiting status
+  apiRouter.get("/rate-limit-status", (req: Request, res: Response) => {
+    try {
+      const status = getRateLimitStatus();
+      const now = Date.now();
+      
+      const formattedStatus = status.map(({ ip, entry }) => ({
+        ip,
+        failureCount: entry.failureCount,
+        firstFailure: new Date(entry.firstFailure).toISOString(),
+        isBlocked: entry.blockedUntil ? now < entry.blockedUntil : false,
+        blockedUntil: entry.blockedUntil ? new Date(entry.blockedUntil).toISOString() : null,
+        remainingBlockMinutes: entry.blockedUntil && now < entry.blockedUntil 
+          ? Math.ceil((entry.blockedUntil - now) / 1000 / 60) 
+          : null
+      }));
+
+      return res.json({
+        totalTrackedIPs: formattedStatus.length,
+        blockedIPs: formattedStatus.filter(s => s.isBlocked).length,
+        entries: formattedStatus
+      });
+    } catch (error) {
+      console.error("Error getting rate limit status:", error);
+      return res.status(500).json({
+        message: "Failed to get rate limit status",
         error: error instanceof Error ? error.message : String(error),
       });
     }

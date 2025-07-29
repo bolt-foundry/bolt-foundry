@@ -97,17 +97,33 @@ async function main(): Promise<number> {
     return 0;
   }
 
-  const commandName = args[0];
-  const commandArgs = args.slice(1);
+  // Handle "requestApproval" subcommand
+  let commandName: string;
+  let commandArgs: Array<string>;
+
+  if (args[0] === "requestApproval") {
+    if (args.length < 2) {
+      ui.error("Usage: bft requestApproval <command> [arguments...]");
+      ui.error("The requestApproval flag allows running AI-unsafe commands");
+      return 1;
+    }
+    commandName = args[1];
+    commandArgs = args.slice(2);
+  } else {
+    commandName = args[0];
+    commandArgs = args.slice(1);
+  }
 
   // Look up the command
   const task = taskMap.get(commandName);
 
   if (!task) {
     ui.error(`Unknown command: ${commandName}`);
-    ui.error(`Run 'bft --help' for available commands`);
+    ui.error(`Run 'bft help' for available commands`);
     return 1;
   }
+
+  // AI safety is now handled by hooks, not by BFT framework
 
   // Execute the command
   try {

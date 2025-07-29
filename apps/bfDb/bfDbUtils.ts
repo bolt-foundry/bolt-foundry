@@ -69,7 +69,7 @@ export async function upsertBfDb() {
     "class_name",
   ];
   for (const index of indexes) {
-    await sql(`CREATE INDEX IF NOT EXISTS idx_${index} ON bfdb(${index})`);
+    await sql`CREATE INDEX IF NOT EXISTS idx_${index} ON bfdb(${index})`;
   }
   logger.info("Indexes upserted", indexes);
 

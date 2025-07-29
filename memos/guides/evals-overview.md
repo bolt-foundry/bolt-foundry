@@ -23,13 +23,13 @@ across multiple underlying base models.
 Set your `OPENROUTER_API_KEY` environment variable.
 
 ```bash
-aibff calibrate --help
+aibft calibrate --help
 ```
 
 Run evaluation with sample data:
 
 ```bash
-npx bff-eval --input examples/json-validator/samples.jsonl \
+npx bft-eval --input examples/json-validator/samples.jsonl \
          --grader examples/json-validator/grader.js
 ```
 
@@ -38,16 +38,18 @@ npx bff-eval --input examples/json-validator/samples.jsonl \
 Provide input data as a file in JSONL format.
 
 ```jsonl
-{"userMessage": "Extract user info from: 'John Doe, 30, NYC'", "assistantResponse": "{\"name\":\"John Doe\",\"age\":30,\"city\":\"NYC\"}"}
-{"userMessage": "Parse address: '123 Main St'", "assistantResponse": "{\"street\":\"123 Main St\"}"}
+{"messages": [{"role": "user", "content": "Extract user info from: 'John Doe, 30, NYC'"}, {"role": "assistant", "content": "{\"name\":\"John Doe\",\"age\":30,\"city\":\"NYC\"}"}]}
+{"messages": [{"role": "user", "content": "Parse address: '123 Main St'"}, {"role": "assistant", "content": "{\"street\":\"123 Main St\"}"}]}
 ```
 
 The types for the input data are:
 
 ```typescript
 type Sample = {
-  userMessage: string;
-  assistantResponse: string;
+  messages: Array<{
+    role: string;
+    content: string;
+  }>;
   id?: string;
   score?: number; // Optional: expected score for meta-evaluation (-3 to 3)
   metadata?: Record<string, unknown>; // your custom metadata to forward along to the reporter
@@ -106,7 +108,7 @@ export default makeGraderDeckBuilder("json-validator")
   );
 
 // Note: The makeGraderDeckBuilder automatically:
-// - Appends evaluation context (userMessage, assistantResponse, expected)
+// - Appends evaluation context (messages array, expected)
 // - Adds output format requirements (JSON with score and notes)
 // - Handles all the boilerplate for grader evaluation
 ```
@@ -116,8 +118,8 @@ export default makeGraderDeckBuilder("json-validator")
 Specify the model to use for evaluation using the `--model` flag:
 
 ```bash
-aibff calibrate --input data.jsonl --grader grader.ts --model openai/gpt-4o  # Default
-aibff calibrate --input data.jsonl --grader grader.ts --model anthropic/claude-3-opus
+aibft calibrate --input data.jsonl --grader grader.ts --model openai/gpt-4o  # Default
+aibft calibrate --input data.jsonl --grader grader.ts --model anthropic/claude-3-opus
 ```
 
 The evaluation uses OpenRouter API, so any model available on OpenRouter can be
@@ -176,9 +178,9 @@ against expected scores. This calibration feature helps you:
 Include a `score` field in your input samples:
 
 ```jsonl
-{"userMessage": "Extract: name=John", "assistantResponse": "{\"name\":\"John\"}", "score": 3}
-{"userMessage": "Parse: color=red", "assistantResponse": "{'color': 'red'}", "score": 2}
-{"userMessage": "Convert: email=test@test.com", "assistantResponse": "test@test.com", "score": -3}
+{"messages": [{"role": "user", "content": "Extract: name=John"}, {"role": "assistant", "content": "{\"name\":\"John\"}"}], "score": 3}
+{"messages": [{"role": "user", "content": "Parse: color=red"}, {"role": "assistant", "content": "{'color': 'red'}"}], "score": 2}
+{"messages": [{"role": "user", "content": "Convert: email=test@test.com"}, {"role": "assistant", "content": "test@test.com"}], "score": -3}
 ```
 
 ### Calibration Metrics

@@ -5,6 +5,7 @@ import { parseArgs } from "@std/cli";
 import { getLogger } from "@bolt-foundry/logger";
 import { createGraphQLServer } from "../commands/graphql-schema.ts";
 import { renderDeck } from "../index.ts";
+import { AibffConversation } from "@bfmono/apps/bfDb/nodeTypes/aibff/AibffConversation.ts";
 
 const logger = getLogger(import.meta);
 
@@ -20,13 +21,13 @@ interface ChatMessage {
 async function generateInitialMessage(): Promise<string> {
   // Load the assistant deck
   const deckPath = new URL(
-    import.meta.resolve("./decks/assistant.deck.md"),
+    import.meta.resolve("./decks/onboarding-actor.deck.md"),
   ).pathname;
 
   try {
     // Get the OpenAI request from renderDeck
     const openAiRequest = renderDeck(deckPath, {}, {
-      model: "gpt-4o-mini",
+      model: "openai/gpt-4o",
       stream: false,
     });
 
@@ -76,10 +77,11 @@ async function generateInitialMessage(): Promise<string> {
 
 // Parse command line arguments
 const flags = parseArgs(Deno.args, {
-  string: ["port", "mode", "vite-port"],
+  string: ["port", "mode", "vite-port", "conversations-dir"],
   default: {
-    port: "3000",
+    port: "4000",
     mode: "production",
+    "conversations-dir": undefined,
   },
 });
 
@@ -91,6 +93,16 @@ if (isNaN(port)) {
 
 const isDev = flags.mode === "development";
 const vitePort = flags["vite-port"] ? parseInt(flags["vite-port"]) : undefined;
+
+// Get conversations directory - either from flag (already resolved) or default to ./conversations
+const getConversationsDir = () => {
+  if (flags["conversations-dir"]) {
+    // Flag value is already resolved to absolute path by gui.ts
+    return flags["conversations-dir"];
+  }
+  // Default to ./aibff-conversations relative to the GUI directory
+  return new URL(import.meta.resolve("./aibff-conversations")).pathname;
+};
 
 // Create GraphQL server
 const graphQLServer = createGraphQLServer(isDev);
@@ -164,67 +176,15 @@ const routes = [
       }
 
       try {
-        const filename = `conversations/${conversationId}.md`;
-        const markdown = await Deno.readTextFile(filename);
-
-        // Parse the markdown to extract messages
-        const lines = markdown.split("\n");
-        const messages: Array<ChatMessage> = [];
-        let currentMessage: ChatMessage | null = null;
-        let inFrontmatter = false;
-
-        for (let i = 0; i < lines.length; i++) {
-          const line = lines[i];
-
-          // Skip frontmatter
-          if (line === "+++") {
-            inFrontmatter = !inFrontmatter;
-            continue;
-          }
-          if (inFrontmatter) continue;
-
-          // Check for message headers
-          if (line.startsWith("## User") || line.startsWith("## Assistant")) {
-            // Save previous message if exists
-            if (currentMessage) {
-              messages.push(currentMessage);
-            }
-
-            // Start new message
-            const role = line.includes("User") ? "user" : "assistant";
-            const timestampLine = lines[i + 1];
-            const timestamp = timestampLine?.match(/_(.+)_/)?.[1] || "";
-
-            currentMessage = {
-              id: `msg-${i}`,
-              role,
-              timestamp,
-              content: "",
-            };
-
-            i++; // Skip timestamp line
-          } else if (currentMessage && line.trim()) {
-            // Add content to current message
-            currentMessage.content += (currentMessage.content ? "\n" : "") +
-              line;
-          }
-        }
-
-        // Don't forget the last message
-        if (currentMessage) {
-          messages.push(currentMessage);
-        }
-
-        // Clean up content
-        messages.forEach((msg) => {
-          msg.content = msg.content.trim();
-        });
+        // Try to load existing conversation
+        const conversation = await AibffConversation.load(conversationId);
+        const messages = conversation.getMessages();
 
         return new Response(JSON.stringify({ conversationId, messages }), {
           headers: { "Content-Type": "application/json" },
         });
       } catch (error) {
-        if (error instanceof Deno.errors.NotFound) {
+        if (error instanceof Error && error.message.includes("not found")) {
           // Check if this is a newly created conversation ID
           if (
             conversationId.startsWith("conv-") &&
@@ -240,42 +200,19 @@ const routes = [
                 const initialContent = await generateInitialMessage();
 
                 // Create initial conversation with generated greeting
-                const initialMessages = [{
+                const conversation = new AibffConversation(conversationId);
+                conversation.addMessage({
                   id: "1",
                   role: "assistant",
                   content: initialContent,
                   timestamp: new Date().toISOString(),
-                }];
+                });
+                await conversation.save();
 
-                // Save the initial conversation
-                const conversationsDir = "conversations";
-                try {
-                  await Deno.mkdir(conversationsDir, { recursive: true });
-                } catch {
-                  // Directory might already exist
-                }
-
-                const frontmatter = `+++
-id = "${conversationId}"
-created_at = "${new Date().toISOString()}"
-updated_at = "${new Date().toISOString()}"
-+++`;
-
-                const markdownContent = initialMessages.map((msg) => {
-                  const role = msg.role === "user" ? "User" : "Assistant";
-                  return `## ${role}
-_${msg.timestamp}_
-
-${msg.content}`;
-                }).join("\n\n");
-
-                const fullContent =
-                  `${frontmatter}\n\n# Conversation ${conversationId}\n\n${markdownContent}`;
-                const filename = `${conversationsDir}/${conversationId}.md`;
-                await Deno.writeTextFile(filename, fullContent);
+                const messages = conversation.getMessages();
 
                 return new Response(
-                  JSON.stringify({ conversationId, messages: initialMessages }),
+                  JSON.stringify({ conversationId, messages }),
                   {
                     headers: { "Content-Type": "application/json" },
                   },
@@ -294,19 +231,65 @@ ${msg.content}`;
     pattern: new URLPattern({ pathname: "/api/chat/stream" }),
     handler: async (request: Request) => {
       // Parse the conversation from request body
-      const { messages, conversationId } = await request.json();
+      const { messages, conversationId, saveOnly } = await request.json();
+
+      // If this is just a save request, save the messages and return
+      if (saveOnly) {
+        if (!conversationId) {
+          return new Response("No conversation ID provided", { status: 400 });
+        }
+
+        try {
+          // Create a new conversation with the updated messages
+          // This effectively replaces all existing messages
+          const conversation = new AibffConversation(conversationId);
+
+          // Add all the messages from the frontend
+          for (const msg of messages) {
+            conversation.addMessage(msg);
+          }
+
+          // Save the conversation (this will overwrite the existing file)
+          await conversation.save();
+
+          logger.info(
+            `Saved ${messages.length} messages for conversation ${conversationId}`,
+          );
+
+          return new Response(JSON.stringify({ success: true }), {
+            headers: { "Content-Type": "application/json" },
+          });
+        } catch (error) {
+          logger.error("Failed to save messages:", error);
+          return new Response("Failed to save messages", { status: 500 });
+        }
+      }
 
       // Load the assistant deck
       const deckPath = new URL(
-        import.meta.resolve("./decks/assistant.deck.md"),
+        import.meta.resolve("./decks/onboarding-actor.deck.md"),
       ).pathname;
 
       try {
         // Get the OpenAI request from renderDeck to get the system message
-        const baseRequest = renderDeck(deckPath, {}, {
-          model: "gpt-4o-mini",
+        const baseRequest = await renderDeck(deckPath, {}, {
+          model: "openai/gpt-4o",
           stream: true,
         });
+
+        // Log if tools are included
+        if (baseRequest.tools) {
+          logger.debug(
+            `Including ${baseRequest.tools.length} tools in request:`,
+            baseRequest.tools.map((t) => t.function.name),
+          );
+          logger.debug(
+            "Tools detail:",
+            JSON.stringify(baseRequest.tools, null, 2),
+          );
+        } else {
+          logger.warn("No tools found in baseRequest!");
+        }
 
         // Combine the system message from renderDeck with our conversation messages
         const openAiRequest = {
@@ -330,6 +313,19 @@ ${msg.content}`;
           });
         }
 
+        const finalRequest = {
+          ...openAiRequest,
+          stream: true,
+        };
+
+        // Log the final request (excluding sensitive data)
+        logger.debug("Final request to OpenRouter:", {
+          model: (finalRequest as Record<string, unknown>).model,
+          messages: finalRequest.messages?.length,
+          tools: finalRequest.tools?.length,
+          stream: finalRequest.stream,
+        });
+
         const openRouterResponse = await fetch(
           "https://openrouter.ai/api/v1/chat/completions",
           {
@@ -340,10 +336,7 @@ ${msg.content}`;
               "HTTP-Referer": "https://github.com/boltfoundry/bolt-foundry",
               "X-Title": "aibff GUI",
             },
-            body: JSON.stringify({
-              ...openAiRequest,
-              stream: true,
-            }),
+            body: JSON.stringify(finalRequest),
           },
         );
 
@@ -351,42 +344,24 @@ ${msg.content}`;
           return new Response("Failed to get AI response", { status: 500 });
         }
 
-        // Helper function to save conversation
-        const saveConversation = async (messages: Array<ChatMessage>) => {
-          if (!conversationId) return;
+        // Load or create conversation
+        let conversation: AibffConversation;
+        try {
+          conversation = await AibffConversation.load(conversationId);
+        } catch {
+          // Create new conversation if it doesn't exist
+          conversation = new AibffConversation(conversationId);
+        }
 
-          const conversationsDir = "conversations";
-          try {
-            await Deno.mkdir(conversationsDir, { recursive: true });
-          } catch {
-            // Directory might already exist
+        // Add all messages to the conversation
+        for (const msg of messages) {
+          if (!conversation.getMessages().some((m) => m.id === msg.id)) {
+            conversation.addMessage(msg);
           }
-
-          // Create TOML frontmatter
-          const frontmatter = `+++
-id = "${conversationId}"
-created_at = "${messages[0]?.timestamp || new Date().toISOString()}"
-updated_at = "${new Date().toISOString()}"
-+++`;
-
-          // Create markdown content
-          const markdownContent = messages.map((msg) => {
-            const role = msg.role === "user" ? "User" : "Assistant";
-            return `## ${role}
-_${msg.timestamp || new Date().toISOString()}_
-
-${msg.content}`;
-          }).join("\n\n");
-
-          const fullContent =
-            `${frontmatter}\n\n# Conversation ${conversationId}\n\n${markdownContent}`;
-
-          const filename = `${conversationsDir}/${conversationId}.md`;
-          await Deno.writeTextFile(filename, fullContent);
-        };
+        }
 
         // Save the conversation with the user's message
-        await saveConversation(messages);
+        await conversation.save();
 
         // Create SSE stream
         const encoder = new TextEncoder();
@@ -411,14 +386,12 @@ ${msg.content}`;
                   if (line.startsWith("data: ")) {
                     const data = line.slice(6);
                     if (data === "[DONE]") {
-                      // Save the complete conversation with assistant's response
-                      const completeMessages = [...messages, {
-                        id: (Date.now() + 1).toString(),
+                      // Add the assistant's response and save
+                      conversation.addMessage({
                         role: "assistant",
                         content: assistantMessage,
-                        timestamp: new Date().toISOString(),
-                      }];
-                      await saveConversation(completeMessages);
+                      });
+                      await conversation.save();
 
                       controller.enqueue(
                         encoder.encode("event: done\ndata: {}\n\n"),
@@ -428,12 +401,28 @@ ${msg.content}`;
 
                     try {
                       const parsed = JSON.parse(data);
-                      const content = parsed.choices?.[0]?.delta?.content;
-                      if (content) {
-                        assistantMessage += content;
+                      const delta = parsed.choices?.[0]?.delta;
+
+                      // Handle content
+                      if (delta?.content) {
+                        assistantMessage += delta.content;
                         controller.enqueue(
                           encoder.encode(
-                            `data: ${JSON.stringify({ content })}\n\n`,
+                            `data: ${
+                              JSON.stringify({ content: delta.content })
+                            }\n\n`,
+                          ),
+                        );
+                      }
+
+                      // Handle tool calls
+                      if (delta?.tool_calls) {
+                        logger.debug("Received tool call:", delta.tool_calls);
+                        controller.enqueue(
+                          encoder.encode(
+                            `data: ${
+                              JSON.stringify({ tool_calls: delta.tool_calls })
+                            }\n\n`,
                           ),
                         );
                       }
@@ -470,6 +459,199 @@ ${msg.content}`;
       } catch (error) {
         logger.error("Chat stream error:", error);
         return new Response("Internal server error", { status: 500 });
+      }
+    },
+  },
+  {
+    pattern: new URLPattern({
+      pathname: "/api/conversations/:conversationId/save",
+    }),
+    handler: async (request: Request) => {
+      if (request.method !== "POST") {
+        return new Response("Method not allowed", { status: 405 });
+      }
+
+      const url = new URL(request.url);
+      const conversationId = url.pathname.split("/")[3]; // /api/conversations/{id}/save
+
+      if (!conversationId) {
+        return new Response("No conversation ID provided", { status: 400 });
+      }
+
+      try {
+        const saveData = await request.json();
+        const { inputSamples, actorDeck, graderDeck, groundTruth, notes } =
+          saveData;
+
+        // Create the conversation folder path
+        const conversationsPath = getConversationsDir();
+        const conversationFolder = `${conversationsPath}/${conversationId}`;
+
+        // Ensure conversations directory exists
+        try {
+          await Deno.mkdir(conversationsPath, { recursive: true });
+        } catch (error) {
+          if (!(error instanceof Deno.errors.AlreadyExists)) {
+            throw error;
+          }
+        }
+
+        // Ensure conversation folder exists
+        try {
+          await Deno.mkdir(conversationFolder, { recursive: true });
+        } catch (error) {
+          if (!(error instanceof Deno.errors.AlreadyExists)) {
+            throw error;
+          }
+        }
+
+        // Load the conversation to get the messages
+        let conversation: AibffConversation;
+        try {
+          conversation = await AibffConversation.load(conversationId);
+        } catch (error) {
+          logger.error("Failed to load conversation for saving:", error);
+          return new Response("Conversation not found", { status: 404 });
+        }
+
+        const messages = conversation.getMessages();
+
+        // Save conversation.md
+        const conversationMd = messages.map((msg) => {
+          const role = msg.role === "user" ? "User" : "Assistant";
+          return `## ${role}\n\n${msg.content}\n`;
+        }).join("\n");
+
+        await Deno.writeTextFile(
+          `${conversationFolder}/conversation.md`,
+          conversationMd,
+        );
+
+        // Save input-samples.jsonl
+        await Deno.writeTextFile(
+          `${conversationFolder}/input-samples.jsonl`,
+          inputSamples || "",
+        );
+
+        // Save actor-deck.md
+        await Deno.writeTextFile(
+          `${conversationFolder}/actor-deck.md`,
+          actorDeck || "",
+        );
+
+        // Save grader-deck.md
+        await Deno.writeTextFile(
+          `${conversationFolder}/grader-deck.md`,
+          graderDeck || "",
+        );
+
+        // Save ground-truth.deck.toml
+        await Deno.writeTextFile(
+          `${conversationFolder}/ground-truth.deck.toml`,
+          groundTruth || "",
+        );
+
+        // Save notes.md
+        await Deno.writeTextFile(`${conversationFolder}/notes.md`, notes || "");
+
+        logger.info(
+          `Saved conversation ${conversationId} to ${conversationFolder}`,
+        );
+
+        return new Response(
+          JSON.stringify({
+            success: true,
+            message: `Conversation saved to ${conversationFolder}`,
+            files: [
+              "conversation.md",
+              "input-samples.jsonl",
+              "actor-deck.md",
+              "grader-deck.md",
+              "ground-truth.deck.toml",
+              "notes.md",
+            ],
+          }),
+          {
+            headers: { "Content-Type": "application/json" },
+          },
+        );
+      } catch (error) {
+        logger.error("Failed to save conversation:", error);
+        return new Response(
+          `Failed to save conversation: ${
+            error instanceof Error ? error.message : "Unknown error"
+          }`,
+          {
+            status: 500,
+          },
+        );
+      }
+    },
+  },
+  {
+    pattern: new URLPattern({
+      pathname: "/api/conversations/:conversationId/load",
+    }),
+    handler: async (request: Request) => {
+      if (request.method !== "GET") {
+        return new Response("Method not allowed", { status: 405 });
+      }
+
+      const url = new URL(request.url);
+      const conversationId = url.pathname.split("/")[3]; // /api/conversations/{id}/load
+
+      if (!conversationId) {
+        return new Response("No conversation ID provided", { status: 400 });
+      }
+
+      try {
+        // Create the conversation folder path
+        const conversationsPath = getConversationsDir();
+        const conversationFolder = `${conversationsPath}/${conversationId}`;
+
+        // Initialize response data
+        const loadData = {
+          inputSamples: "",
+          actorDeck: "",
+          graderDeck: "",
+          groundTruth: "",
+          notes: "",
+        };
+
+        // Try to load each file, but don't fail if they don't exist
+        const fileMap = {
+          inputSamples: "input-samples.jsonl",
+          actorDeck: "actor-deck.md",
+          graderDeck: "grader-deck.md",
+          groundTruth: "ground-truth.deck.toml",
+          notes: "notes.md",
+        };
+
+        for (const [key, fileName] of Object.entries(fileMap)) {
+          try {
+            const filePath = `${conversationFolder}/${fileName}`;
+            const content = await Deno.readTextFile(filePath);
+            loadData[key as keyof typeof loadData] = content;
+          } catch (error) {
+            // File doesn't exist or can't be read - that's fine, keep empty string
+            logger.debug(
+              `Could not load ${fileName} for conversation ${conversationId}:`,
+              error,
+            );
+          }
+        }
+
+        return new Response(JSON.stringify(loadData), {
+          headers: { "Content-Type": "application/json" },
+        });
+      } catch (error) {
+        logger.error("Failed to load conversation data:", error);
+        return new Response(
+          `Failed to load conversation data: ${
+            error instanceof Error ? error.message : "Unknown error"
+          }`,
+          { status: 500 },
+        );
       }
     },
   },
@@ -586,6 +768,7 @@ const server = Deno.serve({ port }, handler);
 
 logger.println(`GUI server running at http://localhost:${port}`);
 logger.println(`Mode: ${isDev ? "development" : "production"}`);
+logger.println(`Conversations directory: ${getConversationsDir()}`);
 if (isDev && vitePort) {
   logger.println(
     `Proxying frontend requests to Vite at http://localhost:${vitePort}`,

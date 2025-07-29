@@ -7,10 +7,13 @@ import type { GraphqlNode } from "@bfmono/apps/bfDb/graphql/helpers.ts";
 import type { CurrentViewer } from "@bfmono/apps/bfDb/classes/CurrentViewer.ts";
 import { BfErrorNotImplemented } from "@bfmono/lib/BfError.ts";
 import { storage } from "@bfmono/apps/bfDb/storage/storage.ts";
+import type { DbItem } from "@bfmono/apps/bfDb/bfDb.ts";
 import type { JSONValue } from "@bfmono/apps/bfDb/bfDb.ts";
 import { BfErrorNodeNotFound } from "@bfmono/apps/bfDb/classes/BfErrorsBfNode.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { generateUUID } from "@bfmono/lib/generateUUID.ts";
+import { connectionFromArray } from "graphql-relay";
+import type { Connection, ConnectionArguments } from "graphql-relay";
 import type {
   FieldSpec,
   RelationSpec,
@@ -59,6 +62,7 @@ export type BfMetadata = BfNodeMetadata | BfEdgeMetadata;
 
 type FieldValue<S> = S extends { kind: "string" } ? string
   : S extends { kind: "number" } ? number
+  : S extends { kind: "json" } ? JSONValue
   : never;
 
 // deno-lint-ignore no-explicit-any
@@ -165,6 +169,87 @@ export abstract class BfNode<TProps extends PropsBase = {}>
       cache?.set(item.metadata.bfGid, instance);
       return instance as InstanceType<TThis>;
     });
+  }
+
+  static connection<T extends BfNode>(
+    nodes: Array<T>,
+    args: ConnectionArguments,
+  ): Connection<T> {
+    const { first, last, after, before } = args;
+
+    // If no pagination args, return simple connection
+    if (!first && !last && !after && !before) {
+      return connectionFromArray(nodes, {});
+    }
+
+    // Helper function to get sort value from a node
+    const getSortValue = (node: T): string => {
+      // Access sortValue through metadata, fallback to id
+      return String(node.metadata?.sortValue || node.id);
+    };
+
+    // For array-based connections with pagination args, implement cursor logic
+    const sortedNodes = [...nodes].sort((a, b) => {
+      // Sort by sortValue if available, otherwise by id
+      const aSort = getSortValue(a);
+      const bSort = getSortValue(b);
+      return aSort.localeCompare(bSort);
+    });
+
+    let startIndex = 0;
+    let endIndex = sortedNodes.length;
+
+    // Handle cursor-based filtering
+    if (after) {
+      const afterIndex = sortedNodes.findIndex((node) => {
+        const nodeSort = getSortValue(node);
+        return nodeSort > after;
+      });
+      if (afterIndex !== -1) startIndex = afterIndex;
+    }
+
+    if (before) {
+      const beforeIndex = sortedNodes.findIndex((node) => {
+        const nodeSort = getSortValue(node);
+        return nodeSort >= before;
+      });
+      if (beforeIndex !== -1) endIndex = beforeIndex;
+    }
+
+    // Apply first/last limits
+    if (first !== undefined && first !== null) {
+      endIndex = Math.min(startIndex + first, endIndex);
+    }
+
+    if (last !== undefined && last !== null) {
+      startIndex = Math.max(endIndex - last, startIndex);
+    }
+
+    const paginatedNodes = sortedNodes.slice(startIndex, endIndex);
+
+    // Generate proper cursors and pageInfo
+    const hasNextPage = endIndex < sortedNodes.length;
+    const hasPreviousPage = startIndex > 0;
+
+    const startCursor = paginatedNodes.length > 0
+      ? getSortValue(paginatedNodes[0])
+      : null;
+    const endCursor = paginatedNodes.length > 0
+      ? getSortValue(paginatedNodes[paginatedNodes.length - 1])
+      : null;
+
+    return {
+      edges: paginatedNodes.map((node) => ({
+        cursor: getSortValue(node),
+        node,
+      })),
+      pageInfo: {
+        hasNextPage,
+        hasPreviousPage,
+        startCursor,
+        endCursor,
+      },
+    };
   }
 
   static override async find<
@@ -310,7 +395,8 @@ export abstract class BfNode<TProps extends PropsBase = {}>
       // deno-lint-ignore no-explicit-any
       ...(this as any).props,
       ...Object.fromEntries(getters),
-      // id is already provided via the getter
+      // Explicitly include id since it's an inherited getter
+      id: this.id,
       __typename: this.__typename,
     };
   }
@@ -340,6 +426,205 @@ export abstract class BfNode<TProps extends PropsBase = {}>
     this._savedProps = this._props;
     this._metadata = item.metadata;
     return this;
+  }
+
+  async createTargetNode<TProps extends PropsBase>(
+    TargetNodeClass: typeof BfNode<TProps>,
+    props: TProps,
+    options?: {
+      role?: string;
+      metadata?: Partial<BfMetadata>;
+    },
+  ): Promise<InstanceType<typeof TargetNodeClass>> {
+    const targetNode = await TargetNodeClass.__DANGEROUS__createUnattached(
+      this.cv,
+      props,
+      options?.metadata,
+    );
+
+    await targetNode.save();
+
+    const { BfEdge } = await import("@bfmono/apps/bfDb/nodeTypes/BfEdge.ts");
+    await BfEdge.createBetweenNodes(
+      this.cv,
+      this,
+      targetNode,
+      { role: options?.role || "" },
+    );
+
+    return targetNode;
+  }
+
+  async queryAncestorsByClassName<
+    TSourceClass extends typeof BfNode<TSourceProps>,
+    TSourceProps extends PropsBase = PropsBase,
+  >(
+    SourceClass: TSourceClass,
+    limit: number = 10,
+    cache?: BfNodeCache<TSourceProps>,
+  ): Promise<Array<InstanceType<TSourceClass>>> {
+    const { bfQueryAncestorsByClassName } = await import(
+      "@bfmono/apps/bfDb/bfDb.ts"
+    );
+    const results = await bfQueryAncestorsByClassName<TSourceProps>(
+      this.cv.orgBfOid,
+      this.metadata.bfGid,
+      SourceClass.name,
+      limit,
+    );
+
+    return results.map((item: DbItem<TSourceProps>) => {
+      const Ctor = SourceClass as unknown as ConcreteBfNodeBaseCtor<
+        TSourceProps
+      >;
+      const instance = new Ctor(this.cv, item.props, item.metadata);
+      cache?.set(item.metadata.bfGid, instance);
+      return instance as InstanceType<TSourceClass>;
+    });
+  }
+
+  queryAncestorsByClass<
+    TSourceClass extends typeof BfNode<TSourceProps>,
+    TSourceProps extends PropsBase = PropsBase,
+  >(
+    SourceClass: TSourceClass,
+    limit: number = 10,
+    cache?: BfNodeCache<TSourceProps>,
+  ): Promise<Array<InstanceType<TSourceClass>>> {
+    return this.queryAncestorsByClassName(SourceClass, limit, cache);
+  }
+
+  async queryDescendantsByClassName<
+    TTargetClass extends typeof BfNode<TTargetProps>,
+    TTargetProps extends PropsBase = PropsBase,
+  >(
+    TargetClass: TTargetClass,
+    limit: number = 10,
+    cache?: BfNodeCache<TTargetProps>,
+  ): Promise<Array<InstanceType<TTargetClass>>> {
+    const { bfQueryDescendantsByClassName } = await import(
+      "@bfmono/apps/bfDb/bfDb.ts"
+    );
+    const results = await bfQueryDescendantsByClassName<TTargetProps>(
+      this.cv.orgBfOid,
+      this.metadata.bfGid,
+      TargetClass.name,
+      limit,
+    );
+
+    return results.map((item: DbItem<TTargetProps>) => {
+      const Ctor = TargetClass as unknown as ConcreteBfNodeBaseCtor<
+        TTargetProps
+      >;
+      const instance = new Ctor(this.cv, item.props, item.metadata);
+      cache?.set(item.metadata.bfGid, instance);
+      return instance as InstanceType<TTargetClass>;
+    });
+  }
+
+  queryDescendantsByClass<
+    TTargetClass extends typeof BfNode<TTargetProps>,
+    TTargetProps extends PropsBase = PropsBase,
+  >(
+    TargetClass: TTargetClass,
+    limit: number = 10,
+    cache?: BfNodeCache<TTargetProps>,
+  ): Promise<Array<InstanceType<TTargetClass>>> {
+    return this.queryDescendantsByClassName(TargetClass, limit, cache);
+  }
+
+  async querySourceInstances<
+    TSourceClass extends typeof BfNode<TSourceProps>,
+    TSourceProps extends PropsBase = PropsBase,
+  >(
+    SourceClass: TSourceClass,
+    nodeProps: Partial<TSourceProps> = {},
+    edgeProps: Partial<PropsBase> = {},
+    cache?: BfNodeCache<TSourceProps>,
+  ): Promise<Array<InstanceType<TSourceClass>>> {
+    // Step 1: Query edges where this node is the target
+    const { BfEdge } = await import("@bfmono/apps/bfDb/nodeTypes/BfEdge.ts");
+    const edgeMetadata: Partial<BfEdgeMetadata> = {
+      bfTid: this.metadata.bfGid,
+      bfOid: this.cv.orgBfOid,
+      bfSClassName: SourceClass.name,
+    };
+
+    const edges = await BfEdge.query(
+      this.cv,
+      edgeMetadata,
+      edgeProps,
+      [],
+    );
+
+    if (edges.length === 0) {
+      return [];
+    }
+
+    // Step 2: Extract source IDs and query source nodes
+    const sourceIds = edges.map((edge) =>
+      (edge.metadata as BfEdgeMetadata).bfSid
+    );
+
+    const sourceMetadata: Partial<BfNodeMetadata> = {
+      className: SourceClass.name,
+      bfOid: this.cv.orgBfOid,
+    };
+
+    return SourceClass.query(
+      this.cv,
+      sourceMetadata,
+      nodeProps,
+      sourceIds,
+      cache,
+    );
+  }
+
+  async queryTargetInstances<
+    TTargetClass extends typeof BfNode<TTargetProps>,
+    TTargetProps extends PropsBase = PropsBase,
+  >(
+    TargetClass: TTargetClass,
+    nodeProps: Partial<TTargetProps> = {},
+    edgeProps: Partial<PropsBase> = {},
+    cache?: BfNodeCache<TTargetProps>,
+  ): Promise<Array<InstanceType<TTargetClass>>> {
+    // Step 1: Query edges where this node is the source
+    const { BfEdge } = await import("@bfmono/apps/bfDb/nodeTypes/BfEdge.ts");
+    const edgeMetadata: Partial<BfEdgeMetadata> = {
+      bfSid: this.metadata.bfGid,
+      bfOid: this.cv.orgBfOid,
+      bfTClassName: TargetClass.name,
+    };
+
+    const edges = await BfEdge.query(
+      this.cv,
+      edgeMetadata,
+      edgeProps,
+      [],
+    );
+
+    if (edges.length === 0) {
+      return [];
+    }
+
+    // Step 2: Extract target IDs and query target nodes
+    const targetIds = edges.map((edge) =>
+      (edge.metadata as BfEdgeMetadata).bfTid
+    );
+
+    const targetMetadata: Partial<BfNodeMetadata> = {
+      className: TargetClass.name,
+      bfOid: this.cv.orgBfOid,
+    };
+
+    return TargetClass.query(
+      this.cv,
+      targetMetadata,
+      nodeProps,
+      targetIds,
+      cache,
+    );
   }
 
   protected beforeCreate(): Promise<void> | void {}

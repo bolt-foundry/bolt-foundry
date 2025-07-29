@@ -39,6 +39,10 @@ export abstract class GraphQLObjectBase {
    * Object fields without custom resolvers are automatically treated as edge
    * relationships, with the field name becoming the edge role.
    *
+   * **Inheritance**: This method automatically inherits fields, relations, and mutations
+   * from the parent class's gqlSpec. Child classes can add new fields or override
+   * existing ones.
+   *
    * Example:
    * ```typescript
    * static override gqlSpec = this.defineGqlNode(gql =>
@@ -61,7 +65,25 @@ export abstract class GraphQLObjectBase {
   static defineGqlNode(
     def: Parameters<typeof makeGqlSpec>[0],
   ): GqlNodeSpec {
-    return makeGqlSpec(def);
+    // Get parent class's gqlSpec if it exists
+    const parentClass = Object.getPrototypeOf(this);
+    const parentSpec = parentClass?.gqlSpec;
+
+    // Create the new spec
+    const newSpec = makeGqlSpec(def);
+
+    // If there's no parent spec, return the new spec as-is
+    if (!parentSpec) {
+      return newSpec;
+    }
+
+    // Merge parent spec with new spec (new spec takes precedence)
+    return {
+      fields: { ...parentSpec.fields, ...newSpec.fields },
+      relations: { ...parentSpec.relations, ...newSpec.relations },
+      mutations: { ...parentSpec.mutations, ...newSpec.mutations },
+      connections: { ...parentSpec.connections, ...newSpec.connections },
+    };
   }
 
   /**

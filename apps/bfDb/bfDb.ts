@@ -2,6 +2,7 @@ import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { BfErrorDb } from "@bfmono/apps/bfDb/classes/BfErrorDb.ts";
 import type { BfGid } from "@bfmono/lib/types.ts";
 import type {
+  AnyBfNodeCtor,
   BfEdgeMetadata,
   BfNodeMetadata,
 } from "@bfmono/apps/bfDb/classes/BfNode.ts";
@@ -12,7 +13,6 @@ import type {
   PageInfo,
 } from "graphql-relay";
 import type { BfDbMetadata } from "@bfmono/apps/bfDb/backend/DatabaseBackend.ts";
-import { closeBackend, getBackend } from "@bfmono/apps/bfDb/bfDbBackend.ts";
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 
 const logger = getLogger(import.meta);
@@ -56,30 +56,35 @@ export async function bfGetItem<
   TProps extends Props,
 >(bfOid: BfGid, bfGid: BfGid): Promise<DbItem<TProps> | null> {
   logger.trace("getItem", bfOid, bfGid);
-  const backend = await getBackend();
-  return await backend.getItem<TProps>(bfOid, bfGid);
+  const { storage } = await import("@bfmono/apps/bfDb/storage/storage.ts");
+  return await storage.get<TProps>(bfOid, bfGid);
 }
 
 export async function bfGetItemByBfGid<
   TProps extends Props = Props,
 >(
-  bfGid: string,
-  className?: string,
+  bfGid: BfGid,
+  nodeClassOrClassName?: AnyBfNodeCtor | string,
 ): Promise<DbItem<TProps> | null> {
-  logger.trace("getItemByBfGid", { bfGid, className });
-  const backend = await getBackend();
-  return await backend.getItemByBfGid<TProps>(bfGid, className);
+  logger.trace("getItemByBfGid", { bfGid, nodeClassOrClassName });
+  const { storage } = await import("@bfmono/apps/bfDb/storage/storage.ts");
+
+  // Convert string className to undefined since storage.getByBfGid expects AnyBfNodeCtor
+  const nodeClass = typeof nodeClassOrClassName === "string"
+    ? undefined
+    : nodeClassOrClassName;
+  return await storage.getByBfGid<TProps>(bfGid, nodeClass);
 }
 
 export async function bfGetItemsByBfGid<
   TProps extends Props = Props,
 >(
-  bfGids: Array<string>,
-  className?: string,
+  bfGids: Array<BfGid>,
+  nodeClassOrClassName?: AnyBfNodeCtor | string,
 ): Promise<Array<DbItem<TProps>>> {
-  logger.trace("getItemsByBfGid", { bfGids, className });
-  const backend = await getBackend();
-  return await backend.getItemsByBfGid<TProps>(bfGids, className);
+  logger.trace("getItemsByBfGid", { bfGids, nodeClassOrClassName });
+  const { storage } = await import("@bfmono/apps/bfDb/storage/storage.ts");
+  return await storage.getByBfGids<TProps>(bfGids, nodeClassOrClassName);
 }
 
 export async function bfPutItem<
@@ -87,10 +92,12 @@ export async function bfPutItem<
 >(
   itemProps: TProps,
   itemMetadata: BfNodeMetadata | BfEdgeMetadata,
-  sortValue = Date.now(),
 ): Promise<void> {
-  const backend = await getBackend();
-  await backend.putItem<TProps>(itemProps, itemMetadata, sortValue);
+  const { storage } = await import("@bfmono/apps/bfDb/storage/storage.ts");
+  await storage.put<TProps, BfNodeMetadata | BfEdgeMetadata>(
+    itemProps,
+    itemMetadata,
+  );
 }
 
 export async function bfDeleteItem(
@@ -98,21 +105,21 @@ export async function bfDeleteItem(
   bfGid: BfGid,
 ): Promise<void> {
   logger.trace("deleteItem", bfOid, bfGid);
-  const backend = await getBackend();
-  await backend.deleteItem(bfOid, bfGid);
+  const { storage } = await import("@bfmono/apps/bfDb/storage/storage.ts");
+  await storage.delete(bfOid, bfGid);
 }
 
 export async function bfQueryAncestorsByClassName<
   TProps extends Props,
 >(
-  bfOid: string,
-  targetBfGid: string,
+  bfOid: BfGid,
+  targetBfGid: BfGid,
   sourceBfClassName: string,
   depth: number = 10,
 ): Promise<Array<DbItem<TProps>>> {
   try {
-    const backend = await getBackend();
-    return await backend.queryAncestorsByClassName<TProps>(
+    const { storage } = await import("@bfmono/apps/bfDb/storage/storage.ts");
+    return await storage.queryAncestorsByClassName<TProps>(
       bfOid,
       targetBfGid,
       sourceBfClassName,
@@ -127,14 +134,14 @@ export async function bfQueryAncestorsByClassName<
 export async function bfQueryDescendantsByClassName<
   TProps extends Props = Props,
 >(
-  bfOid: string,
-  sourceBfGid: string,
+  bfOid: BfGid,
+  sourceBfGid: BfGid,
   targetBfClassName: string,
   depth: number = 10,
 ): Promise<Array<DbItem<TProps>>> {
   try {
-    const backend = await getBackend();
-    return await backend.queryDescendantsByClassName<TProps>(
+    const { storage } = await import("@bfmono/apps/bfDb/storage/storage.ts");
+    return await storage.queryDescendantsByClassName<TProps>(
       bfOid,
       sourceBfGid,
       targetBfClassName,
@@ -151,7 +158,7 @@ export async function bfQueryItemsUnified<
 >(
   metadataToQuery: Partial<BfDbMetadata>,
   propsToQuery: Partial<TProps> = {},
-  bfGids?: Array<string>,
+  bfGids?: Array<BfGid>,
   orderDirection: "ASC" | "DESC" = "ASC",
   orderBy: string = "sort_value",
   options: {
@@ -197,16 +204,14 @@ export async function bfQueryItemsUnified<
     );
   }
 
-  const backend = await getBackend();
-  logger.debug(
-    `Using backend type for queryItemsUnified: ${backend.constructor.name}`,
-  );
+  const { storage } = await import("@bfmono/apps/bfDb/storage/storage.ts");
+  logger.debug("Using storage facade for queryItemsUnified");
 
   if (useSizeLimit) {
     logger.debug(
       `Using size limit query with maxSizeBytes: ${maxSizeBytes}, batchSize: ${batchSize}`,
     );
-    const results = await backend.queryItemsWithSizeLimit<TProps>(
+    const results = await storage.queryWithSizeLimit<TProps>(
       metadataToQuery,
       propsToQuery,
       bfGids,
@@ -223,7 +228,7 @@ export async function bfQueryItemsUnified<
   // For count only or other special cases, we'll need more implementation
   // This is simplified for now
   if (countOnly) {
-    const items = await backend.queryItems<TProps>(
+    const items = await storage.query<TProps>(
       metadataToQuery,
       propsToQuery,
       bfGids,
@@ -239,7 +244,7 @@ export async function bfQueryItemsUnified<
   if (totalLimit) {
     // This would need more implementation to match the original behavior
     // For now, we'll just fetch and slice
-    const items = await backend.queryItems<TProps>(
+    const items = await storage.query<TProps>(
       metadataToQuery,
       propsToQuery,
       bfGids,
@@ -249,7 +254,7 @@ export async function bfQueryItemsUnified<
     return items.slice(0, totalLimit);
   }
 
-  const results = await backend.queryItems<TProps>(
+  const results = await storage.query<TProps>(
     metadataToQuery,
     propsToQuery,
     bfGids,
@@ -275,7 +280,7 @@ export async function bfQueryItems<
 >(
   metadataToQuery: Partial<BfNodeMetadata | BfEdgeMetadata>,
   propsToQuery: Partial<TProps> = {},
-  bfGids?: Array<string>,
+  bfGids?: Array<BfGid>,
   orderDirection: "ASC" | "DESC" = "ASC",
   orderBy: string = "sort_value",
 ): Promise<Array<DbItem<TProps>>> {
@@ -287,10 +292,10 @@ export async function bfQueryItems<
     orderBy,
   });
 
-  const backend = await getBackend();
-  logger.debug(`Using backend type: ${backend.constructor.name}`);
+  const { storage } = await import("@bfmono/apps/bfDb/storage/storage.ts");
+  logger.debug("Using storage facade for bfQueryItems");
 
-  const results = await backend.queryItems<TProps>(
+  const results = await storage.query<TProps>(
     metadataToQuery,
     propsToQuery,
     bfGids,
@@ -314,7 +319,7 @@ export async function bfQueryItemsWithSizeLimit<
 >(
   metadataToQuery: Partial<BfNodeMetadata | BfEdgeMetadata>,
   propsToQuery: Partial<TProps> = {},
-  bfGids?: Array<string>,
+  bfGids?: Array<BfGid>,
   orderDirection: "ASC" | "DESC" = "ASC",
   orderBy: string = "sort_value",
   cursorValue?: number | string,
@@ -322,8 +327,8 @@ export async function bfQueryItemsWithSizeLimit<
   batchSize: number = 4,
 ): Promise<Array<DbItem<TProps>>> {
   try {
-    const backend = await getBackend();
-    return await backend.queryItemsWithSizeLimit<TProps>(
+    const { storage } = await import("@bfmono/apps/bfDb/storage/storage.ts");
+    return await storage.queryWithSizeLimit<TProps>(
       metadataToQuery,
       propsToQuery,
       bfGids,
@@ -344,14 +349,14 @@ export async function bfQueryItemsTop<
 >(
   metadataToQuery: Partial<BfNodeMetadata | BfEdgeMetadata>,
   propsToQuery: Partial<TProps> = {},
-  bfGids?: Array<string>,
+  bfGids?: Array<BfGid>,
   orderDirection: "ASC" | "DESC" = "ASC",
   orderBy: string = "sort_value",
   topCount = 20,
 ): Promise<Array<DbItem<TProps>>> {
   try {
-    const backend = await getBackend();
-    const items = await backend.queryItems<TProps>(
+    const { storage } = await import("@bfmono/apps/bfDb/storage/storage.ts");
+    const items = await storage.query<TProps>(
       metadataToQuery,
       propsToQuery,
       bfGids,
@@ -370,13 +375,13 @@ export async function bfQueryItem<
 >(
   metadataToQuery: Partial<BfNodeMetadata | BfEdgeMetadata>,
   propsToQuery: Partial<TProps> = {},
-  bfGid?: string,
+  bfGid?: BfGid,
   orderDirection: "ASC" | "DESC" = "ASC",
   orderBy: string = "sort_value",
 ): Promise<DbItem<TProps> | null> {
   try {
-    const backend = await getBackend();
-    const items = await backend.queryItems<TProps>(
+    const { storage } = await import("@bfmono/apps/bfDb/storage/storage.ts");
+    const items = await storage.query<TProps>(
       metadataToQuery,
       propsToQuery,
       bfGid ? [bfGid] : undefined,
@@ -393,12 +398,12 @@ export async function bfQueryItem<
 export async function bfQueryItemsStream<TProps extends Props = Props>(
   metadataToQuery: Partial<BfNodeMetadata | BfEdgeMetadata>,
   propsToQuery: Partial<TProps> = {},
-  bfGids?: Array<string>,
+  bfGids?: Array<BfGid>,
   orderDirection: "ASC" | "DESC" = "ASC",
   orderBy: string = "sort_value",
 ): Promise<ReadableStream<DbItem<TProps>>> {
-  const backend = await getBackend();
-  const items = await backend.queryItems<TProps>(
+  const { storage } = await import("@bfmono/apps/bfDb/storage/storage.ts");
+  const items = await storage.query<TProps>(
     metadataToQuery,
     propsToQuery,
     bfGids,
@@ -421,15 +426,15 @@ export async function bfQueryItemsStreamWithSizeLimit<
 >(
   metadataToQuery: Partial<BfNodeMetadata | BfEdgeMetadata>,
   propsToQuery: Partial<TProps> = {},
-  bfGids?: Array<string>,
+  bfGids?: Array<BfGid>,
   orderDirection: "ASC" | "DESC" = "ASC",
   orderBy: string = "sort_value",
   cursorValue?: number | string,
   maxSizeBytes = 10 * 1024 * 1024, // 10MB in bytes
   batchSize = 4,
 ): Promise<ReadableStream<DbItem<TProps>>> {
-  const backend = await getBackend();
-  const items = await backend.queryItemsWithSizeLimit<TProps>(
+  const { storage } = await import("@bfmono/apps/bfDb/storage/storage.ts");
+  const items = await storage.queryWithSizeLimit<TProps>(
     metadataToQuery,
     propsToQuery,
     bfGids,
@@ -457,7 +462,7 @@ export async function bfQueryItemsForGraphQLConnection<
   metadata: Partial<TMetadata>,
   props: Partial<TProps> = {},
   connectionArgs: ConnectionArguments,
-  bfGids: Array<string>,
+  bfGids: Array<BfGid>,
 ): Promise<Connection<DbItem<TProps>> & { count: number }> {
   logger.debug({ metadata, props, connectionArgs });
   const { first, last, after, before } = connectionArgs;
@@ -573,7 +578,8 @@ export async function CLEAR_FOR_DEBUGGING() {
  */
 export async function bfCloseConnection(): Promise<void> {
   logger.debug("Closing database connection");
-  await closeBackend();
+  const { storage } = await import("@bfmono/apps/bfDb/storage/storage.ts");
+  await storage.close();
 }
 
 // This function ensures database operations are properly isolated,
@@ -601,6 +607,23 @@ export async function withIsolatedDb<T>(
 
     // Make sure any existing connection is closed
     await bfCloseConnection();
+
+    // Clear adapter registry to force re-registration with new settings
+    const { AdapterRegistry } = await import("./storage/AdapterRegistry.ts");
+    const { resetRegistration, registerDefaultAdapter } = await import(
+      "./storage/registerDefaultAdapter.ts"
+    );
+    AdapterRegistry.clear();
+    resetRegistration();
+
+    // Register the adapter after setting environment variables
+    // so that registerDefaultAdapter picks up the new backend type
+    registerDefaultAdapter();
+
+    // Additional safety: ensure the adapter is properly initialized
+    const adapter = AdapterRegistry.get();
+    await adapter.initialize();
+    logger.debug(`Initialized adapter: ${adapter.constructor.name}`);
 
     // For tests, prefer using SQLite as the default backend
     // if not explicitly specified otherwise

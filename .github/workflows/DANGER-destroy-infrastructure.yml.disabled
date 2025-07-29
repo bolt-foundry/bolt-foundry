@@ -1,0 +1,82 @@
+name: "🚨 DANGER - Destroy Infrastructure 🚨"
+
+# This workflow is ENABLED for infrastructure cleanup
+# To disable: change "workflow_dispatch" to "workflow_dispatch_DISABLED"
+on:
+  workflow_dispatch_DISABLED:
+    inputs:
+      confirmation:
+        description: 'Type exactly: "DESTROY-PRODUCTION-INFRASTRUCTURE-PERMANENTLY"'
+        required: true
+        type: string
+      environment:
+        description: 'Type exactly: "production"'
+        required: true
+        type: string
+      reason:
+        description: "Reason for destruction (required for audit)"
+        required: true
+        type: string
+
+jobs:
+  destroy:
+    runs-on: ubuntu-latest
+    # Triple confirmation required
+    if: |
+      github.event.inputs.confirmation == 'DESTROY-PRODUCTION-INFRASTRUCTURE-PERMANENTLY' &&
+      github.event.inputs.environment == 'production' &&
+      github.event.inputs.reason != ''
+
+    # Requires manual approval via protected environment
+    environment:
+      name: production-destroy
+      url: https://github.com/${{ github.repository }}/actions
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: DeterminateSystems/flakehub-cache-action@main
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Final confirmation warning
+        run: |
+          echo "🚨🚨🚨 FINAL WARNING 🚨🚨🚨"
+          echo "You are about to PERMANENTLY DESTROY:"
+          echo "- Hetzner server (boltfoundry-com)"
+          echo "- Floating IP and all network config"
+          echo "- Database volume (DATA LOSS!)"
+          echo "- All infrastructure for next.boltfoundry.com"
+          echo ""
+          echo "Reason: ${{ github.event.inputs.reason }}"
+          echo ""
+          echo "Waiting 30 seconds for final consideration..."
+          sleep 30
+          echo "Proceeding with destruction..."
+
+      - name: Terraform destroy
+        run: |
+          cd infra/terraform/hetzner
+          terraform init -backend-config="endpoint=${{ secrets.S3_ENDPOINT }}"
+          terraform destroy -auto-approve \
+            -var="hcloud_token=${{ secrets.HETZNER_API_TOKEN }}" \
+            -var="cloudflare_api_token=${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -var="cloudflare_zone_id=${{ secrets.CLOUDFLARE_ZONE_ID }}" \
+            -var="github_username=${{ github.repository_owner }}" \
+            -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}" \
+            -var="hyperdx_api_key=${{ secrets.HYPERDX_API_KEY }}" \
+            -var="domain_name=next.boltfoundry.com"
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Destruction complete
+        run: |
+          echo "💥 Infrastructure destroyed successfully"
+          echo "⚠️  Remember to:"
+          echo "   1. Verify in Hetzner Console that resources are gone"
+          echo "   2. Check Cloudflare DNS records"
+          echo "   3. Clear any local Terraform state if needed"
+          echo "   4. Re-run deployment workflow when ready to recreate"

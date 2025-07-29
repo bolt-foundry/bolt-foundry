@@ -22,7 +22,7 @@ export function CfDsFormRange(
       min={min}
       max={max}
       step={step}
-      value={Number(data[id]) || 0}
+      value={Number(data[id as keyof typeof data]) || 0}
       onChange={(value) => onChange?.({ ...data, [id]: value })}
     />
   );

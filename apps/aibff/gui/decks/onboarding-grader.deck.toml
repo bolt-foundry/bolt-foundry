@@ -1,0 +1,9 @@
+[[messages]]
+role = "user"
+content = "Hello world"
+expected_score = 3
+
+[[messages]]
+role = "user" 
+content = "Goodbye world"
+expected_score = -3

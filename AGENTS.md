@@ -1,66 +1,157 @@
-# AI Agent Configuration
+# CLAUDE.md
 
-This repository is configured for use with AI coding assistants. CLAUDE.md is a
-symlink to this file for compatibility with Claude Code (claude.ai/code).
+This file provides guidance to Claude Code (claude.ai/code) when working with
+code in this repository.
 
-## Quick Start
+## Core Development Principle
 
-- **Project**: Bolt Foundry - Open-source platform for reliable LLM systems
+**🚀 Simple is almost always better than complex.**
+
+When in doubt, build the smallest thing that could work. Working code beats
+perfect code.
+
+## Development Philosophy
+
+### Move Fast and Ship
+
+- **Working > Perfect** - Ship functional solutions quickly over architecturally
+  perfect ones
+- **Iterate in production** - Get something working in users' hands, then
+  improve based on real usage
+- **Bias toward action** - When uncertain between approaches, pick one and ship
+  it
+- **Fail fast** - Build the simplest thing that could work, learn from failures
+  quickly
+
+### Code Quality Expectations
+
+- **Good enough is good enough** - Don't over-engineer unless performance/scale
+  demands it
+- **Pragmatic solutions encouraged** - Hardcode values, copy-paste code, use
+  quick hacks if they solve the problem
+- **Technical debt is acceptable** - Mark it with TODOs, but don't let it block
+  shipping
+- **Refactor after shipping** - Clean up working code rather than perfecting
+  unshipped code
+
+### When Building Features
+
+1. **Start with the hack** - Build the most direct solution first
+2. **Ship the MVP** - Get basic functionality working and deployed
+3. **Measure real usage** - Let actual user behavior guide improvements
+4. **Iterate based on data** - Don't guess what users want
+
+## Project Overview
+
+**Bolt Foundry** - Customer Success Platform for AI that enables continuous
+improvement through customer feedback using RLHF workflows.
+
 - **Runtime**: Deno 2.x with TypeScript
 - **Source Control**: Sapling SCM (not Git)
-- **Task Runner**: `bff <command>` (Bolt Foundry Friend)
-- **Package Management**: npm (NOT deno install - see below)
+- **Task Runner**: `bft <command>` (Bolt Foundry Tool)
+- **Package Management**: Nix and `deno add`
 
-## Essential Commands
+## Development Commands
 
-```bash
-bff build              # Full project build
-bff test               # Run tests
-bff e2e --build        # Run end-to-end tests
-bff ci                 # Full CI pipeline
-bff devTools           # Start development environment
-bff ai                 # List AI-safe commands
-```
+### Core Commands
 
-## Key Resources
+- `bft help` - List all available commands
+- Use `bft help` to see the complete list of available commands
+- **Prefer `bft` commands over `deno run` whenever possible**
 
-**Development Practices:**
+### Testing
 
-- `decks/cards/version-control.card.md` - Sapling SCM and commit workflow
-- `decks/cards/testing.card.md` - TDD practices
-- `decks/cards/coding.card.md` - Code organization and style
+- Individual package tests: `deno test packages/<package-name>/`
+- App-specific tests: `deno test apps/<app-name>/`
+- Integration tests: Look for `*.integration.test.ts` files
+- E2E tests: Look for `*.test.e2e.ts` files in `__tests__/e2e/` directories
 
-**Architecture Documentation:**
+## Architecture
 
-- `memos/guides/` - Technical architecture and patterns
-- `memos/plans/` - Implementation plans (dated)
+### Monorepo Structure
 
-**Project Structure:**
+- `apps/` - Main applications and web services
+  - `aibff/` - AI feedback and evaluation CLI tool
+  - `bfDb/` - Database layer with GraphQL API
+  - `bfDs/` - Design system components
+  - `boltFoundry/` - Main web application
+  - `boltfoundry-com/` - Marketing website
+  - Additional deprecated/experimental apps exist but are not actively
+    maintained
+- `packages/` - Reusable TypeScript packages
+  - `bolt-foundry/` - Core library and client
+  - `logger/` - Logging utilities
+  - `get-configuration-var/` - Configuration management
+  - `aibff/` - AI feedback package
+  - `cli-ui/` - CLI user interface utilities
+  - Additional packages exist in various stages of development
+- `infra/` - Build tools and infrastructure
+  - `bft/` - Bolt Foundry Task runner implementation
+  - `bff/` - Bolt Foundry Friend tools (targeted for removal)
+  - `jupyter/` - Jupyter notebook support (targeted for removal)
+  - `appBuild/` - Application build utilities (targeted for removal)
+  - Additional infrastructure components exist as part of ongoing monorepo
+    consolidation
+- `decks/` - Behavior specifications and evaluation cards
 
-- `apps/` - Main applications (bfDb, bfDs, boltFoundry, etc.)
-- `packages/` - Reusable packages
-- `infra/` - Build and tooling infrastructure
-- `decks/` - Behavior specifications and cards
+### Key Technologies
+
+- **Deno** - Runtime with TypeScript support
+- **Isograph** - GraphQL client framework (used in web apps)
+- **React** - UI framework for web applications
+- **SQLite/PostgreSQL** - Database backends via bfDb
+- **Lexical** - Rich text editor framework
+- **Vite** - Frontend build tool for web apps
+
+### Design Patterns
+
+- **BfNode System**: Central data model pattern in bfDb for all entities
+- **RLHF Workflow**: Customer feedback → evaluation specs → improved AI
+  responses
+- **Deck/Card System**: Modular behavior specifications using .deck.md files
+- **GraphQL-First**: All data access through GraphQL via bfDb layer
+
+### Configuration
+
+- `deno.jsonc` - Main Deno configuration with import maps
+- `deno.lock` - Dependency lock file
+- Workspace configuration for multiple apps/packages
+- Custom lint rules in `infra/lint/bolt-foundry.ts`
 
 ## Important Notes
 
-1. **No MDX** - Use plain Markdown (`.md`) only
-2. **No direct env access** - Use `packages/get-configuration-var/`
-3. **Test first** - Follow TDD practices in testing card
-4. **Use BFF commands** - Prefer `bff` over direct commands
-5. **TypeScript array syntax** - Always use `Array<T>` instead of `T[]` for
-   array types (e.g., `Array<BfDsLiteTabItem>` not `BfDsLiteTabItem[]`)
+### BFT Task Runner
 
-## Dependency Management
+- Custom task runner at `infra/bft/`
+- Tasks defined in `.bft.ts` files and `.bft.deck.md` files in
+  `infra/bft/tasks/`
+- AI-safe commands by default, use `bft requestApproval <command>` for
+  unrestricted access
+- Automatically loads tasks from `infra/bft/tasks/` directory
 
-This project uses **npm** for managing dependencies, not Deno's built-in package
-management:
+### Package Management
 
-- Run `npm install` to install dependencies (NOT `deno install`)
-- The project is configured with `"nodeModulesDir": "manual"` in deno.jsonc
-- If you see errors about `.deno` directory, delete node_modules and run
-  `npm install`
-- This approach ensures compatibility with all npm packages and standard module
-  resolution
+- **Nix for system dependencies** - Use `nix develop` to enter development shell
+- **Deno for JavaScript/TypeScript packages** - Use `deno add <package>` to add
+  dependencies
+- **JSR dependencies**: `@std/*`, `@deno/*` packages from jsr.io
+- **npm dependencies**: Use `deno add npm:package-name`
+- **Local imports**: `@bfmono/` prefix for monorepo modules
 
-For detailed technical documentation, see the memos and cards referenced above.
+### Database Layer (bfDb)
+
+- All entities extend BfNode base class
+- Automatic GraphQL schema generation via decorators
+- Multiple backend support
+- Connection-based pagination and traversal patterns
+
+---
+
+## 🎯 Final Reminder
+
+**Before building anything: What's the simplest version that could work?**
+
+- Start small and iterate
+- Working code beats perfect architecture
+- You can always improve later
+- Simple is almost always better than complex

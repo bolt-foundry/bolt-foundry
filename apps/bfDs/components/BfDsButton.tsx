@@ -1,23 +1,47 @@
-import * as React from "react";
+import type * as React from "react";
 import { BfDsIcon, type BfDsIconName } from "./BfDsIcon.tsx";
+import { BfDsSpinner } from "./BfDsSpinner.tsx";
 
 export type BfDsButtonSize = "small" | "medium" | "large";
 export type BfDsButtonVariant =
   | "primary"
   | "secondary"
   | "outline"
-  | "ghost";
+  | "outline-secondary"
+  | "ghost"
+  | "ghost-primary";
 
 export type BfDsButtonProps = {
+  /** Button content text or elements */
   children?: React.ReactNode;
+  /** Size variant for button */
   size?: BfDsButtonSize;
+  /** Visual style variant */
   variant?: BfDsButtonVariant;
+  /** Disables button interaction */
   disabled?: boolean;
-  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  /** Click event handler */
+  onClick?: (
+    e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>,
+  ) => void;
+  /** Additional CSS classes */
   className?: string;
+  /** Icon name or custom icon element */
   icon?: BfDsIconName | React.ReactNode;
+  /** Position of icon relative to text */
   iconPosition?: "left" | "right";
+  /** When true, shows only icon without text */
   iconOnly?: boolean;
+  /** When true, applies overlay styling, shows original variant on hover */
+  overlay?: boolean;
+  /** URL to navigate to (renders as anchor tag) */
+  href?: string;
+  /** Target attribute for links (defaults to _blank when href is provided) */
+  target?: "_blank" | "_self" | "_parent" | "_top" | string;
+  /** React Router link path (not implemented yet, falls back to anchor tag) */
+  link?: string;
+  /** When true, shows spinner animation */
+  spinner?: boolean;
 } & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 export function BfDsButton({
@@ -27,14 +51,23 @@ export function BfDsButton({
   disabled = false,
   onClick,
   className,
+  href: _href,
   icon,
   iconPosition = "left",
   iconOnly = false,
+  overlay = false,
+  href,
+  target = "_blank",
+  link,
+  spinner = false,
   ...props
 }: BfDsButtonProps) {
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleClick = (
+    e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>,
+  ) => {
     if (disabled) return;
     onClick?.(e);
+    // TODO: href navigation will be implemented later
   };
 
   const classes = [
@@ -42,15 +75,25 @@ export function BfDsButton({
     `bfds-button--${variant}`,
     `bfds-button--${size}`,
     iconOnly && "bfds-button--icon-only",
+    overlay && "bfds-button--overlay",
     className,
   ].filter(Boolean).join(" ");
 
-  // Determine icon size based on button size
-  const iconSize = size === "small"
-    ? "small"
-    : size === "large"
-    ? "large"
-    : "medium";
+  // Set icon size based on button size
+  const iconSize = size;
+
+  // Determine spinner size based on button size
+  let spinnerSize;
+  switch (size) {
+    case "small":
+      spinnerSize = iconOnly ? 24 : 16;
+      break;
+    case "large":
+      spinnerSize = iconOnly ? 40 : 32;
+      break;
+    default:
+      spinnerSize = iconOnly ? 32 : 24;
+  }
 
   // Render icon element
   const iconElement = icon
@@ -61,123 +104,63 @@ export function BfDsButton({
     )
     : null;
 
+  // TODO: Change to React Router Link component when implemented
+  if (link) {
+    return (
+      <a
+        href={link}
+        className={classes}
+        onClick={handleClick}
+        target="_self"
+      >
+        {spinner && (
+          <div className="bfds-button-spinner">
+            <BfDsSpinner size={spinnerSize} />
+          </div>
+        )}
+        {iconPosition === "left" && iconElement}
+        {!iconOnly && children}
+        {iconPosition === "right" && iconElement}
+      </a>
+    );
+  }
+
+  if (href) {
+    return (
+      <a
+        href={href}
+        className={classes}
+        onClick={handleClick}
+        target={target}
+      >
+        {spinner && (
+          <div className="bfds-button-spinner">
+            <BfDsSpinner size={spinnerSize} />
+          </div>
+        )}
+        {iconPosition === "left" && iconElement}
+        {!iconOnly && children}
+        {iconPosition === "right" && iconElement}
+      </a>
+    );
+  }
+
   return (
     <button
-      {...props}
+      {...(props as React.ButtonHTMLAttributes<HTMLButtonElement>)}
+      type={props.type ?? "button"}
       className={classes}
       disabled={disabled}
       onClick={handleClick}
     >
+      {spinner && (
+        <div className="bfds-button-spinner">
+          <BfDsSpinner size={spinnerSize} />
+        </div>
+      )}
       {iconPosition === "left" && iconElement}
       {!iconOnly && children}
       {iconPosition === "right" && iconElement}
     </button>
   );
 }
-
-BfDsButton.Example = function BfDsButtonExample() {
-  const [clickCount, setClickCount] = React.useState(0);
-
-  return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: "24px",
-        padding: "24px",
-        backgroundColor: "var(--bfds-background)",
-        color: "var(--bfds-text)",
-        fontFamily: "system-ui, -apple-system, sans-serif",
-      }}
-    >
-      <h2>BfDsButton Examples</h2>
-
-      <div>
-        <h3>Variants</h3>
-        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-          <BfDsButton
-            variant="primary"
-            onClick={() => setClickCount((c) => c + 1)}
-          >
-            Primary ({clickCount})
-          </BfDsButton>
-          <BfDsButton variant="secondary">Secondary</BfDsButton>
-          <BfDsButton variant="outline">Outline</BfDsButton>
-          <BfDsButton variant="ghost">Ghost</BfDsButton>
-        </div>
-      </div>
-
-      <div>
-        <h3>Sizes</h3>
-        <div
-          style={{
-            display: "flex",
-            gap: "12px",
-            alignItems: "center",
-            flexWrap: "wrap",
-          }}
-        >
-          <BfDsButton size="small">Small</BfDsButton>
-          <BfDsButton size="medium">Medium</BfDsButton>
-          <BfDsButton size="large">Large</BfDsButton>
-        </div>
-      </div>
-
-      <div>
-        <h3>States</h3>
-        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-          <BfDsButton disabled>Disabled</BfDsButton>
-          <BfDsButton variant="outline" disabled>
-            Disabled Outline
-          </BfDsButton>
-        </div>
-      </div>
-
-      <div>
-        <h3>Icons</h3>
-        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-          <BfDsButton icon="arrowRight">Next</BfDsButton>
-          <BfDsButton icon="arrowLeft" iconPosition="left">
-            Previous
-          </BfDsButton>
-          <BfDsButton icon="brand-github" variant="outline">
-            GitHub
-          </BfDsButton>
-          <BfDsButton icon="burgerMenu" variant="ghost">
-            Menu
-          </BfDsButton>
-        </div>
-      </div>
-
-      <div>
-        <h3>Icon Positions</h3>
-        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-          <BfDsButton icon="arrowRight" iconPosition="left">
-            Left Icon
-          </BfDsButton>
-          <BfDsButton icon="arrowRight" iconPosition="right">
-            Right Icon
-          </BfDsButton>
-        </div>
-      </div>
-
-      <div>
-        <h3>Icon-Only Buttons</h3>
-        <div
-          style={{
-            display: "flex",
-            gap: "12px",
-            alignItems: "center",
-            flexWrap: "wrap",
-          }}
-        >
-          <BfDsButton icon="arrowLeft" iconOnly size="small" />
-          <BfDsButton icon="burgerMenu" iconOnly />
-          <BfDsButton icon="arrowRight" iconOnly size="large" />
-          <BfDsButton icon="brand-github" iconOnly variant="outline" />
-          <BfDsButton icon="back" iconOnly variant="ghost" />
-        </div>
-      </div>
-    </div>
-  );
-};

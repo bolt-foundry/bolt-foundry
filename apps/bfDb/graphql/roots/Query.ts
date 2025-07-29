@@ -2,6 +2,8 @@ import { GraphQLObjectBase } from "../GraphQLObjectBase.ts";
 import { PublishedDocument } from "@bfmono/apps/bfDb/nodeTypes/PublishedDocument.ts";
 import { BlogPost } from "@bfmono/apps/bfDb/nodeTypes/BlogPost.ts";
 import { GithubRepoStats } from "@bfmono/apps/bfDb/nodeTypes/GithubRepoStats.ts";
+import { CurrentViewer } from "@bfmono/apps/bfDb/classes/CurrentViewer.ts";
+import { BfDeck } from "@bfmono/apps/bfDb/nodeTypes/rlhf/BfDeck.ts";
 
 export class Query extends GraphQLObjectBase {
   static override gqlSpec = this.defineGqlNode((field) =>
@@ -45,6 +47,32 @@ export class Query extends GraphQLObjectBase {
       .object("githubRepoStats", () => GithubRepoStats, {
         resolve: async () => {
           return await GithubRepoStats.findX();
+        },
+      })
+      .object("deck", () => BfDeck, {
+        args: (a) => a.string("slug"),
+        resolve: async (_root, args, ctx) => {
+          const cv = ctx.getCurrentViewer();
+          const slug = args.slug as string;
+
+          if (!slug) {
+            return null;
+          }
+
+          // Query by slug within organization
+          const decks = await BfDeck.query(
+            cv,
+            { bfOid: cv.orgBfOid, className: "BfDeck" },
+            { slug },
+            [],
+          );
+
+          return decks[0] || null;
+        },
+      })
+      .nonNull.object("currentViewer", () => CurrentViewer, {
+        resolve: (_root, _args, ctx) => {
+          return ctx.getCvForGraphql();
         },
       })
   );

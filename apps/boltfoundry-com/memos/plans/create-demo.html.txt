@@ -1,0 +1,3347 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EvalForge - Interactive Demo</title>
+    <style>
+      :root {
+        --bfds-primary: #ffd700;
+        --bfds-primary-hover: #e6c200;
+        --bfds-primary-active: #ccad00;
+        --bfds-primary-09: rgba(255, 215, 0, 0.9);
+        --bfds-primary-08: rgba(255, 215, 0, 0.8);
+        --bfds-primary-06: rgba(255, 215, 0, 0.6);
+        --bfds-primary-04: rgba(255, 215, 0, 0.4);
+        --bfds-primary-02: rgba(255, 215, 0, 0.2);
+        --bfds-primary-01: rgba(255, 215, 0, 0.1);
+
+        --bfds-background: #141516;
+        --bfds-background-hover: #1f2021;
+        --bfds-background-active: #2a2b2c;
+        --bfds-background-08: rgba(20, 21, 22, 0.8);
+
+        --bfds-text: #fafaff;
+        --bfds-text-secondary: #b8b8c0;
+        --bfds-text-muted: #898990;
+
+        --bfds-secondary: #6b7280;
+        --bfds-secondary-hover: #4b5563;
+        --bfds-secondary-active: #374151;
+
+        --bfds-border: #3a3b3c;
+        --bfds-border-hover: #4a4b4c;
+
+        --bfds-error: #ef4444;
+        --bfds-error-hover: #dc2626;
+        --bfds-error-background: #1f1415;
+
+        --bfds-success: #10b981;
+        --bfds-success-hover: #059669;
+        --bfds-success-background: #0f1f1a;
+
+        --bfds-focus: #3b82f6;
+        --bfds-focus-outline: rgba(59, 130, 246, 0.3);
+
+        --bfds-purple: #8a2be2;
+        --bfds-purple-hover: #7a26c7;
+        --bfds-purple-active: #6a22aa;
+        --bfds-purple-09: rgba(138, 43, 226, 0.9);
+        --bfds-purple-08: rgba(138, 43, 226, 0.8);
+        --bfds-purple-06: rgba(138, 43, 226, 0.6);
+        --bfds-purple-04: rgba(138, 43, 226, 0.4);
+        --bfds-purple-02: rgba(138, 43, 226, 0.2);
+        --bfds-purple-01: rgba(138, 43, 226, 0.1);
+      }
+
+      /* Utility Classes */
+      .text-muted {
+        color: var(--bfds-text-muted);
+      }
+      .text-secondary {
+        color: var(--bfds-text-secondary);
+      }
+      .text-primary {
+        color: var(--bfds-text);
+      }
+      .text-success {
+        color: var(--bfds-success);
+      }
+      .text-error {
+        color: var(--bfds-error);
+      }
+      .text-warning {
+        color: var(--bfds-primary);
+      }
+      .text-focus {
+        color: var(--bfds-focus);
+      }
+
+      .bg-primary {
+        background: var(--bfds-background);
+      }
+      .bg-secondary {
+        background: var(--bfds-background-hover);
+      }
+      .bg-tertiary {
+        background: var(--bfds-background-active);
+      }
+
+      .border-primary {
+        border-color: var(--bfds-border);
+      }
+      .border-secondary {
+        border-color: var(--bfds-border-hover);
+      }
+
+      .test-examples {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .example-item {
+        border: 1px solid var(--bfds-border);
+        border-radius: 8px;
+        padding: 1rem;
+        background: var(--bfds-background);
+      }
+
+      .example-item.good {
+        border-color: var(--bfds-success);
+        background: var(--bfds-success-background);
+      }
+
+      .example-item.bad {
+        border-color: var(--bfds-error);
+        background: var(--bfds-error-background);
+      }
+
+      .example-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+      }
+
+      .example-label {
+        font-weight: 600;
+      }
+
+      .example-item.good .example-label {
+        color: var(--bfds-success);
+      }
+
+      .example-item.bad .example-label {
+        color: var(--bfds-error);
+      }
+
+      .example-score {
+        font-weight: bold;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.875rem;
+      }
+
+      .example-item.good .example-score {
+        background: var(--bfds-success);
+        color: black;
+      }
+
+      .example-item.bad .example-score {
+        background: var(--bfds-error);
+        color: white;
+      }
+
+      .example-content p {
+        margin: 0.5rem 0;
+        font-size: 0.875rem;
+        color: var(--bfds-text-secondary);
+      }
+
+      .example-content strong {
+        color: var(--bfds-text);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        background: var(--bfds-background);
+        color: var(--bfds-text);
+        line-height: 1.6;
+        overflow-x: hidden;
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+      }
+
+      .container {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        margin: 0;
+        padding: 0;
+      }
+
+      .compact-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem 1.5rem;
+        background: var(--bfds-background-hover);
+        border-bottom: 1px solid var(--bfds-border);
+        flex-shrink: 0;
+      }
+
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .header-title {
+        font-size: 1.25rem;
+        font-weight: bold;
+        color: var(--bfds-purple);
+      }
+
+      .header-progress {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        color: var(--bfds-text-muted);
+        font-size: 0.875rem;
+      }
+
+      .header-progress-bar {
+        width: 120px;
+        height: 4px;
+        background: var(--bfds-background-active);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+
+      .header-progress-fill {
+        height: 100%;
+        background: var(--bfds-purple);
+        transition: width 0.3s ease;
+        width: 0%;
+      }
+
+      .header-nav {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .header-nav .nav-button {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.875rem;
+      }
+
+      .demo-header {
+        display: none;
+      }
+
+      .demo-subtitle {
+        font-size: 1.2rem;
+        color: var(--bfds-text-secondary);
+        margin-bottom: 1rem;
+      }
+
+      .demo-instructions {
+        font-size: 1rem;
+        color: var(--bfds-text-muted);
+        margin-bottom: 2rem;
+      }
+
+      .progress-bar {
+        width: 100%;
+        height: 8px;
+        background: var(--bfds-background-active);
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 1rem;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          var(--bfds-purple) 0%,
+          var(--bfds-purple-hover) 100%
+        );
+        transition: width 0.3s ease;
+        width: 0%;
+      }
+
+      .progress-text {
+        font-size: 0.875rem;
+        color: var(--bfds-text-muted);
+        text-align: center;
+      }
+
+      .demo-container {
+        background: var(--bfds-background-hover);
+        border: 1px solid var(--bfds-border);
+        border-radius: 0;
+        padding: 0;
+        position: relative;
+        overflow: hidden;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .app-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 2rem;
+        border-bottom: 1px solid var(--bfds-border);
+        background: var(--bfds-background);
+      }
+
+      .chat-first-container {
+        display: grid;
+        grid-template-columns: 1fr 400px;
+        height: 100%;
+        flex: 1;
+        overflow: hidden;
+      }
+
+      .main-chat-area {
+        display: flex;
+        flex-direction: column;
+        background: var(--bfds-background);
+        border-right: 1px solid var(--bfds-border);
+        height: 100%;
+        overflow: hidden;
+      }
+
+      .chat-messages-main {
+        flex: 1;
+        overflow-y: auto;
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        min-height: 0;
+      }
+
+      .assistant-message,
+      .user-message {
+        max-width: 80%;
+        animation: fadeIn 0.3s ease;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .assistant-message {
+        align-self: flex-start;
+      }
+
+      .assistant-avatar {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+
+      .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(
+          135deg,
+          var(--bfds-primary) 0%,
+          var(--bfds-primary-hover) 100%
+        );
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+        color: var(--bfds-background);
+      }
+
+      .message-content {
+        background: var(--bfds-background-hover);
+        border: 1px solid var(--bfds-border);
+        border-radius: 12px;
+        padding: 1rem 1.5rem;
+        flex: 1;
+      }
+
+      .user-message {
+        align-self: flex-end;
+        background: linear-gradient(
+          135deg,
+          var(--bfds-primary) 0%,
+          var(--bfds-primary-hover) 100%
+        );
+        padding: 1rem 1.5rem;
+        border-radius: 12px;
+        color: var(--bfds-background);
+      }
+
+      .chat-input-main {
+        padding: 1.5rem 2rem;
+        border-top: 1px solid var(--bfds-border);
+        flex-shrink: 0;
+        background: var(--bfds-background);
+      }
+
+      .chat-input-wrapper {
+        display: flex;
+        gap: 1rem;
+        align-items: flex-end;
+      }
+
+      .chat-input {
+        flex: 1;
+        padding: 1rem;
+        border: 1px solid var(--bfds-border);
+        border-radius: 8px;
+        background: var(--bfds-background-hover);
+        color: var(--bfds-text);
+        font-size: 1rem;
+        min-height: 3rem;
+        max-height: 6rem;
+        overflow-y: auto;
+        line-height: 1.5;
+        resize: none;
+      }
+
+      .chat-input:focus {
+        outline: none;
+        border-color: var(--bfds-focus);
+        box-shadow: 0 0 0 3px var(--bfds-focus-outline);
+      }
+
+      .send-button {
+        padding: 1rem 1.5rem;
+        background: linear-gradient(
+          135deg,
+          var(--bfds-primary) 0%,
+          var(--bfds-primary-hover) 100%
+        );
+        border: none;
+        border-radius: 8px;
+        color: var(--bfds-background);
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .send-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px var(--bfds-primary-04);
+      }
+
+      .send-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .side-panel {
+        background: var(--bfds-background-hover);
+        padding: 2rem;
+        overflow-y: auto;
+      }
+
+      .inline-card {
+        display: inline-block;
+        padding: 0.75rem 1rem;
+        background: var(--bfds-background-active);
+        border: 1px solid var(--bfds-primary);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.875rem;
+        margin: 0.25rem 0;
+      }
+
+      .inline-card:hover {
+        background: var(--bfds-primary);
+        color: var(--bfds-background);
+      }
+
+      .inline-card.selected {
+        background: var(--bfds-primary-01);
+        border-color: var(--bfds-primary);
+        color: var(--bfds-primary);
+      }
+
+      .generated-card {
+        background: var(--bfds-background-active);
+        border: 1px solid var(--bfds-border);
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+      }
+
+      .generated-card.building {
+        opacity: 0.5;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 0.5;
+        }
+        50% {
+          opacity: 0.8;
+        }
+      }
+
+      .grader-config-card {
+        background: var(--bfds-background-active);
+        border: 1px solid var(--bfds-border);
+        border-radius: 8px;
+        padding: 1rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .grader-config-card:hover {
+        background: var(--bfds-background-hover);
+        border-color: var(--bfds-primary);
+        transform: translateY(-1px);
+      }
+      .grader-config-card.selected {
+        background: var(--bfds-primary-01);
+        border-color: var(--bfds-primary);
+      }
+      .grader-detailed-config {
+        background: var(--bfds-background-hover);
+        border: 1px solid var(--bfds-border);
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+      }
+      .library-grader {
+        padding: 0.75rem;
+        background: var(--bfds-background-active);
+        border: 1px solid var(--bfds-border);
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .library-grader:hover {
+        background: var(--bfds-background-hover);
+        border-color: var(--bfds-border-hover);
+      }
+      .library-grader.active {
+        background: var(--bfds-primary-01);
+        border-color: var(--bfds-primary);
+      }
+      .library-grader.template {
+        opacity: 0.7;
+      }
+      .inline-card.small {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8rem;
+      }
+      .inline-card {
+        color: var(--bfds-primary);
+        border-color: var(--bfds-primary);
+        background: var(--bfds-primary-01);
+      }
+      .inline-card.primary {
+        background: var(--bfds-primary-01);
+        border-color: var(--bfds-primary);
+        color: var(--bfds-primary);
+      }
+
+      /* Hint arrows */
+      .hint-arrow {
+        position: absolute;
+        color: var(--bfds-purple);
+        font-size: 1.5rem;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        pointer-events: none;
+        z-index: 1000;
+      }
+
+      @keyframes pulse-arrow-top {
+        0%,
+        100% {
+          opacity: 0.6;
+          transform: translateX(-50%) translateY(0px);
+        }
+        50% {
+          opacity: 1;
+          transform: translateX(-50%) translateY(-5px);
+        }
+      }
+
+      @keyframes pulse-arrow-bottom {
+        0%,
+        100% {
+          opacity: 0.6;
+          transform: translateX(-50%) translateY(0px);
+        }
+        50% {
+          opacity: 1;
+          transform: translateX(-50%) translateY(5px);
+        }
+      }
+
+      @keyframes pulse-arrow-left {
+        0%,
+        100% {
+          opacity: 0.6;
+          transform: translateY(-50%) translateX(0px);
+        }
+        50% {
+          opacity: 1;
+          transform: translateY(-50%) translateX(-5px);
+        }
+      }
+
+      @keyframes pulse-arrow-right {
+        0%,
+        100% {
+          opacity: 0.6;
+          transform: translateY(-50%) translateX(0px);
+        }
+        50% {
+          opacity: 1;
+          transform: translateY(-50%) translateX(5px);
+        }
+      }
+
+      .hint-arrow.top {
+        top: -2rem;
+        left: 50%;
+        animation: pulse-arrow-top 2s ease-in-out infinite;
+      }
+
+      .hint-arrow.bottom {
+        bottom: -2rem;
+        left: 50%;
+        animation: pulse-arrow-bottom 2s ease-in-out infinite;
+      }
+
+      .hint-arrow.left {
+        left: -2rem;
+        top: 50%;
+        animation: pulse-arrow-left 2s ease-in-out infinite;
+      }
+
+      .hint-arrow.right {
+        right: -2rem;
+        top: 50%;
+        animation: pulse-arrow-right 2s ease-in-out infinite;
+      }
+
+      .prompt-analysis {
+        background: var(--bfds-background);
+        border: 1px solid var(--bfds-border);
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1rem 0;
+      }
+
+      .current-prompt,
+      .optimized-prompt {
+        background: var(--bfds-background-hover);
+        border: 1px solid var(--bfds-border);
+        border-radius: 6px;
+        padding: 1rem;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        font-size: 0.875rem;
+        line-height: 1.4;
+        color: var(--bfds-text-secondary);
+      }
+
+      .prompt-suggestions {
+        margin-top: 1.5rem;
+      }
+
+      .suggestion-item {
+        background: var(--bfds-background);
+        border: 1px solid var(--bfds-border);
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+      }
+
+      .suggestion-item:hover {
+        border-color: var(--bfds-primary);
+        transform: translateY(-1px);
+      }
+
+      .suggestion-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+      }
+
+      .suggestion-title {
+        font-size: 1rem;
+        font-weight: bold;
+        color: var(--bfds-text);
+      }
+
+      .improvement-badge {
+        background: var(--bfds-success);
+        color: var(--bfds-background);
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: bold;
+      }
+
+      .suggestion-description {
+        color: var(--bfds-text-secondary);
+        margin-bottom: 1rem;
+        font-size: 0.875rem;
+      }
+
+      .suggestion-code {
+        background: var(--bfds-background-hover);
+        border: 1px solid var(--bfds-border);
+        border-radius: 6px;
+        padding: 1rem;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        font-size: 0.875rem;
+        line-height: 1.4;
+        color: var(--bfds-success);
+      }
+
+      .updated-prompt {
+        background: var(--bfds-background);
+        border: 1px solid var(--bfds-border);
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1rem 0;
+      }
+
+      .optimized-prompt {
+        background: var(--bfds-background-hover);
+        border: 1px solid var(--bfds-border);
+        border-radius: 6px;
+        padding: 1rem;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        font-size: 0.875rem;
+        line-height: 1.6;
+        color: var(--bfds-success);
+      }
+
+      .prompt-actions {
+        margin-top: 0.75rem;
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+
+      .prompt-btn {
+        padding: 0.375rem 0.75rem;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.75rem;
+        transition: all 0.3s ease;
+        border: none;
+      }
+
+      .prompt-btn.primary {
+        background: linear-gradient(
+          135deg,
+          var(--bfds-primary) 0%,
+          var(--bfds-primary-hover) 100%
+        );
+        color: var(--bfds-background);
+      }
+
+      .prompt-btn.primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px var(--bfds-primary-04);
+      }
+
+      .prompt-btn.secondary {
+        background: var(--bfds-background-active);
+        color: var(--bfds-text);
+        border: 1px solid var(--bfds-border);
+      }
+
+      .prompt-btn.secondary:hover {
+        border-color: var(--bfds-primary);
+        background: var(--bfds-background-hover);
+      }
+
+      .card-preview {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+      }
+
+      .card-title {
+        font-weight: bold;
+        font-size: 0.9rem;
+      }
+
+      .grader-badge {
+        padding: 0.25rem 0.5rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: bold;
+      }
+
+      .grader-badge.essential {
+        background: var(--bfds-error-background);
+        color: var(--bfds-error);
+      }
+
+      .grader-badge.recommended {
+        background: var(--bfds-success-background);
+        color: var(--bfds-success);
+      }
+
+      .grader-badge.building {
+        background: var(--bfds-primary-01);
+        color: var(--bfds-primary);
+      }
+
+      .hint-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .hint-overlay.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .hint-content {
+        background: var(--bfds-background-hover);
+        border: 1px solid var(--bfds-border);
+        border-radius: 16px;
+        padding: 2rem;
+        max-width: 500px;
+        margin: 2rem;
+        position: relative;
+        animation: slideIn 0.3s ease;
+      }
+
+      @keyframes slideIn {
+        from {
+          transform: translateY(-20px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      .hint-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+        color: var(--bfds-purple);
+      }
+
+      .hint-text {
+        margin-bottom: 1.5rem;
+        color: var(--bfds-text-secondary);
+      }
+
+      .hint-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+      }
+
+      .hint-button {
+        padding: 0.5rem 1rem;
+        border: 1px solid var(--bfds-border);
+        border-radius: 8px;
+        background: var(--bfds-background-active);
+        color: var(--bfds-text);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .hint-button:hover {
+        background: var(--bfds-background-hover);
+        border-color: var(--bfds-purple);
+      }
+
+      .hint-button.primary {
+        background: linear-gradient(
+          135deg,
+          var(--bfds-purple) 0%,
+          var(--bfds-purple-hover) 100%
+        );
+        color: white;
+        border-color: var(--bfds-purple);
+      }
+
+      .hint-button.primary:hover {
+        background: linear-gradient(
+          135deg,
+          var(--bfds-purple-hover) 0%,
+          var(--bfds-purple-active) 100%
+        );
+        border-color: var(--bfds-purple-hover);
+      }
+
+      .navigation-controls {
+        display: none;
+      }
+
+      .nav-button {
+        padding: 0.75rem 1.5rem;
+        background: var(--bfds-background-active);
+        border: 1px solid var(--bfds-border);
+        border-radius: 8px;
+        color: var(--bfds-text);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .nav-button:hover {
+        background: var(--bfds-background-hover);
+        border-color: var(--bfds-purple);
+      }
+
+      .nav-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .nav-button.primary {
+        background: linear-gradient(
+          135deg,
+          var(--bfds-purple) 0%,
+          var(--bfds-purple-hover) 100%
+        );
+        color: white;
+        border-color: var(--bfds-purple);
+      }
+
+      .nav-button.primary:hover {
+        background: linear-gradient(
+          135deg,
+          var(--bfds-purple-hover) 0%,
+          var(--bfds-purple-active) 100%
+        );
+        border-color: var(--bfds-purple-hover);
+      }
+
+      .journey-indicator {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .journey-step {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--bfds-background-active);
+        border: 2px solid var(--bfds-border);
+        transition: all 0.3s ease;
+      }
+
+      .journey-step.active {
+        background: var(--bfds-primary);
+        border-color: var(--bfds-primary);
+      }
+
+      .journey-step.completed {
+        background: var(--bfds-success);
+        border-color: var(--bfds-success);
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .progress-indicator {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1rem;
+        background: var(--bfds-background-hover);
+        border: 1px solid var(--bfds-border);
+        border-radius: 8px;
+        margin: 1rem 0;
+      }
+
+      .progress-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--bfds-primary);
+        animation: typing 1.5s infinite;
+      }
+
+      .progress-dot:nth-child(2) {
+        animation-delay: 0.3s;
+      }
+
+      .progress-dot:nth-child(3) {
+        animation-delay: 0.6s;
+      }
+
+      @keyframes typing {
+        0%,
+        100% {
+          opacity: 0.3;
+          transform: scale(1);
+        }
+
+        50% {
+          opacity: 1;
+          transform: scale(1.2);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="compact-header">
+        <div class="header-left">
+          <div class="header-title">EvalForge Interactive Demo</div>
+          <div class="header-progress">
+            <span id="progressText">Step 1 of 7: Onboarding</span>
+            <div class="header-progress-bar">
+              <div class="header-progress-fill" id="progressFill"></div>
+            </div>
+          </div>
+        </div>
+        <div class="header-nav">
+          <button class="nav-button" id="hintButton">💡 Hint</button>
+          <button class="nav-button" id="prevButton" disabled>
+            ← Previous
+          </button>
+          <button class="nav-button" id="skipButton">Skip</button>
+          <button class="nav-button primary" id="nextButton">Next →</button>
+        </div>
+      </div>
+
+      <div class="demo-container">
+        <div class="app-header">
+          <div style="display: flex; align-items: center; gap: 1rem">
+            <span style="font-size: 1.5rem; font-weight: bold">EvalForge</span>
+            <span
+              id="headerStatus"
+              class="text-muted"
+              style="font-size: 0.875rem"
+              >New Project</span
+            >
+          </div>
+          <div style="display: flex; gap: 1rem; align-items: center"></div>
+        </div>
+
+        <div class="chat-first-container">
+          <div class="main-chat-area">
+            <div class="chat-messages-main" id="chatMessages">
+              <!-- Messages will be populated by JavaScript -->
+            </div>
+
+            <div class="chat-input-main">
+              <div class="chat-input-wrapper">
+                <textarea
+                  class="chat-input"
+                  id="chatInput"
+                  placeholder="Type your message..."
+                  rows="1"
+                ></textarea>
+                <button class="send-button" id="sendButton">→</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="side-panel" id="sidePanel">
+            <h3 style="margin-bottom: 1rem; color: #ccc">Your Grader System</h3>
+            <div
+              style="color: #999; font-size: 0.875rem; margin-bottom: 1.5rem"
+            >
+              Graders appear here as we build them
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="navigation-controls">
+        <button class="nav-button" id="prevButton" disabled>← Previous</button>
+        <button class="nav-button" id="skipButton">Skip to Next</button>
+        <button class="nav-button primary" id="nextButton">Next →</button>
+      </div>
+    </div>
+
+    <!-- Hint Overlay -->
+    <div class="hint-overlay" id="hintOverlay">
+      <div class="hint-content">
+        <div class="hint-title" id="hintTitle">Welcome to EvalForge!</div>
+        <div class="hint-text" id="hintText">
+          You're about to experience the complete user journey for building an
+          AI evaluation system. Each step demonstrates key interactions and
+          features.
+        </div>
+        <div class="hint-actions">
+          <button class="hint-button" id="hintClose">Close</button>
+          <button class="hint-button primary" id="hintNext">Got it!</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Journey data structure
+      const journeySteps = [
+        {
+          id: 1,
+          title: "Setup & Onboarding",
+          description: "Setting up your evaluation system and creating graders",
+          hint: {
+            title: "🚀 Welcome to EvalForge!",
+            text: "You're starting the complete onboarding process. EvalForge will help you select your use case, collect your system prompt, and create tailored evaluation graders all in one flow.",
+          },
+          messages: [
+            {
+              type: "assistant",
+              content: `<p style="font-weight: bold; margin-bottom: 0.5rem;">Welcome to EvalForge! I'm your AI evaluation assistant.</p>
+                 <p>I'll help you build a robust evaluation system for your LLM. Let's start with understanding what you're trying to evaluate.</p>
+                 <p style="margin-top: 0.5rem;">What kind of AI assistant are you building? For example:</p>
+                 <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                   <div class="inline-card" data-choice="coding">📝 Coding assistant</div>
+                   <div class="inline-card" data-choice="customer">🔬 Customer service chatbot</div>
+                   <div class="inline-card" data-choice="creative">🎨 Creative writing helper</div>
+                   <div class="inline-card" data-choice="other">💡 Something else...</div>
+                 </div>
+                 <div style="margin-top: 1rem; padding: 0.75rem; background: var(--bfds-background-active); border-radius: 6px; font-size: 0.875rem; color: var(--bfds-text-muted);">
+                   💡 <strong>Navigation tip:</strong> Type <code>/help</code> anytime for navigation commands, or click completed steps in the progress bar above
+                 </div>`,
+            },
+          ],
+          sidePanel: `<h3 style="margin-bottom: 1rem; color: #ccc;">Your Grader System</h3>
+               <div style="color: #999; font-size: 0.875rem; margin-bottom: 1.5rem;">
+                 Graders will appear here as we build them
+               </div>`,
+          finalSidePanel: `<h3 style="margin-bottom: 1rem; color: #ccc;">Your Grader System</h3>
+               <div class="generated-card">
+                 <div class="card-header">
+                   <span class="card-title">Code Accuracy</span>
+                   <span class="grader-badge ready">Ready</span>
+                 </div>
+                 <p style="font-size: 0.875rem; color: #999;">Validates syntax and logic</p>
+               </div>
+               <div class="generated-card">
+                 <div class="card-header">
+                   <span class="card-title">Language Simplicity</span>
+                   <span class="grader-badge ready">Ready</span>
+                 </div>
+                 <p style="font-size: 0.875rem; color: #999;">Checks for clear, simple explanations</p>
+               </div>
+               <div class="generated-card">
+                 <div class="card-header">
+                   <span class="card-title">Helpfulness</span>
+                   <span class="grader-badge ready">Ready</span>
+                 </div>
+                 <p style="font-size: 0.875rem; color: #999;">Ensures responses solve the problem</p>
+               </div>
+               <div class="generated-card">
+                 <div class="card-header">
+                   <span class="card-title">Explanation Quality</span>
+                   <span class="grader-badge ready">Ready</span>
+                 </div>
+                 <p style="font-size: 0.875rem; color: #999;">Evaluates clarity and completeness</p>
+               </div>`,
+          nextTrigger: "choice",
+          expectedInput: "system prompt",
+          userChoices: {
+            coding: "I'm building a coding assistant that helps developers debug and write better code",
+            customer: "I'm building a customer service chatbot for technical support", 
+            creative: "I'm building a creative writing assistant for content creators",
+            other: "I'm building something unique for my specific use case",
+          },
+          followUpMessage: {
+            content: `<p>Perfect! A coding assistant needs robust evaluation. Now I need to understand your assistant's behavior to create tailored graders.</p>
+                     <p style="margin-top: 1rem;">Could you share your AI system's prompt? This is the prompt that tells your coding assistant how to behave - something like "You are a helpful coding assistant..."</p>
+                     <p style="margin-top: 0.5rem; color: #999; font-size: 0.875rem;">
+                       This helps me create graders that match your assistant's specific role and style.
+                     </p>`,
+            nextInput: "You are a helpful coding assistant. Help developers debug issues and write better code. Always provide clear explanations, use simple language, and include working examples when possible."
+          },
+          finalMessage: {
+            content: `<p>Excellent! I can see your assistant emphasizes clarity, accuracy, and simplicity. Let me create evaluation graders tailored to these goals.</p>
+                     <div style="background: #0a0a0a; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                       <div style="color: #10b981; font-weight: bold; margin-bottom: 0.5rem;">📝 System Prompt Saved</div>
+                       <div style="color: #999; font-size: 0.875rem;">"You are a helpful coding assistant. Help developers debug issues and write better code..."</div>
+                     </div>
+                     <div class="progress-indicator">
+                       <span style="color: #999;">Creating tailored graders</span>
+                       <div class="progress-dot"></div>
+                       <div class="progress-dot"></div>
+                       <div class="progress-dot"></div>
+                     </div>
+                     <p style="margin-top: 1rem;">Based on your prompt, I've created graders for:</p>
+                     <ul style="margin: 0.5rem 0 0.5rem 1.5rem; color: #ccc;">
+                       <li><strong>Code Accuracy</strong> - Ensures solutions are syntactically correct</li>
+                       <li><strong>Language Simplicity</strong> - Matches your "simple language" requirement</li>
+                       <li><strong>Explanation Quality</strong> - Verifies clear explanations are provided</li>
+                       <li><strong>Helpfulness</strong> - Ensures responses actually solve the problem</li>
+                     </ul>
+                     <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--bfds-border); display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                       <button class="nav-action-btn" onclick="showRestartConfirm()" style="padding: 0.375rem 0.75rem; background: var(--bfds-secondary); color: var(--bfds-text); border: 1px solid var(--bfds-border); border-radius: 6px; font-size: 0.875rem; cursor: pointer;">Start Over</button>
+                       <button class="nav-action-btn" onclick="nextStep()" style="padding: 0.375rem 0.75rem; background: var(--bfds-primary); color: var(--bfds-background); border: 1px solid var(--bfds-primary); border-radius: 6px; font-size: 0.875rem; cursor: pointer;">Continue to Testing →</button>
+                     </div>`
+          },
+        },
+        {
+          id: 2,
+          title: "Interactive Testing & Analysis",
+          description: "Testing your AI and resolving evaluation conflicts", 
+          hint: {
+            title: "🧪 Interactive Testing & Analysis",
+            text: "Test your AI assistant with real scenarios, rate the responses, and analyze disagreements between your ratings and the graders to improve your evaluation system.",
+          },
+          messages: [
+            {
+              type: "assistant",
+              content: `<span style="padding: 0.25rem 0.75rem; background: #333; border-radius: 12px; font-size: 0.8rem; color: #10b981;">Testing Mode</span>
+                 <p style="margin-top: 1rem;">Let's test your coding assistant. I'll generate a test query, run it through your system, and you can rate the response.</p>
+                 <div style="background: #0a0a0a; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                   <p style="font-weight: bold; margin-bottom: 0.5rem;">Test Query:</p>
+                   <p style="color: #10b981; font-family: monospace;">"How do I handle null pointer exceptions in Java?"</p>
+                 </div>
+                 <div class="progress-indicator">
+                   <span style="color: #999;">Running this through your assistant</span>
+                   <div class="progress-dot"></div>
+                   <div class="progress-dot"></div>
+                   <div class="progress-dot"></div>
+                 </div>`,
+            },
+            {
+              type: "ai-response",
+              content: `<span style="padding: 0.25rem 0.75rem; background: #333; border-radius: 12px; font-size: 0.8rem; color: #10b981;">AI Response</span>
+                 <p style="margin-top: 1rem;">To handle null pointer exceptions in Java:</p>
+                 <pre style="background: #0a0a0a; padding: 1rem; border-radius: 8px; margin: 0.5rem 0; overflow-x: auto; font-size: 0.875rem;">
+// 1. Check for null before use
+if (object != null) {
+  object.doSomething();
+}
+
+// 2. Use Optional (Java 8+)
+Optional&lt;String&gt; optional = Optional.ofNullable(getString());
+optional.ifPresent(System.out::println);
+
+// 3. Initialize objects properly
+private String name = ""; // Instead of leaving it null</pre>
+                 <p>Best practice: Prevent NPEs rather than catching them...</p>`,
+            },
+            {
+              type: "assistant", 
+              content: `<p>How would you rate this response?</p>
+                 <div style="display: flex; gap: 0.5rem; margin: 1rem 0; flex-wrap: wrap;">
+                   <div class="inline-card" data-rating="-3">😟 -3 (Poor)</div>
+                   <div class="inline-card" data-rating="-2">😐 -2</div>
+                   <div class="inline-card" data-rating="-1">🤔 -1</div>
+                   <div class="inline-card" data-rating="1">🙂 +1</div>
+                   <div class="inline-card" data-rating="2">😊 +2</div>
+                   <div class="inline-card" data-rating="3">🎉 +3 (Excellent)</div>
+                 </div>`,
+            },
+          ],
+          sidePanel: `<h3 style="margin-bottom: 1rem; color: #ccc;">Testing Progress</h3>
+               <div style="background: #1a1a1a; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                 <p style="font-weight: bold; margin-bottom: 0.5rem;">Session Stats</p>
+                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; text-align: center;">
+                   <div style="background: #0a0a0a; padding: 0.5rem; border-radius: 8px;">
+                     <p style="font-size: 1.5rem; color: #10b981;">50</p>
+                     <p style="font-size: 0.75rem; color: #999;">Tests Run</p>
+                   </div>
+                   <div style="background: #0a0a0a; padding: 0.5rem; border-radius: 8px;">
+                     <p style="font-size: 1.5rem; color: #eab308;">75%</p>
+                     <p style="font-size: 0.75rem; color: #999;">Agreement</p>
+                   </div>
+                 </div>
+               </div>
+               <h3 style="margin-bottom: 1rem; color: #ccc;">Disagreement Patterns</h3>
+               <div style="background: #1a1a1a; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                 <p style="font-weight: bold; margin-bottom: 0.5rem;">By Category</p>
+                 <div style="font-size: 0.875rem;">
+                   <div style="display: flex; justify-content: space-between; padding: 0.5rem 0;">
+                     <span>Code Style</span>
+                     <span style="color: #ef4444;">8 conflicts</span>
+                   </div>
+                   <div style="display: flex; justify-content: space-between; padding: 0.5rem 0;">
+                     <span>Error Handling</span>
+                     <span style="color: #eab308;">3 conflicts</span>
+                   </div>
+                   <div style="display: flex; justify-content: space-between; padding: 0.5rem 0;">
+                     <span>Documentation</span>
+                     <span style="color: #10b981;">1 conflict</span>
+                   </div>
+                 </div>
+               </div>`,
+          nextTrigger: "rating",
+          completionMessage: {
+            content: `<p>Perfect! I've recorded your rating. Now let me run this response through our graders to see how they evaluate it...</p>
+                     
+                     <div style="background: #1a1a1a; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                       <p style="font-weight: bold; margin-bottom: 0.5rem;">Grader Results:</p>
+                       <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.875rem;">
+                         <div style="display: flex; justify-content: space-between;">
+                           <span>Code Accuracy:</span>
+                           <span style="color: #10b981; font-weight: bold;">+3</span>
+                         </div>
+                         <div style="display: flex; justify-content: space-between;">
+                           <span>Language Simplicity:</span>
+                           <span style="color: #10b981; font-weight: bold;">+2</span>
+                         </div>
+                         <div style="display: flex; justify-content: space-between;">
+                           <span>Explanation Quality:</span>
+                           <span style="color: #10b981; font-weight: bold;">+3</span>
+                         </div>
+                         <div style="display: flex; justify-content: space-between;">
+                           <span>Helpfulness:</span>
+                           <span style="color: #10b981; font-weight: bold;">+2</span>
+                         </div>
+                         <div style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid var(--bfds-border); display: flex; justify-content: space-between; font-weight: bold;">
+                           <span>Average Grader Score:</span>
+                           <span style="color: #10b981;">+2.5</span>
+                         </div>
+                         <div style="display: flex; justify-content: space-between; font-weight: bold;">
+                           <span>Your Rating:</span>
+                           <span style="color: #ffd700;">+2</span>
+                         </div>
+                       </div>
+                     </div>
+                     
+                     <p style="margin-top: 1rem;">Interesting! There's a slight disagreement between your rating (+2) and the average grader score (+2.5). Let me analyze this pattern with others from batch testing...</p>
+                     
+                     <div style="margin-top: 1rem; text-align: center;">
+                       <button class="inline-card" data-batch-test="run" style="background: var(--bfds-primary-02); border-color: var(--bfds-primary); color: var(--bfds-primary);">
+                         🚀 Run Batch Tests (50 queries)
+                       </button>
+                     </div>`,
+            nextInput: "Run batch tests to analyze disagreement patterns"
+          },
+          followUpMessage: {
+            content: `<span style="padding: 0.25rem 0.75rem; background: #333; border-radius: 12px; font-size: 0.8rem; color: #ccc;">Batch Test Complete</span>
+                     <p style="margin-top: 1rem;">I've finished running 50 batch tests (cost: $0.24). There's an interesting pattern in the disagreements.</p>
+                     
+                     <div style="background: #1a1a1a; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                       <p style="font-weight: bold; margin-bottom: 0.5rem;">Agreement Analysis</p>
+                       <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                         <span style="font-size: 0.875rem; color: #999;">Agreement:</span>
+                         <div style="flex: 1; height: 24px; background: #2a2b2c; border-radius: 12px; overflow: hidden; position: relative;">
+                           <div style="height: 100%; background: linear-gradient(90deg, #ef4444 0%, #ffd700 50%, #10b981 100%); transition: width 0.5s ease; width: 75%;"></div>
+                         </div>
+                         <span style="font-weight: bold; color: #eab308;">75%</span>
+                       </div>
+                       <p style="font-size: 0.875rem; color: #999;">12 significant disagreements found</p>
+                     </div>
+                     
+                     <p style="margin-top: 1rem;">The main issue: <strong>Your ratings emphasize code elegance, while the grader prioritizes functionality.</strong></p>
+                     
+                     <p style="margin-top: 1rem;">Here's the biggest disagreement - a 5-point gap:</p>
+                     
+                     <div style="background: #1a1a1a; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                       <p style="color: #ef4444; font-weight: bold; margin-bottom: 0.5rem;">Test Case #23: "Implement a singleton pattern"</p>
+                       <div style="display: flex; gap: 2rem; margin-top: 0.5rem;">
+                         <div>
+                           <span style="color: #999;">Your rating:</span>
+                           <span style="color: #ef4444; font-weight: bold; margin-left: 0.5rem;">-2</span>
+                         </div>
+                         <div>
+                           <span style="color: #999;">Grader rating:</span>
+                           <span style="color: #10b981; font-weight: bold; margin-left: 0.5rem;">+3</span>
+                         </div>
+                       </div>
+                     </div>
+                     
+                     <div style="border-left: 3px solid #3b82f6; padding-left: 1.5rem; margin-left: 2rem; margin-top: 1rem;">
+                       <p style="font-weight: bold; margin-bottom: 0.5rem;">The AI's response used this approach:</p>
+                       <pre style="background: #0a0a0a; padding: 1rem; border-radius: 8px; font-size: 0.875rem; overflow-x: auto; margin: 0.5rem 0;">
+public class Singleton {
+  private static Singleton instance = new Singleton();
+  private Singleton() {}
+  public static Singleton getInstance() {
+    return instance;
+  }
+}</pre>
+                     </div>
+                     
+                     <p style="margin-top: 1rem;"><strong>Your perspective:</strong> "Too simplistic, doesn't handle thread safety elegantly"</p>
+                     <p><strong>Grader's perspective:</strong> "Correct, functional, and actually thread-safe due to class loading"</p>
+                     
+                     <p style="margin-top: 1rem;">Here are some ways to resolve this disagreement:</p>
+                     
+                     <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                       <div class="inline-card" data-resolution-choice="accept">
+                         <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                           <strong>✅ Accept Grader's View</strong>
+                           <span style="font-size: 0.875rem; color: var(--bfds-text-muted);">Trust the grader's functionality-first approach</span>
+                         </div>
+                       </div>
+                       <div class="inline-card" data-resolution-choice="middle">
+                         <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                           <strong>🤝 Find Middle Ground</strong>
+                           <span style="font-size: 0.875rem; color: var(--bfds-text-muted);">Balance functionality with elegance (recommended)</span>
+                         </div>
+                       </div>
+                       <div class="inline-card" data-resolution-choice="retrain">
+                         <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                           <strong>🔄 Retrain Grader</strong>
+                           <span style="font-size: 0.875rem; color: var(--bfds-text-muted);">Adjust grader to value more sophisticated patterns</span>
+                         </div>
+                       </div>
+                     </div>
+                     
+                     <p style="margin-top: 1rem;">Or describe your preferred approach:</p>`,
+            nextInput: "I see the grader's point, but I want responses to show more sophisticated patterns. Can we find a middle ground?"
+          },
+          finalMessage: {
+            content: `<p>Perfect! I understand your preference for more sophisticated patterns while maintaining functionality. Let me suggest some resolution strategies:</p>
+                     
+                     <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                       <div class="inline-card" data-resolution="tiered">
+                         <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                           <strong>🎯 Tiered Evaluation</strong>
+                           <span style="font-size: 0.875rem; color: var(--bfds-text-muted);">Create separate graders for basic functionality vs. elegant patterns</span>
+                         </div>
+                       </div>
+                       <div class="inline-card" data-resolution="weighted">
+                         <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                           <strong>⚖️ Weighted Scoring</strong>
+                           <span style="font-size: 0.875rem; color: var(--bfds-text-muted);">30% elegance, 70% functionality - balanced approach</span>
+                         </div>
+                       </div>
+                       <div class="inline-card" data-resolution="context">
+                         <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                           <strong>🧠 Context-Aware Grading</strong>
+                           <span style="font-size: 0.875rem; color: var(--bfds-text-muted);">Add a grader that detects when to provide simple vs. advanced solutions based on the query</span>
+                         </div>
+                       </div>
+                     </div>
+                     
+                     <p style="margin-top: 1rem;">Or describe your ideal solution and I'll implement it.</p>`
+          },
+          nextTrigger: "rating"
+        },
+        {
+          id: 3,
+          title: "Grader Configuration",
+          description: "Customizing evaluation criteria",
+          hint: {
+            title: "⚙️ Grader Configuration", 
+            text: "Fine-tune your graders by editing their evaluation rules. You can see exactly how each grader works and modify the criteria to match your standards.",
+          },
+          messages: [
+            {
+              type: "assistant",
+              content: `<p>Let's configure your evaluation graders.</p>
+                 <p style="margin-top: 1.5rem;">Click any grader below to see its specific evaluation criteria and configuration.</p>
+                 
+                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin: 1.5rem 0;">
+                   <div class="grader-config-card" data-grader="language-simplicity">
+                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                       <span style="font-weight: bold; color: #ffd700;">📝 Language Simplicity</span>
+                       <span style="background: #10b981; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.75rem; color: black;">Active</span>
+                     </div>
+                     <p style="font-size: 0.875rem; color: #999; margin-bottom: 0.5rem;">Ensures explanations use simple, accessible language</p>
+                     <div style="color: #666; font-size: 0.75rem;">Click to configure →</div>
+                   </div>
+                   
+                   <div class="grader-config-card" data-grader="code-accuracy">
+                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                       <span style="font-weight: bold; color: #ffd700;">🎯 Code Accuracy</span>
+                       <span style="background: #10b981; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.75rem; color: black;">Active</span>
+                     </div>
+                     <p style="font-size: 0.875rem; color: #999; margin-bottom: 0.5rem;">Validates syntax and logic correctness</p>
+                     <div style="color: #666; font-size: 0.75rem;">Click to configure →</div>
+                   </div>
+                   
+                   <div class="grader-config-card" data-grader="explanation-quality">
+                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                       <span style="font-weight: bold; color: #ffd700;">🔤 Explanation Quality</span>
+                       <span style="background: #10b981; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.75rem; color: black;">Active</span>
+                     </div>
+                     <p style="font-size: 0.875rem; color: #999; margin-bottom: 0.5rem;">Verifies clear explanations are provided</p>
+                     <div style="color: #666; font-size: 0.75rem;">Click to configure →</div>
+                   </div>
+                 </div>
+                 
+                 <p style="margin-top: 1.5rem;">Choose a grader to configure.</p>`,
+            },
+          ],
+          sidePanel: `<h3 style="margin-bottom: 1rem; color: #ccc;">Grader Library</h3>
+               <div style="margin-bottom: 1.5rem;">
+                 <h4 style="margin-bottom: 0.5rem; color: #888; font-size: 0.875rem;">Active Graders</h4>
+                 <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                   <div class="library-grader active">
+                     <div style="display: flex; justify-content: space-between; align-items: center;">
+                       <span style="font-size: 0.875rem; color: #ffd700;">Language Simplicity</span>
+                       <span style="font-size: 0.75rem; color: #666;">v2.1</span>
+                     </div>
+                   </div>
+                   <div class="library-grader">
+                     <div style="display: flex; justify-content: space-between; align-items: center;">
+                       <span style="font-size: 0.875rem; color: #ccc;">Code Accuracy</span>
+                       <span style="font-size: 0.75rem; color: #666;">v1.2</span>
+                     </div>
+                   </div>
+                   <div class="library-grader">
+                     <div style="display: flex; justify-content: space-between; align-items: center;">
+                       <span style="font-size: 0.875rem; color: #ccc;">Explanation Quality</span>
+                       <span style="font-size: 0.75rem; color: #666;">v1.0</span>
+                     </div>
+                   </div>
+                 </div>
+               </div>`,
+          nextTrigger: "config",
+          followUpMessage: {
+            type: "assistant",
+            content: `<p>Absolutely! I'll help you modify that evaluation rule. Let me show you the change:</p>
+                 <div style="background: #1a1a1a; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                   <div style="margin-bottom: 1rem;">
+                     <div style="color: #ef4444; font-size: 0.875rem; margin-bottom: 0.5rem;">❌ Current Rule:</div>
+                     <p style="color: #ccc; font-size: 0.875rem;">"Verify that acronyms are spelled out on first use" (disabled)</p>
+                   </div>
+                   <div>
+                     <div style="color: #10b981; font-size: 0.875rem; margin-bottom: 0.5rem;">✅ New Rule:</div>
+                     <p style="color: #ccc; font-size: 0.875rem;">"Allow common acronyms (API, URL, HTML) without explanation" (enabled)</p>
+                   </div>
+                 </div>
+                 <p style="margin-top: 1rem;">This adds a new rule that allows common acronyms without explanation. Should I update the grader to version 2.2?</p>
+                 <div style="display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap;">
+                   <button class="inline-card" id="updateGraderBtn" data-grader-action="update" style="background: var(--bfds-primary-02); border-color: var(--bfds-primary); color: var(--bfds-primary);">Yes, update to v2.2</button>
+                   <button class="inline-card" data-grader-action="test">Test first</button>
+                   <button class="inline-card" data-grader-action="examples">Show more examples</button>
+                 </div>`,
+          },
+        },
+        {
+          id: 4,
+          title: "System Optimization",
+          description: "Improving your AI with insights", 
+          hint: {
+            title: "🎯 System Optimization",
+            text: "Based on your evaluation patterns, EvalForge can suggest improvements to your original AI system prompt. This creates a feedback loop for continuous improvement.",
+          },
+          messages: [
+            {
+              type: "assistant",
+              content: `<p style="font-weight: bold; margin-bottom: 0.5rem;">Great news! Your graders are performing excellently.</p>
+                 <p>Based on the patterns I've seen from your refined graders, I have some suggestions to improve your original AI system prompt. These changes could help your coding assistant align better with what your graders are looking for.</p>
+                 
+                 <div class="prompt-analysis">
+                   <h4 style="color: #667eea; margin-bottom: 1rem;">📋 Current System Prompt</h4>
+                   <div class="current-prompt">
+                     You are a helpful coding assistant. Help users debug and write better code. Provide clear explanations and working solutions.
+                   </div>
+                 </div>
+                 
+                 <div class="prompt-suggestions">
+                   <h4 style="color: #10b981; margin-bottom: 1rem;">✨ Suggested Improvements</h4>
+                   
+                   <div class="suggestion-item">
+                     <div class="suggestion-header">
+                       <h5 class="suggestion-title">Language Simplicity Enhancement</h5>
+                       <span class="improvement-badge">+12% improvement</span>
+                     </div>
+                     <p class="suggestion-description">Your Language Simplicity grader shows your assistant could be clearer for junior developers.</p>
+                     <div class="suggestion-code">
+                       <strong>Add:</strong> "Use simple, clear language that junior developers can understand. Avoid unnecessary jargon and explain technical terms when needed."
+                     </div>
+                   </div>
+                   
+                   <div class="suggestion-item">
+                     <div class="suggestion-header">
+                       <h5 class="suggestion-title">Code Structure Focus</h5>
+                       <span class="improvement-badge">+8% improvement</span>
+                     </div>
+                     <p class="suggestion-description">Your graders consistently value well-structured, readable code solutions.</p>
+                     <div class="suggestion-code">
+                       <strong>Add:</strong> "Prioritize clean, readable code with proper formatting, meaningful variable names, and logical structure."
+                     </div>
+                   </div>
+                   
+                   <div class="suggestion-item">
+                     <div class="suggestion-header">
+                       <h5 class="suggestion-title">Context Awareness</h5>
+                       <span class="improvement-badge">+15% improvement</span>
+                     </div>
+                     <p class="suggestion-description">Analysis shows better performance when you acknowledge the user's experience level and project context.</p>
+                     <div class="suggestion-code">
+                       <strong>Add:</strong> "Consider the user's experience level and project context. Ask clarifying questions when the scope is unclear."
+                     </div>
+                   </div>
+                 </div>
+                 
+                 <p style="margin-top: 1.5rem;">Would you like me to show you the updated prompt with these improvements?</p>
+                 <div style="margin-top: 1rem;">
+                   <button class="inline-card" data-action="show-updated" style="background: var(--bfds-primary-02); border-color: var(--bfds-primary); color: var(--bfds-primary);">
+                     Show Updated Prompt
+                   </button>
+                 </div>`,
+            },
+          ],
+          sidePanel: `<h3 style="margin-bottom: 1rem; color: #ccc;">Journey Complete! 🎉</h3>
+               <div style="background: #1a1a1a; padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                 <h4 style="color: #10b981; margin-bottom: 1rem;">Your Evaluation System</h4>
+                 <div style="font-size: 0.875rem; color: #999; margin-bottom: 1rem;">
+                   <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                     <span>Graders Created:</span>
+                     <span style="color: #10b981; font-weight: bold;">6</span>
+                   </div>
+                   <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                     <span>Tests Run:</span>
+                     <span style="color: #10b981; font-weight: bold;">50</span>
+                   </div>
+                   <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                     <span>Agreement Rate:</span>
+                     <span style="color: #10b981; font-weight: bold;">85%</span>
+                   </div>
+                   <div style="display: flex; justify-content: space-between;">
+                     <span>System Optimized:</span>
+                     <span style="color: #10b981; font-weight: bold;">✓</span>
+                   </div>
+                 </div>
+                 <div style="padding: 1rem; background: #0a0a0a; border-radius: 8px; text-align: center;">
+                   <p style="font-weight: bold; color: #10b981; margin-bottom: 0.5rem;">Ready for Production!</p>
+                   <p style="font-size: 0.875rem; color: #999;">Your evaluation system is optimized and ready to use.</p>
+                 </div>
+               </div>`,
+          nextTrigger: "show-updated",
+        },
+      ];
+
+      // State management
+      let currentStep = 1;
+      let currentMessages = [];
+      let awaitingInput = false;
+      let stepComplete = false;
+      let navigationHeaderId = null;
+
+      // DOM elements
+      const chatMessages = document.getElementById("chatMessages");
+      const sidePanel = document.getElementById("sidePanel");
+      const chatInput = document.getElementById("chatInput");
+      const sendButton = document.getElementById("sendButton");
+      const progressFill = document.getElementById("progressFill");
+      const progressText = document.getElementById("progressText");
+      const headerStatus = document.getElementById("headerStatus");
+      const hintOverlay = document.getElementById("hintOverlay");
+      const hintTitle = document.getElementById("hintTitle");
+      const hintText = document.getElementById("hintText");
+      const hintButton = document.getElementById("hintButton");
+      const hintClose = document.getElementById("hintClose");
+      const hintNext = document.getElementById("hintNext");
+      const prevButton = document.getElementById("prevButton");
+      const nextButton = document.getElementById("nextButton");
+      const skipButton = document.getElementById("skipButton");
+
+      // Initialize the demo
+      function initDemo() {
+        addNavigationHeader();
+        loadStep(currentStep);
+        updateProgress();
+        setupEventListeners();
+      }
+
+      // Add persistent navigation header to chat
+      function addNavigationHeader() {
+        navigationHeaderId = `nav-header-${Date.now()}`;
+        const navElement = document.createElement('div');
+        navElement.id = navigationHeaderId;
+        navElement.className = 'message navigation-header';
+        navElement.style.cssText = `
+          background: var(--bfds-background-08);
+          border: none;
+          border-radius: 0;
+          padding: 0.75rem 1rem;
+          margin: -2rem -2rem 1rem -2rem;
+          position: sticky;
+          top: -2rem;
+          z-index: 10;
+        `;
+        updateNavigationHeader();
+        chatMessages.appendChild(navElement);
+      }
+
+      // Update navigation header content
+      function updateNavigationHeader() {
+        const navElement = document.getElementById(navigationHeaderId);
+        if (!navElement) return;
+
+        const stepNames = journeySteps.map(step => step.title);
+        let breadcrumbHtml = '🧭 <strong>Progress:</strong> ';
+        
+        stepNames.forEach((stepName, index) => {
+          const stepNumber = index + 1;
+          if (stepNumber < currentStep) {
+            // Completed step - clickable
+            breadcrumbHtml += `<span style="color: var(--bfds-success); cursor: pointer; text-decoration: underline;" onclick="navigateToStep(${stepNumber})">${stepName} ✓</span>`;
+          } else if (stepNumber === currentStep) {
+            // Current step - highlighted
+            breadcrumbHtml += `<span style="color: var(--bfds-primary); font-weight: bold;">[${stepName}]</span>`;
+          } else {
+            // Future step - muted
+            breadcrumbHtml += `<span style="color: var(--bfds-text-muted);">${stepName}</span>`;
+          }
+          
+          if (index < stepNames.length - 1) {
+            breadcrumbHtml += ' → ';
+          }
+        });
+
+        navElement.innerHTML = `
+          <div style="margin-bottom: 0.5rem;">${breadcrumbHtml}</div>
+          <div style="font-size: 0.875rem; color: var(--bfds-text-muted);">
+            💡 Tip: Type <code>/help</code> for navigation commands
+          </div>
+        `;
+      }
+
+      // Navigate to specific step (for breadcrumb clicks)
+      function navigateToStep(stepNumber) {
+        if (stepNumber < currentStep) {
+          currentStep = stepNumber;
+          loadStep(currentStep);
+          updateProgress();
+        }
+      }
+
+      // Show restart confirmation
+      function showRestartConfirm() {
+        if (confirm('Are you sure you want to restart from the beginning? This will reset all progress.')) {
+          currentStep = 1;
+          loadStep(currentStep);
+          updateProgress();
+        }
+      }
+
+      // Load a specific step
+      function loadStep(stepNumber) {
+        const step = journeySteps.find((s) => s.id === stepNumber);
+        if (!step) return;
+
+        // Clear current messages except navigation header
+        const navHeader = navigationHeaderId ? document.getElementById(navigationHeaderId) : null;
+        chatMessages.innerHTML = "";
+        currentMessages = [];
+        
+        // Re-add navigation header and update it
+        if (navHeader) {
+          chatMessages.appendChild(navHeader);
+          updateNavigationHeader();
+        } else {
+          addNavigationHeader();
+        }
+
+        // Update header
+        headerStatus.textContent = step.title;
+
+        // Load messages
+        step.messages.forEach((message, index) => {
+          // For Interactive Testing step, add extra delay before AI response
+          let delay = index * 1000;
+          if (step.id === 2 && index === 1) {
+            delay = 3000; // 3 second delay before AI response
+          } else if (step.id === 2 && index === 2) {
+            delay = 4000; // 4 second delay before rating question
+          }
+
+          setTimeout(() => {
+            addMessage(message.type, message.content);
+            
+          }, delay);
+        });
+
+        // Update side panel
+        sidePanel.innerHTML = step.sidePanel;
+
+        // Setup step-specific interactions
+        setupStepInteractions(step);
+
+        // Update journey indicators
+        updateJourneyIndicators();
+
+      }
+
+      // Add a message to the chat
+      function addMessage(type, content) {
+        const messageDiv = document.createElement("div");
+
+        if (type === "user") {
+          messageDiv.className = "user-message";
+          messageDiv.innerHTML = `<p>${content}</p>`;
+        } else if (type === "ai-response") {
+          messageDiv.className = "assistant-message";
+          messageDiv.innerHTML = `
+          <div class="assistant-avatar">
+            <div class="avatar">💻</div>
+            <div class="message-content" style="border-color: #10b981;">
+              ${content}
+            </div>
+          </div>
+        `;
+        } else {
+          messageDiv.className = "assistant-message";
+          messageDiv.innerHTML = `
+          <div class="assistant-avatar">
+            <div class="avatar">🤖</div>
+            <div class="message-content">
+              ${content}
+            </div>
+          </div>
+        `;
+        }
+
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+
+      // Setup step-specific interactions
+      function setupStepInteractions(step) {
+        // Remove existing event listeners
+        const existingCards = chatMessages.querySelectorAll(".inline-card");
+        existingCards.forEach((card) => {
+          card.replaceWith(card.cloneNode(true));
+        });
+
+        // Add new event listeners with longer delay to ensure all messages are loaded
+        let interactionDelay = step.messages.length * 1000 + 500;
+        if (step.id === 2) {
+          interactionDelay = 6000; // Wait 6 seconds for Interactive Testing & Analysis step to ensure rating message is fully loaded
+        }
+
+        setTimeout(() => {
+          const cards = chatMessages.querySelectorAll(".inline-card");
+          cards.forEach((card) => {
+            card.addEventListener("click", () => {
+              window.removeHintArrows(); // Remove hints when user clicks
+              if (step.nextTrigger === "choice") {
+                handleChoice(card, step);
+              } else if (step.nextTrigger === "rating") {
+                handleRating(card, step);
+              } else if (step.nextTrigger === "resolution") {
+                const resolution = card.getAttribute("data-resolution");
+                if (resolution) {
+                  handleResolution(card, resolution);
+                }
+              }
+            });
+          });
+
+          // Add hint arrows for choices
+          if (step.nextTrigger === "choice" && cards.length > 0) {
+            setTimeout(() => {
+              window.showHintArrow(cards[0], "left", "→");
+            }, 1000);
+          }
+
+          // Add hint arrows for rating buttons
+          if (step.nextTrigger === "rating" && cards.length > 0) {
+            setTimeout(() => {
+              // Find the middle rating button (+1 or +2)
+              const ratingButton = Array.from(cards).find(
+                (card) =>
+                  card.getAttribute("data-rating") === "2" ||
+                  card.getAttribute("data-rating") === "1",
+              );
+              if (ratingButton) {
+                window.showHintArrow(ratingButton, "top", "↓");
+              }
+            }, 2000); // Reduced delay to show earlier so users don't click before arrow appears
+          }
+
+          // Handle grader configuration cards
+          const graderCards = chatMessages.querySelectorAll(
+            ".grader-config-card",
+          );
+          graderCards.forEach((card) => {
+            card.addEventListener("click", () => {
+              window.removeHintArrows(); // Remove hints when user clicks
+              if (step.nextTrigger === "config") {
+                const graderType = card.getAttribute("data-grader");
+                if (graderType) {
+                  handleConfig(card, graderType);
+                }
+              }
+            });
+          });
+
+          // Add hint arrows for grader config
+          if (step.nextTrigger === "config" && graderCards.length > 0) {
+            setTimeout(() => {
+              window.showHintArrow(graderCards[0], "left", "→");
+            }, 1000);
+          }
+
+          // Add hint arrows for resolution buttons
+          if (step.nextTrigger === "resolution") {
+            setTimeout(() => {
+              const resolutionButtons =
+                chatMessages.querySelectorAll("[data-resolution]");
+              if (resolutionButtons.length > 0) {
+                // Point to the recommended option (context-aware)
+                const recommendedButton = Array.from(resolutionButtons).find(
+                  (btn) => btn.getAttribute("data-resolution") === "context",
+                );
+                if (recommendedButton) {
+                  window.showHintArrow(recommendedButton, "left", "→");
+                }
+              }
+            }, 1000);
+          }
+
+          const buttons = chatMessages.querySelectorAll("[data-action]");
+          buttons.forEach((button) => {
+            // Check if button already has a listener to prevent duplicates
+            if (!button.hasAttribute("data-listener-added")) {
+              button.setAttribute("data-listener-added", "true");
+              button.addEventListener("click", () => {
+                window.removeHintArrows(); // Remove hints when user clicks
+                const action = button.getAttribute("data-action");
+                if (action === "edit") {
+                  // Simulate editing interaction
+                  setTimeout(() => {
+                    if (currentStep < journeySteps.length) {
+                      nextStep();
+                    }
+                  }, 1000);
+                } else if (action === "show-updated") {
+                  handleShowUpdated(button);
+                }
+              });
+            }
+          });
+
+          // Add hint arrows for "show-updated" action buttons
+          if (step.nextTrigger === "show-updated") {
+            setTimeout(() => {
+              const showUpdatedButton = chatMessages.querySelector(
+                '[data-action="show-updated"]',
+              );
+              if (showUpdatedButton) {
+                window.showHintArrow(showUpdatedButton, "top", "↓");
+              }
+            }, 1000);
+          }
+
+          const graderButtons = chatMessages.querySelectorAll(
+            "[data-grader-choice]",
+          );
+          graderButtons.forEach((button) => {
+            button.addEventListener("click", () => {
+              const choice = button.getAttribute("data-grader-choice");
+              handleGraderChoice(button, choice);
+            });
+          });
+        }, interactionDelay);
+
+        // Setup input handling
+        if (step.nextTrigger === "input") {
+          awaitingInput = true;
+          if (step.expectedInput === "system prompt") {
+            chatInput.placeholder = "";
+            chatInput.value =
+              "You are a helpful coding assistant. Help developers debug issues and write better code. Always provide clear explanations, use simple language, and include working examples when possible.";
+            window.autoResizeTextarea(); // Resize to fit the pre-populated text
+          } else {
+            // Prepopulate with expected input for other cases
+            chatInput.placeholder = "";
+            chatInput.value = step.expectedInput;
+            window.autoResizeTextarea(); // Resize to fit the pre-populated text
+          }
+          chatInput.disabled = false;
+          sendButton.disabled = false;
+
+          // Add hint arrow for submit button
+          setTimeout(() => {
+            window.showHintArrow(sendButton, "top", "↓");
+          }, 1000);
+        } else {
+          awaitingInput = false;
+          chatInput.placeholder =
+            "Demo mode - interactions handled automatically";
+          chatInput.disabled = true;
+          sendButton.disabled = true;
+        }
+      }
+
+      // Handle user choice selection
+      function handleChoice(card, step) {
+        const choice = card.getAttribute("data-choice");
+        card.classList.add("selected");
+
+        // Disable other choices
+        const otherCards = chatMessages.querySelectorAll(".inline-card");
+        otherCards.forEach((otherCard) => {
+          if (otherCard !== card) {
+            otherCard.style.opacity = "0.5";
+            otherCard.style.pointerEvents = "none";
+          }
+        });
+
+        // Add user message
+        setTimeout(() => {
+          if (step.userChoices && step.userChoices[choice]) {
+            addMessage("user", step.userChoices[choice]);
+          }
+
+          // For step 1 (combined onboarding), show followUpMessage instead of moving to next step
+          if (step.followUpMessage && currentStep === 1) {
+            setTimeout(() => {
+              addMessage("assistant", step.followUpMessage.content);
+              
+              // Set up input for system prompt
+              if (step.followUpMessage.nextInput) {
+                setTimeout(() => {
+                  awaitingInput = true;
+                  chatInput.placeholder = "";
+                  chatInput.value = step.followUpMessage.nextInput;
+                  chatInput.disabled = false;
+                  sendButton.disabled = false;
+                  window.autoResizeTextarea();
+                  
+                  // Add arrow to submit button
+                  window.showHintArrow(sendButton, "top", "↓");
+                }, 1000);
+              }
+            }, 1500);
+          } else {
+            // For other steps, move to next step as before
+            setTimeout(() => {
+              if (currentStep < journeySteps.length) {
+                nextStep();
+              }
+            }, 2000);
+          }
+        }, 1000);
+      }
+
+      // Handle show updated prompt
+      function handleShowUpdated(button) {
+        button.classList.add("selected");
+        button.style.opacity = "0.5";
+        button.style.pointerEvents = "none";
+
+        // Add user message
+        setTimeout(() => {
+          addMessage("user", "Yes, please show me the updated prompt!");
+
+          setTimeout(() => {
+            // Add the updated prompt message
+            addMessage(
+              "assistant",
+              `<p>Absolutely! Here's your optimized system prompt based on grader insights:</p>
+                       
+                       <div class="updated-prompt">
+                         <h4 style="color: #10b981; margin-bottom: 1rem;">🚀 Optimized System Prompt</h4>
+                         <div class="optimized-prompt">
+                           You are a helpful coding assistant. Help users debug and write better code with clear explanations and working solutions. Use simple, clear language that junior developers can understand. Avoid unnecessary jargon and explain technical terms when needed. Prioritize clean, readable code with proper formatting, meaningful variable names, and logical structure. Consider the user's experience level and project context. Ask clarifying questions when the scope is unclear.
+                         </div>
+                         
+                         <div class="prompt-actions">
+                           <button class="prompt-btn primary" data-action="apply-changes">Apply Changes</button>
+                           <button class="prompt-btn secondary" data-action="preview-changes">Preview Changes</button>
+                           <button class="prompt-btn secondary" data-action="export-prompt">Export Prompt</button>
+                         </div>
+                       </div>
+                       
+                       <p style="margin-top: 1rem;">These changes incorporate all the insights from your evaluation system and should improve your AI assistant's performance by up to 15%!</p>`,
+            );
+
+            // Add event listeners for the new buttons
+            setTimeout(() => {
+              const promptButtons = chatMessages.querySelectorAll(
+                '[data-action^="apply-"], [data-action^="preview-"], [data-action^="export-"]',
+              );
+              promptButtons.forEach((btn) => {
+                btn.addEventListener("click", () => {
+                  window.removeHintArrows(); // Remove hints when user clicks
+                  const action = btn.getAttribute("data-action");
+                  if (action === "apply-changes") {
+                    btn.innerHTML = "✓ Changes Applied";
+                    btn.style.background = "var(--bfds-success)";
+                    btn.style.pointerEvents = "none";
+
+                    // Show completion message
+                    setTimeout(() => {
+                      addMessage(
+                        "assistant",
+                        `<p style="color: var(--bfds-success); font-weight: bold;">🎉 Success! Your system prompt has been updated.</p>
+                                 <p>Your evaluation system is now complete and optimized. You can:</p>
+                                 <ul style="margin: 1rem 0; padding-left: 2rem;">
+                                   <li>Deploy your improved AI assistant with the new prompt</li>
+                                   <li>Continue testing with your refined graders</li>
+                                   <li>Monitor performance improvements in production</li>
+                                   <li>Iterate based on real-world feedback</li>
+                                 </ul>`,
+                      );
+                    }, 1000);
+                  }
+                });
+              });
+
+              // Add hint arrow for "Apply changes" button
+              setTimeout(() => {
+                const applyButton = chatMessages.querySelector(
+                  '[data-action="apply-changes"]',
+                );
+                if (applyButton) {
+                  window.showHintArrow(applyButton, "top", "↓");
+                }
+              }, 1000);
+            }, 500);
+          }, 1500);
+        }, 1000);
+      }
+
+      // Handle rating selection
+      function handleRating(card, step) {
+        const rating = card.getAttribute("data-rating");
+        card.classList.add("selected");
+
+        // Disable other ratings
+        const otherCards = chatMessages.querySelectorAll(".inline-card");
+        otherCards.forEach((otherCard) => {
+          if (otherCard !== card) {
+            otherCard.style.opacity = "0.5";
+            otherCard.style.pointerEvents = "none";
+          }
+        });
+
+        // Add user message
+        setTimeout(() => {
+          addMessage(
+            "user",
+            `I'd give it a ${rating}. Good examples but could use more explanation about try-catch blocks`,
+          );
+
+          // Show the completion message for Interactive Testing step
+          setTimeout(() => {
+            if (step.completionMessage) {
+              addMessage("assistant", step.completionMessage.content);
+              
+              // Remove any existing hint arrows
+              window.removeHintArrows();
+              
+              // Set up batch test button
+              setTimeout(() => {
+                const batchTestButton = chatMessages.querySelector("[data-batch-test='run']");
+                if (batchTestButton) {
+                  batchTestButton.addEventListener("click", () => {
+                    window.removeHintArrows();
+                    // Add user message for batch test
+                    addMessage("user", step.completionMessage.nextInput);
+                    
+                    // Disable button after click
+                    batchTestButton.style.opacity = "0.5";
+                    batchTestButton.style.pointerEvents = "none";
+                    
+                    // Show follow-up message after delay
+                    setTimeout(() => {
+                      if (step.followUpMessage) {
+                        addMessage("assistant", step.followUpMessage.content);
+                        
+                        // Set up resolution choice buttons and input
+                        setTimeout(() => {
+                          // Set up resolution choice buttons
+                          const resolutionButtons = chatMessages.querySelectorAll("[data-resolution-choice]");
+                          resolutionButtons.forEach((button) => {
+                            button.addEventListener("click", () => {
+                              const choice = button.getAttribute("data-resolution-choice");
+                              button.classList.add("selected");
+                              
+                              // Disable other buttons
+                              resolutionButtons.forEach((otherButton) => {
+                                if (otherButton !== button) {
+                                  otherButton.style.opacity = "0.5";
+                                  otherButton.style.pointerEvents = "none";
+                                }
+                              });
+                              
+                              // Set input value based on choice
+                              let userMessage;
+                              if (choice === "accept") {
+                                userMessage = "Accept the grader's view - functionality is more important than elegance";
+                              } else if (choice === "middle") {
+                                userMessage = "I see the grader's point, but I want responses to show more sophisticated patterns. Can we find a middle ground?";
+                              } else if (choice === "retrain") {
+                                userMessage = "Retrain the grader to value more sophisticated and elegant code patterns";
+                              }
+                              
+                              chatInput.value = userMessage;
+                              window.autoResizeTextarea();
+                              
+                              // Add hint arrow to submit button
+                              window.removeHintArrows();
+                              window.showHintArrow(sendButton, "top", "↓");
+                            });
+                          });
+                          
+                          // Set up input field
+                          awaitingInput = true;
+                          chatInput.placeholder = "";
+                          chatInput.value = step.followUpMessage.nextInput;
+                          chatInput.disabled = false;
+                          sendButton.disabled = false;
+
+                          // Force refresh the button state
+                          sendButton.style.opacity = "1";
+                          sendButton.style.cursor = "pointer";
+
+                          window.autoResizeTextarea();
+
+                          // Add arrow to submit button
+                          window.showHintArrow(sendButton, "top", "↓");
+                        }, 1000);
+                      }
+                    }, 2000);
+                  });
+                  
+                  // Add hint arrow to batch test button
+                  window.showHintArrow(batchTestButton, "top", "↓");
+                }
+              }, 500);
+            }
+          }, 1500);
+        }, 1000);
+      }
+
+      // Handle grader choice selection
+      function handleGraderChoice(button, choice) {
+        button.classList.add("selected");
+
+        // Disable other grader choice buttons
+        const otherButtons = chatMessages.querySelectorAll(
+          "[data-grader-choice]",
+        );
+        otherButtons.forEach((otherButton) => {
+          if (otherButton !== button) {
+            otherButton.style.opacity = "0.5";
+            otherButton.style.pointerEvents = "none";
+          }
+        });
+
+        // Add user message based on choice
+        setTimeout(() => {
+          let userMessage;
+          if (choice === "yes") {
+            userMessage = "Yes, create that grader";
+          } else if (choice === "no") {
+            userMessage = "No, the current graders are fine";
+          } else if (choice === "show") {
+            userMessage = "Show me what that grader would do";
+          }
+
+          addMessage("user", userMessage);
+
+          // Add assistant response
+          setTimeout(() => {
+            let assistantMessage;
+            if (choice === "yes") {
+              assistantMessage = `<p>Perfect! I've created the "Exception Handling Completeness" grader.</p>
+                        <p style="margin-top: 0.5rem;">This grader will check that responses cover multiple exception handling approaches (try-catch, Optional, defensive programming, etc.) and explain when to use each one.</p>`;
+            } else if (choice === "no") {
+              assistantMessage = `<p>Understood! We'll stick with the current grader set.</p>
+                        <p style="margin-top: 0.5rem;">Your existing graders should provide good coverage for most coding scenarios.</p>`;
+            } else if (choice === "show") {
+              assistantMessage = `<p>The "Exception Handling Completeness" grader would evaluate:</p>
+                        <ul style="margin: 0.5rem 0 0.5rem 1.5rem; color: #ccc;">
+                          <li><strong>Multiple approaches</strong> - Does the response show different ways to handle exceptions?</li>
+                          <li><strong>Context awareness</strong> - Does it explain when to use each approach?</li>
+                          <li><strong>Best practices</strong> - Are prevention strategies mentioned alongside handling?</li>
+                          <li><strong>Code examples</strong> - Are concrete examples provided for each method?</li>
+                        </ul>
+                        <p style="margin-top: 0.5rem;">Would you like me to create this grader?</p>`;
+            }
+
+            addMessage("assistant", assistantMessage);
+
+          }, 1500);
+        }, 1000);
+      }
+
+      // Handle resolution choice selection
+      function handleConfig(card, graderType) {
+        card.classList.add("selected");
+
+        // Disable other grader cards
+        const otherCards = chatMessages.querySelectorAll(".grader-config-card");
+        otherCards.forEach((otherCard) => {
+          if (otherCard !== card) {
+            otherCard.style.opacity = "0.5";
+            otherCard.style.pointerEvents = "none";
+          }
+        });
+
+        // Add user message
+        setTimeout(() => {
+          let userMessage;
+          if (graderType === "language-simplicity") {
+            userMessage =
+              "I'd like to see the Language Simplicity grader configuration.";
+          } else if (graderType === "code-accuracy") {
+            userMessage = "Show me the Code Accuracy grader settings.";
+          } else if (graderType === "explanation-quality") {
+            userMessage = "Let me configure the Explanation Quality grader.";
+          }
+
+          addMessage("user", userMessage);
+
+          // Add assistant response with detailed configuration interface
+          setTimeout(() => {
+            const detailedConfig = `<div class="grader-detailed-config">
+                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding: 1rem; background: #1a1a1a; border-radius: 8px;">
+                   <div style="display: flex; align-items: center; gap: 1rem;">
+                     <span style="font-size: 1.2rem;">📝</span>
+                     <span style="font-weight: bold; font-size: 1.1rem;">Language Simplicity</span>
+                     <span style="background: #333; padding: 0.25rem 0.5rem; border-radius: 8px; font-size: 0.75rem; color: #ffd700;">v2.1</span>
+                   </div>
+                   <div style="display: flex; gap: 0.5rem;">
+                     <button class="inline-card small">🧪 Test</button>
+                     <button class="inline-card small">📊 Analytics</button>
+                     <button class="inline-card small primary">✏️ Edit</button>
+                   </div>
+                 </div>
+                 
+                 <div style="background: #0a0a0a; padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                   <h4 style="margin-bottom: 1rem; color: #ccc;">Evaluation Rules:</h4>
+                   <ul style="margin: 0 0 1rem 1.5rem; color: #ccc; line-height: 1.6;">
+                     <li>Flag ANY technical jargon without immediate explanation</li>
+                     <li>Require explanations within same sentence or paragraph</li>
+                     <li>Check for overly complex sentence structures</li>
+                     <li>Verify that acronyms are spelled out on first use</li>
+                   </ul>
+                   
+                   <h4 style="margin: 1.5rem 0 1rem 0; color: #ccc;">Scoring Guidelines:</h4>
+                   <div style="display: grid; grid-template-columns: 60px 1fr; gap: 0.5rem; font-size: 0.875rem;">
+                     <div style="color: #10b981; font-weight: bold;">+3</div>
+                     <div style="color: #999;">Perfect simplicity, all terms explained</div>
+                     <div style="color: #10b981; font-weight: bold;">+2</div>
+                     <div style="color: #999;">Mostly simple, minor jargon with explanations</div>
+                     <div style="color: #10b981; font-weight: bold;">+1</div>
+                     <div style="color: #999;">Generally accessible, some unclear terms</div>
+                     <div style="color: #ef4444; font-weight: bold;">-1</div>
+                     <div style="color: #999;">Multiple technical terms without explanation</div>
+                     <div style="color: #ef4444; font-weight: bold;">-2</div>
+                     <div style="color: #999;">Heavily technical, difficult to understand</div>
+                     <div style="color: #ef4444; font-weight: bold;">-3</div>
+                     <div style="color: #999;">Completely inaccessible, expert-level jargon</div>
+                   </div>
+                 </div>
+                 
+                 <div style="background: #0a0a0a; padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                   <h4 style="margin-bottom: 1rem; color: #ccc;">Evaluation Criteria</h4>
+                   <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                     <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                       <input type="checkbox" checked style="transform: scale(1.2);">
+                       <span style="color: #ccc;">Flag ANY technical jargon without immediate explanation</span>
+                     </label>
+                     <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                       <input type="checkbox" checked style="transform: scale(1.2);">
+                       <span style="color: #ccc;">Require explanations within same sentence or paragraph</span>
+                     </label>
+                     <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                       <input type="checkbox" checked style="transform: scale(1.2);">
+                       <span style="color: #ccc;">Check for overly complex sentence structures</span>
+                     </label>
+                     <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                       <input type="checkbox" style="transform: scale(1.2);">
+                       <span style="color: #ccc;">Allow common acronyms (API, URL, HTML) without explanation</span>
+                     </label>
+                   </div>
+                   <button class="inline-card" style="margin-top: 1rem;">➕ Add Custom Rule</button>
+                 </div>
+                 
+                 <div style="background: #0a0a0a; padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                   <h4 style="margin-bottom: 1rem; color: #ccc;">Test Examples</h4>
+                   
+                   <div class="test-examples">
+                     <div class="example-item good">
+                       <div class="example-header">
+                         <span class="example-label">✅ Good Example</span>
+                         <span class="example-score">+3</span>
+                       </div>
+                       <div class="example-content">
+                         <p>
+                           <strong>Input:</strong> "How do I implement
+                           authentication?"
+                         </p>
+                         <p>
+                           <strong>Response:</strong> "Authentication is
+                           the process of verifying who a user is. To
+                           implement it, you'll need to..."
+                         </p>
+                         <p>
+                           <strong>Why it's good:</strong> Technical term
+                           "authentication" is immediately explained in
+                           simple language.
+                         </p>
+                       </div>
+                     </div>
+
+                     <div class="example-item bad">
+                       <div class="example-header">
+                         <span class="example-label">❌ Bad Example</span>
+                         <span class="example-score">-2</span>
+                       </div>
+                       <div class="example-content">
+                         <p>
+                           <strong>Input:</strong> "How do I implement
+                           authentication?"
+                         </p>
+                         <p>
+                           <strong>Response:</strong> "You'll need to
+                           configure OAuth2 with JWT tokens and implement
+                           RBAC for authorization..."
+                         </p>
+                         <p>
+                           <strong>Why it's bad:</strong> Multiple
+                           technical terms (OAuth2, JWT, RBAC) without
+                           explanation.
+                         </p>
+                       </div>
+                     </div>
+                   </div>
+                 </div>
+                 
+                 <div style="background: #0a0a0a; padding: 1.5rem; border-radius: 8px;">
+                   <h4 style="margin-bottom: 1rem; color: #ccc;">Performance Metrics</h4>
+                   <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem;">
+                     <div style="text-align: center; padding: 1rem; background: #1a1a1a; border-radius: 6px;">
+                       <div style="font-size: 1.5rem; font-weight: bold; color: #10b981;">92%</div>
+                       <div style="font-size: 0.8rem; color: #999;">Accuracy</div>
+                     </div>
+                     <div style="text-align: center; padding: 1rem; background: #1a1a1a; border-radius: 6px;">
+                       <div style="font-size: 1.5rem; font-weight: bold; color: #ffd700;">1,247</div>
+                       <div style="font-size: 0.8rem; color: #999;">Tests Run</div>
+                     </div>
+                     <div style="text-align: center; padding: 1rem; background: #1a1a1a; border-radius: 6px;">
+                       <div style="font-size: 1.5rem; font-weight: bold; color: #ef4444;">34</div>
+                       <div style="font-size: 0.8rem; color: #999;">Disagreements</div>
+                     </div>
+                     <div style="text-align: center; padding: 1rem; background: #1a1a1a; border-radius: 6px;">
+                       <div style="font-size: 1.5rem; font-weight: bold; color: #3b82f6;">0.8s</div>
+                       <div style="font-size: 0.8rem; color: #999;">Avg Time</div>
+                     </div>
+                   </div>
+                 </div>
+               </div>`;
+
+            addMessage("assistant", detailedConfig);
+
+            // Add follow-up message asking what the user wants to do
+            setTimeout(() => {
+              addMessage(
+                "assistant",
+                `<p>You can modify any of these rules, add new ones, or test the grader with different examples. What would you like to do?</p>`,
+              );
+
+              // Enable input for user to ask about acronyms
+              setTimeout(() => {
+                awaitingInput = true;
+                chatInput.placeholder = "";
+                chatInput.value =
+                  "This is great! Can I add a rule to allow common acronyms without explanation?";
+                chatInput.disabled = false;
+                sendButton.disabled = false;
+                window.autoResizeTextarea(); // Resize to fit the pre-populated text
+
+                // Add arrow to submit button
+                window.showHintArrow(sendButton, "top", "↓");
+              }, 1000);
+            }, 1000);
+          }, 1000);
+        }, 1000);
+      }
+
+      function handleResolution(button, resolution) {
+        button.classList.add("selected");
+
+        // Disable other resolution buttons
+        const otherButtons = chatMessages.querySelectorAll("[data-resolution]");
+        otherButtons.forEach((otherButton) => {
+          if (otherButton !== button) {
+            otherButton.style.opacity = "0.5";
+            otherButton.style.pointerEvents = "none";
+          }
+        });
+
+        // Add user message based on resolution choice
+        setTimeout(() => {
+          let userMessage;
+          if (resolution === "tiered") {
+            userMessage =
+              "I like the tiered evaluation approach. Let's create separate graders for basic and advanced patterns.";
+          } else if (resolution === "weighted") {
+            userMessage =
+              "Weighted scoring sounds good. 30% elegance and 70% functionality makes sense.";
+          } else if (resolution === "context") {
+            userMessage =
+              "The context-aware option is perfect! That's exactly what I was looking for.";
+          }
+
+          addMessage("user", userMessage);
+
+          // Add assistant response
+          setTimeout(() => {
+            let assistantMessage;
+            if (resolution === "tiered") {
+              assistantMessage = `<p>Perfect! I'll create two new graders:</p>
+                        <ul style="margin: 0.5rem 0 0.5rem 1.5rem; color: #ccc;">
+                          <li><strong>Basic Correctness</strong> - Evaluates functional accuracy and syntax</li>
+                          <li><strong>Advanced Patterns</strong> - Assesses elegant, sophisticated solutions</li>
+                        </ul>
+                        <p style="margin-top: 0.5rem;">This way, responses get credit for both working correctly AND showing advanced techniques when appropriate.</p>`;
+            } else if (resolution === "weighted") {
+              assistantMessage = `<p>Excellent! I've updated the scoring system:</p>
+                        <div style="background: #1a1a1a; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                          <p style="font-weight: bold; margin-bottom: 0.5rem;">New Weighted Scoring</p>
+                          <div style="display: flex; justify-content: space-between; padding: 0.25rem 0;">
+                            <span>Functionality & Correctness</span>
+                            <span style="color: #10b981; font-weight: bold;">70%</span>
+                          </div>
+                          <div style="display: flex; justify-content: space-between; padding: 0.25rem 0;">
+                            <span>Code Elegance & Style</span>
+                            <span style="color: #ffd700; font-weight: bold;">30%</span>
+                          </div>
+                        </div>
+                        <p>This balances your preference for elegant solutions with practical functionality.</p>`;
+            } else if (resolution === "context") {
+              assistantMessage = `<p>Brilliant choice! I'm creating a "Context-Aware Sophistication" grader that:</p>
+                        <ul style="margin: 0.5rem 0 0.5rem 1.5rem; color: #ccc;">
+                          <li><strong>Detects query complexity</strong> - Simple questions get simple answers</li>
+                          <li><strong>Identifies experience level</strong> - Adjusts sophistication accordingly</li>
+                          <li><strong>Recognizes learning moments</strong> - Shows advanced patterns when educational</li>
+                          <li><strong>Balances practicality</strong> - Elegant solutions that still work</li>
+                        </ul>
+                        <p style="margin-top: 0.5rem;">This eliminates the disagreement by making sophistication contextual rather than absolute.</p>
+                        
+                        <div style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                          <div class="inline-card" data-context-action="test">
+                            <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                              <strong>🧪 Test This Setup</strong>
+                              <span style="font-size: 0.875rem; color: var(--bfds-text-muted);">See how it handles different query types</span>
+                            </div>
+                          </div>
+                          <div class="inline-card" data-context-action="configure">
+                            <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                              <strong>⚙️ Configure Details</strong>
+                              <span style="font-size: 0.875rem; color: var(--bfds-text-muted);">Fine-tune the sophistication detection rules</span>
+                            </div>
+                          </div>
+                          <div class="inline-card" data-context-action="example">
+                            <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                              <strong>💡 Show Example</strong>
+                              <span style="font-size: 0.875rem; color: var(--bfds-text-muted);">Demonstrate how it would handle our singleton case</span>
+                            </div>
+                          </div>
+                        </div>`;
+            }
+
+            addMessage("assistant", assistantMessage);
+
+            // Set up event listeners for context action buttons (only for context resolution)
+            if (resolution === "context") {
+              setTimeout(() => {
+                const contextButtons = chatMessages.querySelectorAll("[data-context-action]");
+                contextButtons.forEach((button) => {
+                  button.addEventListener("click", () => {
+                    const action = button.getAttribute("data-context-action");
+                    button.classList.add("selected");
+                    
+                    // Disable other buttons
+                    contextButtons.forEach((otherButton) => {
+                      if (otherButton !== button) {
+                        otherButton.style.opacity = "0.5";
+                        otherButton.style.pointerEvents = "none";
+                      }
+                    });
+                    
+                    // Add user message and assistant response based on action
+                    setTimeout(() => {
+                      let userMessage, assistantResponse;
+                      
+                      if (action === "test") {
+                        userMessage = "Test this setup - show me how it handles different query types";
+                        assistantResponse = `<p>Perfect! Let me demonstrate with three test cases:</p>
+                                           <div style="background: #1a1a1a; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                                             <p style="font-weight: bold; margin-bottom: 0.5rem;">🟢 Simple Query: "How do I add two numbers?"</p>
+                                             <p style="color: #10b981; font-size: 0.875rem;">→ Grader expects: Simple, direct answer</p>
+                                           </div>
+                                           <div style="background: #1a1a1a; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                                             <p style="font-weight: bold; margin-bottom: 0.5rem;">🟡 Intermediate: "Best practices for error handling?"</p>
+                                             <p style="color: #eab308; font-size: 0.875rem;">→ Grader expects: Balanced explanation with examples</p>
+                                           </div>
+                                           <div style="background: #1a1a1a; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                                             <p style="font-weight: bold; margin-bottom: 0.5rem;">🔴 Advanced: "Implement thread-safe singleton with lazy initialization"</p>
+                                             <p style="color: #ef4444; font-size: 0.875rem;">→ Grader expects: Sophisticated patterns welcome</p>
+                                           </div>`;
+                      } else if (action === "configure") {
+                        userMessage = "Configure the details - let me fine-tune the sophistication detection rules";
+                        assistantResponse = `<p>Excellent! Here are the key rules you can adjust:</p>
+                                           <div style="background: #1a1a1a; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                                             <p style="font-weight: bold; margin-bottom: 0.5rem;">🎯 Complexity Detection</p>
+                                             <p style="font-size: 0.875rem; color: #ccc;">Keywords: "design pattern", "architecture", "scalable", "performance"</p>
+                                           </div>
+                                           <div style="background: #1a1a1a; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                                             <p style="font-weight: bold; margin-bottom: 0.5rem;">👨‍🎓 Experience Level Indicators</p>
+                                             <p style="font-size: 0.875rem; color: #ccc;">Beginner: "how do I", "what is" | Advanced: "optimize", "best practices"</p>
+                                           </div>
+                                           <p style="margin-top: 1rem;">These rules help the grader choose the right level of sophistication.</p>`;
+                      } else if (action === "example") {
+                        userMessage = "Show me an example - demonstrate how this would handle our singleton case";
+                        assistantResponse = `<p>Great question! Here's exactly how the context-aware grader would handle our singleton disagreement:</p>
+                                           <div style="background: #1a1a1a; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                                             <p style="font-weight: bold; margin-bottom: 0.5rem;">🧠 Context Analysis</p>
+                                             <p style="font-size: 0.875rem; color: #ccc;">Query: "Implement a singleton pattern"</p>
+                                             <p style="font-size: 0.875rem; color: #eab308;">→ Detected: Advanced pattern request</p>
+                                             <p style="font-size: 0.875rem; color: #10b981;">→ Sophistication level: HIGH</p>
+                                           </div>
+                                           <div style="background: #1a1a1a; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                                             <p style="font-weight: bold; margin-bottom: 0.5rem;">📊 New Grader Score</p>
+                                             <p style="font-size: 0.875rem; color: #ccc;">Previous: Functionality +3, Your rating -2</p>
+                                             <p style="font-size: 0.875rem; color: #10b981;">Context-aware: +2 (balanced for advanced query)</p>
+                                           </div>
+                                           <p style="margin-top: 1rem;">The disagreement is resolved because the grader now considers query sophistication!</p>
+                                           
+                                           <div style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                                             <div class="inline-card" data-final-action="rerun">
+                                               <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                                                 <strong>🔄 Rerun Batch Tests</strong>
+                                                 <span style="font-size: 0.875rem; color: var(--bfds-text-muted);">Test the improved grader with 50 new queries</span>
+                                               </div>
+                                             </div>
+                                             <div class="inline-card" data-final-action="configure">
+                                               <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                                                 <strong>⚙️ Check Out Grader</strong>
+                                                 <span style="font-size: 0.875rem; color: var(--bfds-text-muted);">Configure and fine-tune your evaluation system</span>
+                                               </div>
+                                             </div>
+                                           </div>`;
+                      }
+                      
+                      addMessage("user", userMessage);
+                      
+                      setTimeout(() => {
+                        addMessage("assistant", assistantResponse);
+                        
+                        // Show final action buttons after response
+                        setTimeout(() => {
+                          const finalActionButtons = chatMessages.querySelectorAll("[data-final-action]");
+                          finalActionButtons.forEach((button) => {
+                            button.addEventListener("click", () => {
+                              const action = button.getAttribute("data-final-action");
+                              button.classList.add("selected");
+                              
+                              // Disable other buttons
+                              finalActionButtons.forEach((otherButton) => {
+                                if (otherButton !== button) {
+                                  otherButton.style.opacity = "0.5";
+                                  otherButton.style.pointerEvents = "none";
+                                }
+                              });
+                              
+                              // Add user message and handle action
+                              setTimeout(() => {
+                                let userMessage, assistantResponse;
+                                
+                                if (action === "rerun") {
+                                  userMessage = "Rerun batch tests - let me see how the improved grader performs";
+                                  assistantResponse = `<p>Excellent! Running 50 new batch tests with the context-aware grader...</p>
+                                                     <div style="background: #1a1a1a; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                                                       <p style="font-weight: bold; margin-bottom: 0.5rem;">📊 Improved Results</p>
+                                                       <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                                         <span>Agreement Rate:</span>
+                                                         <span style="color: #10b981; font-weight: bold;">92% (+17%)</span>
+                                                       </div>
+                                                       <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                                         <span>Disagreements:</span>
+                                                         <span style="color: #10b981; font-weight: bold;">4 (-8)</span>
+                                                       </div>
+                                                       <div style="display: flex; justify-content: space-between;">
+                                                         <span>Avg Score Difference:</span>
+                                                         <span style="color: #10b981; font-weight: bold;">0.3 (-1.2)</span>
+                                                       </div>
+                                                     </div>
+                                                     <p style="margin-top: 1rem;">Outstanding improvement! The context-aware grader significantly reduced disagreements.</p>`;
+                                } else if (action === "configure") {
+                                  userMessage = "Check out grader - let me configure and fine-tune the evaluation system";
+                                  // For configure action, go directly to next step
+                                  addMessage("user", userMessage);
+                                  
+                                  setTimeout(() => {
+                                    window.removeHintArrows();
+                                    if (currentStep < journeySteps.length) {
+                                      nextStep();
+                                    }
+                                  }, 1000);
+                                  return; // Exit early for configure action
+                                }
+                                
+                                addMessage("user", userMessage);
+                                
+                                setTimeout(() => {
+                                  addMessage("assistant", assistantResponse);
+                                  
+                                  // Add continue button after final action
+                                  setTimeout(() => {
+                                    const continueButton = document.createElement("div");
+                                    continueButton.innerHTML = `
+                                      <div style="text-align: center; margin-top: 2rem;">
+                                        <button class="inline-card" id="continueAfterFinal" style="background: var(--bfds-primary-02); border-color: var(--bfds-primary); color: var(--bfds-primary);">
+                                          Continue to Grader Configuration →
+                                        </button>
+                                      </div>
+                                    `;
+                                    chatMessages.appendChild(continueButton);
+                                    
+                                    document.getElementById("continueAfterFinal").addEventListener("click", () => {
+                                      window.removeHintArrows();
+                                      if (currentStep < journeySteps.length) {
+                                        nextStep();
+                                      }
+                                    });
+                                    
+                                    // Add hint arrow to continue button
+                                    const finalContinueBtn = document.getElementById("continueAfterFinal");
+                                    if (finalContinueBtn) {
+                                      window.showHintArrow(finalContinueBtn, "left", "→");
+                                    }
+                                  }, 1000);
+                                }, 1500);
+                              }, 1000);
+                            });
+                          });
+                          
+                          // Add hint arrow to "Check Out Grader" button by default
+                          const configureButton = Array.from(finalActionButtons).find(
+                            (btn) => btn.getAttribute("data-final-action") === "configure"
+                          );
+                          if (configureButton) {
+                            window.showHintArrow(configureButton, "left", "→");
+                          }
+                        }, 1000);
+                      }, 1500);
+                    }, 1000);
+                  });
+                });
+                
+                // Add hint arrow to "Show Example" button by default
+                const exampleButton = Array.from(contextButtons).find(
+                  (btn) => btn.getAttribute("data-context-action") === "example"
+                );
+                if (exampleButton) {
+                  window.showHintArrow(exampleButton, "left", "→");
+                }
+              }, 500);
+            } else {
+              // Add continue button for non-context resolutions
+              setTimeout(() => {
+                const continueButton = document.createElement("div");
+                continueButton.innerHTML = `
+                  <div style="text-align: center; margin-top: 2rem;">
+                    <button class="inline-card" id="continueAfterResolution" style="background: var(--bfds-primary-02); border-color: var(--bfds-primary); color: var(--bfds-primary);">
+                      Continue to Next Step →
+                    </button>
+                  </div>
+                `;
+                chatMessages.appendChild(continueButton);
+
+              // Scroll to show the continue button
+              setTimeout(() => {
+                continueButton.scrollIntoView({
+                  behavior: "smooth",
+                  block: "end",
+                });
+              }, 100);
+
+              document
+                .getElementById("continueAfterResolution")
+                .addEventListener("click", () => {
+                  window.removeHintArrows();
+                  if (currentStep < journeySteps.length) {
+                    nextStep();
+                  }
+                });
+
+              // Add arrow to continue button
+              setTimeout(() => {
+                const continueAfterResolutionBtn = document.getElementById(
+                  "continueAfterResolution",
+                );
+                if (continueAfterResolutionBtn) {
+                  window.showHintArrow(continueAfterResolutionBtn, "left", "→");
+                }
+              }, 500);
+              });
+            }
+          }, 1500);
+        }, 1000);
+      }
+
+      // Move to next step
+      function nextStep() {
+        if (currentStep < journeySteps.length) {
+          currentStep++;
+          loadStep(currentStep);
+          updateProgress();
+        }
+      }
+
+      // Move to previous step
+      function prevStep() {
+        if (currentStep > 1) {
+          currentStep--;
+          loadStep(currentStep);
+          updateProgress();
+        }
+      }
+
+      // Update progress indicators
+      function updateProgress() {
+        const progress = (currentStep / journeySteps.length) * 100;
+        progressFill.style.width = `${progress}%`;
+        progressText.textContent = `Step ${currentStep} of ${journeySteps.length}: ${journeySteps[currentStep - 1].title}`;
+
+        // Update navigation buttons
+        prevButton.disabled = currentStep === 1;
+        nextButton.disabled = currentStep === journeySteps.length;
+
+        if (currentStep === journeySteps.length) {
+          nextButton.textContent = "Start Over";
+          nextButton.disabled = false;
+        } else {
+          nextButton.textContent = "Next →";
+        }
+      }
+
+      // Update journey step indicators
+      function updateJourneyIndicators() {
+        const steps = document.querySelectorAll(".journey-step");
+        steps.forEach((step, index) => {
+          const stepNumber = index + 1;
+          if (stepNumber < currentStep) {
+            step.classList.add("completed");
+            step.classList.remove("active");
+          } else if (stepNumber === currentStep) {
+            step.classList.add("active");
+            step.classList.remove("completed");
+          } else {
+            step.classList.remove("active", "completed");
+          }
+        });
+      }
+
+      // Show hint overlay
+      function showHint() {
+        const step = journeySteps[currentStep - 1];
+        if (step && step.hint) {
+          hintTitle.textContent = step.hint.title;
+          hintText.textContent = step.hint.text;
+          hintOverlay.classList.add("active");
+        }
+      }
+
+      // Hide hint overlay
+      function hideHint() {
+        hintOverlay.classList.remove("active");
+      }
+
+      // Setup event listeners
+      function setupEventListeners() {
+        // Hint controls
+        hintButton.addEventListener("click", showHint);
+        hintClose.addEventListener("click", hideHint);
+        hintNext.addEventListener("click", hideHint);
+
+        // Navigation controls
+        prevButton.addEventListener("click", prevStep);
+        nextButton.addEventListener("click", () => {
+          if (currentStep === journeySteps.length) {
+            // Restart demo
+            currentStep = 1;
+            loadStep(currentStep);
+            updateProgress();
+          } else {
+            nextStep();
+          }
+        });
+
+        skipButton.addEventListener("click", nextStep);
+
+        // Chat input
+        chatInput.addEventListener("keypress", (e) => {
+          if (e.key === "Enter" && !e.shiftKey && !sendButton.disabled) {
+            e.preventDefault();
+            handleUserInput();
+          }
+        });
+
+        // Auto-resize textarea (moved to global scope)
+        window.autoResizeTextarea = function () {
+          const chatInput = document.getElementById("chatInput");
+          if (chatInput) {
+            chatInput.style.height = "auto";
+            chatInput.style.height =
+              Math.min(chatInput.scrollHeight, 96) + "px"; // 96px = 6rem max height
+          }
+        };
+
+        // Hint arrow functions
+        window.showHintArrow = function (
+          targetElement,
+          direction = "top",
+          text = "↑",
+        ) {
+          if (!targetElement) return;
+
+          // Remove existing arrows
+          window.removeHintArrows();
+
+          const arrow = document.createElement("div");
+          arrow.className = `hint-arrow ${direction}`;
+          arrow.textContent = text;
+          arrow.id = "current-hint-arrow";
+
+          // Position relative to target
+          targetElement.style.position = "relative";
+          targetElement.appendChild(arrow);
+
+          // Arrows stay until user clicks - no auto-removal timer
+        };
+
+        window.removeHintArrows = function () {
+          const existingArrows = document.querySelectorAll(".hint-arrow");
+          existingArrows.forEach((arrow) => arrow.remove());
+        };
+
+        chatInput.addEventListener("input", window.autoResizeTextarea);
+        chatInput.addEventListener("paste", () => {
+          setTimeout(window.autoResizeTextarea, 0);
+        });
+
+        sendButton.addEventListener("click", handleUserInput);
+
+        // Close hint overlay when clicking outside
+        hintOverlay.addEventListener("click", (e) => {
+          if (e.target === hintOverlay) {
+            hideHint();
+          }
+        });
+      }
+
+      // Handle chat commands
+      function handleChatCommand(command) {
+        const cmd = command.toLowerCase();
+        
+        // Add command message to chat
+        addMessage("user", command);
+        
+        // Simulate short delay for response
+        setTimeout(() => {
+          switch (cmd) {
+            case '/back':
+              if (currentStep > 1) {
+                addMessage("assistant", "📍 Moving back to the previous step...");
+                setTimeout(() => {
+                  prevStep();
+                }, 500);
+              } else {
+                addMessage("assistant", "ℹ️ You're already at the first step.");
+              }
+              break;
+              
+            case '/menu':
+              showNavigationMenu();
+              break;
+              
+            case '/restart':
+              addMessage("assistant", "🔄 Restarting the demo from the beginning...");
+              setTimeout(() => {
+                currentStep = 1;
+                loadStep(currentStep);
+                updateProgress();
+              }, 1000);
+              break;
+              
+            case '/skip':
+              if (currentStep < journeySteps.length) {
+                addMessage("assistant", "⏭️ Skipping to the next step...");
+                setTimeout(() => {
+                  nextStep();
+                }, 500);
+              } else {
+                addMessage("assistant", "ℹ️ You're at the final step. Use '/restart' to begin again.");
+              }
+              break;
+              
+            case '/help':
+              showHelpMenu();
+              break;
+              
+            default:
+              addMessage("assistant", `❓ Unknown command: ${command}. Type '/help' to see available commands.`);
+          }
+        }, 300);
+      }
+
+      // Show navigation menu
+      function showNavigationMenu() {
+        let menuHtml = '<div style="background: var(--bfds-background-active); border: 1px solid var(--bfds-border); border-radius: 8px; padding: 1rem; margin: 0.5rem 0;">';
+        menuHtml += '<h4 style="margin: 0 0 1rem 0; color: var(--bfds-primary);">🧭 Navigation Menu</h4>';
+        
+        journeySteps.forEach((step, index) => {
+          const stepNumber = index + 1;
+          const isCompleted = stepNumber < currentStep;
+          const isCurrent = stepNumber === currentStep;
+          const isClickable = isCompleted;
+          
+          let stepClass = 'color: var(--bfds-text-muted);';
+          if (isCompleted) stepClass = 'color: var(--bfds-success);';
+          if (isCurrent) stepClass = 'color: var(--bfds-primary); font-weight: bold;';
+          
+          menuHtml += `<div style="margin: 0.5rem 0; ${stepClass}">`;
+          if (isClickable) {
+            menuHtml += `<span onclick="navigateToStep(${stepNumber})" style="cursor: pointer; text-decoration: underline;">${stepNumber}. ${step.title} ✓</span>`;
+          } else if (isCurrent) {
+            menuHtml += `${stepNumber}. [${step.title}] - Current`;
+          } else {
+            menuHtml += `${stepNumber}. ${step.title}`;
+          }
+          menuHtml += '</div>';
+        });
+        
+        menuHtml += '</div>';
+        addMessage("assistant", menuHtml);
+      }
+
+      // Show help menu
+      function showHelpMenu() {
+        const helpHtml = `
+          <div style="background: var(--bfds-background-active); border: 1px solid var(--bfds-border); border-radius: 8px; padding: 1rem; margin: 0.5rem 0;">
+            <h4 style="margin: 0 0 1rem 0; color: var(--bfds-primary);">💬 Chat Commands</h4>
+            <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.875rem;">
+              <div><code>/back</code> - Return to previous step</div>
+              <div><code>/menu</code> - Show navigation menu with all steps</div>
+              <div><code>/restart</code> - Start over from the beginning</div>
+              <div><code>/skip</code> - Advance to next step</div>
+              <div><code>/help</code> - Show this help menu</div>
+            </div>
+            <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--bfds-border); color: var(--bfds-text-muted); font-size: 0.875rem;">
+              💡 You can also click on completed steps in the progress bar above to navigate back
+            </div>
+          </div>
+        `;
+        addMessage("assistant", helpHtml);
+      }
+
+      // Handle user input
+      function handleUserInput() {
+        if (!awaitingInput || !chatInput.value.trim()) return;
+
+        window.removeHintArrows(); // Remove hints when user submits
+        const input = chatInput.value.trim();
+        
+        // Check for chat commands
+        if (input.startsWith('/')) {
+          handleChatCommand(input);
+          chatInput.value = "";
+          chatInput.style.height = "auto";
+          return;
+        }
+
+        addMessage("user", input);
+        chatInput.value = "";
+
+        // Reset textarea height to 1 row
+        chatInput.style.height = "auto";
+
+        // Disable input after submission
+        awaitingInput = false;
+        chatInput.disabled = true;
+        sendButton.disabled = true;
+
+        // Simulate AI response
+        setTimeout(() => {
+          const step = journeySteps[currentStep - 1];
+          if (step.expectedInput === "system prompt") {
+            // For combined onboarding step (step 1), show final message instead of moving to next step
+            if (step.finalMessage && currentStep === 1) {
+              setTimeout(() => {
+                addMessage("assistant", step.finalMessage.content);
+                if (step.finalSidePanel) {
+                  sidePanel.innerHTML = step.finalSidePanel;
+                }
+                // Don't move to next step automatically - let user click "Continue to Testing"
+              }, 1500);
+            } else {
+              // Move to next step after system prompt (for other steps)
+              setTimeout(() => {
+                if (currentStep < journeySteps.length) {
+                  nextStep();
+                }
+              }, 1000);
+            }
+          } else if (
+            step.followUpMessage &&
+            input.toLowerCase().includes("example")
+          ) {
+            // Handle follow-up message for disagreement analysis (merged step)
+            addMessage("assistant", step.followUpMessage.content);
+
+            // Set up next input if specified
+            if (step.followUpMessage.nextInput) {
+              setTimeout(() => {
+                awaitingInput = true;
+                chatInput.placeholder = "";
+                chatInput.value = step.followUpMessage.nextInput;
+                chatInput.disabled = false;
+                sendButton.disabled = false;
+
+                // Force refresh the button state
+                sendButton.style.opacity = "1";
+                sendButton.style.cursor = "pointer";
+
+                window.autoResizeTextarea();
+
+                // Add arrow to submit button
+                window.showHintArrow(sendButton, "top", "↓");
+              }, 1000);
+            }
+          } else if (
+            step.followUpMessage &&
+            input.toLowerCase().includes("middle ground")
+          ) {
+            // Handle final message for merged step
+            if (step.finalMessage) {
+              addMessage("assistant", step.finalMessage.content);
+
+              // Set up resolution buttons
+              setTimeout(() => {
+                const resolutionButtons = chatMessages.querySelectorAll("[data-resolution]");
+                resolutionButtons.forEach((button) => {
+                  button.addEventListener("click", () => {
+                    window.removeHintArrows();
+                    const resolution = button.getAttribute("data-resolution");
+                    if (resolution) {
+                      handleResolution(button, resolution);
+                    }
+                  });
+                });
+
+                // Add arrow to recommended context-aware option
+                const contextButton = Array.from(resolutionButtons).find(
+                  (btn) => btn.getAttribute("data-resolution") === "context",
+                );
+                if (contextButton) {
+                  window.showHintArrow(contextButton, "left", "→");
+                }
+              }, 500);
+            }
+          } else if (
+            step.followUpMessage &&
+            input.toLowerCase().includes("acronym")
+          ) {
+            // Handle follow-up message for grader configuration
+            addMessage("assistant", step.followUpMessage.content);
+
+            // Set up event listeners for grader action buttons
+            setTimeout(() => {
+              const graderActionButtons = chatMessages.querySelectorAll("[data-grader-action]");
+              graderActionButtons.forEach((button) => {
+                button.addEventListener("click", () => {
+                  const action = button.getAttribute("data-grader-action");
+                  button.classList.add("selected");
+                  
+                  // Disable other buttons
+                  graderActionButtons.forEach((otherButton) => {
+                    if (otherButton !== button) {
+                      otherButton.style.opacity = "0.5";
+                      otherButton.style.pointerEvents = "none";
+                    }
+                  });
+                  
+                  // Add user message and handle action
+                  setTimeout(() => {
+                    let userMessage, assistantResponse;
+                    
+                    if (action === "update") {
+                      userMessage = "Yes, update to v2.2";
+                      assistantResponse = `<p>Perfect! I've updated the Language Simplicity grader to version 2.2.</p>
+                                         <div style="background: #1a1a1a; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                                           <p style="font-weight: bold; margin-bottom: 0.5rem; color: #10b981;">✅ Grader Updated Successfully</p>
+                                           <p style="font-size: 0.875rem; color: #ccc;">Language Simplicity v2.2 - Active</p>
+                                           <p style="font-size: 0.875rem; color: #999;">New rule: Common acronyms (API, URL, HTML) allowed without explanation</p>
+                                         </div>
+                                         <p style="margin-top: 1rem;">Your grader is now optimized! What would you like to do next?</p>
+                                         
+                                         <div style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                                           <div class="inline-card" data-next-action="optimize">
+                                             <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                                               <strong>🎯 Optimize System Prompt</strong>
+                                               <span style="font-size: 0.875rem; color: var(--bfds-text-muted);">Improve your AI's system prompt based on grader insights</span>
+                                             </div>
+                                           </div>
+                                           <div class="inline-card" data-next-action="configure">
+                                             <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                                               <strong>⚙️ Configure More Graders</strong>
+                                               <span style="font-size: 0.875rem; color: var(--bfds-text-muted);">Fine-tune other evaluation criteria</span>
+                                             </div>
+                                           </div>
+                                         </div>`;
+                    } else if (action === "test") {
+                      userMessage = "Test first";
+                      assistantResponse = `<p>Good idea! Let me test the new rule with some examples first.</p>
+                                         <div style="background: #1a1a1a; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                                           <p style="font-weight: bold; margin-bottom: 0.5rem;">🧪 Testing New Rule</p>
+                                           <p style="font-size: 0.875rem; color: #10b981;">✅ "Use the API to fetch data" - No explanation needed</p>
+                                           <p style="font-size: 0.875rem; color: #10b981;">✅ "Check the URL validity" - No explanation needed</p>
+                                           <p style="font-size: 0.875rem; color: #eab308;">⚠️ "Implement SOLID principles" - Would require explanation</p>
+                                         </div>
+                                         <p style="margin-top: 1rem;">Test successful! The rule works correctly. Should I update the grader?</p>`;
+                    } else if (action === "examples") {
+                      userMessage = "Show more examples";
+                      assistantResponse = `<p>Here are more examples of how the new rule would work:</p>
+                                         <div style="background: #1a1a1a; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                                           <p style="font-weight: bold; margin-bottom: 0.5rem;">💡 Common Acronyms (No Explanation Needed)</p>
+                                           <p style="font-size: 0.875rem; color: #10b981;">✅ API, URL, HTML, CSS, JSON, XML, HTTP, HTTPS</p>
+                                           <p style="font-weight: bold; margin-bottom: 0.5rem; margin-top: 1rem;">⚠️ Technical Acronyms (Explanation Required)</p>
+                                           <p style="font-size: 0.875rem; color: #eab308;">SOLID, DRY, KISS, YAGNI, MVC, MVP, MVVM</p>
+                                         </div>
+                                         <p style="margin-top: 1rem;">This ensures beginners understand technical concepts while keeping common web terms simple.</p>`;
+                    }
+                    
+                    addMessage("user", userMessage);
+                    
+                    setTimeout(() => {
+                      addMessage("assistant", assistantResponse);
+                      
+                      // For "update" action, set up next step buttons
+                      if (action === "update") {
+                        setTimeout(() => {
+                          const nextActionButtons = chatMessages.querySelectorAll("[data-next-action]");
+                          nextActionButtons.forEach((button) => {
+                            button.addEventListener("click", () => {
+                              const nextAction = button.getAttribute("data-next-action");
+                              button.classList.add("selected");
+                              
+                              // Disable other buttons
+                              nextActionButtons.forEach((otherButton) => {
+                                if (otherButton !== button) {
+                                  otherButton.style.opacity = "0.5";
+                                  otherButton.style.pointerEvents = "none";
+                                }
+                              });
+                              
+                              setTimeout(() => {
+                                if (nextAction === "optimize") {
+                                  addMessage("user", "Optimize system prompt - show me how to improve my AI's prompt based on grader insights");
+                                  setTimeout(() => {
+                                    window.removeHintArrows();
+                                    if (currentStep < journeySteps.length) {
+                                      nextStep();
+                                    }
+                                  }, 1000);
+                                } else if (nextAction === "configure") {
+                                  addMessage("user", "Configure more graders - let me fine-tune other evaluation criteria");
+                                  setTimeout(() => {
+                                    // Stay on current step, could add more grader config here
+                                    addMessage("assistant", "Let's continue configuring your other graders...");
+                                  }, 1000);
+                                }
+                              }, 1000);
+                            });
+                          });
+                          
+                          // Add hint arrow to "Optimize System Prompt" button
+                          const optimizeButton = Array.from(nextActionButtons).find(
+                            (btn) => btn.getAttribute("data-next-action") === "optimize"
+                          );
+                          if (optimizeButton) {
+                            window.showHintArrow(optimizeButton, "left", "→");
+                          }
+                        }, 1000);
+                      } else {
+                        // For other actions, show continue button
+                        setTimeout(() => {
+                          const continueButton = document.createElement("div");
+                          continueButton.innerHTML = `
+                            <div style="text-align: center; margin-top: 2rem;">
+                              <button class="inline-card" id="configContinueBtn2" style="background: var(--bfds-primary-02); border-color: var(--bfds-primary); color: var(--bfds-primary);">
+                                Continue to Next Step →
+                              </button>
+                            </div>
+                          `;
+                          chatMessages.appendChild(continueButton);
+                          
+                          document.getElementById("configContinueBtn2").addEventListener("click", () => {
+                            window.removeHintArrows();
+                            if (currentStep < journeySteps.length) {
+                              nextStep();
+                            }
+                          });
+                          
+                          // Add hint arrow to continue button
+                          const configContinueBtn2 = document.getElementById("configContinueBtn2");
+                          if (configContinueBtn2) {
+                            window.showHintArrow(configContinueBtn2, "left", "→");
+                          }
+                        }, 1000);
+                      }
+                    }, 1500);
+                  }, 1000);
+                });
+              });
+              
+              // Add hint arrow to "Yes, update to v2.2" button
+              const updateButton = document.getElementById("updateGraderBtn");
+              if (updateButton) {
+                window.showHintArrow(updateButton, "left", "→");
+              }
+            }, 1000);
+          }
+        }, 500);
+      }
+
+      // Initialize demo when page loads
+      document.addEventListener("DOMContentLoaded", initDemo);
+    </script>
+  </body>
+</html>

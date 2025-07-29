@@ -21,3 +21,5 @@ if (import.meta.main) {
   const scriptArgs = Deno.args.slice(2);
   Deno.exit(echo(scriptArgs));
 }
+
+// Test comment for smart validation

@@ -1,0 +1,172 @@
+name: Deploy boltfoundry-com
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/boltfoundry-com/**"
+      - "infra/terraform/hetzner/**"
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: DeterminateSystems/flakehub-cache-action@main
+
+      - name: Build binary
+        run: nix develop --impure --command bft compile boltfoundry-com
+
+      - name: Login to GitHub Container Registry
+        run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build and push Docker image
+        run: |
+          # Build with git hash and latest tags
+          docker build -t ghcr.io/${{ github.repository_owner }}/boltfoundry-com:${{ github.sha }} -f apps/boltfoundry-com/Dockerfile .
+          docker tag ghcr.io/${{ github.repository_owner }}/boltfoundry-com:${{ github.sha }} ghcr.io/${{ github.repository_owner }}/boltfoundry-com:latest
+          docker push ghcr.io/${{ github.repository_owner }}/boltfoundry-com:${{ github.sha }}
+          docker push ghcr.io/${{ github.repository_owner }}/boltfoundry-com:latest
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H $(terraform output -raw server_ip 2>/dev/null || echo "placeholder-ip") >> ~/.ssh/known_hosts || true
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Generate Kamal config from Terraform state
+        run: |
+          cd infra/terraform/hetzner
+          terraform init -backend-config="endpoint=${{ secrets.S3_ENDPOINT }}"
+          terraform apply -auto-approve \
+            -var="hcloud_token=${{ secrets.HETZNER_API_TOKEN }}" \
+            -var="cloudflare_api_token=${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -var="cloudflare_zone_id=${{ secrets.CLOUDFLARE_ZONE_ID }}" \
+            -var="github_username=${{ github.repository_owner }}" \
+            -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}" \
+            -var="hyperdx_api_key=${{ secrets.HYPERDX_API_KEY }}" \
+            -var="domain_name=next.boltfoundry.com"
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Install Kamal
+        run: sudo gem install kamal --version 2.7.0 --no-document
+
+      - name: Deploy with Kamal
+        run: |
+          # Create .kamal directory and secrets file for Kamal 2.x
+          mkdir -p .kamal
+          echo "GITHUB_TOKEN=${KAMAL_REGISTRY_PASSWORD}" > .kamal/secrets
+          chmod 600 .kamal/secrets
+
+          # Deploy with Kamal 2.x
+          kamal deploy
+        env:
+          KAMAL_REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+        working-directory: ./
+
+      - name: Validate deployment health
+        run: |
+          echo "🔍 Validating deployment health..."
+
+          # Wait for deployment to stabilize
+          echo "⏳ Waiting for deployment to stabilize..."
+          sleep 30
+
+          # Health check with retries
+          echo "🩺 Testing health endpoint..."
+          for i in {1..60}; do
+            if curl -f -s https://next.boltfoundry.com/ > /dev/null 2>&1; then
+              echo "✅ Health endpoint responded successfully"
+              break
+            fi
+            if [ $i -eq 60 ]; then
+              echo "❌ Health endpoint failed after 60 attempts (10 minutes)"
+              echo "🔄 Attempting rollback..."
+              kamal rollback || echo "⚠️ Rollback command failed"
+              exit 1
+            fi
+            echo "Health check attempt $i/60 failed, retrying in 10s..."
+            sleep 10
+          done
+
+          # Test main page endpoint
+          echo "🏠 Testing main page endpoint..."
+          for i in {1..10}; do
+            response_code=$(curl -s -o /dev/null -w "%{http_code}" https://next.boltfoundry.com/)
+            if [ "$response_code" = "200" ]; then
+              echo "✅ Main page responded with 200 OK"
+              break
+            fi
+            if [ $i -eq 10 ]; then
+              echo "❌ Main page failed with response code: $response_code"
+              echo "🔄 Attempting rollback..."
+              kamal rollback || echo "⚠️ Rollback command failed"
+              exit 1
+            fi
+            echo "Main page attempt $i/10 failed (response: $response_code), retrying in 10s..."
+            sleep 10
+          done
+
+          # Enhanced health check - get detailed health info
+          echo "🔬 Performing detailed health check..."
+          health_response=$(curl -s https://next.boltfoundry.com/)
+          if echo "$health_response" | grep -q 'html\|HTML'; then
+            echo "✅ Detailed health check passed"
+            echo "Health response contains HTML content"
+          else
+            echo "❌ Detailed health check failed - invalid response format"
+            echo "Response: $health_response"
+            echo "🔄 Attempting rollback..."
+            kamal rollback || echo "⚠️ Rollback command failed"
+            exit 1
+          fi
+
+          echo "🎉 Deployment validation successful!"
+
+      - name: Monitor post-deployment stability
+        run: |
+          echo "👀 Monitoring deployment stability for 2 minutes..."
+
+          # Monitor for 2 minutes to catch early failures
+          for i in {1..12}; do
+            response_code=$(curl -s -o /dev/null -w "%{http_code}" https://next.boltfoundry.com/)
+            if [ "$response_code" != "200" ]; then
+              echo "❌ Stability check failed with response code: $response_code at check $i/12"
+              echo "🔄 Attempting rollback..."
+              kamal rollback || echo "⚠️ Rollback command failed"
+              exit 1
+            fi
+            echo "✅ Stability check $i/12 passed (response: $response_code)"
+            sleep 10
+          done
+
+          echo "🎯 Deployment is stable and healthy!"
+
+      - name: Deployment success notification
+        if: success()
+        run: |
+          echo "🚀 Deployment completed successfully!"
+          echo "✅ Service URL: https://next.boltfoundry.com"
+          echo "✅ Health Check: https://next.boltfoundry.com/"
+          echo "✅ Deployment validated and stable"
+
+      - name: Deployment failure notification
+        if: failure()
+        run: |
+          echo "💥 Deployment failed!"
+          echo "❌ Service may be unresponsive at: https://next.boltfoundry.com"
+          echo "🔍 Check logs above for specific failure reason"
+          echo "⚠️ Manual intervention may be required"

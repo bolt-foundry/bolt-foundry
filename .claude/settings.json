@@ -5,8 +5,6 @@
   },
   "permissions": {
     "allow": [
-      "Bash(aibff:*)",
-      "Bash(bff ai:*)",
       "Bash(ls:*)",
       "Bash(cat:*)",
       "Bash(mkdir:*)",
@@ -24,7 +22,41 @@
       "Bash(rg:*)"
     ],
     "deny": [
-      "Bash(git:*)"
+      "Bash(git:*)",
+      "Bash(deno test:*)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bft safety"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bft blockGeneratedFiles"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|MultiEdit|Write|Update",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bft post-update"
+          }
+        ]
+      }
     ]
   }
 }

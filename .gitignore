@@ -4,7 +4,7 @@ build/**
 nix_system
 .direnv
 attached_assets/
-static/build/*
+static/build/**
 static/tmp/*
 .cache
 .local
@@ -13,6 +13,7 @@ vendor
 .config
 .git
 .sl
+.deno
 .config/sapling
 tmp/*
 !**/.gitkeep
@@ -26,8 +27,13 @@ generated-icon.png
 .config/op/*.sock
 .env
 .env.local
+.env.client
+.env.server
 *.local.*
 .DS_Store
 
 # Generated Claude commands for BFT
 .claude/commands/bft/
+
+# BFT container workspaces
+tmp/codebot-workspaces/

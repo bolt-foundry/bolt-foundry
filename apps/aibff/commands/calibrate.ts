@@ -16,6 +16,43 @@ import {
 import type { Sample } from "./render.ts";
 import { getLogger } from "@bolt-foundry/logger";
 
+// Types for sample messages
+interface SampleMessage {
+  role: string;
+  content: string;
+}
+
+interface SampleContext {
+  fullConversation?: Array<SampleMessage>;
+  [key: string]: unknown;
+}
+
+// Build context for a sample by combining sample data with extracted context
+function buildSampleContext(
+  sample: Sample,
+  extractedContext: ExtractedContext,
+  contextValues: Record<string, unknown>,
+): SampleContext {
+  // Start with provided context values
+  const context: SampleContext = {
+    ...contextValues,
+  };
+
+  // Add default values from extracted context (only if not already provided)
+  for (const [key, definition] of Object.entries(extractedContext)) {
+    if (definition.default !== undefined && !(key in context)) {
+      context[key] = definition.default;
+    }
+  }
+
+  // Set fullConversation from sample.messages if not already provided from context file
+  if (!contextValues.fullConversation) {
+    context.fullConversation = sample.messages;
+  }
+
+  return context;
+}
+
 const logger = getLogger(import.meta);
 
 // UI helper (to be extracted later)
@@ -147,7 +184,7 @@ async function runEvaluationWithConcurrency(
   models: Array<string>,
   concurrency: number,
   openAiCompletionOptions: Record<string, unknown> = {},
-  _extractedContext: ExtractedContext,
+  extractedContext: ExtractedContext,
   contextValues: Record<string, unknown>,
 ): Promise<Array<OutputFile>> {
   // Create a shared concurrency pool for all models
@@ -181,15 +218,15 @@ async function runEvaluationWithConcurrency(
         sampleIndex: index,
         task: async () => {
           try {
-            // Build context for this specific sample
-            const sampleContext = {
-              ...contextValues,
-              userMessage: sample.input,
-              assistantResponse: sample.expected,
-            };
+            // Build context for this specific sample using our new function
+            const sampleContext = buildSampleContext(
+              sample,
+              extractedContext,
+              contextValues,
+            );
 
             // Render the deck with the sample context
-            const sampleRequest = renderDeck(
+            const sampleRequest = await renderDeck(
               deckPath,
               sampleContext,
               openAiCompletionOptions,
@@ -222,13 +259,25 @@ async function runEvaluationWithConcurrency(
             const latencyMs = Date.now() - startTime;
 
             const parsedResponse = parseGraderResponse(response.content);
+
+            // Extract last user and assistant messages for display
+            let lastUserMessage = "";
+            let lastAssistantMessage = "";
+            for (const message of sample.messages) {
+              if (message.role === "user") {
+                lastUserMessage = message.content;
+              } else if (message.role === "assistant") {
+                lastAssistantMessage = message.content;
+              }
+            }
+
             const result = {
               id: sample.id,
               grader_score: parsedResponse.score,
               truth_score: sample.score !== undefined ? sample.score : 1, // Use sample score if available
               notes: parsedResponse.reason,
-              userMessage: sample.input,
-              assistantResponse: sample.expected, // In real implementation, this would be the actual assistant response
+              userMessage: lastUserMessage,
+              assistantResponse: lastAssistantMessage,
               graderInput: graderInput,
               graderResponse: response.content,
               // Also include in the format expected by the HTML generator
@@ -249,6 +298,14 @@ async function runEvaluationWithConcurrency(
               `[${model}] Error processing sample ${sample.id}:`,
               error,
             );
+            // Extract last user message for error display
+            let lastUserMessage = "";
+            for (const message of sample.messages) {
+              if (message.role === "user") {
+                lastUserMessage = message.content;
+              }
+            }
+
             const errorResult = {
               id: sample.id,
               grader_score: 0,
@@ -256,7 +313,7 @@ async function runEvaluationWithConcurrency(
               notes: `Error: ${
                 error instanceof Error ? error.message : String(error)
               }`,
-              userMessage: sample.input,
+              userMessage: lastUserMessage,
               assistantResponse: "",
               graderInput: "",
               graderResponse: "",

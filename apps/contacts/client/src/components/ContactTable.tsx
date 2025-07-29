@@ -36,6 +36,8 @@ import {
   RefreshCw,
   Search,
   UserRound,
+  Trash2,
+  Check,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -57,6 +59,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface ContactTableProps {
   contacts: Contact[];
@@ -74,6 +77,7 @@ export function ContactTable(
     field: "createdAt",
     direction: "desc",
   });
+  const [selectedContacts, setSelectedContacts] = useState<Set<number>>(new Set());
 
   // Handle contact status update
   const toggleContactStatus = useMutation({
@@ -207,6 +211,102 @@ export function ContactTable(
     },
   });
 
+  // Handle bulk deletion
+  const bulkDeleteContacts = useMutation({
+    mutationFn: async (ids: number[]) => {
+      try {
+        console.log(`Bulk deleting ${ids.length} contacts: [${ids.join(", ")}]`);
+        const response = await apiRequest("DELETE", "/api/contacts/bulk", {
+          ids,
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error(
+            `Failed to bulk delete contacts: ${response.status} ${response.statusText}`,
+            errorText,
+          );
+          throw new Error(
+            `Failed to bulk delete contacts: ${response.statusText}. ${errorText}`,
+          );
+        }
+
+        return response.json();
+      } catch (error) {
+        console.error("Bulk delete error:", error);
+        throw error;
+      }
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/contacts"] });
+      setSelectedContacts(new Set()); // Clear selection
+      toast({
+        description: `Successfully deleted ${data.successful} contact${data.successful !== 1 ? 's' : ''}${data.failed > 0 ? ` (${data.failed} failed)` : ''}`,
+      });
+    },
+    onError: (error: Error) => {
+      console.error("Bulk delete error in onError:", error);
+      toast({
+        variant: "destructive",
+        title: "Error deleting contacts",
+        description: error.message ||
+          "Failed to delete the selected contacts. Please try again.",
+      });
+    },
+  });
+
+  // Handle individual contact selection
+  const toggleContactSelection = (contactId: number) => {
+    const newSelected = new Set(selectedContacts);
+    if (newSelected.has(contactId)) {
+      newSelected.delete(contactId);
+    } else {
+      newSelected.add(contactId);
+    }
+    setSelectedContacts(newSelected);
+  };
+
+  // Handle select all/none
+  const toggleSelectAll = () => {
+    if (selectedContacts.size === filteredContacts.length) {
+      setSelectedContacts(new Set()); // Deselect all
+    } else {
+      setSelectedContacts(new Set(filteredContacts.map(contact => contact.id))); // Select all
+    }
+  };
+
+  // Helper function to detect malicious contacts
+  const isMaliciousContact = (contact: Contact) => {
+    const maliciousPatterns = [
+      /select\s*\(/i,
+      /union\s+select/i,
+      /insert\s+into/i,
+      /update\s+set/i,
+      /delete\s+from/i,
+      /drop\s+table/i,
+      /sleep\s*\(/i,
+      /waitfor\s+delay/i,
+      /benchmark\s*\(/i,
+      /<script/i,
+      /javascript:/i,
+      /on\w+\s*=/i,
+    ];
+    
+    return maliciousPatterns.some(pattern => 
+      pattern.test(contact.name) || 
+      pattern.test(contact.company) ||
+      pattern.test(contact.email)
+    );
+  };
+
+  // Select all malicious contacts
+  const selectMaliciousContacts = () => {
+    const maliciousIds = filteredContacts
+      .filter(isMaliciousContact)
+      .map(contact => contact.id);
+    setSelectedContacts(new Set(maliciousIds));
+  };
+
   // Handle sort change
   const handleSort = (field: SortField) => {
     setSortState((prevState) => ({
@@ -281,7 +381,7 @@ export function ContactTable(
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0">
             <div className="flex items-center gap-2">
               <h2 className="text-lg font-medium text-gray-900">
-                Contact List
+                Contact List {selectedContacts.size > 0 && <span className="text-sm text-gray-500">({selectedContacts.size} selected)</span>}
               </h2>
               {onRefresh && (
                 <Button
@@ -296,6 +396,49 @@ export function ContactTable(
                   />
                   <span className="sr-only">Refresh contacts</span>
                 </Button>
+              )}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={selectMaliciousContacts}
+                className="ml-2"
+              >
+                <Check className="h-4 w-4 mr-1" />
+                Select Malicious
+              </Button>
+              {selectedContacts.size > 0 && (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      className="ml-2"
+                    >
+                      <Trash2 className="h-4 w-4 mr-1" />
+                      Delete Selected ({selectedContacts.size})
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Delete {selectedContacts.size} contact{selectedContacts.size !== 1 ? 's' : ''}?
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This will permanently delete the selected contacts. This action cannot be undone.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => bulkDeleteContacts.mutate(Array.from(selectedContacts))}
+                        className="bg-red-500 hover:bg-red-600"
+                        disabled={bulkDeleteContacts.isPending}
+                      >
+                        {bulkDeleteContacts.isPending ? "Deleting..." : "Delete"}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               )}
             </div>
 
@@ -334,6 +477,13 @@ export function ContactTable(
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="w-12">
+                      <Checkbox
+                        checked={filteredContacts.length > 0 && selectedContacts.size === filteredContacts.length}
+                        onCheckedChange={toggleSelectAll}
+                        aria-label="Select all contacts"
+                      />
+                    </TableHead>
                     <TableHead
                       className="cursor-pointer"
                       onClick={() => handleSort("name")}
@@ -378,8 +528,15 @@ export function ContactTable(
                   {filteredContacts.map((contact) => (
                     <TableRow
                       key={contact.id}
-                      className="hover:bg-gray-50 transition-colors"
+                      className={`hover:bg-gray-50 transition-colors ${isMaliciousContact(contact) ? 'bg-red-50 border-l-4 border-l-red-400' : ''}`}
                     >
+                      <TableCell>
+                        <Checkbox
+                          checked={selectedContacts.has(contact.id)}
+                          onCheckedChange={() => toggleContactSelection(contact.id)}
+                          aria-label={`Select ${contact.name}`}
+                        />
+                      </TableCell>
                       <TableCell className="font-medium">
                         {contact.name}
                       </TableCell>

@@ -686,19 +686,25 @@ export class DatabaseBackendSqlite implements DatabaseBackend {
       let current = await this.getDirectAncestors<TProps>(
         bfOid,
         targetBfGid,
-        sourceBfClassName,
       );
 
       let currentDepth = 1;
       const processed = new Set<string>();
 
-      // Add direct ancestors to results
+      // Add direct ancestors to results if they match the target class
+      const nextLevel: Array<DbItem<TProps>> = [];
       for (const item of current) {
         if (!processed.has(item.metadata.bfGid)) {
-          results.push(item);
           processed.add(item.metadata.bfGid);
+          // Add to results if it matches our target class
+          if (item.metadata.className === sourceBfClassName) {
+            results.push(item);
+          }
+          // Always add to next level for recursive search
+          nextLevel.push(item);
         }
       }
+      current = nextLevel;
 
       // Continue with indirect ancestors up to the specified depth
       while (currentDepth < depth && current.length > 0) {
@@ -708,14 +714,17 @@ export class DatabaseBackendSqlite implements DatabaseBackend {
           const ancestors = await this.getDirectAncestors<TProps>(
             bfOid,
             item.metadata.bfGid,
-            sourceBfClassName,
           );
 
           for (const ancestor of ancestors) {
             if (!processed.has(ancestor.metadata.bfGid)) {
-              nextLevel.push(ancestor);
-              results.push(ancestor);
               processed.add(ancestor.metadata.bfGid);
+              // Add to results if it matches our target class
+              if (ancestor.metadata.className === sourceBfClassName) {
+                results.push(ancestor);
+              }
+              // Always add to next level for recursive search
+              nextLevel.push(ancestor);
             }
           }
         }
@@ -734,24 +743,23 @@ export class DatabaseBackendSqlite implements DatabaseBackend {
   private getDirectAncestors<TProps extends Props = Props>(
     bfOid: string,
     targetBfGid: string,
-    sourceBfClassName: string,
   ): Promise<Array<DbItem<TProps>>> {
     const db = this.getDb();
 
-    // This query finds nodes that point to our target node
+    // This query finds ALL nodes that point to our target node (regardless of class)
+    // The main algorithm will filter by class and handle recursion
     const query = `
       SELECT * FROM bfdb 
       WHERE bf_gid IN (
         SELECT bf_sid FROM bfdb
-        WHERE bf_tid = ? AND bf_oid = ?
+        WHERE bf_tid = ? AND bf_oid = ? AND class_name = 'BfEdge'
       )
-      AND class_name = ?
-      AND bf_oid = ?
+      AND bf_oid = ? AND class_name != 'BfEdge'
     `;
 
     const stmt = db.prepare(query);
     stmt.setReadBigInts(true);
-    const rows = stmt.all(targetBfGid, bfOid, sourceBfClassName, bfOid);
+    const rows = stmt.all(targetBfGid, bfOid, bfOid);
 
     return Promise.resolve(rows.map((row: Row<TProps>) => {
       const props = JSON.parse(row.props) as TProps;
@@ -782,19 +790,25 @@ export class DatabaseBackendSqlite implements DatabaseBackend {
       let current = await this.getDirectDescendants<TProps>(
         bfOid,
         sourceBfGid,
-        targetBfClassName,
       );
 
       let currentDepth = 1;
       const processed = new Set<string>();
 
-      // Add direct descendants to results
+      // Add direct descendants to results if they match the target class
+      const nextLevel: Array<DbItem<TProps>> = [];
       for (const item of current) {
         if (!processed.has(item.metadata.bfGid)) {
-          results.push(item);
           processed.add(item.metadata.bfGid);
+          // Add to results if it matches our target class
+          if (item.metadata.className === targetBfClassName) {
+            results.push(item);
+          }
+          // Always add to next level for recursive search
+          nextLevel.push(item);
         }
       }
+      current = nextLevel;
 
       // Continue with indirect descendants up to the specified depth
       while (currentDepth < depth && current.length > 0) {
@@ -804,14 +818,17 @@ export class DatabaseBackendSqlite implements DatabaseBackend {
           const descendants = await this.getDirectDescendants<TProps>(
             bfOid,
             item.metadata.bfGid,
-            targetBfClassName,
           );
 
           for (const descendant of descendants) {
             if (!processed.has(descendant.metadata.bfGid)) {
-              nextLevel.push(descendant);
-              results.push(descendant);
               processed.add(descendant.metadata.bfGid);
+              // Add to results if it matches our target class
+              if (descendant.metadata.className === targetBfClassName) {
+                results.push(descendant);
+              }
+              // Always add to next level for recursive search
+              nextLevel.push(descendant);
             }
           }
         }
@@ -830,7 +847,6 @@ export class DatabaseBackendSqlite implements DatabaseBackend {
   private getDirectDescendants<TProps extends Props = Props>(
     bfOid: string,
     sourceBfGid: string,
-    targetBfClassName: string,
   ): Promise<Array<DbItem<TProps>>> {
     const db = this.getDb();
 
@@ -839,15 +855,14 @@ export class DatabaseBackendSqlite implements DatabaseBackend {
       SELECT * FROM bfdb 
       WHERE bf_gid IN (
         SELECT bf_tid FROM bfdb
-        WHERE bf_sid = ? AND bf_oid = ?
+        WHERE bf_sid = ? AND bf_oid = ? AND class_name = 'BfEdge'
       )
-      AND class_name = ?
-      AND bf_oid = ?
+      AND bf_oid = ? AND class_name != 'BfEdge'
     `;
 
     const stmt = db.prepare(query);
     stmt.setReadBigInts(true);
-    const rows = stmt.all(sourceBfGid, bfOid, targetBfClassName, bfOid);
+    const rows = stmt.all(sourceBfGid, bfOid, bfOid);
 
     return Promise.resolve(rows.map((row: Row<TProps>) => {
       const props = JSON.parse(row.props) as TProps;

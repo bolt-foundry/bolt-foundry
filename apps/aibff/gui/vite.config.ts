@@ -1,20 +1,39 @@
+import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 import { defineConfig } from "vite";
 import deno from "@deno/vite-plugin";
 import react from "@vitejs/plugin-react";
+import { boltFoundryEnvPlugin } from "@bfmono/packages/env/vite-plugin.ts";
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
     deno(),
-    react(),
+    react({
+      babel: {
+        babelrc: true,
+      },
+    }),
+    boltFoundryEnvPlugin(),
   ],
+  server: {
+    hmr: (() => {
+      // Get HMR port from environment variable if set
+      const hmrPort = getConfigurationVariable("VITE_HMR_PORT");
+      if (hmrPort) {
+        return { port: parseInt(hmrPort) };
+      }
+      // Let Vite auto-assign port
+      return true;
+    })(),
+  },
   resolve: {
     alias: {
-      "@bfmono/": new URL("../../../", import.meta.url).pathname,
-      "@iso": new URL("./src/__isograph/iso.ts", import.meta.url).pathname,
+      "@bfmono/": new URL(import.meta.resolve("../../../")).pathname,
+      "@iso": new URL(import.meta.resolve("./src/__isograph/iso.ts")).pathname,
     },
   },
   optimizeDeps: {
     include: ["@isograph/react"],
   },
+  publicDir: new URL(import.meta.resolve("@bfmono/static")).pathname,
 });

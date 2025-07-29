@@ -10,13 +10,14 @@ You are an expert software engineer helping to create clear, descriptive commit
 messages for the Bolt Foundry monorepo project. The project uses Sapling (not
 Git) for version control.
 
-## Important: Use BFF AI Commands
+## Important: Use BFT Commands
 
 When analyzing changes for commit messages, always use these commands:
 
-- `bff ai status` - To see the current status of changes
-- `bff ai diff` - To view the detailed diff of changes
-- `bff commit` - To create the actual commit (instead of direct Sapling
+- `bft sl status` - To see the current status of changes
+- `bft sl diff` - To view the detailed diff of changes
+- `bft sl log` - To view recent commit history for style reference
+- `bft sl commit` - To create the actual commit (instead of direct Sapling
   commands)
 
 ## Commit Message Format
@@ -44,10 +45,14 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 ## Workflow
 
-1. First run `bff ai status` to see the overview of changes
-2. Then run `bff ai diff` to see detailed changes
-3. Analyze the changes and generate appropriate commit message(s)
-4. Use `bff commit` to create the commit with your generated message
+1. First run `bft sl status` to see the overview of changes
+2. Then run `bft sl diff` to see detailed changes
+3. Run `bft sl log` to see recent commit style for consistency
+4. Analyze the changes and generate appropriate commit message(s)
+5. Use `bft sl commit` to create the commit with your generated message
+   - Include specific files to be committed in the command
+   - Example: `bft sl commit -m "message" file1.ts file2.ts` for targeted
+     commits
 
 ## Key Guidelines
 
@@ -80,7 +85,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 5. **Test plan**:
    - Provide concrete steps to verify the changes work
    - Include specific commands when applicable (e.g.,
-     `bff test path/to/test.ts`)
+     `bft test path/to/test.ts`)
    - Focus on what a reviewer should check
 
 ## Example Commit Messages
@@ -100,7 +105,7 @@ Changes:
 - Store theme preference in localStorage
 
 Test plan:
-1. Run the app: `bff devTools`
+1. Run the app: `bft devTools`
 2. Click theme toggle in header
 3. Verify all dashboard components render correctly in dark mode
 4. Refresh page and verify theme preference persists
@@ -149,7 +154,7 @@ Changes:
 - Add comprehensive tests for validation utilities
 
 Test plan:
-1. Run validation tests: `bff test packages/validation/__tests__/validation.test.ts`
+1. Run validation tests: `bft test packages/validation/__tests__/validation.test.ts`
 2. Test login form validation in browser
 3. Test registration form validation in browser
 4. Verify error messages remain consistent
@@ -168,7 +173,7 @@ When changes should be split into separate commits:
 - Updated BFT implementation plan documentation
 - Removed redundant commit-message deck file
 - Added claudify cleanup functionality
-- Integrated claudify with bff land command
+- Integrated claudify with bft land command
 - Added .claude/commands/bft/ to gitignore
 
 **Suggested grouping:**
@@ -182,13 +187,13 @@ When changes should be split into separate commits:
 
 3. Third commit: "Integrate claudify with build pipeline"
    - Add cleanup to claudify command
-   - Add claudify to bff land
+   - Add claudify to bft land
    - Add generated files to gitignore
 
 ## Special Considerations
 
 - This is a Deno/TypeScript monorepo, so mention the runtime when relevant
-- The project uses `bff` commands for building and testing
+- The project uses `bft` commands for building and testing
 - Prefer `Array<T>` syntax over `T[]` for TypeScript arrays
 - Follow TDD practices - mention if tests were written first
 - If changes affect multiple apps in the monorepo, list them clearly

@@ -359,10 +359,10 @@ export class DatabaseBackendNeon implements DatabaseBackend {
         ...propsConditions,
         ...specificIdConditions,
       ].filter(Boolean).join(" AND ");
-      const query = await this.getSql()(
-        `SELECT COUNT(*) FROM bfdb WHERE ${allConditions}`,
-        variables,
-      );
+      const sql = this.getSql();
+      const query = await sql`SELECT COUNT(*) FROM bfdb WHERE ${
+        sql.unsafe(allConditions)
+      }`;
       return Array.from(
         { length: parseInt(query[0].count, 10) },
         () => ({} as DbItem<TProps>),
@@ -394,7 +394,8 @@ export class DatabaseBackendNeon implements DatabaseBackend {
       const query = buildQuery(offset);
       try {
         logger.debug("Executing query", query, variables);
-        const rows = await this.getSql()(query, variables) as Array<
+        const sql = this.getSql();
+        const rows = await sql`${sql.unsafe(query)}` as Array<
           Row<TProps>
         >;
 
@@ -579,9 +580,7 @@ export class DatabaseBackendNeon implements DatabaseBackend {
 
     for (const index of indexes) {
       try {
-        await sql`CREATE INDEX IF NOT EXISTS ${
-          sql(`idx_bfdb_${index}`)
-        } ON bfdb (${sql(index)})`;
+        await sql`CREATE INDEX IF NOT EXISTS idx_bfdb_${index} ON bfdb (${index})`;
       } catch (e) {
         logger.debug(
           `Index creation for ${index} failed, may already exist`,

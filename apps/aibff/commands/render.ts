@@ -2,17 +2,11 @@
 
 import type { Command } from "./types.ts";
 import { parse as parseTOML } from "@std/toml";
+import { extractToml as extractFrontmatter } from "@std/front-matter";
 import * as path from "@std/path";
-
-// UI helper (to be extracted later)
-const ui = {
-  // deno-lint-ignore no-console
-  printLn: (msg: string) => console.log(msg),
-  // deno-lint-ignore no-console
-  printWarn: (msg: string) => console.warn(msg),
-  // deno-lint-ignore no-console
-  printErr: (msg: string) => console.error(msg),
-};
+import { parse as parseFlags } from "@std/flags";
+import { ui } from "@bfmono/packages/cli-ui/cli-ui.ts";
+import { readLocalDeck } from "@bfmono/packages/bolt-foundry/bolt-foundry.ts";
 
 interface ContextDefinition {
   assistantQuestion: string; // Required field
@@ -29,8 +23,7 @@ interface ExtractedContext {
 
 interface Sample {
   id: string;
-  input: string;
-  expected: string;
+  messages: Array<SampleMessage>;
   score?: number;
 }
 
@@ -41,7 +34,7 @@ interface SampleMessage {
 
 interface SampleDefinition {
   score?: number;
-  messages?: Array<SampleMessage>;
+  messages: Array<SampleMessage>;
 }
 
 interface OpenAIMessage {
@@ -49,8 +42,22 @@ interface OpenAIMessage {
   content: string;
 }
 
+interface OpenAITool {
+  type: "function";
+  function: {
+    name: string;
+    description: string;
+    parameters: {
+      type: "object";
+      properties: Record<string, unknown>;
+      required?: Array<string>;
+    };
+  };
+}
+
 interface OpenAICompletionRequest {
   messages: Array<OpenAIMessage>;
+  tools?: Array<OpenAITool>;
   [key: string]: unknown; // Additional OpenAI parameters
 }
 
@@ -176,16 +183,16 @@ function processTomlContexts(
 
       // Handle duplicate context variables
       if (varName in extractedContext) {
-        ui.printWarn(
-          `Warning: Context variable '${varName}' is defined in multiple files:`,
+        ui.warn(
+          `Context variable '${varName}' is defined in multiple files:`,
         );
-        ui.printWarn(
+        ui.warn(
           `  - Previously defined in: ${
             extractedContext[varName].sourceFile || "unknown"
           }`,
         );
-        ui.printWarn(`  - Now redefined in: ${absolutePath}`);
-        ui.printWarn(`  Using definition from: ${absolutePath}`);
+        ui.warn(`  - Now redefined in: ${absolutePath}`);
+        ui.warn(`  Using definition from: ${absolutePath}`);
       }
 
       // Extract context definition with source file tracking
@@ -254,29 +261,13 @@ export function extractSamplesFromMarkdown(
 
         const sample = sampleDef as SampleDefinition;
 
-        // Extract messages if available
+        // Add sample if it has messages
         if (sample.messages && Array.isArray(sample.messages)) {
-          // Find the last user message for input
-          let lastUserMessage = "";
-          let lastAssistantMessage = "";
-
-          for (const message of sample.messages) {
-            if (message.role === "user") {
-              lastUserMessage = message.content;
-            } else if (message.role === "assistant") {
-              lastAssistantMessage = message.content;
-            }
-          }
-
-          // Only add sample if we have both user and assistant messages
-          if (lastUserMessage && lastAssistantMessage) {
-            samples.push({
-              id: sampleId,
-              input: lastUserMessage,
-              expected: lastAssistantMessage,
-              score: sample.score,
-            });
-          }
+          samples.push({
+            id: sampleId,
+            messages: sample.messages,
+            score: sample.score,
+          });
         }
       }
     }
@@ -288,6 +279,7 @@ export function extractSamplesFromMarkdown(
 interface ProcessedMarkdown {
   content: string;
   tomlReferences: Array<{ filePath: string; basePath: string }>;
+  tools: Array<OpenAITool>;
 }
 
 function processMarkdownIncludes(
@@ -296,6 +288,7 @@ function processMarkdownIncludes(
 ): ProcessedMarkdown {
   const deckDir = path.dirname(basePath);
   const tomlReferences: Array<{ filePath: string; basePath: string }> = [];
+  const tools: Array<OpenAITool> = [];
 
   // Replace markdown includes with their content
   const content = markdown.replace(
@@ -307,21 +300,40 @@ function processMarkdownIncludes(
         return match; // Keep TOML references in the content
       }
 
-      // Only process .deck.md files for inclusion
-      if (!filePath.endsWith(".deck.md")) {
-        return ""; // Remove other non-markdown includes
-      }
-
       const absolutePath = path.isAbsolute(filePath)
         ? filePath
         : path.join(deckDir, filePath);
 
       try {
         const fileContent = Deno.readTextFileSync(absolutePath);
+
+        // Extract tools from any markdown file (both .md and .deck.md)
+        const fileTools = extractToolsFromMarkdown(fileContent);
+        tools.push(...fileTools);
+
+        // Include content for any markdown file (.md or .deck.md)
+        if (!filePath.endsWith(".md")) {
+          return ""; // Remove other non-markdown includes from content
+        }
+
+        // Extract content without frontmatter for deck files
+        let cleanFileContent: string;
+        try {
+          const { body } = extractFrontmatter(fileContent);
+          cleanFileContent = body;
+        } catch (_error) {
+          // No frontmatter, use content as-is
+          cleanFileContent = fileContent;
+        }
+
         // Recursively process includes in the included file
-        const processed = processMarkdownIncludes(fileContent, absolutePath);
-        // Merge TOML references from included files
+        const processed = processMarkdownIncludes(
+          cleanFileContent,
+          absolutePath,
+        );
+        // Merge TOML references and tools from included files
         tomlReferences.push(...processed.tomlReferences);
+        tools.push(...processed.tools);
         return processed.content;
       } catch (error) {
         if (error instanceof Deno.errors.NotFound) {
@@ -332,52 +344,73 @@ function processMarkdownIncludes(
     },
   );
 
-  return { content, tomlReferences };
+  return { content, tomlReferences, tools };
 }
 
-function renderDeck(
-  deckFileSystemPath: string,
-  context: Record<string, unknown>,
-  openAiCompletionOptions: Record<string, unknown> = {},
-): OpenAICompletionRequest {
-  // Read the deck file content
-  const deckMarkdown = Deno.readTextFileSync(deckFileSystemPath);
+function extractToolsFromMarkdown(markdown: string): Array<OpenAITool> {
+  const tools: Array<OpenAITool> = [];
 
-  // Process markdown includes to build the full content first
-  const processed = processMarkdownIncludes(deckMarkdown, deckFileSystemPath);
+  // Extract all TOML frontmatter blocks (there might be multiple from embedded content)
+  const tomlBlocks = markdown.match(/\+\+\+\n([\s\S]*?)\n\+\+\+/g);
 
-  // Extract context definitions from the fully assembled markdown with proper path resolution
-  const extractedContext = extractContextFromMarkdown(
-    processed.content,
-    deckFileSystemPath,
-    processed.tomlReferences,
-  );
+  if (!tomlBlocks) {
+    return tools;
+  }
 
-  // Remove all ![alt](file) embeds from markdown to get clean system message
-  const systemContent = processed.content.replace(/!\[.*?\]\(.*?\)/g, "")
-    .trim();
+  for (const block of tomlBlocks) {
+    // Remove the +++ delimiters
+    const tomlContent = block.slice(4, -4);
 
-  // Build messages array starting with system message
-  const messages: Array<OpenAIMessage> = [
-    { role: "system", content: systemContent },
-  ];
+    try {
+      const tomlData = parseTOML(tomlContent);
 
-  // Track which context variables were provided but not requested
-  const unrequestedVars: Array<string> = [];
-  const usedVars = new Set<string>();
-
-  // Add context Q&A pairs in the order they were defined in the deck
-  for (const [key, definition] of Object.entries(extractedContext)) {
-    if (key in context && definition.assistantQuestion) {
-      messages.push(
-        { role: "assistant", content: definition.assistantQuestion },
-        { role: "user", content: String(context[key]) },
-      );
-      usedVars.add(key);
+      // Check if this TOML block contains tools
+      if (tomlData.tools && Array.isArray(tomlData.tools)) {
+        for (const tool of tomlData.tools) {
+          if (tool.type === "function" && tool.function) {
+            const openAITool: OpenAITool = {
+              type: "function",
+              function: {
+                name: tool.function.name,
+                description: tool.function.description,
+                parameters: tool.function.parameters || {
+                  type: "object",
+                  properties: {},
+                },
+              },
+            };
+            tools.push(openAITool);
+          }
+        }
+      }
+    } catch (_error) {
+      // Skip invalid TOML blocks - they might be context definitions
+      continue;
     }
   }
 
-  // Check for unrequested variables
+  return tools;
+}
+
+async function renderDeck(
+  deckFileSystemPath: string,
+  context: Record<string, unknown>,
+  openAiCompletionOptions: Record<string, unknown> = {},
+): Promise<OpenAICompletionRequest> {
+  // Use the new deck system
+  const deck = await readLocalDeck(deckFileSystemPath);
+  const result = deck.render({}, { context });
+
+  // Extract context definitions from the deck to check for unrequested variables
+  const { contextDefs } = deck.processMarkdownIncludes(
+    deck.markdownContent,
+    deck.deckPath,
+  );
+
+  // Check for unrequested context variables and warn
+  const usedVars = new Set<string>(Object.keys(contextDefs));
+  const unrequestedVars: Array<string> = [];
+
   for (const key of Object.keys(context)) {
     if (!usedVars.has(key)) {
       unrequestedVars.push(key);
@@ -386,18 +419,44 @@ function renderDeck(
 
   // Warn about unrequested context variables
   if (unrequestedVars.length > 0) {
-    ui.printWarn(
-      `Warning: The following context variables were provided but not requested by the deck: ${
+    ui.warn(
+      `The following context variables were provided but not requested by the deck: ${
         unrequestedVars.join(", ")
       }`,
     );
   }
 
+  // Convert our deck system output to the expected OpenAI format
+  const messages: Array<OpenAIMessage> = result.messages.map((msg) => ({
+    role: msg.role as "system" | "assistant" | "user",
+    content: msg.content,
+  }));
+
+  // Convert tools to OpenAI format if any exist
+  const tools: Array<OpenAITool> = result.tools.map((tool) => ({
+    type: "function",
+    function: {
+      name: tool.name,
+      description: tool.description,
+      parameters: {
+        type: "object",
+        properties: {},
+      },
+    },
+  }));
+
   // Return complete OpenAI request with options spread last
-  return {
+  const request: OpenAICompletionRequest = {
     messages,
     ...openAiCompletionOptions,
   };
+
+  // Add tools if any were found
+  if (tools.length > 0) {
+    request.tools = tools;
+  }
+
+  return request;
 }
 
 // Export functions and types for use by other modules
@@ -408,12 +467,31 @@ export const renderCommand: Command = {
   name: "render",
   description: "Render a deck file to see the generated prompt structure",
   run: async (args: Array<string>) => {
-    if (args.length === 0) {
-      ui.printLn("Usage: aibff render <deck.md>");
+    // Parse arguments using Deno's standard library
+    const flags = parseFlags(args, {
+      string: ["context-file"],
+      boolean: ["help"],
+      stopEarly: false,
+      "--": true,
+    });
+
+    // Show help if requested or no arguments
+    if (flags.help || flags._.length === 0) {
+      ui.info("Usage: aibff render <deck.md> [options]");
+      ui.info("");
+      ui.info("Options:");
+      ui.info(
+        "  --context-file <path>  Path to TOML file with context values",
+      );
+      ui.info("  --help                 Show this help message");
+      ui.info("");
+      ui.info("Examples:");
+      ui.info("  aibff render deck.md");
+      ui.info("  aibff render deck.md --context-file context.toml");
       Deno.exit(1);
     }
 
-    const deckPath = args[0];
+    const deckPath = String(flags._[0]);
 
     try {
       const deckContent = await Deno.readTextFile(deckPath);
@@ -422,34 +500,57 @@ export const renderCommand: Command = {
         deckPath,
       );
 
-      // Build context values and warn for missing defaults
+      // Build context values from defaults
       const contextValues: Record<string, unknown> = {};
       for (const [key, definition] of Object.entries(extractedContext)) {
         if (definition.default !== undefined) {
           contextValues[key] = definition.default;
         } else {
-          ui.printWarn(
-            `Warning: Context variable '${key}' has no default value`,
+          ui.warn(
+            `Context variable '${key}' has no default value`,
           );
           if (definition.description) {
-            ui.printWarn(`  Description: ${definition.description}`);
+            ui.info(`  Description: ${definition.description}`);
           }
           if (definition.type) {
-            ui.printWarn(`  Type: ${definition.type}`);
+            ui.info(`  Type: ${definition.type}`);
           }
         }
       }
 
-      // Render the deck with context injection
-      const openAiRequest = renderDeck(deckPath, contextValues, {});
+      // Load context from file if provided
+      if (flags["context-file"]) {
+        const contextFilePath = String(flags["context-file"]);
+        try {
+          const contextFileContent = await Deno.readTextFile(contextFilePath);
+          const contextFromFile = parseTOML(contextFileContent);
 
-      ui.printLn(JSON.stringify(openAiRequest, null, 2));
+          // Merge context from file, overriding defaults
+          Object.assign(contextValues, contextFromFile);
+        } catch (error) {
+          if (error instanceof Deno.errors.NotFound) {
+            ui.error(`Context file not found: ${contextFilePath}`);
+          } else {
+            ui.error(
+              `Parsing context file: ${
+                error instanceof Error ? error.message : String(error)
+              }`,
+            );
+          }
+          Deno.exit(1);
+        }
+      }
+
+      // Render the deck with context injection
+      const openAiRequest = await renderDeck(deckPath, contextValues, {});
+
+      ui.output(JSON.stringify(openAiRequest, null, 2));
     } catch (error) {
       if (error instanceof Deno.errors.NotFound) {
-        ui.printErr(`Error: File not found: ${deckPath}`);
+        ui.error(`File not found: ${deckPath}`);
       } else {
-        ui.printErr(
-          `Error: ${error instanceof Error ? error.message : String(error)}`,
+        ui.error(
+          `${error instanceof Error ? error.message : String(error)}`,
         );
       }
       Deno.exit(1);
