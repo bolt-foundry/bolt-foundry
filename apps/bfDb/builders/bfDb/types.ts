@@ -5,11 +5,13 @@
 export type FieldSpec =
   | { kind: "string" }
   | { kind: "number" }
-  | { kind: "json" };
+  | { kind: "json" }
+  | { kind: "enum"; values: readonly Array<string> };
 
 export type FieldValue<S> = S extends { kind: "string" } ? string
   : S extends { kind: "number" } ? number
   : S extends { kind: "json" } ? import("@bfmono/apps/bfDb/bfDb.ts").JSONValue
+  : S extends { kind: "enum"; values: readonly Array<infer V> } ? V
   : never;
 
 /* -------------------------------------------------------------------------- */
