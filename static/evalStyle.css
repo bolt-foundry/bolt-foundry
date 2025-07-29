@@ -1098,12 +1098,16 @@
 }
 
 .message-content {
-  flex: 1;
   min-width: 0;
 }
 
 .user-message .message-content {
   text-align: right;
+}
+
+.message-space {
+  flex: 1;
+  min-width: 4rem;
 }
 
 .message-header {
@@ -1137,7 +1141,7 @@
 }
 
 .message-text {
-  background: var(--bfds-background-hover);
+  background: var(--bfds-background);
   padding: 12px 16px;
   border-radius: 12px;
   line-height: 1.5;

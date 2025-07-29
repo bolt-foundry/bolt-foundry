@@ -86,8 +86,16 @@ export function ChatMessage(
     >
       <div className="message-avatar">
         {isUser
-          ? <div className="user-avatar">You</div>
-          : <div className="assistant-avatar">AI</div>}
+          ? (
+            <div className="user-avatar">
+              <BfDsIcon name="friend" />
+            </div>
+          )
+          : (
+            <div className="assistant-avatar">
+              <BfDsIcon name="assistant" />
+            </div>
+          )}
       </div>
 
       <div className="message-content">
@@ -203,6 +211,7 @@ export function ChatMessage(
           </div>
         )}
       </div>
+      <div className="message-space" />
     </div>
   );
 }
