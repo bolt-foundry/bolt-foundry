@@ -1,10 +1,20 @@
 import { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
 import { useEffect, useRef } from "react";
 import { useEvalContext } from "@bfmono/apps/boltfoundry-com/contexts/EvalContext.tsx";
+import { GradingInbox } from "../Grading/GradingInbox.tsx";
 
 export function RightSidebar() {
-  const { rightSidebarOpen, rightSidebarContent, closeRightSidebar, chatMode } =
-    useEvalContext();
+  const {
+    rightSidebarOpen,
+    rightSidebarContent,
+    rightSidebarMode,
+    closeRightSidebar,
+    chatMode,
+    gradingDeckId,
+    gradingDeckName,
+    gradingSamples,
+    exitGrading,
+  } = useEvalContext();
   const hasAnimated = useRef(false);
 
   useEffect(() => {
@@ -77,6 +87,10 @@ export function RightSidebar() {
   const placeholderClass = rightSidebarOpen
     ? `eval-right-sidebar-placeholder eval-right-sidebar-placeholder--open ${
       hasAnimated.current ? "eval-right-sidebar-placeholder--animate" : ""
+    } ${
+      rightSidebarMode === "grading"
+        ? "eval-right-sidebar-placeholder--grading"
+        : ""
     }`
     : `eval-right-sidebar-placeholder ${
       hasAnimated.current ? "eval-right-sidebar-placeholder--animate" : ""
@@ -85,29 +99,40 @@ export function RightSidebar() {
   // Sidebar always uses transform animation
   const sidebarClass = `eval-right-sidebar ${
     !rightSidebarOpen ? "eval-right-sidebar--hidden" : ""
-  }`;
+  } ${rightSidebarMode === "grading" ? "eval-right-sidebar--grading" : ""}`;
 
   return (
     <>
       <div className={placeholderClass}></div>
       <div className={sidebarClass}>
-        <div className="eval-sidebar-content">
-          <div className="eval-sidebar-header">
-            <h3>{rightSidebarContent}</h3>
-            <BfDsButton
-              variant="ghost"
-              icon="cross"
-              iconOnly
-              onClick={closeRightSidebar}
+        {rightSidebarMode === "grading" && gradingDeckId && gradingDeckName
+          ? (
+            <GradingInbox
+              deckId={gradingDeckId}
+              deckName={gradingDeckName}
+              samples={gradingSamples}
+              onClose={exitGrading}
             />
-          </div>
-          <div className="eval-sidebar-body">
-            {chatMode === "createDeck" &&
-                rightSidebarContent === "Deck Creation"
-              ? renderDeckCreationContent()
-              : <p>Content for: {rightSidebarContent}</p>}
-          </div>
-        </div>
+          )
+          : (
+            <div className="eval-sidebar-content">
+              <div className="eval-sidebar-header">
+                <h3>{rightSidebarContent}</h3>
+                <BfDsButton
+                  variant="ghost"
+                  icon="cross"
+                  iconOnly
+                  onClick={closeRightSidebar}
+                />
+              </div>
+              <div className="eval-sidebar-body">
+                {chatMode === "createDeck" &&
+                    rightSidebarContent === "Deck Creation"
+                  ? renderDeckCreationContent()
+                  : <p>Content for: {rightSidebarContent}</p>}
+              </div>
+            </div>
+          )}
       </div>
     </>
   );
