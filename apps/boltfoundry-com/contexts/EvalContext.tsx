@@ -1,17 +1,25 @@
 import { createContext, useContext, useState } from "react";
 import type { ReactNode } from "react";
+import type { GradingSample } from "../types/grading.ts";
 
 type MainView = "Decks" | "Analyze" | "Chat";
 type ChatMode = null | "createDeck";
+type SidebarMode = "normal" | "grading";
 
 interface EvalContextType {
   leftSidebarOpen: boolean;
   rightSidebarOpen: boolean;
   activeMainContent: MainView;
   rightSidebarContent: string | null;
+  rightSidebarMode: SidebarMode;
   leftSidebarStateBeforeRightOpen: boolean;
   chatMode: ChatMode;
   chatBackTarget: MainView | null;
+
+  // Grading state
+  gradingDeckId: string | null;
+  gradingDeckName: string | null;
+  gradingSamples: Array<GradingSample>;
 
   setLeftSidebarOpen: (open: boolean) => void;
   setActiveMainContent: (content: MainView) => void;
@@ -19,6 +27,12 @@ interface EvalContextType {
   closeRightSidebar: () => void;
   startDeckCreation: () => void;
   exitChatMode: () => void;
+  startGrading: (
+    deckId: string,
+    deckName: string,
+    samples: Array<GradingSample>,
+  ) => void;
+  exitGrading: () => void;
 }
 
 const EvalContext = createContext<EvalContextType | undefined>(undefined);
@@ -38,10 +52,20 @@ export function EvalProvider({ children }: { children: ReactNode }) {
   const [rightSidebarContent, setRightSidebarContent] = useState<string | null>(
     null,
   );
+  const [rightSidebarMode, setRightSidebarMode] = useState<SidebarMode>(
+    "normal",
+  );
   const [leftSidebarStateBeforeRightOpen, setLeftSidebarStateBeforeRightOpen] =
     useState(false);
   const [chatMode, setChatMode] = useState<ChatMode>(null);
   const [chatBackTarget, setChatBackTarget] = useState<MainView | null>(null);
+
+  // Grading state
+  const [gradingDeckId, setGradingDeckId] = useState<string | null>(null);
+  const [gradingDeckName, setGradingDeckName] = useState<string | null>(null);
+  const [gradingSamples, setGradingSamples] = useState<Array<GradingSample>>(
+    [],
+  );
 
   const setLeftSidebarOpen = (open: boolean) => {
     setLeftSidebarOpenState(open);
@@ -61,6 +85,7 @@ export function EvalProvider({ children }: { children: ReactNode }) {
   const closeRightSidebar = () => {
     setRightSidebarOpen(false);
     setRightSidebarContent(null);
+    setRightSidebarMode("normal");
     // Restore left sidebar to its previous state
     setLeftSidebarOpenState(leftSidebarStateBeforeRightOpen);
   };
@@ -81,6 +106,26 @@ export function EvalProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const startGrading = (
+    deckId: string,
+    deckName: string,
+    samples: Array<GradingSample>,
+  ) => {
+    setGradingDeckId(deckId);
+    setGradingDeckName(deckName);
+    setGradingSamples(samples);
+    setRightSidebarMode("grading");
+    openRightSidebar("Grading Inbox");
+  };
+
+  const exitGrading = () => {
+    setGradingDeckId(null);
+    setGradingDeckName(null);
+    setGradingSamples([]);
+    setRightSidebarMode("normal");
+    closeRightSidebar();
+  };
+
   return (
     <EvalContext.Provider
       value={{
@@ -88,15 +133,21 @@ export function EvalProvider({ children }: { children: ReactNode }) {
         rightSidebarOpen,
         activeMainContent,
         rightSidebarContent,
+        rightSidebarMode,
         leftSidebarStateBeforeRightOpen,
         chatMode,
         chatBackTarget,
+        gradingDeckId,
+        gradingDeckName,
+        gradingSamples,
         setLeftSidebarOpen,
         setActiveMainContent,
         openRightSidebar,
         closeRightSidebar,
         startDeckCreation,
         exitChatMode,
+        startGrading,
+        exitGrading,
       }}
     >
       {children}
