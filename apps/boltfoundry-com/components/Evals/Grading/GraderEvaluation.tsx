@@ -1,0 +1,71 @@
+import { BfDsIcon } from "@bfmono/apps/bfDs/components/BfDsIcon.tsx";
+import { BfDsBadge } from "@bfmono/apps/bfDs/components/BfDsBadge.tsx";
+import { GraderHumanRating } from "./GraderHumanRating.tsx";
+
+interface GraderEvaluationProps {
+  evaluation: {
+    graderId: string;
+    graderName: string;
+    score: number;
+    reason: string;
+    humanGrade?: {
+      score: -3 | 3;
+      comment: string;
+      gradedBy: string;
+      gradedAt: string;
+    };
+  };
+  onHumanRatingChange: (
+    graderId: string,
+    rating: -3 | 3 | null,
+    comment: string,
+  ) => void;
+}
+
+export function GraderEvaluation(
+  { evaluation, onHumanRatingChange }: GraderEvaluationProps,
+) {
+  const getScoreColor = (score: number): "success" | "error" | "warning" => {
+    if (score >= 2) return "success";
+    if (score <= -2) return "error";
+    return "warning";
+  };
+
+  const getScoreIcon = (score: number): string => {
+    if (score >= 2) return "thumbs-up";
+    if (score <= -2) return "thumbs-down";
+    return "minus";
+  };
+
+  return (
+    <div className="grader-evaluation">
+      <div className="evaluation-header">
+        <div className="grader-info">
+          <BfDsIcon name="cpu" size="small" />
+          <span className="grader-name">{evaluation.graderName}</span>
+        </div>
+        <div className="grader-score">
+          <BfDsBadge
+            variant={getScoreColor(evaluation.score)}
+            size="small"
+          >
+            <BfDsIcon name={getScoreIcon(evaluation.score)} size="small" />
+            <span>{evaluation.score > 0 ? "+" : ""}{evaluation.score}</span>
+          </BfDsBadge>
+        </div>
+      </div>
+      <div className="evaluation-reason">
+        <p>{evaluation.reason}</p>
+      </div>
+      <div className="evaluation-human-rating">
+        <GraderHumanRating
+          graderId={evaluation.graderId}
+          graderName={evaluation.graderName}
+          initialRating={evaluation.humanGrade?.score || null}
+          initialComment={evaluation.humanGrade?.comment || ""}
+          onRatingChange={onHumanRatingChange}
+        />
+      </div>
+    </div>
+  );
+}
