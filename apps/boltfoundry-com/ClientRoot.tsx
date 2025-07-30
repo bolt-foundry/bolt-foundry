@@ -47,7 +47,18 @@ if (isDev) {
         currentPath: globalThis.location.pathname,
         // @ts-expect-error Development global
         GOOGLE_OAUTH_CLIENT_ID: globalThis.__ENVIRONMENT__
-          ?.GOOGLE_OAUTH_CLIENT_ID,
+          ?.GOOGLE_OAUTH_CLIENT_ID ||
+          // @ts-expect-error Vite env
+          import.meta.env?.VITE_GOOGLE_OAUTH_CLIENT_ID ||
+          "1053566961455-rreuknvho4jqcj184evmj93n7n1nrjun.apps.googleusercontent.com",
+        // @ts-expect-error Development global
+        BF_E2E_MODE: globalThis.__ENVIRONMENT__?.BF_E2E_MODE ||
+          // Check if BF_E2E_MODE is set in environment
+          (typeof Deno !== "undefined" &&
+            Deno.env?.get?.("BF_E2E_MODE") === "true") ||
+          // In codebot, always enable E2E mode
+          (typeof window !== "undefined" &&
+            window.location.hostname.includes(".codebot.local")),
       };
       createRoot(root).render(<ClientRoot environment={devEnvironment} />);
     }
