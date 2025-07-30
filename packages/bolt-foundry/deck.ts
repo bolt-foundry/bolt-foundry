@@ -35,9 +35,11 @@ export class Deck {
       this.deckPath,
     );
 
-    const messages = [
+    const messages: Array<
+      { role: "system" | "assistant" | "user"; content: string }
+    > = [
       {
-        role: "system",
+        role: "system" as const,
         content: processedContent,
       },
     ];
@@ -55,11 +57,11 @@ export class Deck {
       ) {
         messages.push(
           {
-            role: "assistant",
+            role: "assistant" as const,
             content: contextDef.assistantQuestion,
           },
           {
-            role: "user",
+            role: "user" as const,
             content: String(value),
           },
         );
@@ -68,8 +70,9 @@ export class Deck {
 
     // Create base output with default messages and tools
     const output: RenderOutput = {
-      messages,
+      messages: messages as any,
       tools: contextDefs.tools || [],
+      model: "gpt-4o-mini", // Default model
     };
 
     // Merge OpenAI params if provided (this may override messages)
@@ -92,13 +95,13 @@ export class Deck {
   processMarkdownIncludes(content: string, basePath: string): {
     processedContent: string;
     contextDefs: Record<string, { assistantQuestion: string }> & {
-      tools?: Array<{ name: string; description: string }>;
+      tools?: Array<any>;
     };
   } {
     let processed = content;
     let hasIncludes = true;
     const contextDefs: Record<string, { assistantQuestion: string }> & {
-      tools?: Array<{ name: string; description: string }>;
+      tools?: Array<any>;
     } = {};
 
     // Keep processing until no more includes found
@@ -157,7 +160,7 @@ export class Deck {
 
   private parseToml(content: string): {
     contexts: Record<string, { assistantQuestion: string }>;
-    tools: Array<{ name: string; description: string }>;
+    tools: Array<any>;
   } {
     // Simple TOML parser for [contexts.varName] and [[tools]] sections
     const contexts: Record<string, { assistantQuestion: string }> = {};
@@ -213,8 +216,15 @@ export class Deck {
         ) {
           if (currentTool?.name && currentTool?.description) {
             tools.push({
-              name: currentTool.name,
-              description: currentTool.description,
+              type: "function",
+              function: {
+                name: currentTool.name,
+                description: currentTool.description,
+                parameters: {
+                  type: "object",
+                  properties: {},
+                },
+              },
             });
           }
           currentTool = null;
@@ -234,8 +244,15 @@ export class Deck {
     // Add final tool if we were in the middle of parsing one
     if (currentTool?.name && currentTool?.description) {
       tools.push({
-        name: currentTool.name,
-        description: currentTool.description,
+        type: "function",
+        function: {
+          name: currentTool.name,
+          description: currentTool.description,
+          parameters: {
+            type: "object",
+            properties: {},
+          },
+        },
       });
     }
 
