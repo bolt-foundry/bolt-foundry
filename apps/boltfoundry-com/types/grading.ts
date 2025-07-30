@@ -42,13 +42,16 @@ export interface GradingSample {
     graderName: string;
     score: number;
     reason: string;
-    humanGrade?: {
-      score: -3 | 3; // Thumbs down/up for now
-      comment: string;
-      gradedBy: string;
-      gradedAt: string;
-    };
   }>;
+  humanGrade?: {
+    grades: Array<{
+      graderId: string;
+      score: -3 | 3;
+      reason: string;
+    }>;
+    gradedBy: string;
+    gradedAt: string;
+  };
   bfMetadata: {
     deckName: string;
     deckContent: string;

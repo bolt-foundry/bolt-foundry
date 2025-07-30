@@ -45,7 +45,7 @@ export function DeckItem({ deck, onClick }: DeckItemProps) {
       </div>
       <div className="deck-bar-meta">
         <span className="deck-bar-metric">
-          <BfDsIcon name="friend" size="small" />
+          <BfDsIcon name="cpu" size="small" />
           {deck.graderCount} graders
         </span>
         <span className="deck-bar-metric">
