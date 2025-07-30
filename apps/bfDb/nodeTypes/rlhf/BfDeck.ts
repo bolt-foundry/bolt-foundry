@@ -75,7 +75,10 @@ export class BfDeck extends BfNode<InferProps<typeof BfDeck>> {
 
     // Extract content from the rendered deck (system message content)
     const rendered = deck.render({});
-    const content = rendered.messages[0]?.content || "";
+    const rawContent = rendered.messages[0]?.content || "";
+    const content = typeof rawContent === "string"
+      ? rawContent
+      : JSON.stringify(rawContent);
 
     return {
       name: "Customer Support Response Evaluator",
