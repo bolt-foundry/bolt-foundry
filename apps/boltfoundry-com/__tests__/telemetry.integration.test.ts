@@ -26,8 +26,6 @@ const createMockTelemetryData = (overrides = {}) => ({
   duration: 1500,
   provider: "openai",
   providerApiVersion: "v1",
-  sessionId: "test-session-123",
-  userId: "user-456",
   request: {
     url: "https://api.openai.com/v1/chat/completions",
     method: "POST",

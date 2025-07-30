@@ -12,8 +12,6 @@ interface TelemetryData {
   duration: number;
   provider: string;
   providerApiVersion?: string;
-  sessionId?: string;
-  userId?: string;
   model?: string;
   request: {
     url: string;
