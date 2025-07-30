@@ -126,6 +126,7 @@ OPTIONS:
   --shell              Enter container shell for debugging
   --exec CMD           Execute command in container
   --workspace NAME     Reuse existing workspace or create new one with specific name
+                       If a container is already running with this name, attach to it
   --cleanup            Remove workspace after completion (default: keep)
   --force-rebuild      Force rebuild container image before starting
   --memory SIZE        Container memory limit (e.g., 4g, 8g, 16g) (default: auto-detect 80% of system RAM)
@@ -134,7 +135,7 @@ OPTIONS:
 
 EXAMPLES:
   bft codebot                           # Start Claude Code CLI (new workspace)
-  bft codebot --workspace fuzzy-goat    # Reuse existing workspace
+  bft codebot --workspace fuzzy-goat    # Resume running container or reuse workspace
   bft codebot --cleanup                 # Start and cleanup workspace when done
   bft codebot --shell                   # Open container shell for debugging
   bft codebot --exec "ls -la"           # Run command and exit
@@ -617,6 +618,62 @@ FIRST TIME SETUP:
       // Ignore cleanup errors
     }
     return 1;
+  }
+
+  // Check if container is already running with this workspace name
+  if (parsed.workspace) {
+    try {
+      const inspectCmd = new Deno.Command("container", {
+        args: ["inspect", workspaceId, "--format", "{{.State.Running}}"],
+        stdout: "piped",
+        stderr: "null",
+      });
+      const inspectResult = await inspectCmd.output();
+
+      if (inspectResult.success) {
+        const isRunning =
+          new TextDecoder().decode(inspectResult.stdout).trim() === "true";
+
+        if (isRunning) {
+          ui.output(
+            `🔄 Container '${workspaceId}' is already running - attaching to it...`,
+          );
+
+          // Update Ghostty titlebar
+          try {
+            await Deno.stdout.write(
+              new TextEncoder().encode(
+                `\x1b]0;codebot (resumed): ${workspaceId}\x07`,
+              ),
+            );
+          } catch {
+            // Ignore errors
+          }
+
+          // Attach to the running container
+          const attachCmd = new Deno.Command("container", {
+            args: ["attach", workspaceId],
+            stdin: "inherit",
+            stdout: "inherit",
+            stderr: "inherit",
+          });
+
+          const attachChild = attachCmd.spawn();
+          const { success } = await attachChild.status;
+
+          // Don't cleanup workspace for resumed containers
+          ui.output(`📁 Workspace preserved at: ${workspacePath}`);
+          return success ? 0 : 1;
+        }
+      }
+    } catch (error) {
+      // Container doesn't exist, continue with normal flow
+      logger.debug(
+        `Container check failed: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+      );
+    }
   }
 
   if (parsed.shell) {
