@@ -14,6 +14,10 @@ type ChatCompletionCreateParams = OpenAI.Chat.ChatCompletionCreateParams;
 // RenderOutput includes our metadata extension
 type RenderOutput = ChatCompletionCreateParamsWithMetadata;
 
+// Type for tools that matches OpenAI's ChatCompletionTool
+type ChatCompletionTool = ChatCompletionCreateParams["tools"] extends
+  Array<infer T> ? T : never;
+
 export class Deck {
   deckId: string;
   markdownContent: string;
@@ -35,9 +39,11 @@ export class Deck {
       this.deckPath,
     );
 
-    const messages = [
+    const messages: Array<
+      { role: "system" | "assistant" | "user"; content: string }
+    > = [
       {
-        role: "system",
+        role: "system" as const,
         content: processedContent,
       },
     ];
@@ -55,11 +61,11 @@ export class Deck {
       ) {
         messages.push(
           {
-            role: "assistant",
+            role: "assistant" as const,
             content: contextDef.assistantQuestion,
           },
           {
-            role: "user",
+            role: "user" as const,
             content: String(value),
           },
         );
@@ -68,8 +74,9 @@ export class Deck {
 
     // Create base output with default messages and tools
     const output: RenderOutput = {
-      messages,
+      messages: messages as ChatCompletionCreateParams["messages"],
       tools: contextDefs.tools || [],
+      model: "gpt-4o-mini", // Default model
     };
 
     // Merge OpenAI params if provided (this may override messages)
@@ -92,13 +99,13 @@ export class Deck {
   processMarkdownIncludes(content: string, basePath: string): {
     processedContent: string;
     contextDefs: Record<string, { assistantQuestion: string }> & {
-      tools?: Array<{ name: string; description: string }>;
+      tools?: Array<ChatCompletionTool>;
     };
   } {
     let processed = content;
     let hasIncludes = true;
     const contextDefs: Record<string, { assistantQuestion: string }> & {
-      tools?: Array<{ name: string; description: string }>;
+      tools?: Array<ChatCompletionTool>;
     } = {};
 
     // Keep processing until no more includes found
@@ -157,11 +164,11 @@ export class Deck {
 
   private parseToml(content: string): {
     contexts: Record<string, { assistantQuestion: string }>;
-    tools: Array<{ name: string; description: string }>;
+    tools: Array<ChatCompletionTool>;
   } {
     // Simple TOML parser for [contexts.varName] and [[tools]] sections
     const contexts: Record<string, { assistantQuestion: string }> = {};
-    const tools: Array<{ name: string; description: string }> = [];
+    const tools: Array<ChatCompletionTool> = [];
 
     const lines = content.split("\n");
     let currentContext = "";
@@ -213,9 +220,16 @@ export class Deck {
         ) {
           if (currentTool?.name && currentTool?.description) {
             tools.push({
-              name: currentTool.name,
-              description: currentTool.description,
-            });
+              type: "function",
+              function: {
+                name: currentTool.name,
+                description: currentTool.description,
+                parameters: {
+                  type: "object",
+                  properties: {},
+                },
+              },
+            } as ChatCompletionTool);
           }
           currentTool = null;
           inToolsArray = false;
@@ -234,9 +248,16 @@ export class Deck {
     // Add final tool if we were in the middle of parsing one
     if (currentTool?.name && currentTool?.description) {
       tools.push({
-        name: currentTool.name,
-        description: currentTool.description,
-      });
+        type: "function",
+        function: {
+          name: currentTool.name,
+          description: currentTool.description,
+          parameters: {
+            type: "object",
+            properties: {},
+          },
+        },
+      } as ChatCompletionTool);
     }
 
     return { contexts, tools };
