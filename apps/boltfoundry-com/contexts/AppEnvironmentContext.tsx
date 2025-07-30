@@ -16,6 +16,8 @@ export type AppEnvironmentProps = {
   mode?: string;
   port?: number;
   currentPath?: string;
+  GOOGLE_OAUTH_CLIENT_ID?: string;
+  BF_E2E_MODE?: boolean;
 };
 
 export type ServerProps =

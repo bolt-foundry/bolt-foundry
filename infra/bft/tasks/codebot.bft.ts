@@ -799,6 +799,8 @@ FIRST TIME SETUP:
       `${workspacePath}:/workspace`,
       "-e",
       `GITHUB_TOKEN=${githubToken}`,
+      "-e",
+      "BF_E2E_MODE=true",
       "codebot",
     ];
 
@@ -846,6 +848,8 @@ FIRST TIME SETUP:
       `${workspacePath}:/workspace`,
       "-e",
       `GITHUB_TOKEN=${githubToken}`,
+      "-e",
+      "BF_E2E_MODE=true",
       "codebot",
       "-c",
       parsed.exec,
@@ -915,6 +919,8 @@ FIRST TIME SETUP:
     `${workspacePath}:/workspace`,
     "-e",
     `GITHUB_TOKEN=${githubToken}`,
+    "-e",
+    "BF_E2E_MODE=true",
     "codebot",
     "-c",
     "claude --dangerously-skip-permissions; exec /bin/bash",
