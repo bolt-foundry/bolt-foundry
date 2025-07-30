@@ -56,7 +56,9 @@ jobs:
             -var="github_username=${{ github.repository_owner }}" \
             -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}" \
             -var="hyperdx_api_key=${{ secrets.HYPERDX_API_KEY }}" \
-            -var="domain_name=next.boltfoundry.com"
+            -var="s3_access_key=${{ secrets.AWS_ACCESS_KEY_ID }}" \
+            -var="s3_secret_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
+            -var="domain_name=boltfoundry.com"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -88,7 +90,7 @@ jobs:
           # Health check with retries
           echo "🩺 Testing health endpoint..."
           for i in {1..60}; do
-            if curl -f -s https://next.boltfoundry.com/ > /dev/null 2>&1; then
+            if curl -f -s https://boltfoundry.com/ > /dev/null 2>&1; then
               echo "✅ Health endpoint responded successfully"
               break
             fi
@@ -105,7 +107,7 @@ jobs:
           # Test main page endpoint
           echo "🏠 Testing main page endpoint..."
           for i in {1..10}; do
-            response_code=$(curl -s -o /dev/null -w "%{http_code}" https://next.boltfoundry.com/)
+            response_code=$(curl -s -o /dev/null -w "%{http_code}" https://boltfoundry.com/)
             if [ "$response_code" = "200" ]; then
               echo "✅ Main page responded with 200 OK"
               break
@@ -122,7 +124,7 @@ jobs:
 
           # Enhanced health check - get detailed health info
           echo "🔬 Performing detailed health check..."
-          health_response=$(curl -s https://next.boltfoundry.com/)
+          health_response=$(curl -s https://boltfoundry.com/)
           if echo "$health_response" | grep -q 'html\|HTML'; then
             echo "✅ Detailed health check passed"
             echo "Health response contains HTML content"
@@ -142,7 +144,7 @@ jobs:
 
           # Monitor for 2 minutes to catch early failures
           for i in {1..12}; do
-            response_code=$(curl -s -o /dev/null -w "%{http_code}" https://next.boltfoundry.com/)
+            response_code=$(curl -s -o /dev/null -w "%{http_code}" https://boltfoundry.com/)
             if [ "$response_code" != "200" ]; then
               echo "❌ Stability check failed with response code: $response_code at check $i/12"
               echo "🔄 Attempting rollback..."
@@ -159,14 +161,14 @@ jobs:
         if: success()
         run: |
           echo "🚀 Deployment completed successfully!"
-          echo "✅ Service URL: https://next.boltfoundry.com"
-          echo "✅ Health Check: https://next.boltfoundry.com/"
+          echo "✅ Service URL: https://boltfoundry.com"
+          echo "✅ Health Check: https://boltfoundry.com/"
           echo "✅ Deployment validated and stable"
 
       - name: Deployment failure notification
         if: failure()
         run: |
           echo "💥 Deployment failed!"
-          echo "❌ Service may be unresponsive at: https://next.boltfoundry.com"
+          echo "❌ Service may be unresponsive at: https://boltfoundry.com"
           echo "🔍 Check logs above for specific failure reason"
           echo "⚠️ Manual intervention may be required"

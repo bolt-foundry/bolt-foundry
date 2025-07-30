@@ -1,161 +1,224 @@
-# Bolt Foundry H2 2025 Product Plan
+# 1. Executive Summary
 
-_Product roadmap for July-December 2025_
+Bolt Foundry is building the operating system for LLMs, transforming unreliable
+prompt engineering into structured systems that achieve 99% reliability. We're a
+five-person team with two paying customers at $1k/month each and validated
+methodology.
 
-## Executive Summary
+**H2 Objectives**: Ship v1 platform, onboard 10 customers, close $2M seed round,
+prepare for growth phase.
 
-Bolt Foundry's H2 2025 focus is delivering a production-ready
-[RLHF pipeline](../apps/boltfoundry-com/memos/plans/rlhf-pipeline-data-model-implementation.md)
-that enables internal teams to align on LLM behavior definitions and get
-actionable insights for improvement.
+**Core Product Bet**: Automated reliability loop - developers upload samples, we
+auto-generate graders, integrate seamlessly, continuously evaluate, and optimize
+prompts automatically.
 
-## Core Product Definition
+# 2. Strategy Overview
 
-**What we're building**: A customer success platform where internal teams (PM +
-Engineering + etc.) can:
+## Mission & Vision
 
-1. Agree on how their LLM should behave
-   ([graders/decks](../apps/boltfoundry-com/memos/plans/rlhf-pipeline-data-model-implementation.md))
-2. Evaluate real usage against those standards
-3. Get clear guidance on what to change
+**Bolt Foundry is building the operating system for LLMs**. We're transforming
+Large Language Model development from unreliable, ad-hoc prompt engineering into
+structured, engineering-rigorous systems that achieve 99% reliability.
 
-**Current state**: Working technical foundation with pilot customer not yet
-using the system
+We solve the four critical problems plaguing today's LLM development:
 
-**H2 Goal**: Multiple customers actively using the
-[RLHF feedback loop](../apps/boltfoundry-com/memos/plans/rlhf-pipeline-data-model-implementation.md)
-to improve their LLMs
+- **Unreliable systems**: One prompt change breaks unrelated functionality
+- **Unmaintainable code**: No structure, reusability, or clear interfaces
+- **Untestable components**: Can't verify individual pieces work correctly
+- **Scaling challenges**: Each new use case starts from scratch
 
-## Implementation Phases
+## Where We Are Now vs. Where We Want to Go
 
-### Phase 1: Foundation
+### Current State (H1 2024)
 
-**Goal**: Complete RLHF data model and authentication
+- **Alpha phase product** (v0.1-0.5) with core CLI tools and SDK
+- **Developer tools foundation**: aibff CLI, structured prompt building APIs
+- **Open source approach** with growing developer interest
+- **Five-person team** in alpha phase
+- **Early validation** of our cards/decks/graders methodology
+- **Two paying customers** at $1k/month each with active pipeline of demo
+  meetings
 
-- [x] Extend [bfdb](../apps/bfDb/memos/guides/data-model.md) with
-      [BfSample, BfDeck, BfGrader, BfGraderResult nodes](../apps/boltfoundry-com/memos/plans/rlhf-pipeline-data-model-implementation.md)
-      _Status: 65% complete - all 5 BfNode types implemented with comprehensive
-      test coverage_
-- [ ] GraphQL schema extensions _Status: DELETED - removed from requirements_
-- [ ] [Google OAuth authentication](../apps/boltFoundry/components/CurrentViewer/LoginWithGoogleButton.tsx)
-      _Status: In progress - authentication infrastructure being developed_
-- [ ] [Organization/person management](../apps/bfDb/classes/CurrentViewer.ts)
-      _Status: In progress - organization scoping patterns implemented_
+### Target State (End of H2 2024)
 
-### Phase 2: API Integration
+- **Production-ready v1 platform** with web GUI and full feature set
+- **Functioning marketing engine** that consistently generates qualified leads
+  and converts customers
+- **$2M seed funding** secured to accelerate growth and team expansion
+- **Fully scaled operations** ready to handle rapid customer growth beyond
+  initial 10 customers
+- **Market positioning** as the go-to infrastructure for reliable LLM
+  development
 
-**Goal**: Sample ingestion pipeline working
+# 3. Key Objectives
 
-- [ ] [bolt-foundry library](../packages/bolt-foundry/README.md) extension for
-      sample collection _Status: In progress - sample collection patterns
-      defined_
-- [ ] Sample storage endpoints _Status: In progress - implementing REST API in
-      collector app_
-- [x] Organization-scoped data access _Status: Complete - CurrentViewer and
-      cv.orgBfOid patterns implemented_
-- [ ] Basic web interface scaffolding _Status: In progress - boltFoundry app
-      foundation exists_
+## Company-level OKRs for H2
 
-### Phase 3: Core UI
-
-**Goal**: Customer-facing dashboard operational
-
-- [ ] Sample management interface _Status: Planned - awaiting sample storage
-      endpoints_
-- [ ] Deck/grader configuration UI _Status: Planned - AIBFF GUI provides
-      foundation patterns_
-- [ ] Evaluation workflow _Status: In progress - moving from AIBFF GUI to
-      boltfoundry-com web app_
-- [ ] Grader result visualization _Status: In progress - grader result patterns
-      defined in AIBFF_
-
-### Phase 4: Customer Success
-
-**Goal**: Pilot customer actively using feedback loop
-
-- [ ] Deploy to pilot customer _Status: In progress - example-customer.com
-      pipeline in development, not yet deployed_
-- [ ] Train their team on the workflow _Status: In progress - targeting >90%
-      accuracy milestone_
-- [ ] Collect usage data and iterate _Status: In progress - usage analytics via
-      collector app_
-- [ ] Document replicable customer onboarding process _Status: Planned -
-      awaiting pilot customer success validation_
+- **Complete development of Bolt Foundry v1** - All core features implemented,
+  production infrastructure deployed, documentation finalized
+- **Onboard 10 customers to validate product-market fit** - 10 active customers
+  with ≥8/10 satisfaction and established feedback loop
+- **Complete seed funding round** - Close $2M round with strategic investors and
+  finalized board composition
+- **Prepare for next phase** - Define growth strategy, team expansion plan, and
+  v2 roadmap based on customer feedback
 
 ## Success Metrics
 
-### 30-Day Success Criteria
+- **Primary (Q3):** v1 shipped, 10 customers onboarded, seed round closed
+- **Q4:** Scale the product and keep shipping product
+- **Secondary:** Customer retention >90%, product usage metrics trending up
+- **Leading Indicators:** Demo conversion rate [TBD%], customer engagement
+  scores [TBD threshold], feature adoption rates [TBD%]
 
-- [ ] [Pilot customer](../customers/example-customer.com/) team regularly using
-      feedback loop _Status: Planned - needs deployment and inbox implementation
-      first_
-- [ ] Working RLHF pipeline ready for replication _Status: 65% complete - data
-      model complete, GraphQL mutations needed_
-- [ ] Clear customer onboarding process documented _Status: Planned - awaiting
-      pilot customer validation_
+# 4. Project List & Prioritization
 
-### 90-Day Success Criteria
+## High-Level Initiatives
 
-- [ ] 3+ customers actively using the system
-- [ ] Measurable improvement in customer LLM performance
-- [ ] Self-service customer onboarding functional
+| Project                             | Impact | Effort | IEQ | Priority | Owner        |
+| ----------------------------------- | ------ | ------ | --- | -------- | ------------ |
+| End-to-End RLHF Flow Implementation | 3      | 3      | 1.0 | P0       | Randall      |
+| Product v1 Feature Complete         | 3      | 3      | 1.0 | P0       | Randall      |
+| UI-Backend Integration              | 3      | 2      | 1.5 | P0       | Justin       |
+| Seed Round Fundraising              | 3      | 3      | 1.0 | P0       | Dan          |
+| Customer Pipeline Development       | 3      | 3      | 1.0 | P0       | Dan and Josh |
+| Product Hunt Launch                 | 2      | 2      | 1.0 | P0       | Dan          |
 
-## Customer-Centric Focus
+# 5. Product & Engineering Plans
 
-**Primary customer**: Internal teams building LLM applications **Core value**:
-Systematic improvement through team alignment and actionable feedback **Key
-workflow**: Define behavior → Evaluate samples → Get specific improvement
-guidance
+## Core Product Vision: Automated Reliability Loop
 
-## Technical Priorities
+Our primary product bet is a simple integration that automatically improves LLM
+reliability:
 
-1. **Customer-facing UI**: Priority #1 - customers need to see their data
-2. **Sample ingestion**: Core pipeline for collecting evaluation data
-3. **Organization isolation**: Secure, multi-tenant data access
-4. **Evaluation workflow**: Intuitive process for running graders on samples
+1. **Sample Upload Interface**: Users upload LLM output examples
+2. **Auto-Generated Multi-Dimensional Graders**: System creates graders across
+   quality dimensions
+3. **Stack Integration**: Seamless integration into existing LLM pipelines
+4. **Continuous Evaluation**: Real-time grading of new samples
+5. **Automatic Prompt Optimization**: Grades feed back to improve prompts
+   automatically
 
-## Next Actions
+**Key Hypothesis**: This will be simple and high-return enough to be a "no
+brainer" for developers needing reliability.
 
-1. **Complete REST API endpoints in collector app** for sample storage
-2. **Build inbox system** for example-customer.com
-3. **Deploy** example-customer.com pipeline and achieve >90% accuracy
-4. **Migrate evaluation workflow** from AIBFF GUI to boltfoundry-com
-5. **Redefine success metrics** based on actual deployment requirements
-6. Build replicable customer onboarding process
+## Development Priorities
 
-_This plan prioritizes customer success and real usage over feature
-completeness._
+- **Multi-Dimensional Grader Generation**: Expand from single-dimension (Munch
+  beta) to automatic multi-dimensional grading
+- **Seamless Stack Integration**: Drop-in SDK/API for major LLM providers and
+  frameworks
+- **Installation & Onboarding**: Frictionless setup, potentially via AI coding
+  assistant integration
+- **Real-Time Feedback Loop**: Streaming pipeline for sub-second evaluation and
+  prompt updates
 
-## Appendix: Related Resources
+**Owner**: Randall
 
-### Implementation Plans
+## Key Risks
 
-- [RLHF Pipeline Data Model Implementation](../apps/boltfoundry-com/memos/plans/rlhf-pipeline-data-model-implementation.md) -
-  Detailed technical implementation plan for the RLHF pipeline
-- [H1 2025 Product Plan](./2025-h1-product-plan.md) - Previous roadmap and
-  context
+**Technical**: Grader quality, integration complexity, performance scaling
+**Product**: Adoption friction, value demonstration, competitive pressure
 
-### Strategic Documentation
+# 6. Go-to-Market & Growth Initiatives
 
-- [Company Vision](../memos/guides/company-vision.md) - Core mission and vision
-- [Business Vision](../memos/guides/business-vision.md) - Go-to-market strategy
-  and revenue model
-- [Big Picture Strategy](../memos/guides/big-picture-strategy.md) - Strategic
-  positioning
-- [Library Vision](../memos/guides/library-vision.md) - Technical library
-  approach
-- [Measurement Strategy](../memos/guides/measurement-strategy.md) - KPIs and
-  success metrics
+## Messaging & Positioning Strategy
 
-### Technical Architecture
+### Target Customer Personas
 
-- [Current Status](../memos/guides/STATUS.md) - Project status and priorities
-- [AIBFF Product Plan](../apps/aibff/memos/guides/product-plan.md) - REPL tool
-  roadmap
-- [Internal Tools Plan](../apps/internalbf/memos/guides/product-plan.md) -
-  Internal platform vision
+#### Primary: AI-First Startup CTOs/Eng Leaders
 
-### Customer Examples
+- **Profile**: Technical leaders at AI startups building LLM-powered products
+- **Pain Points**: Reliability issues causing customer churn, inability to scale
+  AI features confidently
+- **Message**: "Ship AI features with confidence. Get the reliability
+  infrastructure you need to scale."
 
-- [Customer Implementation](../customers/example-customer.com/) - Real customer
-  use case
+#### Secondary: Enterprise AI Teams
+
+- **Profile**: ML/AI teams at larger companies implementing LLM solutions
+- **Pain Points**: Need to meet enterprise reliability standards, compliance
+  requirements
+- **Message**: "Meet enterprise reliability standards for AI. 99% uptime
+  requires 99% AI reliability."
+
+### Key Messaging Pillars
+
+#### 1. Reliability Crisis Recognition
+
+_"90% accurate AI feels broken to users. The companies that achieve 99%
+reliability will dominate their markets."_
+
+#### 2. Infrastructure Necessity
+
+_"You wouldn't deploy code without testing frameworks. Why deploy AI without
+reliability frameworks?"_
+
+#### 3. Developer Experience
+
+_"From prompt hacking to prompt engineering. Build AI systems the way you build
+software - with structure, testing, and confidence."_
+
+#### 4. Competitive Advantage
+
+_"While others accept 'good enough' AI, you'll ship AI that actually works.
+Every time."_
+
+## Marketing Experiments & Channels
+
+### Direct Outreach
+
+- Cold email to YC companies and AI startups (3 demo meetings generated)
+- Owner: Dan
+
+### Content Marketing
+
+- Podcast, company blog, external Substack (contexteng.ai), social media
+- Owner: Dan + Content team
+
+### Community & Events
+
+- Speaking at conferences, own NYC meetups, expand to other tech hubs
+- Owner: Randall + Dan
+
+### Product Hunt Launch
+
+- Post-v1 completion for developer awareness
+- Owner: Dan
+
+# 8. Team & Ops
+
+## Current Team (5 people)
+
+- **Engineering**: Randall (Lead), Justin (Frontend/Backend)
+- **Business/Growth**: Dan (CEO), Josh (BD/Sales)
+- **Operations**: Mofe (Ops)
+
+## H2 Approach: Stay Lean
+
+- No full-time hiring planned - current team sufficient for v1 and 10 customers
+- Potential part-time contractors: marketing (content/demand gen) and product
+  design (UI/UX)
+- Focus: Engineering 100% on v1, Business on customers and fundraising
+- Maintain cost efficiency while scaling
+
+# 9. Risks & Dependencies
+
+## Major Risks
+
+**Execution Risk**: Can we build and ship fast enough before running out of
+money? _Mitigation_: Ruthless feature prioritization, parallel development,
+weekly milestones, early customer beta testing.
+
+**Competitive Risk**: Can we stay ahead of well-funded competitors and existing
+platforms expanding into our space? _Mitigation_: Focus on superior developer
+experience, rapid customer-driven iteration, thought leadership.
+
+## Key Dependencies
+
+- **Technical**: RLHF algorithm performance, multi-model compatibility,
+  evaluation pipeline scalability
+- **Business**: Demo-to-customer conversion rates, seed round timeline,
+  sustained market demand for AI reliability
+- **External**: LLM provider API stability, regulatory environment, economic
+  climate for startup funding

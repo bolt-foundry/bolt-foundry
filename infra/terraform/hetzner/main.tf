@@ -59,7 +59,7 @@ variable "ssh_public_key" {
 variable "domain_name" {
   description = "Domain name for the deployment"
   type        = string
-  default     = "next.boltfoundry.com"
+  default     = "boltfoundry.com"
 }
 
 variable "hyperdx_api_key" {
