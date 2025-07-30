@@ -7,5 +7,6 @@ import "@bfmono/static/landingStyle.css";
 import "../components/WaitlistSection.css";
 import "@bfmono/static/evalStyle.css";
 import "../components/plinko/plinko.css";
+import "@bfmono/static/blogStyle.css";
 
 // Add any future CSS imports here
