@@ -42,8 +42,8 @@ Examples:
 
   // Handle boltfoundry.com app in development mode
   const flags = parseArgs(devArgs, {
-    boolean: ["build", "no-open", "help"],
-    string: ["port"],
+    boolean: ["build", "no-open", "help", "no-log", "foreground"],
+    string: ["port", "log-file"],
     default: {
       port: "8000",
     },
@@ -58,12 +58,18 @@ Options:
   --build            Build assets without starting server
   --port             Specify server port (default: 8000)
   --no-open          Don't auto-open browser on startup
+  --log-file         Write logs to specified file instead of default tmp location
+  --no-log           Disable logging to file (output to console)
+  --foreground       Run in foreground instead of background (default: background)
   --help             Show this help message
 
 Examples:
-  bft dev boltfoundry-com                   # Run in development mode
-  bft dev boltfoundry-com --build           # Build assets only
-  bft dev boltfoundry-com --port 4000       # Run on port 4000`);
+  bft dev boltfoundry-com                          # Run in background (logs to tmp/boltfoundry-com-dev.log)
+  bft dev boltfoundry-com --build                  # Build assets only
+  bft dev boltfoundry-com --port 4000              # Run on port 4000
+  bft dev boltfoundry-com --log-file dev.log       # Log to custom file
+  bft dev boltfoundry-com --foreground             # Run in foreground
+  bft dev boltfoundry-com --no-log --foreground    # Run in foreground with console output`);
     return 0;
   }
 
@@ -75,6 +81,75 @@ Examples:
 
   const appPath =
     new URL(import.meta.resolve("../../../apps/boltfoundry-com")).pathname;
+
+  // Check if we should run in background (default) or foreground
+  const runInBackground = !flags.foreground;
+
+  if (runInBackground && !flags.build) {
+    // Run the entire command in background
+    ui.output("Starting boltfoundry-com in background mode...");
+
+    const backgroundArgs = [
+      "run",
+      "-A",
+      new URL(import.meta.resolve("./dev.bft.ts")).pathname,
+      "boltfoundry-com",
+      "--foreground", // Force foreground in the spawned process
+      ...devArgs.filter((arg) => arg !== "--foreground"), // Remove any --foreground flags
+    ];
+
+    const backgroundProcess = new Deno.Command("deno", {
+      args: backgroundArgs,
+      stdout: "null",
+      stderr: "null",
+      stdin: "null",
+    });
+
+    backgroundProcess.spawn();
+
+    // Wait a moment for startup
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    ui.output(`Background server started on http://localhost:${port}`);
+    ui.output("Logs are being written to tmp/boltfoundry-com-dev.log");
+    ui.output(
+      "Use 'bft dev boltfoundry-com --foreground' to run in foreground",
+    );
+
+    return 0;
+  }
+
+  // Set up logging configuration
+  let logFile: Deno.FsFile | undefined;
+  let logFilePath: string | undefined;
+
+  // Determine if we should log to file
+  const shouldLogToFile = !flags["no-log"];
+
+  if (shouldLogToFile) {
+    // Use custom log file path or default to tmp
+    logFilePath = flags["log-file"] || "tmp/boltfoundry-com-dev.log";
+
+    try {
+      // Ensure tmp directory exists
+      if (logFilePath.startsWith("tmp/")) {
+        await Deno.mkdir("tmp", { recursive: true });
+      }
+
+      logFile = await Deno.open(logFilePath, {
+        create: true,
+        write: true,
+        truncate: true,
+      });
+      ui.output(`Logging to file: ${logFilePath}`);
+    } catch (error) {
+      ui.error(`Failed to open log file ${logFilePath}: ${error}`);
+      return 1;
+    }
+  }
+
+  const stdoutOpt = shouldLogToFile ? "piped" : "inherit";
+  const stderrOpt = shouldLogToFile ? "piped" : "inherit";
 
   if (flags.build) {
     ui.output("Building boltfoundry-com assets...");
@@ -113,8 +188,8 @@ Examples:
       vitePort.toString(),
     ],
     cwd: appPath,
-    stdout: "inherit",
-    stderr: "inherit",
+    stdout: stdoutOpt,
+    stderr: stderrOpt,
     env: {
       ...Deno.env.toObject(),
       VITE_HMR_PORT: "8081",
@@ -122,6 +197,45 @@ Examples:
   });
 
   const viteProcess = viteCommand.spawn();
+
+  // Pipe output to log file if specified
+  if (logFile && viteProcess.stdout && viteProcess.stderr) {
+    // Create a function to pipe streams to log file with prefixes
+    const pipeToLog = async (
+      stream: ReadableStream<Uint8Array>,
+      prefix: string,
+    ) => {
+      const reader = stream.getReader();
+      const encoder = new TextEncoder();
+
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const text = new TextDecoder().decode(value);
+          const lines = text.split("\n");
+
+          for (const line of lines) {
+            if (line.trim()) {
+              const logLine = `[${
+                new Date().toISOString()
+              }] ${prefix}: ${line}\n`;
+              await logFile!.write(encoder.encode(logLine));
+            }
+          }
+        }
+      } catch (error) {
+        _logger.error("Error piping to log:", error);
+      } finally {
+        reader.releaseLock();
+      }
+    };
+
+    // Start piping both stdout and stderr
+    pipeToLog(viteProcess.stdout, "VITE");
+    pipeToLog(viteProcess.stderr, "VITE-ERR");
+  }
 
   // Wait for Vite to be ready
   let viteReady = false;
@@ -168,11 +282,50 @@ Examples:
 
   const serverCommand = new Deno.Command("deno", {
     args: serverArgs,
-    stdout: "inherit",
-    stderr: "inherit",
+    stdout: stdoutOpt,
+    stderr: stderrOpt,
   });
 
   const serverProcess = serverCommand.spawn();
+
+  // Pipe server output to log file if specified
+  if (logFile && serverProcess.stdout && serverProcess.stderr) {
+    // Reuse the pipeToLog function from above
+    const pipeToLog = async (
+      stream: ReadableStream<Uint8Array>,
+      prefix: string,
+    ) => {
+      const reader = stream.getReader();
+      const encoder = new TextEncoder();
+
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const text = new TextDecoder().decode(value);
+          const lines = text.split("\n");
+
+          for (const line of lines) {
+            if (line.trim()) {
+              const logLine = `[${
+                new Date().toISOString()
+              }] ${prefix}: ${line}\n`;
+              await logFile!.write(encoder.encode(logLine));
+            }
+          }
+        }
+      } catch (error) {
+        _logger.error("Error piping to log:", error);
+      } finally {
+        reader.releaseLock();
+      }
+    };
+
+    // Start piping server output
+    pipeToLog(serverProcess.stdout, "SERVER");
+    pipeToLog(serverProcess.stderr, "SERVER-ERR");
+  }
 
   // Open browser if not disabled
   if (!flags["no-open"]) {
@@ -202,6 +355,9 @@ Examples:
   const cleanup = () => {
     viteProcess.kill();
     serverProcess.kill();
+    if (logFile) {
+      logFile.close();
+    }
   };
 
   // Handle various exit signals

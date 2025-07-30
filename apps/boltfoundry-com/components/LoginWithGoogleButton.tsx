@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { useAppEnvironment } from "../contexts/AppEnvironmentContext.tsx";
+import { BfDsCallout } from "@bfmono/apps/bfDs/components/BfDsCallout.tsx";
 
 const logger = getLogger(import.meta);
 
@@ -126,58 +127,43 @@ export function LoginWithGoogleButton() {
 
   // Check if we're in a codebot environment (dynamic hostname)
   const isCodebot = typeof window !== "undefined" &&
-    !window.location.hostname.includes("localhost") &&
-    !window.location.hostname.includes("127.0.0.1");
+    !globalThis.location.hostname.includes("localhost") &&
+    !globalThis.location.hostname.includes("127.0.0.1");
 
   // Show Google Sign-In button
   return (
     <div>
       <div ref={googleButtonRef}></div>
       {isCodebot && (
-        <div
-          style={{
-            marginTop: "20px",
-            padding: "15px",
-            backgroundColor: "#fff3cd",
-            border: "1px solid #ffeaa7",
-            borderRadius: "4px",
-          }}
-        >
-          <h4 style={{ margin: "0 0 10px 0" }}>
-            ⚠️ Codebot Environment Detected
-          </h4>
-          <p style={{ margin: "5px 0" }}>
-            Google OAuth won't work with dynamic hostnames like{" "}
-            <code>{window.location.hostname}</code>.
-          </p>
-          <p style={{ margin: "5px 0" }}>
-            <strong>Solutions:</strong>
-          </p>
-          <ol style={{ margin: "5px 0", paddingLeft: "20px" }}>
-            <li>
-              Use SSH port forwarding:{" "}
-              <code>ssh -L 8000:localhost:8000 [your-connection]</code>
-            </li>
-            <li>
-              Then access via:{" "}
-              <a href="http://localhost:8000/login">
-                http://localhost:8000/login
-              </a>
-            </li>
-          </ol>
-          <p style={{ margin: "10px 0 5px 0" }}>
-            <strong>For testing:</strong> Use E2E mode with mock authentication:
-          </p>
-          <pre
-            style={{
-              backgroundColor: "#f8f9fa",
-              padding: "10px",
-              overflow: "auto",
-            }}
-          >
-            BF_E2E_MODE=true bft dev boltfoundry-com
-          </pre>
-        </div>
+        <BfDsCallout variant="warning" className="mt-5">
+          <div>
+            <h4>Codebot Environment Detected</h4>
+            <p>
+              Google OAuth won't work with dynamic hostnames like{" "}
+              <code>{globalThis.location.hostname}</code>.
+            </p>
+            <p>
+              <strong>Solutions:</strong>
+            </p>
+            <ol>
+              <li>
+                Use SSH port forwarding:{" "}
+                <code>ssh -L 8000:localhost:8000 [your-connection]</code>
+              </li>
+              <li>
+                Then access via:{" "}
+                <a href="http://localhost:8000/login">
+                  http://localhost:8000/login
+                </a>
+              </li>
+            </ol>
+            <p>
+              <strong>For testing:</strong>{" "}
+              Use E2E mode with mock authentication:
+            </p>
+            <pre>BF_E2E_MODE=true bft dev boltfoundry-com</pre>
+          </div>
+        </BfDsCallout>
       )}
     </div>
   );
