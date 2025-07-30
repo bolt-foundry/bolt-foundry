@@ -4,11 +4,11 @@ import type {
 } from "openai/resources/chat/completions";
 import type { BfMetadata } from "./types.ts";
 
-// Extend OpenAI types to include bfMetadata
-declare module "openai/resources/chat/completions" {
-  interface ChatCompletionCreateParams {
-    bfMetadata?: BfMetadata;
-  }
+// Extend ChatCompletionCreateParams to include bfMetadata
+// Note: Module augmentation would be ideal here but causes lint issues
+export interface ChatCompletionCreateParamsWithMetadata
+  extends ChatCompletionCreateParams {
+  bfMetadata?: BfMetadata;
 }
 
 // Default telemetry endpoint
