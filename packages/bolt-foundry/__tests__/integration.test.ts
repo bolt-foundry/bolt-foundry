@@ -141,11 +141,10 @@ Extract key fields from invoices.`);
     assertExists(createBody.processedContent);
 
     // 2. Render with metadata
-    const completion = deck.render(
-      { invoice: "INV-001" },
-      undefined, // No OpenAI params override
-      { attributes: { invoiceImage: "base64..." } },
-    );
+    const completion = deck.render({
+      context: { invoice: "INV-001" },
+      attributes: { invoiceImage: "base64..." },
+    });
 
     assertEquals(completion.bfMetadata?.deckId, "invoice-extraction");
     assertEquals(completion.bfMetadata?.contextVariables, {
@@ -201,11 +200,10 @@ Test content.`);
     const deck = await readLocalDeck(deckPath);
 
     // Render with captureTelemetry: false
-    const completion = deck.render(
-      { data: "sensitive" },
-      undefined,
-      { captureTelemetry: false },
-    );
+    const completion = deck.render({
+      context: { data: "sensitive" },
+      captureTelemetry: false,
+    });
 
     // Should not include metadata
     assertEquals(completion.bfMetadata, undefined);
