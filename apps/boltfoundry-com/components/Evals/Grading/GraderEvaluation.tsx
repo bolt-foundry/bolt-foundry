@@ -20,10 +20,11 @@ interface GraderEvaluationProps {
     rating: -3 | 3 | null,
     comment: string,
   ) => void;
+  currentRating?: { rating: -3 | 3 | null; comment: string };
 }
 
 export function GraderEvaluation(
-  { evaluation, onHumanRatingChange }: GraderEvaluationProps,
+  { evaluation, onHumanRatingChange, currentRating }: GraderEvaluationProps,
 ) {
   const getScoreColor = (score: number): "success" | "error" | "warning" => {
     if (score >= 2) return "success";
@@ -32,8 +33,8 @@ export function GraderEvaluation(
   };
 
   const getScoreIcon = (score: number): string => {
-    if (score >= 2) return "thumbs-up";
-    if (score <= -2) return "thumbs-down";
+    if (score >= 2) return "thumbUpSolid";
+    if (score <= -2) return "thumbDownSolid";
     return "minus";
   };
 
@@ -61,8 +62,8 @@ export function GraderEvaluation(
         <GraderHumanRating
           graderId={evaluation.graderId}
           graderName={evaluation.graderName}
-          initialRating={evaluation.humanGrade?.score || null}
-          initialComment={evaluation.humanGrade?.comment || ""}
+          initialRating={currentRating?.rating || null}
+          initialComment={currentRating?.comment || ""}
           onRatingChange={onHumanRatingChange}
         />
       </div>

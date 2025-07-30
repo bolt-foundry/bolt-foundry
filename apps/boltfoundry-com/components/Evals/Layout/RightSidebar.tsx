@@ -12,7 +12,6 @@ export function RightSidebar() {
     chatMode,
     gradingDeckId,
     gradingDeckName,
-    gradingSamples,
     exitGrading,
   } = useEvalContext();
   const hasAnimated = useRef(false);
@@ -110,7 +109,6 @@ export function RightSidebar() {
             <GradingInbox
               deckId={gradingDeckId}
               deckName={gradingDeckName}
-              samples={gradingSamples}
               onClose={exitGrading}
             />
           )
