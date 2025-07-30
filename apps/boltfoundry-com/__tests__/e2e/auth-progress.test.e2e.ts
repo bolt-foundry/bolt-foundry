@@ -85,14 +85,18 @@ Deno.test("🎬 Frontend Authentication Implementation Progress", async (t) => {
       };
     });
 
-    // 🎬 Start recording the entire authentication progress demo
-    const stopRecording = await context.startVideoRecording(
-      "auth-implementation-progress",
-      {
-        quality: "high",
-        framerate: 30,
-      },
-    );
+    // 🎬 Start annotated video recording for the entire authentication progress demo
+    const { stop, showSubtitle, highlightElement: _highlightElement } =
+      await context
+        .startAnnotatedVideoRecording(
+          "auth-implementation-progress",
+          {
+            quality: "high",
+            framerate: 30,
+          },
+        );
+
+    await showSubtitle("Frontend Authentication Implementation Progress Demo");
 
     await t.step(
       "📍 Step 1: Test protected route access without authentication",
@@ -281,7 +285,7 @@ Deno.test("🎬 Frontend Authentication Implementation Progress", async (t) => {
     });
 
     // 🎬 Stop recording and get the video file
-    const videoResult = await stopRecording();
+    const videoResult = await stop();
     if (videoResult) {
       logger.info("🎬 Screencast recorded successfully!");
       logger.info(`   📹 Video: ${videoResult.videoPath}`);

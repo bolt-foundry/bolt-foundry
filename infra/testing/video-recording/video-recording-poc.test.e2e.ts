@@ -14,13 +14,16 @@ Deno.test.ignore("Video recording proof of concept", async () => {
   });
 
   try {
-    // Start video recording
-    const stopRecording = await context.startVideoRecording("poc-test");
+    // Start annotated video recording
+    const { stop, showSubtitle, highlightElement: _highlightElement } =
+      await context
+        .startAnnotatedVideoRecording("poc-test");
 
     // Navigate to a simple page
     await context.navigateTo("/");
 
-    // Wait for page to load - use a simple delay since we already navigated
+    // Show initial subtitle
+    await showSubtitle("Video recording proof of concept test");
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
     // Take a screenshot for comparison
@@ -29,11 +32,13 @@ Deno.test.ignore("Video recording proof of concept", async () => {
     // Perform some smooth mouse movements for the video
     const links = await context.page.$$("a");
     if (links.length > 0) {
+      await showSubtitle("Hovering over page links");
       await smoothHover(context.page, "a");
       await new Promise((resolve) => setTimeout(resolve, 500));
     }
 
     // Scroll the page smoothly
+    await showSubtitle("Scrolling the page");
     await context.page.evaluate(() => {
       globalThis.scrollTo({ top: 300, behavior: "smooth" });
     });
@@ -48,7 +53,7 @@ Deno.test.ignore("Video recording proof of concept", async () => {
     assert(title.length > 0, "Page title should not be empty");
 
     // Stop video recording
-    const videoResult = await stopRecording();
+    const videoResult = await stop();
 
     if (videoResult) {
       logger.info(

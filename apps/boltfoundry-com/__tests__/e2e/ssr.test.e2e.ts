@@ -12,15 +12,19 @@ Deno.test("SSR landing page loads and hydrates correctly", async () => {
   const context = await setupBoltFoundryComTest();
 
   try {
-    // Start video recording with conversion to MP4
-    const stopRecording = await context.startVideoRecording(
-      "ssr-hydration-demo",
-      {
-        outputFormat: "mp4" as const,
-        framerate: 24,
-        quality: "medium" as const,
-      },
-    );
+    // Start annotated video recording with conversion to MP4
+    const { stop, showSubtitle, highlightElement: _highlightElement } =
+      await context
+        .startAnnotatedVideoRecording(
+          "ssr-hydration-demo",
+          {
+            outputFormat: "mp4" as const,
+            framerate: 24,
+            quality: "medium" as const,
+          },
+        );
+
+    await showSubtitle("SSR landing page hydration test");
 
     // Navigate to the home page
     await navigateTo(context, "/");
@@ -119,7 +123,7 @@ Deno.test("SSR landing page loads and hydrates correctly", async () => {
     logger.info("SSR landing page test completed successfully");
 
     // Stop video recording
-    const videoResult = await stopRecording();
+    const videoResult = await stop();
     if (videoResult) {
       logger.info(`Video saved to: ${videoResult.videoPath}`);
     } else {
