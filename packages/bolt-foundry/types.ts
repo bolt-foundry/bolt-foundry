@@ -19,6 +19,10 @@ export interface BfOptions {
   attributes?: Record<string, JSONValue>;
 }
 
+export interface DeckRenderOptions extends BfOptions {
+  context?: Record<string, unknown>;
+}
+
 export interface TelemetryData {
   duration: number;
   provider: string;
