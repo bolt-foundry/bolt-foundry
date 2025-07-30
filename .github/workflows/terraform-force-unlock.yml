@@ -21,14 +21,14 @@ jobs:
           cd infra/terraform/hetzner
           echo "🔍 Initializing Terraform backend..."
           terraform init -backend-config="endpoint=${{ secrets.S3_ENDPOINT }}" -no-color
-          
+
           echo "🔍 Checking for locks..."
           terraform force-unlock -force $(date +%s) 2>/dev/null || echo "No locks found or unlock failed - this is normal"
-          
+
           echo "🔍 Listing workspace and showing state..."
           terraform workspace list || echo "No workspaces"
           terraform show -no-color || echo "No state found"
-          
+
           echo "✅ Force unlock completed"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
