@@ -5,6 +5,9 @@ export { BfClient } from "./BfClient.ts";
 export * from "./deck.ts";
 export { readLocalDeck } from "./deck.ts";
 
+// Re-export types
+export type { BfMetadata, BfOptions, TelemetryData } from "./types.ts";
+
 let logger = console;
 const enableLogging = false;
 if (!enableLogging) {

@@ -1,8 +1,17 @@
 /**
  * Deck class - minimal implementation for testing
  */
+import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 import * as path from "@std/path";
-class Deck {
+import type { BfMetadata, BfOptions } from "./types.ts";
+import type { ChatCompletionCreateParams } from "openai/resources/chat/completions";
+
+// Extend the RenderOutput to include bfMetadata
+interface RenderOutput extends ChatCompletionCreateParams {
+  bfMetadata?: BfMetadata;
+}
+
+export class Deck {
   deckId: string;
   markdownContent: string;
   deckPath: string;
@@ -14,12 +23,10 @@ class Deck {
   }
 
   render(
-    _params: unknown,
-    context: { context?: Record<string, unknown> } = {},
-  ): {
-    messages: Array<{ role: string; content: string }>;
-    tools: Array<{ name: string; description: string }>;
-  } {
+    contextVariables: Record<string, unknown>,
+    openaiParams?: Partial<ChatCompletionCreateParams>,
+    bfOptions?: BfOptions,
+  ): RenderOutput {
     // Process markdown includes and collect context definitions
     const { processedContent, contextDefs } = this.processMarkdownIncludes(
       this.markdownContent,
@@ -38,7 +45,7 @@ class Deck {
       // Skip tools array when processing contexts
       if (varName === "tools") continue;
 
-      const value = context.context?.[varName];
+      const value = contextVariables[varName];
       if (
         value !== undefined && typeof contextDef === "object" &&
         "assistantQuestion" in contextDef
@@ -56,7 +63,27 @@ class Deck {
       }
     }
 
-    return { messages, tools: contextDefs.tools || [] };
+    // Create base output with default messages and tools
+    const output: RenderOutput = {
+      messages,
+      tools: contextDefs.tools || [],
+    };
+
+    // Merge OpenAI params if provided (this may override messages)
+    if (openaiParams) {
+      Object.assign(output, openaiParams);
+    }
+
+    // Include metadata unless explicitly disabled
+    if (bfOptions?.captureTelemetry !== false) {
+      output.bfMetadata = {
+        deckId: this.deckId,
+        contextVariables: contextVariables,
+        attributes: bfOptions?.attributes,
+      };
+    }
+
+    return output;
   }
 
   processMarkdownIncludes(content: string, basePath: string): {
@@ -213,18 +240,77 @@ class Deck {
   }
 }
 
+// Default API endpoint
+const DEFAULT_API_ENDPOINT = "https://boltfoundry.com/api";
+
+// Cache for deck existence checks
+const deckCache = new Set<string>();
+
+// Export for testing purposes
+export function clearDeckCache() {
+  deckCache.clear();
+}
+
 /**
  * Read a local deck file and return a Deck instance
  * @param path Path to the .deck.md file
+ * @param options Optional configuration for API integration
  * @returns Promise<Deck> A Deck instance
  */
-export async function readLocalDeck(path: string): Promise<Deck> {
+export async function readLocalDeck(path: string, options?: {
+  apiKey?: string;
+  apiEndpoint?: string;
+}): Promise<Deck> {
   // Read the file content
   const markdownContent = await Deno.readTextFile(path);
 
-  // Extract deckId from filename (remove path and .deck.md extension)
+  // Extract deckId from filename only (not the full path)
+  // e.g., "decks/customer/invoice.deck.md" -> "invoice"
   const filename = path.split("/").pop() || "";
   const deckId = filename.replace(".deck.md", "");
 
-  return new Deck(deckId, markdownContent, path);
+  const deck = new Deck(deckId, markdownContent, path);
+
+  // Get API configuration
+  const apiKey = options?.apiKey || getConfigurationVariable("BF_API_KEY");
+  const apiEndpoint = options?.apiEndpoint ||
+    getConfigurationVariable("BF_API_ENDPOINT") ||
+    DEFAULT_API_ENDPOINT;
+
+  // Check if deck exists in API (cached after first check)
+  if (apiKey && !deckCache.has(deckId)) {
+    try {
+      const response = await fetch(`${apiEndpoint}/decks/${deckId}`, {
+        headers: { "x-bf-api-key": apiKey },
+      });
+
+      if (response.status === 404) {
+        // Process includes to get full deck content
+        const { processedContent } = deck.processMarkdownIncludes(
+          markdownContent,
+          path,
+        );
+
+        // Create deck if it doesn't exist
+        await fetch(`${apiEndpoint}/decks`, {
+          method: "POST",
+          headers: {
+            "x-bf-api-key": apiKey,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id: deckId,
+            content: markdownContent,
+            processedContent: processedContent, // Full content with embeds resolved
+          }),
+        });
+      }
+
+      deckCache.add(deckId);
+    } catch {
+      // Don't fail deck loading if API is unavailable
+    }
+  }
+
+  return deck;
 }
