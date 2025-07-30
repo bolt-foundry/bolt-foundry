@@ -1,6 +1,6 @@
 # Vite + Deno + React + TypeScript
 
-Bolt Foundry marketing website.
+Bolt Foundry marketing website - Next.js deployment.
 
 ## Running
 
