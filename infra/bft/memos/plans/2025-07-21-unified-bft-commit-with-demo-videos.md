@@ -2,7 +2,8 @@
 
 **Date**: July 21, 2025\
 **Author**: Claude Code\
-**Status**: Planning
+**Status**: Planning\
+**Last Updated**: July 29, 2025
 
 ## Overview
 
@@ -393,3 +394,117 @@ resource "hcloud_storage_bucket" "demo_videos" {
 - **Integration Point**: BFT task system rather than git hooks (decided)
 - **Media Format**: Leverage existing MP4 video generation from E2E system
   (decided)
+
+## Implementation Status (Updated July 29, 2025)
+
+### ✅ Completed Prerequisites
+
+1. **Asset Upload Infrastructure**
+   - `bft asset-upload` command fully implemented and tested
+   - Hetzner S3 bucket configured with Cloudflare CDN (bltcdn.com)
+   - Content hashing and deduplication working
+   - AWS v4 signature authentication implemented
+
+2. **E2E Test Infrastructure**
+   - Screenshot and video recording capabilities exist
+   - Output to `tmp/screenshots/` and `tmp/videos/` directories
+   - Test filtering with tags/categories already supported
+
+### 🚧 Next Steps for Implementation
+
+Based on the current infrastructure, here's the updated implementation plan:
+
+#### Phase 1: Update Storage Configuration ✅ READY TO START
+
+Since we already have the asset upload infrastructure via `bft asset-upload`, we
+can:
+
+1. **Reuse existing S3 infrastructure** - No need for separate Hetzner bucket
+2. **Update environment variables** - The existing S3 configuration can be
+   reused:
+   ```bash
+   # Already configured for asset uploads
+   S3_ACCESS_KEY=...
+   S3_SECRET_KEY=...
+   # Asset paths would be: /assets/{hash}/commits/{commit-id}/{filename}
+   ```
+
+#### Phase 2: Core Commit Command Enhancement
+
+1. **Consolidate existing commands**
+   - [ ] Merge `bft sl commit` functionality into unified command
+   - [ ] Integrate AI-powered commit message generation from existing deck
+   - [ ] Preserve all safety and validation mechanisms
+
+2. **Add demo test selection**
+   - [ ] Implement LLM-based test selection based on changed files
+   - [ ] Use existing `bft e2e --filter` infrastructure
+   - [ ] Add `[demo:*]` tags to relevant E2E tests
+
+3. **Media collection and upload**
+   - [ ] Monitor test output directories during E2E execution
+   - [ ] Use existing `bft asset-upload` functionality programmatically
+   - [ ] Handle multiple file uploads in batch
+
+#### Phase 3: Commit Message Enhancement
+
+1. **Format enhancement**
+   - [ ] Embed CDN URLs in commit messages
+   - [ ] Update format to include media section:
+     ```markdown
+     feat: Add user authentication flow
+
+     Test plan:
+
+     1. Navigate to login page
+     2. Enter credentials
+     3. Verify redirect to dashboard
+
+     Demo videos:
+
+     - Auth flow: https://bltcdn.com/assets/abc123/auth-login-demo.mp4
+     - Dashboard: https://bltcdn.com/assets/def456/dashboard-nav-demo.mp4
+     ```
+
+### 📋 Simplified Implementation Checklist
+
+Since asset upload is already implemented, the remaining work is more focused:
+
+1. **Week 1: Command Consolidation**
+   - [ ] Create unified `commit.bft.ts` that merges existing functionality
+   - [ ] Add flags for `--skip-demos`, `--filter`, etc.
+   - [ ] Test backward compatibility with existing workflows
+
+2. **Week 2: Demo Integration**
+   - [ ] Add `[demo:*]` tags to key E2E tests
+   - [ ] Implement LLM-based test selection logic
+   - [ ] Create media collection pipeline using existing paths
+
+3. **Week 3: Upload & Enhancement**
+   - [ ] Integrate programmatic calls to asset upload
+   - [ ] Update commit message formatting
+   - [ ] Add progress indicators and error handling
+
+4. **Week 4: Testing & Documentation**
+   - [ ] End-to-end testing of complete workflow
+   - [ ] Update documentation
+   - [ ] Gradual rollout with feature flag
+
+### 🎯 Immediate Next Actions
+
+1. **Tag existing E2E tests** with `[demo:*]` categories (can start immediately)
+2. **Create proof-of-concept** that:
+   - Runs a single E2E test
+   - Uploads the generated video using `bft asset-upload`
+   - Formats a commit message with the URL
+3. **Design LLM prompt** for intelligent test selection based on file changes
+
+### 💡 Key Insights from Current State
+
+- **Asset upload is solved** - We can focus on the integration logic
+- **Storage costs are shared** - Same S3 bucket serves all assets
+- **URLs are permanent** - Content-addressed hashing ensures stability
+- **Infrastructure is proven** - Both E2E tests and uploads work independently
+
+The main work is now connecting these existing pieces with intelligent selection
+and formatting.
