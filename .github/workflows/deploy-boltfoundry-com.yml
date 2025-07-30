@@ -90,14 +90,14 @@ jobs:
           # Health check with retries
           echo "🩺 Testing health endpoint..."
           for i in {1..60}; do
-            if curl -f -s https://boltfoundry.com/ > /dev/null 2>&1; then
+            if curl -f -L -s https://boltfoundry.com/ > /dev/null 2>&1; then
               echo "✅ Health endpoint responded successfully"
               break
             fi
             if [ $i -eq 60 ]; then
               echo "❌ Health endpoint failed after 60 attempts (10 minutes)"
               echo "🔄 Attempting rollback..."
-              kamal rollback || echo "⚠️ Rollback command failed"
+              kamal rollback --version=latest || echo "⚠️ Rollback command failed"
               exit 1
             fi
             echo "Health check attempt $i/60 failed, retrying in 10s..."
@@ -107,7 +107,7 @@ jobs:
           # Test main page endpoint
           echo "🏠 Testing main page endpoint..."
           for i in {1..10}; do
-            response_code=$(curl -s -o /dev/null -w "%{http_code}" https://boltfoundry.com/)
+            response_code=$(curl -L -s -o /dev/null -w "%{http_code}" https://boltfoundry.com/)
             if [ "$response_code" = "200" ]; then
               echo "✅ Main page responded with 200 OK"
               break
@@ -115,7 +115,7 @@ jobs:
             if [ $i -eq 10 ]; then
               echo "❌ Main page failed with response code: $response_code"
               echo "🔄 Attempting rollback..."
-              kamal rollback || echo "⚠️ Rollback command failed"
+              kamal rollback --version=latest || echo "⚠️ Rollback command failed"
               exit 1
             fi
             echo "Main page attempt $i/10 failed (response: $response_code), retrying in 10s..."
@@ -124,7 +124,7 @@ jobs:
 
           # Enhanced health check - get detailed health info
           echo "🔬 Performing detailed health check..."
-          health_response=$(curl -s https://boltfoundry.com/)
+          health_response=$(curl -L -s https://boltfoundry.com/)
           if echo "$health_response" | grep -q 'html\|HTML'; then
             echo "✅ Detailed health check passed"
             echo "Health response contains HTML content"
@@ -144,11 +144,11 @@ jobs:
 
           # Monitor for 2 minutes to catch early failures
           for i in {1..12}; do
-            response_code=$(curl -s -o /dev/null -w "%{http_code}" https://boltfoundry.com/)
+            response_code=$(curl -L -s -o /dev/null -w "%{http_code}" https://boltfoundry.com/)
             if [ "$response_code" != "200" ]; then
               echo "❌ Stability check failed with response code: $response_code at check $i/12"
               echo "🔄 Attempting rollback..."
-              kamal rollback || echo "⚠️ Rollback command failed"
+              kamal rollback --version=latest || echo "⚠️ Rollback command failed"
               exit 1
             fi
             echo "✅ Stability check $i/12 passed (response: $response_code)"
