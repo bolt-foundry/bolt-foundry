@@ -56,6 +56,8 @@ jobs:
             -var="github_username=${{ github.repository_owner }}" \
             -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}" \
             -var="hyperdx_api_key=${{ secrets.HYPERDX_API_KEY }}" \
+            -var="s3_access_key=${{ secrets.AWS_ACCESS_KEY_ID }}" \
+            -var="s3_secret_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
             -var="domain_name=next.boltfoundry.com"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
