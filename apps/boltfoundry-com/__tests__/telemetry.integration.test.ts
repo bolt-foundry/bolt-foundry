@@ -22,10 +22,8 @@ async function setupTestData() {
 
 // Mock telemetry data that would come from connectBoltFoundry
 const createMockTelemetryData = (overrides = {}) => ({
-  timestamp: new Date().toISOString(),
   duration: 1500,
   provider: "openai",
-  providerApiVersion: "v1",
   request: {
     url: "https://api.openai.com/v1/chat/completions",
     method: "POST",

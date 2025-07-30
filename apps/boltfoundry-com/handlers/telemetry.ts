@@ -8,10 +8,8 @@ import { generateDeckSlug } from "@bfmono/apps/bfDb/utils/slugUtils.ts";
 const logger = getLogger(import.meta);
 
 interface TelemetryData {
-  timestamp?: string;
   duration: number;
   provider: string;
-  providerApiVersion?: string;
   model?: string;
   request: {
     url: string;
