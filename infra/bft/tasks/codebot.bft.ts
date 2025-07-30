@@ -5,6 +5,7 @@ import type { TaskDefinition } from "../bft.ts";
 import { parseArgs } from "@std/cli/parse-args";
 import { ui } from "@bfmono/packages/cli-ui/cli-ui.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import { promptSelect } from "@std/cli/unstable-prompt-select";
 
 const logger = getLogger(import.meta);
 
@@ -18,6 +19,7 @@ interface CodebotArgs {
   workspace?: string;
   memory?: string;
   cpus?: string;
+  resume?: boolean;
 }
 
 async function generateRandomName(): Promise<string> {
@@ -48,6 +50,56 @@ async function generateRandomName(): Promise<string> {
   }
 }
 
+interface WorkspaceInfo {
+  name: string;
+  path: string;
+  isRunning: boolean;
+  lastModified?: Date;
+}
+
+async function getWorkspacesWithStatus(): Promise<Array<WorkspaceInfo>> {
+  const workspacesDir = "/Users/randallb/code/codebot-workspaces";
+  const workspaces: Array<WorkspaceInfo> = [];
+
+  try {
+    // Get all running containers
+    const listCmd = new Deno.Command("container", {
+      args: ["list", "--format", "{{.Names}}"],
+      stdout: "piped",
+    });
+    const listResult = await listCmd.output();
+    const runningContainers = new TextDecoder().decode(listResult.stdout)
+      .trim()
+      .split("\n")
+      .filter((name) => name.length > 0);
+
+    // Get all workspace directories
+    for await (const entry of Deno.readDir(workspacesDir)) {
+      if (entry.isDirectory) {
+        const workspacePath = `${workspacesDir}/${entry.name}`;
+        const stat = await Deno.stat(workspacePath);
+
+        workspaces.push({
+          name: entry.name,
+          path: workspacePath,
+          isRunning: runningContainers.includes(entry.name),
+          lastModified: stat.mtime || undefined,
+        });
+      }
+    }
+
+    // Sort by last modified date (newest first)
+    workspaces.sort((a, b) => {
+      if (!a.lastModified || !b.lastModified) return 0;
+      return b.lastModified.getTime() - a.lastModified.getTime();
+    });
+  } catch (error) {
+    logger.debug(`Failed to get workspaces: ${error}`);
+  }
+
+  return workspaces;
+}
+
 async function codebot(args: Array<string>): Promise<number> {
   const logger = getLogger("codebot");
 
@@ -58,6 +110,7 @@ async function codebot(args: Array<string>): Promise<number> {
       "force-rebuild",
       "cleanup",
       "cleanup-containers",
+      "resume",
     ],
     string: ["exec", "workspace", "memory", "cpus"],
     alias: { h: "help" },
@@ -127,6 +180,7 @@ OPTIONS:
   --exec CMD           Execute command in container
   --workspace NAME     Reuse existing workspace or create new one with specific name
                        If a container is already running with this name, attach to it
+  --resume             Show list of workspaces and choose one to resume
   --cleanup            Remove workspace after completion (default: keep)
   --force-rebuild      Force rebuild container image before starting
   --memory SIZE        Container memory limit (e.g., 4g, 8g, 16g) (default: auto-detect 80% of system RAM)
@@ -136,6 +190,7 @@ OPTIONS:
 EXAMPLES:
   bft codebot                           # Start Claude Code CLI (new workspace)
   bft codebot --workspace fuzzy-goat    # Resume running container or reuse workspace
+  bft codebot --resume                  # Choose from existing workspaces
   bft codebot --cleanup                 # Start and cleanup workspace when done
   bft codebot --shell                   # Open container shell for debugging
   bft codebot --exec "ls -la"           # Run command and exit
@@ -149,6 +204,48 @@ FIRST TIME SETUP:
   4. Credentials will persist for future runs
 `);
     return 0;
+  }
+
+  // Handle --resume flag
+  if (parsed.resume) {
+    const workspaces = await getWorkspacesWithStatus();
+
+    if (workspaces.length === 0) {
+      ui.output("No workspaces found. Run 'bft codebot' to create one.");
+      return 0;
+    }
+
+    // Format workspace options for display
+    const displayOptions = workspaces.map((ws) => {
+      const status = ws.isRunning ? "🟢 RUNNING" : "⚪ stopped";
+      const modified = ws.lastModified
+        ? new Date(ws.lastModified).toLocaleString()
+        : "unknown";
+      return `${ws.name} [${status}] - Last modified: ${modified}`;
+    });
+
+    // Add option to create new workspace
+    displayOptions.push("➕ Create new workspace");
+
+    const selected = await promptSelect(
+      "Choose a workspace to resume or start:",
+      displayOptions,
+    );
+
+    if (selected === null) {
+      // User cancelled
+      return 0;
+    }
+
+    if (selected === "➕ Create new workspace") {
+      // User selected "Create new workspace"
+      // Continue with normal flow to create new workspace
+      // Don't set parsed.workspace so a new one will be generated
+    } else {
+      // Extract workspace name from the display string
+      const workspaceName = selected.split(" ")[0];
+      parsed.workspace = workspaceName;
+    }
   }
 
   // Automatically clean up stopped containers (except running ones)
