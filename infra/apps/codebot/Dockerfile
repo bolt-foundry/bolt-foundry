@@ -1,7 +1,14 @@
-FROM alpine:latest
+FROM ubuntu:24.04
 
-# Install curl and ca-certificates for the Nix installer
-RUN apk add --no-cache curl ca-certificates bash
+# Install dependencies for Nix installer and general development
+RUN apt-get update && apt-get install -y \
+    curl \
+    ca-certificates \
+    bash \
+    git \
+    sudo \
+    xz-utils \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install Nix using Determinate Nix installer
 RUN curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux \
@@ -19,8 +26,8 @@ WORKDIR /workspace
 # Install our environment
 RUN nix profile install .#codebot-env --accept-flake-config
 
-# Create non-root user (Alpine uses adduser)
-RUN adduser -D -s /bin/bash codebot
+# Create non-root user (Ubuntu uses useradd)
+RUN useradd -m -s /bin/bash codebot
 
 # Switch to codebot user and set up .bashrc
 USER codebot
