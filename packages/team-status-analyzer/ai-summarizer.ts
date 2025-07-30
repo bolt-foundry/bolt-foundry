@@ -175,7 +175,12 @@ Do not include any text before or after the JSON. Start with { and end with }.`,
 
       // Convert to the expected format
       const chatCompletionParams = {
-        messages: result.messages,
+        messages: result.messages.map((msg) => ({
+          role: msg.role,
+          content: typeof msg.content === "string"
+            ? msg.content
+            : JSON.stringify(msg.content),
+        })),
         model: "gpt-4o-mini", // Fast model for summarization
       };
 

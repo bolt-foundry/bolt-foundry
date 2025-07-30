@@ -1,4 +1,3 @@
-// infra/bff/friends/plugins/lint-plugin-bolt-foundry.ts
 /// <reference lib="deno.unstable" />
 
 // deno-lint-ignore-file no-explicit-any
