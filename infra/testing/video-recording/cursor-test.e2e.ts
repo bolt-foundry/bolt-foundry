@@ -14,16 +14,19 @@ Deno.test.ignore("Cursor overlay test with video recording", async () => {
   });
 
   try {
-    // Start video recording with cursor overlay
-    const stopRecording = await context.startVideoRecording(
-      "cursor-test",
-      {
-        outputFormat: "mp4",
-        quality: "medium",
-        framerate: 15,
-        deleteFrames: true,
-      },
-    );
+    // Start annotated video recording with cursor overlay
+    const { stop, showSubtitle, highlightElement } = await context
+      .startAnnotatedVideoRecording(
+        "cursor-test",
+        {
+          outputFormat: "mp4",
+          quality: "medium",
+          framerate: 15,
+          deleteFrames: true,
+        },
+      );
+
+    await showSubtitle("Cursor overlay demonstration");
 
     // Navigate to a simple page
     await context.navigateTo("/");
@@ -77,7 +80,7 @@ Deno.test.ignore("Cursor overlay test with video recording", async () => {
     assert(title.length > 0, "Page title should not be empty");
 
     // Stop video recording and get the result
-    const videoResult = await stopRecording();
+    const videoResult = await stop();
 
     if (videoResult) {
       logger.info(`Cursor test video completed: ${videoResult.videoPath}`);
