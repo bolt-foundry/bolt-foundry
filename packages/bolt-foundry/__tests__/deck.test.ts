@@ -212,7 +212,7 @@ Be helpful.`;
     await Deno.writeTextFile(`${tempDir}/main.deck.md`, deckContent);
 
     const deck = await readLocalDeck(`${tempDir}/main.deck.md`);
-    const result = deck.render({}, { context: { userName: "Alice" } });
+    const result = deck.render({ userName: "Alice" });
 
     // Should have system message + Q&A pair
     assertEquals(result.messages.length, 3);

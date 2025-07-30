@@ -3,13 +3,16 @@
  */
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 import * as path from "@std/path";
-import type { BfMetadata, BfOptions } from "./types.ts";
-import type { ChatCompletionCreateParams } from "openai/resources/chat/completions";
+import type { BfOptions } from "./types.ts";
+// For now, we'll use the import that works in BfClient.ts
+// The actual ChatCompletionCreateParams type is part of our extended type
+import type OpenAI from "@openai/openai";
+import type { ChatCompletionCreateParamsWithMetadata } from "./BfClient.ts";
 
-// Extend the RenderOutput to include bfMetadata
-interface RenderOutput extends ChatCompletionCreateParams {
-  bfMetadata?: BfMetadata;
-}
+type ChatCompletionCreateParams = OpenAI.Chat.ChatCompletionCreateParams;
+
+// RenderOutput includes our metadata extension
+type RenderOutput = ChatCompletionCreateParamsWithMetadata;
 
 export class Deck {
   deckId: string;

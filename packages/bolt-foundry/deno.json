@@ -7,5 +7,10 @@
     "./bolt-foundry.ts": "./bolt-foundry.ts"
   },
   "imports": {
+  },
+  "lint": {
+    "rules": {
+      "exclude": ["no-slow-types"]
+    }
   }
 }
