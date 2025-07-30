@@ -12,12 +12,14 @@ interface GradingInboxProps {
   deckId: string;
   deckName: string;
   onClose: () => void;
+  evalData?: any;
 }
 
 export function GradingInbox({
   deckId,
   deckName,
   onClose,
+  evalData,
 }: GradingInboxProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [completedCount, setCompletedCount] = useState(0);
@@ -25,10 +27,75 @@ export function GradingInbox({
     Record<string, Record<string, { rating: -3 | 3 | null; comment: string }>>
   >({});
 
-  // Use the Isograph hook to fetch and manage samples
-  const { samples, loading, error, saveGrade, saving } = useGradingSamples(
-    deckId,
-  );
+  // Extract samples from evalData for the selected deck
+  const selectedDeck = evalData?.currentViewer?.organization?.bfDecks?.edges
+    ?.find(
+      (edge: any) => edge.node.id === deckId,
+    );
+
+  // Transform BfSample data to GradingSample format
+  const samples = selectedDeck?.node?.bfSamples?.edges?.map((edge: any) => {
+    const completionData = edge.node.completionData;
+    return {
+      id: edge.node.id,
+      timestamp: new Date().toISOString(),
+      duration: 0, // TODO: Add duration to BfSample
+      provider: completionData?.model?.includes("gpt") ? "openai" : "unknown",
+      request: {
+        body: {
+          model: completionData?.model,
+          messages: completionData?.messages || [],
+        },
+      },
+      response: {
+        body: {
+          choices: completionData?.choices || [],
+        },
+      },
+      graderEvaluations: [], // TODO: Load from BfGraderResult
+      bfMetadata: {
+        deckName: selectedDeck.node.name,
+        deckContent: selectedDeck.node.content || "",
+        contextVariables: {},
+      },
+    };
+  }) || [];
+
+  const loading = false;
+  const error = null;
+  const [saving, setSaving] = useState(false);
+
+  // Fallback to mock data if no real data available
+  const { samples: mockSamples } = useGradingSamples(deckId);
+  const finalSamples = samples.length > 0 ? samples : (mockSamples || []);
+
+  // Function to save grade using submitFeedback mutation
+  const saveGrade = async (
+    sampleId: string,
+    grades: Array<{ graderId: string; score: -3 | 3; reason: string }>,
+  ) => {
+    setSaving(true);
+    try {
+      // For now, just save the first grade (in the future we might want to handle multiple graders differently)
+      const grade = grades[0];
+      if (grade) {
+        // TODO: Call the submitFeedback GraphQL mutation
+        logger.info("Would submit feedback:", {
+          sampleId,
+          score: grade.score,
+          explanation: grade.reason,
+        });
+
+        // Simulate API call for now
+        await new Promise((resolve) => setTimeout(resolve, 300));
+      }
+    } catch (error) {
+      logger.error("Failed to save grade", error);
+      throw error;
+    } finally {
+      setSaving(false);
+    }
+  };
 
   // Handle loading and error states
   if (loading) {
@@ -79,7 +146,7 @@ export function GradingInbox({
     );
   }
 
-  if (!samples || samples.length === 0) {
+  if (!finalSamples || finalSamples.length === 0) {
     return (
       <div className="grading-inbox grading-empty">
         <div className="grading-header">
@@ -106,8 +173,8 @@ export function GradingInbox({
     );
   }
 
-  const currentSample = samples[currentIndex];
-  const totalSamples = samples.length;
+  const currentSample = finalSamples[currentIndex];
+  const totalSamples = finalSamples.length;
   const remainingSamples = totalSamples - completedCount;
 
   const handleHumanRatingChange = (
@@ -134,7 +201,7 @@ export function GradingInbox({
   > = {};
 
   // Populate with existing grades first
-  existingGrades.forEach((grade) => {
+  existingGrades.forEach((grade: any) => {
     currentSampleRatings[grade.graderId] = {
       rating: grade.score,
       comment: grade.reason,
@@ -144,10 +211,11 @@ export function GradingInbox({
   // Override with draft grades
   Object.assign(currentSampleRatings, currentSampleDrafts);
 
-  const graderIds = currentSample?.graderEvaluations?.map((e) => e.graderId) ||
+  const graderIds =
+    currentSample?.graderEvaluations?.map((e: any) => e.graderId) ||
     [];
   const allGradersRated = graderIds.length > 0 &&
-    graderIds.every((id) =>
+    graderIds.every((id: any) =>
       currentSampleRatings[id]?.rating !== null &&
       currentSampleRatings[id]?.rating !== undefined
     );
@@ -162,7 +230,7 @@ export function GradingInbox({
 
     try {
       // Prepare grades for submission
-      const gradesToSave = graderIds.map((graderId) => ({
+      const gradesToSave = graderIds.map((graderId: any) => ({
         graderId,
         score: currentSampleRatings[graderId].rating!,
         reason: currentSampleRatings[graderId].comment,
@@ -181,7 +249,7 @@ export function GradingInbox({
       setCompletedCount((prev) => prev + 1);
 
       // Move to next sample
-      if (currentIndex < samples.length - 1) {
+      if (currentIndex < finalSamples.length - 1) {
         setCurrentIndex((prev) => prev + 1);
       } else {
         // All samples graded
@@ -197,7 +265,7 @@ export function GradingInbox({
   };
 
   const handleSkip = () => {
-    if (currentIndex < samples.length - 1) {
+    if (currentIndex < finalSamples.length - 1) {
       setCurrentIndex((prev) => prev + 1);
     }
   };

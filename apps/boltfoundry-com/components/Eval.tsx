@@ -5,15 +5,15 @@ import { LeftSidebar } from "./Evals/Layout/LeftSidebar.tsx";
 import { MainContent } from "./Evals/Layout/MainContent.tsx";
 import { RightSidebar } from "./Evals/Layout/RightSidebar.tsx";
 
-function EvalContent() {
+function EvalContent({ data }: { data: any }) {
   return (
     <div className="eval-page">
       <Header />
       <div className="eval-layout">
         <div className="eval-content">
           <LeftSidebar />
-          <MainContent />
-          <RightSidebar />
+          <MainContent evalData={data} />
+          <RightSidebar evalData={data} />
         </div>
       </div>
     </div>
@@ -22,12 +22,16 @@ function EvalContent() {
 
 export const Eval = iso(`
   field Query.Eval @component {
-    __typename
+    currentViewer {
+      id
+      personBfGid
+      orgBfOid
+    }
   }
-`)(function Eval({ data: _data }) {
+`)(function Eval({ data }) {
   return (
     <EvalProvider>
-      <EvalContent />
+      <EvalContent data={data} />
     </EvalProvider>
   );
 });

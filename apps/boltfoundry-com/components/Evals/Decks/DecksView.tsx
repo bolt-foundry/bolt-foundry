@@ -6,7 +6,7 @@ import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
-export function DecksView() {
+export function DecksView({ evalData }: { evalData?: any }) {
   const { openRightSidebar } = useEvalContext();
   const [selectedDeck, _setSelectedDeck] = useState<
     { id: string; name: string } | null
@@ -46,7 +46,7 @@ export function DecksView() {
         </p>
       </div>
 
-      <DeckList onDeckSelect={handleDeckSelect} />
+      <DeckList onDeckSelect={handleDeckSelect} evalData={evalData} />
 
       {showConfigModal && selectedDeck && (
         <DeckConfigModal

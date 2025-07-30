@@ -39,6 +39,17 @@ export abstract class CurrentViewer extends GraphQLObjectBase {
       .id("id")
       .string("personBfGid")
       .string("orgBfOid")
+      .object("organization", () =>
+        import("../nodeTypes/BfOrganization.ts").then((m) =>
+          m.BfOrganization
+        ), {
+        resolve: async (src) => {
+          const { BfOrganization } = await import(
+            "../nodeTypes/BfOrganization.ts"
+          );
+          return await BfOrganization.findX(src, src.orgBfOid);
+        },
+      })
   );
 
   /* ----------------------------------------------------------------------

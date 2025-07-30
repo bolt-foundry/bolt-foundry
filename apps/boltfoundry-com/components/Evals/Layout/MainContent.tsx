@@ -3,19 +3,19 @@ import { DecksView } from "../Decks/DecksView.tsx";
 import { AnalyzeView } from "../Analyze/AnalyzeView.tsx";
 import { ChatView } from "../Chat/ChatView.tsx";
 
-export function MainContent() {
+export function MainContent({ evalData }: { evalData?: any }) {
   const { activeMainContent, rightSidebarMode } = useEvalContext();
 
   const renderMainContent = () => {
     switch (activeMainContent) {
       case "Decks":
-        return <DecksView />;
+        return <DecksView evalData={evalData} />;
       case "Analyze":
         return <AnalyzeView />;
       case "Chat":
         return <ChatView />;
       default:
-        return <DecksView />;
+        return <DecksView evalData={evalData} />;
     }
   };
 

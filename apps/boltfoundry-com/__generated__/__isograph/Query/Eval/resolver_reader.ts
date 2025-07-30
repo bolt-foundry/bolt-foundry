@@ -4,11 +4,35 @@ import { Eval as resolver } from '../../../../components/Eval.tsx';
 
 const readerAst: ReaderAst<Query__Eval__param> = [
   {
-    kind: "Scalar",
-    fieldName: "__typename",
+    kind: "Linked",
+    fieldName: "currentViewer",
     alias: null,
     arguments: null,
+    condition: null,
     isUpdatable: false,
+    selections: [
+      {
+        kind: "Scalar",
+        fieldName: "id",
+        alias: null,
+        arguments: null,
+        isUpdatable: false,
+      },
+      {
+        kind: "Scalar",
+        fieldName: "personBfGid",
+        alias: null,
+        arguments: null,
+        isUpdatable: false,
+      },
+      {
+        kind: "Scalar",
+        fieldName: "orgBfOid",
+        alias: null,
+        arguments: null,
+        isUpdatable: false,
+      },
+    ],
   },
 ];
 

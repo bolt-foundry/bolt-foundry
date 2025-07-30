@@ -21,6 +21,12 @@ export class BfDeck extends BfNode<InferProps<typeof BfDeck>> {
       .string("content")
       .string("description")
       .nonNull.string("slug")
+      // .connection("bfSamples", "BfSample", {
+      //   resolve: (src) =>
+      //     src.findTargetNodes(() =>
+      //       import("./BfSample.ts").then((m) => m.BfSample)
+      //     ),
+      // })
       .typedMutation("createDeck", {
         args: (a) =>
           a

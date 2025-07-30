@@ -8,9 +8,32 @@ const normalizationAst: NormalizationAst = {
       arguments: null,
     },
     {
-      kind: "Scalar",
-      fieldName: "__typename",
+      kind: "Linked",
+      fieldName: "currentViewer",
       arguments: null,
+      concreteType: null,
+      selections: [
+        {
+          kind: "Scalar",
+          fieldName: "__typename",
+          arguments: null,
+        },
+        {
+          kind: "Scalar",
+          fieldName: "id",
+          arguments: null,
+        },
+        {
+          kind: "Scalar",
+          fieldName: "orgBfOid",
+          arguments: null,
+        },
+        {
+          kind: "Scalar",
+          fieldName: "personBfGid",
+          arguments: null,
+        },
+      ],
     },
   ],
 };

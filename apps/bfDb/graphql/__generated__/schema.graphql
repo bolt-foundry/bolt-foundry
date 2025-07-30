@@ -1,10 +1,10 @@
 ### @generated 
 type BfDeck implements BfNode {
+  content: String
   description: String
   id: ID!
   name: String
   slug: String!
-  systemPrompt: String
 }
 
 type BfEdge implements BfNode {
@@ -77,12 +77,14 @@ interface CurrentViewer {
 type CurrentViewerLoggedIn implements CurrentViewer {
   id: ID
   orgBfOid: String
+  organization: BfOrganization
   personBfGid: String
 }
 
 type CurrentViewerLoggedOut implements CurrentViewer {
   id: ID
   orgBfOid: String
+  organization: BfOrganization
   personBfGid: String
 }
 
@@ -103,9 +105,10 @@ type JoinWaitlistPayload {
 }
 
 type Mutation {
-  createDeck(description: String, name: String!, slug: String!, systemPrompt: String!): BfDeck
+  createDeck(content: String!, description: String, name: String!, slug: String!): BfDeck
   joinWaitlist(company: String, email: String!, name: String!): JoinWaitlistPayload
   loginWithGoogle(idToken: String!): CurrentViewer
+  submitFeedback(explanation: String!, sampleId: String!, score: Int!): BfSampleFeedback
   submitSample(collectionMethod: String, completionData: String!, deckId: String!, name: String): BfSample
 }
 

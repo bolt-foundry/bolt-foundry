@@ -1,4 +1,9 @@
 export default 'query EntrypointEval  {\
   id,\
-  __typename,\
+  currentViewer {\
+    __typename,\
+    id,\
+    orgBfOid,\
+    personBfGid,\
+  },\
 }';

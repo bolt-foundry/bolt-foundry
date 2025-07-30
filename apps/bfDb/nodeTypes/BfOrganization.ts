@@ -6,6 +6,12 @@ export class BfOrganization extends BfNode<InferProps<typeof BfOrganization>> {
     node
       .string("name")
       .string("domain")
+    // .connection("bfDecks", "BfDeck", {
+    //   resolve: (src) =>
+    //     src.findTargetNodes(() =>
+    //       import("./rlhf/BfDeck.ts").then((m) => m.BfDeck)
+    //     ),
+    // })
     // Removing the members relationship for now to focus on 1:1
   );
   static override bfNodeSpec = this.defineBfNode((node) =>

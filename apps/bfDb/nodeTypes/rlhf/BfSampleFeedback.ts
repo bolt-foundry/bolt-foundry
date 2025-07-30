@@ -11,6 +11,27 @@ export class BfSampleFeedback
     gql
       .int("score")
       .string("explanation")
+      .typedMutation("submitFeedback", {
+        args: (a) =>
+          a
+            .nonNull.string("sampleId")
+            .nonNull.int("score")
+            .nonNull.string("explanation"),
+        returns: "BfSampleFeedback",
+        resolve: async (_src, args, ctx) => {
+          const cv = ctx.getCurrentViewer();
+          const { BfSample } = await import("./BfSample.ts");
+          const sample = await BfSample.findX(
+            cv,
+            args.sampleId as import("@bfmono/lib/types.ts").BfGid,
+          );
+          const feedback = await sample.createTargetNode(BfSampleFeedback, {
+            score: args.score,
+            explanation: args.explanation,
+          });
+          return feedback.toGraphql();
+        },
+      })
   );
 
   static override bfNodeSpec = this.defineBfNode((f) =>

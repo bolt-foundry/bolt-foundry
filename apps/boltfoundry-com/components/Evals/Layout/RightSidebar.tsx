@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 import { useEvalContext } from "@bfmono/apps/boltfoundry-com/contexts/EvalContext.tsx";
 import { GradingInbox } from "../Grading/GradingInbox.tsx";
 
-export function RightSidebar() {
+export function RightSidebar({ evalData }: { evalData?: any }) {
   const {
     rightSidebarOpen,
     rightSidebarContent,
@@ -110,6 +110,7 @@ export function RightSidebar() {
               deckId={gradingDeckId}
               deckName={gradingDeckName}
               onClose={exitGrading}
+              evalData={evalData}
             />
           )
           : (

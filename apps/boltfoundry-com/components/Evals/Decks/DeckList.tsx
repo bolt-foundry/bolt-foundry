@@ -47,15 +47,28 @@ const mockDecks = [
 
 interface DeckListProps {
   onDeckSelect?: (deckId: string) => void;
+  evalData?: any;
 }
 
-export function DeckList({ onDeckSelect }: DeckListProps) {
+export function DeckList({ onDeckSelect, evalData }: DeckListProps) {
   const { startDeckCreation, startGrading } = useEvalContext();
   const [searchQuery, setSearchQuery] = useState("");
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [decks] = useState(mockDecks);
 
-  const filteredDecks = decks.filter((deck) =>
+  // Transform BfDeck data to match existing interface
+  const decks =
+    evalData?.currentViewer?.organization?.bfDecks?.edges?.map((edge: any) => ({
+      id: edge.node.id,
+      name: edge.node.name,
+      description: edge.node.description || "No description available",
+      graderCount: 0, // TODO: Add grader count to BfDeck
+      lastModified: new Date().toISOString().split("T")[0], // TODO: Add lastModified to BfDeck
+      status: "active" as const,
+      agreementRate: 90, // TODO: Calculate from grader results
+      totalTests: edge.node.bfSamples?.edges?.length || 0,
+    })) || mockDecks;
+
+  const filteredDecks = decks.filter((deck: any) =>
     deck.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     deck.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -67,7 +80,7 @@ export function DeckList({ onDeckSelect }: DeckListProps) {
   };
 
   const handleDeckClick = (deckId: string) => {
-    const deck = decks.find((d) => d.id === deckId);
+    const deck = decks.find((d: any) => d.id === deckId);
     if (deck) {
       // Samples will be fetched by GradingInbox using GraphQL
       startGrading(deckId, deck.name);
@@ -131,7 +144,7 @@ export function DeckList({ onDeckSelect }: DeckListProps) {
         )
         : (
           <div className="decks-list">
-            {filteredDecks.map((deck) => (
+            {filteredDecks.map((deck: any) => (
               <DeckItem
                 key={deck.id}
                 deck={deck}
