@@ -3,7 +3,7 @@
  */
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 import * as path from "@std/path";
-import type { BfOptions } from "./types.ts";
+import type { DeckRenderOptions } from "./types.ts";
 // For now, we'll use the import that works in BfClient.ts
 // The actual ChatCompletionCreateParams type is part of our extended type
 import type OpenAI from "@openai/openai";
@@ -26,9 +26,8 @@ export class Deck {
   }
 
   render(
-    contextVariables: Record<string, unknown>,
+    options: DeckRenderOptions = {},
     openaiParams?: Partial<ChatCompletionCreateParams>,
-    bfOptions?: BfOptions,
   ): RenderOutput {
     // Process markdown includes and collect context definitions
     const { processedContent, contextDefs } = this.processMarkdownIncludes(
@@ -44,6 +43,7 @@ export class Deck {
     ];
 
     // Add Q&A pairs for context variables
+    const contextVariables = options.context || {};
     for (const [varName, contextDef] of Object.entries(contextDefs)) {
       // Skip tools array when processing contexts
       if (varName === "tools") continue;
@@ -78,11 +78,11 @@ export class Deck {
     }
 
     // Include metadata unless explicitly disabled
-    if (bfOptions?.captureTelemetry !== false) {
+    if (options.captureTelemetry !== false) {
       output.bfMetadata = {
         deckId: this.deckId,
         contextVariables: contextVariables,
-        attributes: bfOptions?.attributes,
+        attributes: options.attributes,
       };
     }
 
@@ -280,20 +280,21 @@ export async function readLocalDeck(path: string, options?: {
     getConfigurationVariable("BF_API_ENDPOINT") ||
     DEFAULT_API_ENDPOINT;
 
-  // Check if deck exists in API (cached after first check)
+  // Always ensure the API has the latest deck content from disk
+  // Only skip if we've already synced this deck in this session (cached)
   if (apiKey && !deckCache.has(deckId)) {
     try {
       const response = await fetch(`${apiEndpoint}/decks/${deckId}`, {
         headers: { "x-bf-api-key": apiKey },
       });
 
-      if (response.status === 404) {
-        // Process includes to get full deck content
-        const { processedContent } = deck.processMarkdownIncludes(
-          markdownContent,
-          path,
-        );
+      // Process includes to get full deck content
+      const { processedContent } = deck.processMarkdownIncludes(
+        markdownContent,
+        path,
+      );
 
+      if (response.status === 404) {
         // Create deck if it doesn't exist
         await fetch(`${apiEndpoint}/decks`, {
           method: "POST",
@@ -303,6 +304,19 @@ export async function readLocalDeck(path: string, options?: {
           },
           body: JSON.stringify({
             id: deckId,
+            content: markdownContent,
+            processedContent: processedContent, // Full content with embeds resolved
+          }),
+        });
+      } else {
+        // Update existing deck with latest content from disk
+        await fetch(`${apiEndpoint}/decks/${deckId}`, {
+          method: "PUT",
+          headers: {
+            "x-bf-api-key": apiKey,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
             content: markdownContent,
             processedContent: processedContent, // Full content with embeds resolved
           }),
