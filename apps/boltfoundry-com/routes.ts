@@ -7,6 +7,7 @@ import {
   entrypointLogin,
   entrypointRlhf,
 } from "./__generated__/builtRoutes.ts";
+import { EntrypointBlog } from "./entrypoints/EntrypointBlog.ts";
 
 export type ComponentWithHeader = React.ComponentType<unknown> & {
   HeaderComponent?: React.ComponentType<unknown>;
@@ -31,4 +32,7 @@ export const isographAppRoutes = new Map<string, IsographRoute>([
   ["/login", entrypointLogin],
   ["/rlhf", entrypointRlhf],
   ["/eval", entrypointEval],
+  ["/blog", EntrypointBlog as unknown as BfIsographEntrypoint],
+  ["/blog/", EntrypointBlog as unknown as BfIsographEntrypoint],
+  ["/blog/:slug", EntrypointBlog as unknown as BfIsographEntrypoint],
 ]);
