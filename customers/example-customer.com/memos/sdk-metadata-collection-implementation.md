@@ -144,8 +144,12 @@ deck.render(
   contextVariables: Record<string, JSONValue>,
   openaiParams?: Partial<ChatCompletionCreateParams>,
   bfOptions?: BfOptions
-): RenderOutput {
+): ChatCompletionCreateParams { // Return type appears standard to TypeScript
   // ... existing render logic to create base output with default messages ...
+  const output: RenderOutput = {
+    messages,
+    // ... other properties
+  };
   
   // Merge OpenAI params if provided (this may override messages)
   if (openaiParams) {
@@ -161,7 +165,7 @@ deck.render(
     };
   }
   
-  return output;
+  return output as unknown as ChatCompletionCreateParams;
 }
 ```
 
@@ -667,7 +671,6 @@ const completion = deck.render(
 // completion includes bfMetadata automatically
 
 const response = await openai.chat.completions.create(completion);
-// BfClient strips bfMetadata before sending to OpenAI
 // Telemetry captures request/response WITH metadata
 ```
 

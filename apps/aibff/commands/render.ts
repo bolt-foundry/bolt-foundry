@@ -399,7 +399,7 @@ async function renderDeck(
 ): Promise<OpenAICompletionRequest> {
   // Use the new deck system
   const deck = await readLocalDeck(deckFileSystemPath);
-  const result = deck.render({}, { context });
+  const result = deck.render(context);
 
   // Extract context definitions from the deck to check for unrequested variables
   const { contextDefs } = deck.processMarkdownIncludes(
@@ -427,13 +427,17 @@ async function renderDeck(
   }
 
   // Convert our deck system output to the expected OpenAI format
-  const messages: Array<OpenAIMessage> = result.messages.map((msg) => ({
+  const messages: Array<OpenAIMessage> = result.messages.map((
+    msg: { role: string; content: string },
+  ) => ({
     role: msg.role as "system" | "assistant" | "user",
     content: msg.content,
   }));
 
   // Convert tools to OpenAI format if any exist
-  const tools: Array<OpenAITool> = result.tools.map((tool) => ({
+  const tools: Array<OpenAITool> = result.tools.map((
+    tool: { name: string; description: string },
+  ) => ({
     type: "function",
     function: {
       name: tool.name,

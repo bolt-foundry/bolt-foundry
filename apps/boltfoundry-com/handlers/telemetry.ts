@@ -8,27 +8,30 @@ import { generateDeckSlug } from "@bfmono/apps/bfDb/utils/slugUtils.ts";
 const logger = getLogger(import.meta);
 
 interface TelemetryData {
-  timestamp: string;
+  timestamp?: string;
   duration: number;
   provider: string;
-  providerApiVersion: string;
+  providerApiVersion?: string;
   sessionId?: string;
   userId?: string;
+  model?: string;
   request: {
     url: string;
     method: string;
     headers: Record<string, string>;
     body: unknown;
+    timestamp?: string;
   };
   response: {
     status: number;
     headers: Record<string, string>;
     body: unknown;
+    timestamp?: string;
   };
   bfMetadata?: {
-    deckName: string;
-    deckContent: string;
+    deckId: string;
     contextVariables: Record<string, unknown>;
+    attributes?: Record<string, unknown>;
   };
 }
 
@@ -109,8 +112,7 @@ export async function handleTelemetryRequest(
       );
     }
 
-    const { deckName, deckContent, contextVariables } = telemetryData
-      .bfMetadata;
+    const { deckId, contextVariables, attributes } = telemetryData.bfMetadata;
 
     // Get the organization node
     const org = await BfOrganization.findX(
@@ -119,7 +121,7 @@ export async function handleTelemetryRequest(
     );
 
     // Generate slug and query for existing deck by slug to avoid duplicates
-    const slug = generateDeckSlug(deckName, currentViewer.orgBfOid);
+    const slug = generateDeckSlug(deckId, currentViewer.orgBfOid);
 
     const existingDecks = await BfDeck.query(
       currentViewer,
@@ -132,16 +134,18 @@ export async function handleTelemetryRequest(
     if (existingDecks.length > 0) {
       // Found existing deck, use it
       deck = existingDecks[0] as BfDeck;
-      logger.info(`Found existing deck: ${deckName} (slug: ${slug})`);
+      logger.info(`Found existing deck: ${deckId} (slug: ${slug})`);
     } else {
       // Create new deck
+      // Note: SDK's lazy deck creation should have already created this deck
+      // This is a fallback for decks that might not have been created yet
       deck = await org.createTargetNode(BfDeck, {
-        name: deckName,
-        content: deckContent,
-        description: `Auto-created from telemetry for ${deckName}`,
+        name: deckId,
+        content: `# ${deckId}\n\nDeck created from telemetry.`,
+        description: `Auto-created from telemetry for ${deckId}`,
         slug,
       }) as BfDeck;
-      logger.info(`Created new deck: ${deckName} (slug: ${slug})`);
+      logger.info(`Created new deck: ${deckId} (slug: ${slug})`);
     }
 
     // Create the sample
@@ -149,8 +153,10 @@ export async function handleTelemetryRequest(
       request: telemetryData.request,
       response: telemetryData.response,
       provider: telemetryData.provider,
+      model: telemetryData.model,
       duration: telemetryData.duration,
       contextVariables,
+      attributes,
     };
 
     const sample = await deck.createTargetNode(BfSample, {

@@ -8,7 +8,7 @@
  */
 
 import { assertEquals, assertExists } from "@std/assert";
-import { BfClient } from "@bfmono/bolt-foundry/BfClient.ts";
+import { BfClient } from "../BfClient.ts";
 
 /**
  * Test utilities
@@ -35,16 +35,18 @@ function setupMockFetch(responses: Map<string, MockResponse>) {
 
     const response = responses.get(url);
     if (response) {
-      return new Response(
-        response.body ? JSON.stringify(response.body) : null,
-        {
-          status: response.status,
-          headers: response.headers,
-        },
+      return Promise.resolve(
+        new Response(
+          response.body ? JSON.stringify(response.body) : null,
+          {
+            status: response.status,
+            headers: response.headers,
+          },
+        ),
       );
     }
 
-    return new Response("Not found", { status: 404 });
+    return Promise.resolve(new Response("Not found", { status: 404 }));
   };
 }
 
@@ -487,8 +489,9 @@ Deno.test("BfClient - sends correct telemetry payload structure", async () => {
     assertEquals(telemetryPayload.bfMetadata, requestBody.bfMetadata);
 
     // Verify API key header
+    const headers = telemetryCall.options?.headers as Record<string, string>;
     assertEquals(
-      telemetryCall.options?.headers?.["x-bf-api-key"],
+      headers?.["x-bf-api-key"],
       "bf-test-key",
     );
   } finally {
