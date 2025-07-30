@@ -1,5 +1,3 @@
-// infra/bff/__tests__/ai.test.ts
-
 import { assertEquals } from "@std/assert";
 import { register } from "../bff.ts";
 import { aiCommand } from "../friends/ai.bff.ts";

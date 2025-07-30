@@ -1,6 +1,6 @@
 #! /usr/bin/env -S bff
 
-// infra/bff/friends/githubAnnotations.ts
+
 
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";

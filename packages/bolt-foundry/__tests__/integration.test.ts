@@ -1,4 +1,3 @@
-// packages/bolt-foundry/__tests__/integration.test.ts
 import { assertEquals, assertExists } from "@std/assert";
 import { BfClient, readLocalDeck } from "../BfClient.ts";
 import { clearDeckCache } from "../deck.ts";
