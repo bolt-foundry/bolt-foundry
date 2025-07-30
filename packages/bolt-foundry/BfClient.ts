@@ -3,6 +3,8 @@ import type {
   ChatCompletionCreateParams,
 } from "openai/resources/chat/completions";
 import type { BfMetadata } from "./types.ts";
+import { readLocalDeck } from "./deck.ts";
+import type { Deck } from "./deck.ts";
 
 // Type for requests that include our metadata
 export type ChatCompletionCreateParamsWithMetadata =
@@ -36,6 +38,30 @@ export class BfClient {
 
   static create(config: BfClientConfig): BfClient {
     return new BfClient(config);
+  }
+
+  /**
+   * Read a local deck file - alias for the standalone readLocalDeck function
+   * @param path Path to the .deck.md file
+   * @param options Optional configuration for API integration
+   * @returns Promise<Deck> A Deck instance
+   */
+  static async readLocalDeck(path: string, options?: {
+    apiKey?: string;
+    apiEndpoint?: string;
+  }): Promise<Deck> {
+    return readLocalDeck(path, options);
+  }
+
+  /**
+   * Read a local deck file - instance method alias
+   * @param path Path to the .deck.md file
+   * @returns Promise<Deck> A Deck instance
+   */
+  async readLocalDeck(path: string): Promise<Deck> {
+    return readLocalDeck(path, {
+      apiKey: this.apiKey,
+    });
   }
 
   private createWrappedFetch(): typeof fetch {
@@ -185,3 +211,7 @@ export class BfClient {
     }
   }
 }
+
+// Re-export for convenience
+export { readLocalDeck } from "./deck.ts";
+export type { Deck } from "./deck.ts";

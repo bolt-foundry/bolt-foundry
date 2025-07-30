@@ -146,23 +146,28 @@ interface BfOptions {
   attributes?: Record<string, JSONValue>; // Additional data for UI display
 }
 
+// DeckRenderOptions extends BfOptions with context
+interface DeckRenderOptions extends BfOptions {
+  context?: Record<string, unknown>; // Context variables for deck rendering
+}
+
 type RenderOutput = ChatCompletionCreateParams & {
   bfMetadata?: BfMetadata; // NEW: Optional metadata
 }
 
 interface BfMetadata {
   deckId: string;             // Deck ID (from filename) for sample attribution
-  contextVariables: Record<string, JSONValue>; // Render parameters (JSON-serializable)
+  contextVariables: Record<string, unknown>; // Render parameters (JSON-serializable)
   attributes?: Record<string, JSONValue>; // Additional data for UI display (not sent to LLM)
 }
 
 // Implementation
 deck.render(
-  contextVariables: Record<string, JSONValue>,
+  options: DeckRenderOptions = {},
   openaiParams?: Partial<ChatCompletionCreateParams>,
-  bfOptions?: BfOptions
 ): ChatCompletionCreateParams { // Return type appears standard to TypeScript
   // ... existing render logic to create base output with default messages ...
+  const contextVariables = options.context || {};
   const output: RenderOutput = {
     messages,
     // ... other properties
@@ -174,11 +179,11 @@ deck.render(
   }
   
   // Include metadata unless explicitly disabled
-  if (bfOptions?.captureTelemetry !== false) {
+  if (options.captureTelemetry !== false) {
     output.bfMetadata = {
       deckId: this.deckId,
       contextVariables: contextVariables,
-      attributes: bfOptions?.attributes
+      attributes: options.attributes
     };
   }
   
@@ -443,18 +448,19 @@ interface TelemetryData {
 
 ##### Tests
 
-- [ ] Test metadata inclusion - render with default BfOptions
+- [ ] Test metadata inclusion - render with default DeckRenderOptions
 - [ ] Test metadata exclusion - render with captureTelemetry:false
 - [ ] Test attributes handling - Verify attributes passed through correctly
-- [ ] Test contextVariables capture - Verify first param becomes
+- [ ] Test contextVariables capture - Verify options.context becomes
       contextVariables
 - [ ] Test OpenAI params merging - Verify second param merges correctly
-- [ ] Test undefined middle parameter - Verify can skip OpenAI params
+- [ ] Test no parameters - Verify deck.render() works with no parameters
 
 ##### Implementation
 
 - [ ] Add BfOptions interface with captureTelemetry and attributes fields
-- [ ] Enhance deck.render() signature to accept three parameters
+- [ ] Add DeckRenderOptions interface extending BfOptions with context field
+- [ ] Enhance deck.render() signature to accept two parameters
 - [ ] Update RenderOutput interface to include optional bfMetadata
 - [ ] Implement OpenAI params merging and metadata extraction
 
@@ -610,9 +616,11 @@ Extract key fields from invoices.`);
 
     // 2. Render with metadata
     const completion = deck.render(
-      { invoice: "INV-001" },
+      {
+        context: { invoice: "INV-001" },
+        attributes: { invoiceImage: "base64..." },
+      },
       undefined, // No OpenAI params override
-      { attributes: { invoiceImage: "base64..." } },
     );
 
     assertEquals(completion.bfMetadata?.deckId, "invoice-extraction");
@@ -683,10 +691,10 @@ const openai = new OpenAI({
 });
 
 const deck = await readLocalDeck("./deck.md");
-const completion = deck.render(
-  { input: "data" },
-  // Using defaults: no OpenAI overrides, telemetry enabled
-);
+const completion = deck.render({
+  context: { input: "data" },
+  // Using defaults: telemetry enabled by default
+});
 // completion includes bfMetadata automatically
 
 const response = await openai.chat.completions.create(completion);
@@ -708,9 +716,11 @@ const openai = new OpenAI({
 
 const deck = await readLocalDeck("./invoice-extraction.deck.md");
 const completion = deck.render(
-  { invoice: "INV-12345" }, // Context variables
+  {
+    context: { invoice: "INV-12345" }, // Context variables
+    attributes: { invoiceImage: "base64..." }, // Additional attributes
+  },
   { temperature: 0.1 }, // OpenAI overrides
-  { attributes: { invoiceImage: "base64..." } }, // BF options
 );
 // completion still has bfMetadata, but it won't be captured
 
@@ -744,9 +754,11 @@ const existingMessages = [
 
 const deck = await readLocalDeck("./invoice-extraction.deck.md");
 const completion = deck.render(
-  { invoice: "INV-001" },
+  {
+    context: { invoice: "INV-001" },
+    attributes: { invoiceImage: "base64..." },
+  },
   { messages: existingMessages }, // Override default messages
-  { attributes: { invoiceImage: "base64..." } },
 );
 // completion.messages === existingMessages (unchanged)
 // completion.bfMetadata still included for telemetry
@@ -774,9 +786,11 @@ const openai = new OpenAI({
 
 const deck = await readLocalDeck("./my-deck.md");
 const completion = deck.render(
-  { data: "sensitive" },
+  {
+    context: { data: "sensitive" },
+    captureTelemetry: false, // Explicitly opt-out for sensitive data
+  },
   undefined, // No OpenAI overrides
-  { captureTelemetry: false }, // Explicitly opt-out for sensitive data
 );
 // completion.bfMetadata is undefined
 
