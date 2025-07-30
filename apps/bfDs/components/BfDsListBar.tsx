@@ -46,10 +46,8 @@ export function BfDsListBar({
     }
   };
 
-  const TagName = clickable ? "button" : "div";
-
   return (
-    <TagName
+    <div
       className={barClasses}
       onClick={clickable ? handleClick : undefined}
       onKeyDown={clickable ? handleKeyDown : undefined}
@@ -69,6 +67,6 @@ export function BfDsListBar({
           {right}
         </div>
       )}
-    </TagName>
+    </div>
   );
 }
