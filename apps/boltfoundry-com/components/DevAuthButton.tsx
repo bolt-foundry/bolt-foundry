@@ -32,7 +32,7 @@ export function DevAuthButton() {
       logger.info("Dev login successful", result);
 
       // Redirect to home page
-      window.location.href = result.redirectTo || "/";
+      globalThis.location.href = result.redirectTo || "/";
     } catch (err) {
       setIsLoading(false);
       setError(err instanceof Error ? err.message : "Failed to sign in");
@@ -47,6 +47,7 @@ export function DevAuthButton() {
   return (
     <div>
       <button
+        type="button"
         onClick={handleDevLogin}
         style={{
           padding: "12px 24px",

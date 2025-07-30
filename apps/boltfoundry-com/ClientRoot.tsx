@@ -58,7 +58,7 @@ if (isDev) {
             Deno.env?.get?.("BF_E2E_MODE") === "true") ||
           // In codebot, always enable E2E mode
           (typeof window !== "undefined" &&
-            window.location.hostname.includes(".codebot.local")),
+            globalThis.location.hostname.includes(".codebot.local")),
       };
       createRoot(root).render(<ClientRoot environment={devEnvironment} />);
     }
