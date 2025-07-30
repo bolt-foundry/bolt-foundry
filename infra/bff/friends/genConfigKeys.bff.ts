@@ -1,5 +1,4 @@
 #! /usr/bin/env -S bff
-// infra/bff/commands/genConfigKeys.bff.ts
 //
 // Generate a key‑only helper file from 1Password.
 //
