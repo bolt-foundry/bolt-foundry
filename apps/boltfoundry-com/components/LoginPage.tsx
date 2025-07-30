@@ -25,23 +25,14 @@ export const LoginPage = iso(`
 
   // Check if we're in a codebot environment
   const isCodebot = typeof window !== "undefined" &&
-    !window.location.hostname.includes("localhost") &&
-    !window.location.hostname.includes("127.0.0.1");
+    !globalThis.location.hostname.includes("localhost") &&
+    !globalThis.location.hostname.includes("127.0.0.1");
 
   // Check if E2E mode is enabled from environment
   // In codebot environments, always enable E2E mode
   const isE2EMode = appEnvironment.BF_E2E_MODE === true || isCodebot;
 
-  // Debug logging
-  if (typeof window !== "undefined") {
-    console.log("LoginPage Debug:", {
-      hostname: window.location.hostname,
-      isCodebot,
-      isE2EMode,
-      appEnvironment,
-      BF_E2E_MODE: appEnvironment.BF_E2E_MODE,
-    });
-  }
+  // Debug logging removed to avoid console usage
 
   return (
     <div className="landing-page with-header">
