@@ -1,4 +1,3 @@
-// apps/bfDb/storage/InMemoryAdapter.ts
 // =================================================
 // Map‑backed adapter that fulfils DatabaseBackend / IBackendAdapter contract.
 // All methods are **sync implementations** that _return_ `Promise.resolve(...)`.
