@@ -15,7 +15,7 @@ Deno.test.ignore("Video recording proof of concept", async () => {
 
   try {
     // Start annotated video recording
-    const { stop, showSubtitle, highlightElement } = await context
+    const { stop, showSubtitle } = await context
       .startAnnotatedVideoRecording("poc-test");
 
     // Navigate to a simple page

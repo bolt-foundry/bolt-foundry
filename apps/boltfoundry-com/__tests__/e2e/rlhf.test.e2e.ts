@@ -12,7 +12,7 @@ Deno.test("RLHF page shows login when not authenticated", async () => {
 
   try {
     // Start annotated video recording
-    const { stop, showSubtitle, highlightElement } = await context
+    const { stop, showSubtitle } = await context
       .startAnnotatedVideoRecording("rlhf-demo");
 
     await showSubtitle("RLHF page authentication test");
