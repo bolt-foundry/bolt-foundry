@@ -399,7 +399,7 @@ async function renderDeck(
 ): Promise<OpenAICompletionRequest> {
   // Use the new deck system
   const deck = await readLocalDeck(deckFileSystemPath);
-  const result = deck.render(context);
+  const result = deck.render({ context });
 
   // Extract context definitions from the deck to check for unrequested variables
   const { contextDefs } = deck.processMarkdownIncludes(
