@@ -1,13 +1,15 @@
-// packages/bolt-foundry/__tests__/integration.test.ts
 import { assertEquals, assertExists } from "@std/assert";
-import { BfClient } from "../BfClient.ts";
-import { clearDeckCache, readLocalDeck } from "../deck.ts";
+import { BfClient, readLocalDeck } from "../BfClient.ts";
+import { clearDeckCache } from "../deck.ts";
 import { OpenAI } from "@openai/openai";
 
 // Test helper functions
-async function createTempDeckFile(content: string): Promise<string> {
+async function createTempDeckFile(
+  content: string,
+  filename: string = "invoice-extraction.deck.md",
+): Promise<string> {
   const tempDir = await Deno.makeTempDir();
-  const deckPath = `${tempDir}/invoice-extraction.deck.md`;
+  const deckPath = `${tempDir}/${filename}`;
   await Deno.writeTextFile(deckPath, content);
   return deckPath;
 }
@@ -290,6 +292,78 @@ Deno.test("SDK flow - telemetry with streaming request", async () => {
     assertExists(openaiCall);
     const openaiBody = JSON.parse(openaiCall.options?.body as string);
     assertEquals(openaiBody.bfMetadata, undefined);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+Deno.test("BfClient.readLocalDeck alias methods", async () => {
+  fetchCalls = [];
+
+  // Setup mock responses
+  const responses = new Map<string, Response>([
+    // Deck exists
+    [
+      "https://boltfoundry.com/api/decks/test-deck",
+      new Response(JSON.stringify({ id: "test-deck" }), { status: 200 }),
+    ],
+    // Deck update succeeds
+    [
+      "PUT:https://boltfoundry.com/api/decks/test-deck",
+      new Response(null, { status: 200 }),
+    ],
+  ]);
+
+  mockFetch(responses);
+
+  try {
+    const deckPath = await createTempDeckFile(
+      `# Test Deck
+
+This is a test deck for alias methods.`,
+      "test-deck.deck.md",
+    );
+
+    // Clear cache to ensure API call happens
+    clearDeckCache();
+
+    // Test 1: Static method
+    const deck1 = await BfClient.readLocalDeck(deckPath, {
+      apiKey: "bf+test-key",
+    });
+    assertEquals(deck1.deckId, "test-deck");
+    assertEquals(deck1.markdownContent.includes("Test Deck"), true);
+
+    // Verify API was called
+    const deckCheckCall1 = fetchCalls.find((c) =>
+      c.url.includes("/api/decks/test-deck") &&
+      c.options?.method !== "PUT"
+    );
+    assertExists(deckCheckCall1);
+
+    // Clear cache and calls for next test
+    clearDeckCache();
+    fetchCalls = [];
+
+    // Test 2: Instance method
+    const bfClient = BfClient.create({ apiKey: "bf+test-key" });
+    const deck2 = await bfClient.readLocalDeck(deckPath);
+    assertEquals(deck2.deckId, "test-deck");
+    assertEquals(deck2.markdownContent.includes("Test Deck"), true);
+
+    // Verify API was called with the client's API key
+    const deckCheckCall2 = fetchCalls.find((c) =>
+      c.url.includes("/api/decks/test-deck") &&
+      c.options?.method !== "PUT"
+    );
+    assertExists(deckCheckCall2);
+    const headers2 = deckCheckCall2.options?.headers as Record<string, string>;
+    assertEquals(
+      headers2?.["x-bf-api-key"],
+      "bf+test-key",
+    );
+
+    await cleanup(deckPath);
   } finally {
     globalThis.fetch = originalFetch;
   }
