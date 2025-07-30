@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
-import { BfDsIcon } from "@bfmono/apps/bfDs/components/BfDsIcon.tsx";
 import { BfDsTextArea } from "@bfmono/apps/bfDs/components/BfDsTextArea.tsx";
 
 interface HumanGradingControlsProps {
@@ -56,20 +55,20 @@ export function HumanGradingControls({
         <BfDsButton
           variant={selectedScore === -3 ? "secondary" : "outline"}
           size="large"
+          icon="thumbDown"
           onClick={() => handleScoreSelect(-3)}
           className="grade-button thumbs-down"
         >
-          <BfDsIcon name="thumbDown" size="medium" />
           <span>Incorrect</span>
         </BfDsButton>
 
         <BfDsButton
           variant={selectedScore === 3 ? "primary" : "outline"}
           size="large"
+          icon="thumbUp"
           onClick={() => handleScoreSelect(3)}
           className="grade-button thumbs-up"
         >
-          <BfDsIcon name="thumbUp" size="medium" />
           <span>Correct</span>
         </BfDsButton>
       </div>
@@ -92,11 +91,12 @@ export function HumanGradingControls({
           <div className="grading-actions">
             <BfDsButton
               variant="primary"
+              icon="arrowRight"
+              iconPosition="right"
               onClick={handleSubmit}
               disabled={selectedScore === null}
             >
               {isLastSample ? "Complete Grading" : "Save & Next"}
-              <BfDsIcon name="arrowRight" size="small" />
             </BfDsButton>
           </div>
         </div>

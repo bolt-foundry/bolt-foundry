@@ -532,7 +532,7 @@ import { BfDsButton } from '@apps/bfDs/components'
   - ✅ ConversationHistory.tsx - Collapsible conversation thread with role
     indicators
   - ✅ GraderEvaluation.tsx - Display AI grader results with score badges
-  - ✅ HumanGradingControls.tsx - Thumbs up/down with reason input and autofocus
+  - ✅ GraderHumanRating.tsx - Shows -3/+3 rating buttons with reason field
 - ✅ Enhanced right sidebar:
   - ✅ Support 70% width mode when grading is active
   - ✅ Smooth transition between normal (320px) and grading (70%) modes
@@ -542,10 +542,11 @@ import { BfDsButton } from '@apps/bfDs/components'
   - ✅ Nested object and array support with expandable sections
   - ✅ Toggle between table view and raw JSON view
 - ✅ Grading workflow:
-  - ✅ Thumbs up/down buttons (-3/3 for now) with icon feedback
-  - ✅ Auto-focus reason input after rating selection
-  - ✅ Save & Next button with Enter key support
+  - ✅ -3/+3 rating buttons for each grader with clear numeric display
+  - ✅ "Reason" field instead of "Comment" for rating justification
+  - ✅ Save & Next button integrated into header with Skip option
   - ✅ Queue management with progress tracking and completion state
+  - ✅ Real-time rating progress indicator (e.g., "2/3 rated")
 - ✅ Additional improvements:
   - ✅ Generated missing icons (zap, server, table, code, cpu) with generated
     flag

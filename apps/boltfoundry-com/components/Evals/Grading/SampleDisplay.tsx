@@ -14,10 +14,12 @@ interface SampleDisplayProps {
     rating: -3 | 3 | null,
     comment: string,
   ) => void;
+  currentRatings?: Record<string, { rating: -3 | 3 | null; comment: string }>;
 }
 
 export function SampleDisplay(
-  { sample, displaySchema, onHumanRatingChange }: SampleDisplayProps,
+  { sample, displaySchema, onHumanRatingChange, currentRatings = {} }:
+    SampleDisplayProps,
 ) {
   const [showRawJson, setShowRawJson] = useState(false);
 
@@ -99,6 +101,7 @@ export function SampleDisplay(
                 key={index}
                 evaluation={evaluation}
                 onHumanRatingChange={onHumanRatingChange}
+                currentRating={currentRatings[evaluation.graderId]}
               />
             ))}
           </div>

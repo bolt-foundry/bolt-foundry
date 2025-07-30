@@ -27,7 +27,7 @@ export function ConversationHistory({ messages }: ConversationHistoryProps) {
         className="conversation-toggle"
       >
         <BfDsIcon
-          name={isExpanded ? "chevron-down" : "chevron-right"}
+          name={isExpanded ? "chevronDown" : "chevronRight"}
           size="small"
         />
         <span>
