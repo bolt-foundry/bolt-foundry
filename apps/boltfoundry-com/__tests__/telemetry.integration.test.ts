@@ -64,9 +64,7 @@ const createMockTelemetryData = (overrides = {}) => ({
   },
   // Basic deck metadata for MVP (no hashing)
   bfMetadata: {
-    deckName: "customer-service",
-    deckContent:
-      "# Customer Service\n\nYou are a helpful customer service agent.",
+    deckId: "customer-service",
     contextVariables: { userId: "user-456", feature: "chat" },
   },
   ...overrides,
@@ -137,8 +135,7 @@ Deno.test("Telemetry endpoint - creates deck if not exists", async () => {
 
     const telemetryData = createMockTelemetryData({
       bfMetadata: {
-        deckName: "new-deck",
-        deckContent: "# New Deck\n\nThis is a new deck.",
+        deckId: "new-deck",
         contextVariables: { feature: "test" },
       },
     });
@@ -168,9 +165,7 @@ Deno.test("Telemetry endpoint - deduplicates decks by slug", async () => {
 
     const telemetryData = createMockTelemetryData({
       bfMetadata: {
-        deckName: "customer-service",
-        deckContent:
-          "# Customer Service\n\nYou are a helpful customer service agent.",
+        deckId: "customer-service",
         contextVariables: { feature: "chat" },
       },
     });

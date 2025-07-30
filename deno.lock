@@ -111,6 +111,7 @@
     "npm:loglevel@^1.9.2": "1.9.2",
     "npm:marked@16": "16.0.0",
     "npm:matter-js@0.20": "0.20.0",
+    "npm:openai@*": "5.10.2_zod@3.25.76",
     "npm:pg@^8.16.3": "8.16.3",
     "npm:posthog-js@^1.256.2": "1.257.0",
     "npm:posthog-node@^5.1.1": "5.5.0",
@@ -2692,6 +2693,16 @@
       "dependencies": [
         "wrappy"
       ]
+    },
+    "openai@5.10.2_zod@3.25.76": {
+      "integrity": "sha512-n+vi74LzHtvlKcDPn9aApgELGiu5CwhaLG40zxLTlFQdoSJCLACORIPC2uVQ3JEYAbqapM+XyRKFy2Thej7bIw==",
+      "dependencies": [
+        "zod"
+      ],
+      "optionalPeers": [
+        "zod"
+      ],
+      "bin": true
     },
     "pac-proxy-agent@7.2.0": {
       "integrity": "sha512-TEB8ESquiLMc0lV8vcd5Ql/JAKAoyzHFXaStwjkzpOpC5Yv+pIzLfHvjTSdf3vpa2bMiUQrg9i6276yn8666aA==",

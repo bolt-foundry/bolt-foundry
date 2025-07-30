@@ -4,12 +4,12 @@ import type {
 } from "openai/resources/chat/completions";
 import type { BfMetadata } from "./types.ts";
 
-// Extend OpenAI types to include bfMetadata
-declare module "openai/resources/chat/completions" {
-  interface ChatCompletionCreateParams {
+// Type for requests that include our metadata
+export type ChatCompletionCreateParamsWithMetadata =
+  & ChatCompletionCreateParams
+  & {
     bfMetadata?: BfMetadata;
-  }
-}
+  };
 
 // Default telemetry endpoint
 const DEFAULT_TELEMETRY_ENDPOINT = "https://boltfoundry.com/api/telemetry";
@@ -55,7 +55,7 @@ export class BfClient {
           // Extract bfMetadata if present
           if (parsedBody && typeof parsedBody === "object") {
             const { bfMetadata: metadata, ...cleanBody } =
-              parsedBody as ChatCompletionCreateParams;
+              parsedBody as ChatCompletionCreateParamsWithMetadata;
             requestBody = cleanBody;
             bfMetadata = metadata;
 
