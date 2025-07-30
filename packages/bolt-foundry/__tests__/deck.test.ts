@@ -142,7 +142,7 @@ Additional instructions.`;
     await Deno.writeTextFile(`${tempDir}/main.deck.md`, deckContent);
 
     const deck = await readLocalDeck(`${tempDir}/main.deck.md`);
-    const result = deck.render({});
+    const result = deck.render();
 
     // Should replace the include with the file content
     const expectedContent = `# Assistant
@@ -177,7 +177,7 @@ End.`;
     await Deno.writeTextFile(`${tempDir}/main.deck.md`, deckContent);
 
     const deck = await readLocalDeck(`${tempDir}/main.deck.md`);
-    const result = deck.render({});
+    const result = deck.render();
 
     const expectedContent = `# Main
 
@@ -256,7 +256,7 @@ You can help with weather.`;
     await Deno.writeTextFile(`${tempDir}/main.deck.md`, deckContent);
 
     const deck = await readLocalDeck(`${tempDir}/main.deck.md`);
-    const result = deck.render({});
+    const result = deck.render();
 
     // Should extract tools and remove TOML reference
     assert(result.tools);
