@@ -2,14 +2,21 @@
 /*  Field primitives                                                          */
 /* -------------------------------------------------------------------------- */
 
+// deno-lint-ignore bolt-foundry/prefer-generic-array-syntax
+type ReadonlyStringArray = readonly string[];
+// deno-lint-ignore bolt-foundry/prefer-generic-array-syntax
+type ReadonlyInferArray<T> = readonly T[];
+
 export type FieldSpec =
   | { kind: "string" }
   | { kind: "number" }
-  | { kind: "json" };
+  | { kind: "json" }
+  | { kind: "enum"; values: ReadonlyStringArray };
 
 export type FieldValue<S> = S extends { kind: "string" } ? string
   : S extends { kind: "number" } ? number
   : S extends { kind: "json" } ? import("@bfmono/apps/bfDb/bfDb.ts").JSONValue
+  : S extends { kind: "enum"; values: ReadonlyInferArray<infer V> } ? V
   : never;
 
 /* -------------------------------------------------------------------------- */

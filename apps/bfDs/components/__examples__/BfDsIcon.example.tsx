@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   BfDsIcon,
   type BfDsIconName,
@@ -14,6 +14,60 @@ export function BfDsIconExample() {
     "medium",
   );
   const [showGeneratedOnly, setShowGeneratedOnly] = useState(false);
+  const [overlayIcon, setOverlayIcon] = useState<BfDsIconName | null>(null);
+
+  // Handle keyboard navigation in overlay
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!overlayIcon) return;
+
+      if (e.key === "Escape") {
+        setOverlayIcon(null);
+        return;
+      }
+
+      if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+        e.preventDefault();
+
+        // Use the same filtering logic as the main component
+        const currentFilteredIcons = allIconNames.filter(
+          ({ name, aliasOf }) => {
+            const matchesSearch = name.toLowerCase().includes(
+              searchTerm.toLowerCase(),
+            );
+            if (showGeneratedOnly) {
+              const lookupName = (aliasOf || name) as keyof typeof icons;
+              const iconData = icons[lookupName];
+              const isGenerated = iconData && "generated" in iconData &&
+                iconData.generated;
+              return matchesSearch && isGenerated;
+            }
+            return matchesSearch;
+          },
+        );
+
+        const currentIndex = currentFilteredIcons.findIndex((icon) =>
+          icon.name === overlayIcon
+        );
+        if (currentIndex === -1) return;
+
+        let nextIndex;
+        if (e.key === "ArrowRight") {
+          nextIndex = (currentIndex + 1) % currentFilteredIcons.length;
+        } else {
+          nextIndex = (currentIndex - 1 + currentFilteredIcons.length) %
+            currentFilteredIcons.length;
+        }
+
+        setOverlayIcon(currentFilteredIcons[nextIndex].name);
+      }
+    };
+
+    if (overlayIcon) {
+      document.addEventListener("keydown", handleKeyDown);
+      return () => document.removeEventListener("keydown", handleKeyDown);
+    }
+  }, [overlayIcon, searchTerm, showGeneratedOnly]);
 
   const iconNames = Object.keys(icons) as Array<keyof typeof icons>;
 
@@ -159,14 +213,29 @@ export function BfDsIconExample() {
             const { name: iconName, isAlias, aliasOf } = iconInfo;
             const lookupName = (aliasOf || iconName) as keyof typeof icons;
             const iconData = icons[lookupName];
-            const isGenerated = iconData && "generated" in iconData &&
-              iconData.generated;
+            const isGenerated = !!(iconData && "generated" in iconData &&
+              iconData.generated);
 
             return (
               <div
                 key={iconName}
                 className="bfds-example__grid-item"
-                style={{ position: "relative" }}
+                style={{
+                  position: "relative",
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                }}
+                onClick={() => setOverlayIcon(iconName)}
+                title={`Click to view ${iconName} at 500x500px`}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor =
+                    "var(--bfds-background-hover)";
+                  e.currentTarget.style.transform = "scale(1.05)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "";
+                  e.currentTarget.style.transform = "";
+                }}
               >
                 {isGenerated && (
                   <BfDsBadge
@@ -220,6 +289,96 @@ export function BfDsIconExample() {
           })}
         </div>
       </div>
+
+      {/* Icon Overlay */}
+      {overlayIcon && (
+        <div
+          className="bfds-icon-overlay"
+          onClick={() => setOverlayIcon(null)}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.8)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 9999,
+            cursor: "pointer",
+          }}
+        >
+          <div
+            className="bfds-icon-overlay-content"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              backgroundColor: "var(--bfds-background)",
+              padding: "2rem",
+              borderRadius: "8px",
+              boxShadow: "0 4px 24px rgba(0, 0, 0, 0.3)",
+              textAlign: "center",
+              position: "relative",
+            }}
+          >
+            <BfDsButton
+              variant="ghost"
+              icon="cross"
+              iconOnly
+              onClick={() => setOverlayIcon(null)}
+              style={{
+                position: "absolute",
+                top: "1rem",
+                right: "1rem",
+              }}
+            />
+            <div style={{ marginBottom: "1rem" }}>
+              <BfDsIcon name={overlayIcon} size={500} />
+            </div>
+            <div
+              style={{
+                fontSize: "1.25rem",
+                fontWeight: 600,
+                color: "var(--bfds-text)",
+                marginTop: "1rem",
+              }}
+            >
+              {overlayIcon}
+            </div>
+            {(() => {
+              // Check if current icon is an alias
+              const iconInfo = allIconNames.find((icon) =>
+                icon.name === overlayIcon
+              );
+              if (iconInfo?.isAlias && iconInfo.aliasOf) {
+                return (
+                  <div
+                    style={{
+                      fontSize: "0.875rem",
+                      color: "var(--bfds-text-secondary)",
+                      marginTop: "0.25rem",
+                      fontStyle: "italic",
+                    }}
+                  >
+                    alias of {iconInfo.aliasOf}
+                  </div>
+                );
+              }
+              return null;
+            })()}
+            <div
+              style={{
+                fontSize: "0.875rem",
+                color: "var(--bfds-text-secondary)",
+                marginTop: "0.5rem",
+              }}
+            >
+              Use ← → arrow keys to navigate • Click outside or press ESC to
+              close
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
