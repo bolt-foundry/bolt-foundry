@@ -92,7 +92,7 @@ provider "cloudflare" {
 provider "aws" {
   access_key = var.s3_access_key
   secret_key = var.s3_secret_key
-  region     = "us-east-1"  # Required but ignored by Hetzner
+  region     = "hel1"  # Helsinki region to match endpoint
   
   endpoints {
     s3 = "https://hel1.your-objectstorage.com"  # Helsinki region endpoint
