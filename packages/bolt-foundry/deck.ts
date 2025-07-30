@@ -280,20 +280,21 @@ export async function readLocalDeck(path: string, options?: {
     getConfigurationVariable("BF_API_ENDPOINT") ||
     DEFAULT_API_ENDPOINT;
 
-  // Check if deck exists in API (cached after first check)
+  // Always ensure the API has the latest deck content from disk
+  // Only skip if we've already synced this deck in this session (cached)
   if (apiKey && !deckCache.has(deckId)) {
     try {
       const response = await fetch(`${apiEndpoint}/decks/${deckId}`, {
         headers: { "x-bf-api-key": apiKey },
       });
 
-      if (response.status === 404) {
-        // Process includes to get full deck content
-        const { processedContent } = deck.processMarkdownIncludes(
-          markdownContent,
-          path,
-        );
+      // Process includes to get full deck content
+      const { processedContent } = deck.processMarkdownIncludes(
+        markdownContent,
+        path,
+      );
 
+      if (response.status === 404) {
         // Create deck if it doesn't exist
         await fetch(`${apiEndpoint}/decks`, {
           method: "POST",
@@ -303,6 +304,19 @@ export async function readLocalDeck(path: string, options?: {
           },
           body: JSON.stringify({
             id: deckId,
+            content: markdownContent,
+            processedContent: processedContent, // Full content with embeds resolved
+          }),
+        });
+      } else {
+        // Update existing deck with latest content from disk
+        await fetch(`${apiEndpoint}/decks/${deckId}`, {
+          method: "PUT",
+          headers: {
+            "x-bf-api-key": apiKey,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
             content: markdownContent,
             processedContent: processedContent, // Full content with embeds resolved
           }),

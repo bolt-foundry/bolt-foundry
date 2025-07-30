@@ -65,20 +65,21 @@ async function readLocalDeck(path: string, options?: {
   const apiEndpoint = options?.apiEndpoint || Deno.env.get("BF_API_ENDPOINT") ||
     DEFAULT_API_ENDPOINT;
 
-  // Check if deck exists in API (cached after first check)
+  // Always ensure the API has the latest deck content from disk
+  // Only skip if we've already synced this deck in this session (cached)
   if (apiKey && !deckCache.has(deckId)) {
     try {
       const response = await fetch(`${apiEndpoint}/decks/${deckId}`, {
         headers: { "x-bf-api-key": apiKey },
       });
 
-      if (response.status === 404) {
-        // Process includes to get full deck content
-        const { processedContent } = deck.processMarkdownIncludes(
-          markdownContent,
-          path,
-        );
+      // Process includes to get full deck content
+      const { processedContent } = deck.processMarkdownIncludes(
+        markdownContent,
+        path,
+      );
 
+      if (response.status === 404) {
         // Create deck if it doesn't exist
         await fetch(`${apiEndpoint}/decks`, {
           method: "POST",
@@ -92,12 +93,25 @@ async function readLocalDeck(path: string, options?: {
             processedContent: processedContent, // Full content with embeds resolved
           }),
         });
+      } else {
+        // Update existing deck with latest content from disk
+        await fetch(`${apiEndpoint}/decks/${deckId}`, {
+          method: "PUT",
+          headers: {
+            "x-bf-api-key": apiKey,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            content: markdownContent,
+            processedContent: processedContent, // Full content with embeds resolved
+          }),
+        });
       }
 
       deckCache.add(deckId);
     } catch (error) {
       // Don't fail deck loading if API is unavailable
-      console.warn(`Failed to check/create deck: ${error}`);
+      console.warn(`Failed to check/create/update deck: ${error}`);
     }
   }
 
@@ -111,7 +125,10 @@ Note:
   handles embedded files
 - The `options` parameter is optional, so existing code like
   `await readLocalDeck("./deck.md")` continues to work
-- Lazy deck creation only happens if an API key is configured
+- Deck sync only happens if an API key is configured
+- The SDK always ensures the API has the latest deck content from disk
+- If telemetry creates a placeholder deck first, the SDK will update it with
+  real content
 - The render method signature change (adding third parameter) is not backward
   compatible, but this is acceptable
 
@@ -381,23 +398,25 @@ interface TelemetryData {
 
 ### Phase 1: Core SDK Changes
 
-#### 1.1 Lazy Deck Creation
+#### 1.1 Deck Sync and Creation
 
 ##### Tests
 
-- [ ] Test deck existence check - Mock API to return 404, verify deck creation
-      call
-- [ ] Test deck already exists - Mock API to return 200, verify no creation call
-- [ ] Test cache behavior - Load same deck twice, verify only one API check
-- [ ] Test deck creation failure - Mock API error, verify graceful handling
+- [ ] Test deck creation - Mock API to return 404, verify deck creation call
+- [ ] Test deck update - Mock API to return 200, verify deck update call
+- [ ] Test cache behavior - Load same deck twice, verify only one API sync
+- [ ] Test deck sync failure - Mock API error, verify graceful handling
 - [ ] Test deck with embeds - Verify processedContent includes resolved files
+- [ ] Test placeholder deck update - Verify SDK updates placeholder decks from
+      telemetry
 
 ##### Implementation
 
 - [ ] Add deck existence check to readLocalDeck
 - [ ] Implement API call to create deck if it doesn't exist
+- [ ] Implement API call to update deck if it exists (ensure latest content)
 - [ ] Use deck.processMarkdownIncludes to resolve embedded files
-- [ ] Cache deck existence to avoid repeated API calls
+- [ ] Cache deck sync to avoid repeated API calls in same session
 - [ ] Store deck ID for use in metadata
 
 #### 1.2 BfClient Fetch Wrapper
