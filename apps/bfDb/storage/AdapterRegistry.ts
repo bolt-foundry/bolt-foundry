@@ -1,4 +1,3 @@
-// apps/bfDb/storage/AdapterRegistry.ts
 // =================================================
 // Storage Adapter Registry — concrete implementation
 // =================================================

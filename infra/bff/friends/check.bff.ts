@@ -1,6 +1,6 @@
 #! /usr/bin/env -S bff
 
-// infra/bff/friends/check.bff.ts
+
 import { register } from "@bfmono/infra/bff/bff.ts";
 import { runShellCommand } from "@bfmono/infra/bff/shellBase.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
