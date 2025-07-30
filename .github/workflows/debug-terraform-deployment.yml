@@ -1,0 +1,119 @@
+name: Debug Terraform Deployment
+
+on:
+  push:
+    branches: [debug-terraform-deployment]
+  workflow_dispatch:
+
+jobs:
+  debug-terraform:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Debug - Check Terraform version and setup
+        run: |
+          echo "🔍 Terraform version:"
+          terraform version
+          echo "🔍 Current directory:"
+          pwd
+          echo "🔍 Directory contents:"
+          ls -la
+          echo "🔍 Terraform directory contents:"
+          ls -la infra/terraform/hetzner/
+
+      - name: Debug - Initialize Terraform (step 1)
+        run: |
+          cd infra/terraform/hetzner
+          echo "🔍 Initializing Terraform backend..."
+          echo "Backend endpoint: ${{ secrets.S3_ENDPOINT }}"
+          terraform init -backend-config="endpoint=${{ secrets.S3_ENDPOINT }}" -no-color
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Debug - Check Terraform state (step 2)
+        run: |
+          cd infra/terraform/hetzner
+          echo "🔍 Checking current state..."
+          terraform show -no-color || echo "No current state found"
+          echo "🔍 Workspace list:"
+          terraform workspace list -no-color || echo "No workspaces found"
+
+      - name: Debug - Run Terraform plan (step 3)
+        run: |
+          cd infra/terraform/hetzner
+          echo "🔍 Running terraform plan..."
+          timeout 300 terraform plan -no-color \
+            -var="hcloud_token=${{ secrets.HETZNER_API_TOKEN }}" \
+            -var="cloudflare_api_token=${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -var="cloudflare_zone_id=${{ secrets.CLOUDFLARE_ZONE_ID }}" \
+            -var="github_username=${{ github.repository_owner }}" \
+            -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}" \
+            -var="hyperdx_api_key=${{ secrets.HYPERDX_API_KEY }}" \
+            -var="s3_access_key=${{ secrets.AWS_ACCESS_KEY_ID }}" \
+            -var="s3_secret_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
+            -var="domain_name=next.boltfoundry.com" || {
+              echo "❌ Terraform plan failed or timed out after 5 minutes"
+              echo "🔍 Checking for terraform processes:"
+              ps aux | grep terraform || true
+              echo "🔍 Checking system resources:"
+              df -h
+              free -h
+              exit 1
+            }
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Debug - Check provider connectivity (step 4)
+        run: |
+          echo "🔍 Testing Hetzner API connectivity..."
+          curl -H "Authorization: Bearer ${{ secrets.HETZNER_API_TOKEN }}" \
+               -H "Content-Type: application/json" \
+               https://api.hetzner-cloud.com/v1/servers --max-time 30 || echo "Hetzner API test failed"
+          
+          echo "🔍 Testing Cloudflare API connectivity..."
+          curl -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+               -H "Content-Type: application/json" \
+               https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_ZONE_ID }} --max-time 30 || echo "Cloudflare API test failed"
+
+      - name: Debug - Apply with timeout (step 5)
+        run: |
+          cd infra/terraform/hetzner
+          echo "🔍 Running terraform apply with 10 minute timeout..."
+          timeout 600 terraform apply -auto-approve -no-color \
+            -var="hcloud_token=${{ secrets.HETZNER_API_TOKEN }}" \
+            -var="cloudflare_api_token=${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -var="cloudflare_zone_id=${{ secrets.CLOUDFLARE_ZONE_ID }}" \
+            -var="github_username=${{ github.repository_owner }}" \
+            -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}" \
+            -var="hyperdx_api_key=${{ secrets.HYPERDX_API_KEY }}" \
+            -var="s3_access_key=${{ secrets.AWS_ACCESS_KEY_ID }}" \
+            -var="s3_secret_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
+            -var="domain_name=next.boltfoundry.com" || {
+              echo "❌ Terraform apply failed or timed out after 10 minutes"
+              echo "🔍 Final terraform processes check:"
+              ps aux | grep terraform || true
+              echo "🔍 Checking for terraform state locks:"
+              terraform force-unlock -force || true
+              exit 1
+            }
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Debug - Success summary
+        if: success()
+        run: |
+          cd infra/terraform/hetzner
+          echo "✅ Terraform operations completed successfully!"
+          echo "🔍 Final outputs:"
+          terraform output -no-color
