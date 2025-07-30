@@ -86,7 +86,7 @@ Deno.test("🎬 Frontend Authentication Implementation Progress", async (t) => {
     });
 
     // 🎬 Start annotated video recording for the entire authentication progress demo
-    const { stop, showSubtitle, highlightElement } = await context
+    const { stop, showSubtitle } = await context
       .startAnnotatedVideoRecording(
         "auth-implementation-progress",
         {

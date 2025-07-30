@@ -13,7 +13,7 @@ Deno.test("UI route renders UIDemo component correctly", async () => {
 
   try {
     // Start annotated video recording
-    const { stop, showSubtitle, highlightElement } = await context
+    const { stop, showSubtitle } = await context
       .startAnnotatedVideoRecording(
         "ui-route-demo",
         {

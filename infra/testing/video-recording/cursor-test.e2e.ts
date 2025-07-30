@@ -15,7 +15,7 @@ Deno.test.ignore("Cursor overlay test with video recording", async () => {
 
   try {
     // Start annotated video recording with cursor overlay
-    const { stop, showSubtitle, highlightElement } = await context
+    const { stop, showSubtitle } = await context
       .startAnnotatedVideoRecording(
         "cursor-test",
         {
