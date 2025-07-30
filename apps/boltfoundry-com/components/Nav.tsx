@@ -45,8 +45,7 @@ export function Nav({ page, onSidebarToggle, sidebarOpen }: Props) {
             icon="home"
           />
         )}
-        {
-          /* <BfDsButton
+        <BfDsButton
           variant={page === "blog" ? "primary" : "outline"}
           overlay={page !== "blog"}
           href="/blog"
@@ -54,7 +53,8 @@ export function Nav({ page, onSidebarToggle, sidebarOpen }: Props) {
         >
           Blog
         </BfDsButton>
-        <BfDsButton
+        {
+          /* <BfDsButton
           variant={page === "docs" ? "primary" : "outline"}
           overlay={page !== "docs"}
           href="/docs"

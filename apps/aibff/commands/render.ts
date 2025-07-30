@@ -448,7 +448,7 @@ async function renderDeck(
             unknown
           >,
           ...(tool.function.parameters?.required
-            ? { required: tool.function.parameters.required as string[] }
+            ? { required: tool.function.parameters.required as Array<string> }
             : {}),
         },
       },

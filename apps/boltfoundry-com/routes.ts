@@ -2,6 +2,7 @@ import { Plinko } from "./components/plinko/Plinko.tsx";
 import { UIDemo } from "./components/UIDemo.tsx";
 import type { BfIsographEntrypoint } from "./lib/BfIsographEntrypoint.ts";
 import {
+  entrypointBlog,
   entrypointEval,
   entrypointHome,
   entrypointLogin,
@@ -31,4 +32,7 @@ export const isographAppRoutes = new Map<string, IsographRoute>([
   ["/login", entrypointLogin],
   ["/rlhf", entrypointRlhf],
   ["/eval", entrypointEval],
+  ["/blog", entrypointBlog],
+  ["/blog/", entrypointBlog],
+  ["/blog/:slug", entrypointBlog],
 ]);
