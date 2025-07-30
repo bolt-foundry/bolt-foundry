@@ -3,7 +3,7 @@
  */
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 import * as path from "@std/path";
-import type { BfOptions } from "./types.ts";
+import type { DeckRenderOptions } from "./types.ts";
 // For now, we'll use the import that works in BfClient.ts
 // The actual ChatCompletionCreateParams type is part of our extended type
 import type OpenAI from "@openai/openai";
@@ -26,9 +26,8 @@ export class Deck {
   }
 
   render(
-    contextVariables: Record<string, unknown>,
+    options: DeckRenderOptions = {},
     openaiParams?: Partial<ChatCompletionCreateParams>,
-    bfOptions?: BfOptions,
   ): RenderOutput {
     // Process markdown includes and collect context definitions
     const { processedContent, contextDefs } = this.processMarkdownIncludes(
@@ -44,6 +43,7 @@ export class Deck {
     ];
 
     // Add Q&A pairs for context variables
+    const contextVariables = options.context || {};
     for (const [varName, contextDef] of Object.entries(contextDefs)) {
       // Skip tools array when processing contexts
       if (varName === "tools") continue;
@@ -78,11 +78,11 @@ export class Deck {
     }
 
     // Include metadata unless explicitly disabled
-    if (bfOptions?.captureTelemetry !== false) {
+    if (options.captureTelemetry !== false) {
       output.bfMetadata = {
         deckId: this.deckId,
         contextVariables: contextVariables,
-        attributes: bfOptions?.attributes,
+        attributes: options.attributes,
       };
     }
 

@@ -4,26 +4,25 @@ import { BfSample } from "@bfmono/apps/bfDb/nodeTypes/rlhf/BfSample.ts";
 import { BfOrganization } from "@bfmono/apps/bfDb/nodeTypes/BfOrganization.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { generateDeckSlug } from "@bfmono/apps/bfDb/utils/slugUtils.ts";
+import type { OpenAI } from "@openai/openai";
 
 const logger = getLogger(import.meta);
 
 interface TelemetryData {
-  timestamp?: string;
   duration: number;
   provider: string;
-  providerApiVersion?: string;
   model?: string;
   request: {
     url: string;
     method: string;
     headers: Record<string, string>;
-    body: unknown;
+    body: OpenAI.Chat.ChatCompletionCreateParams;
     timestamp?: string;
   };
   response: {
     status: number;
     headers: Record<string, string>;
-    body: unknown;
+    body: OpenAI.Chat.ChatCompletion;
     timestamp?: string;
   };
   bfMetadata?: {
@@ -139,7 +138,7 @@ export async function handleTelemetryRequest(
       // This is a fallback for decks that might not have been created yet
       deck = await org.createTargetNode(BfDeck, {
         name: deckId,
-        content: `# ${deckId}\n\nDeck created from telemetry.`,
+        content: "",
         description: `Auto-created from telemetry for ${deckId}`,
         slug,
       }) as BfDeck;
