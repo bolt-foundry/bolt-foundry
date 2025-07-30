@@ -26,6 +26,10 @@ WORKDIR /workspace
 # Install our environment
 RUN nix profile install .#codebot-env --accept-flake-config
 
+# Initialize hosts file with basic entries
+RUN echo "127.0.0.1 localhost" > /etc/hosts && \
+    echo "::1 localhost ip6-localhost ip6-loopback" >> /etc/hosts
+
 # Create non-root user (Ubuntu uses useradd)
 RUN useradd -m -s /bin/bash codebot
 
