@@ -13,7 +13,7 @@ Deno.test("SSR landing page loads and hydrates correctly", async () => {
 
   try {
     // Start annotated video recording with conversion to MP4
-    const { stop, showSubtitle, highlightElement } = await context
+    const { stop, showSubtitle } = await context
       .startAnnotatedVideoRecording(
         "ssr-hydration-demo",
         {

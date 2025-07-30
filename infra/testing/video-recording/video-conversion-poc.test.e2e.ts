@@ -15,7 +15,7 @@ Deno.test.ignore("Video conversion proof of concept - MP4", async () => {
 
   try {
     // Start annotated video recording with MP4 conversion
-    const { stop, showSubtitle, highlightElement } = await context
+    const { stop, showSubtitle } = await context
       .startAnnotatedVideoRecording(
         "conversion-poc-mp4",
         {
