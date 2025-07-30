@@ -19,7 +19,6 @@ interface EvalContextType {
   // Grading state
   gradingDeckId: string | null;
   gradingDeckName: string | null;
-  gradingSamples: Array<GradingSample>;
 
   setLeftSidebarOpen: (open: boolean) => void;
   setActiveMainContent: (content: MainView) => void;
@@ -27,11 +26,7 @@ interface EvalContextType {
   closeRightSidebar: () => void;
   startDeckCreation: () => void;
   exitChatMode: () => void;
-  startGrading: (
-    deckId: string,
-    deckName: string,
-    samples: Array<GradingSample>,
-  ) => void;
+  startGrading: (deckId: string, deckName: string) => void;
   exitGrading: () => void;
 }
 
@@ -63,9 +58,6 @@ export function EvalProvider({ children }: { children: ReactNode }) {
   // Grading state
   const [gradingDeckId, setGradingDeckId] = useState<string | null>(null);
   const [gradingDeckName, setGradingDeckName] = useState<string | null>(null);
-  const [gradingSamples, setGradingSamples] = useState<Array<GradingSample>>(
-    [],
-  );
 
   const setLeftSidebarOpen = (open: boolean) => {
     setLeftSidebarOpenState(open);
@@ -106,14 +98,9 @@ export function EvalProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const startGrading = (
-    deckId: string,
-    deckName: string,
-    samples: Array<GradingSample>,
-  ) => {
+  const startGrading = (deckId: string, deckName: string) => {
     setGradingDeckId(deckId);
     setGradingDeckName(deckName);
-    setGradingSamples(samples);
     setRightSidebarMode("grading");
     openRightSidebar("Grading Inbox");
   };
@@ -121,7 +108,6 @@ export function EvalProvider({ children }: { children: ReactNode }) {
   const exitGrading = () => {
     setGradingDeckId(null);
     setGradingDeckName(null);
-    setGradingSamples([]);
     setRightSidebarMode("normal");
     closeRightSidebar();
   };
@@ -139,7 +125,6 @@ export function EvalProvider({ children }: { children: ReactNode }) {
         chatBackTarget,
         gradingDeckId,
         gradingDeckName,
-        gradingSamples,
         setLeftSidebarOpen,
         setActiveMainContent,
         openRightSidebar,
