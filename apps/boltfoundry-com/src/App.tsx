@@ -4,6 +4,7 @@ import {
 } from "../contexts/AppEnvironmentContext.tsx";
 import { AppRoot } from "../AppRoot.tsx";
 import { BfDsProvider } from "@bfmono/apps/bfDs/components/BfDsProvider.tsx";
+import { AuthProvider } from "../contexts/AuthContext.tsx";
 
 function App(props: Partial<ServerProps>) {
   return (
@@ -13,7 +14,9 @@ function App(props: Partial<ServerProps>) {
           IS_SERVER_RENDERING={false}
           {...props}
         >
-          <AppRoot />
+          <AuthProvider>
+            <AppRoot />
+          </AuthProvider>
         </AppEnvironmentProvider>
       </BfDsProvider>
     </div>

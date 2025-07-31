@@ -107,8 +107,15 @@ export function LoginWithGoogleButton() {
       const result = await loginResponse.json();
       logger.info("Login successful", result);
 
-      // Redirect to dashboard or reload page
-      globalThis.location.href = "/";
+      // Check if we have a redirect path stored
+      const redirectPath = sessionStorage.getItem("redirectAfterLogin");
+      if (redirectPath) {
+        sessionStorage.removeItem("redirectAfterLogin");
+        globalThis.location.href = redirectPath;
+      } else {
+        // Redirect to dashboard or reload page
+        globalThis.location.href = "/";
+      }
     } catch (err) {
       setIsLoading(false);
       setError("Failed to sign in with Google. Please try again.");

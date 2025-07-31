@@ -3,6 +3,8 @@ import { LoginWithGoogleButton } from "./LoginWithGoogleButton.tsx";
 import { DevAuthButton } from "./DevAuthButton.tsx";
 import { Nav } from "./Nav.tsx";
 import { useAppEnvironment } from "../contexts/AppEnvironmentContext.tsx";
+import { useAuth } from "../contexts/AuthContext.tsx";
+import { useEffect } from "react";
 
 export const LoginPage = iso(`
   field CurrentViewer.LoginPage @component {
@@ -10,6 +12,21 @@ export const LoginPage = iso(`
   }
 `)(function LoginPageComponent({ data }) {
   const appEnvironment = useAppEnvironment();
+  const { isAuthenticated } = useAuth();
+
+  // Debug logging
+  console.log("LoginPage environment:", {
+    BF_E2E_MODE: appEnvironment.BF_E2E_MODE,
+    typeof: typeof appEnvironment.BF_E2E_MODE,
+    env: appEnvironment,
+  });
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      globalThis.location.href = "/";
+    }
+  }, [isAuthenticated]);
 
   if (data.__typename === "CurrentViewerLoggedIn") {
     return (
@@ -30,7 +47,12 @@ export const LoginPage = iso(`
 
   // Check if E2E mode is enabled from environment
   // In codebot environments, always enable E2E mode
-  const isE2EMode = appEnvironment.BF_E2E_MODE === true || isCodebot;
+  // Also enable for localhost:8002 (e2e test port)
+  const isLocalE2E = typeof window !== "undefined" &&
+    globalThis.location.hostname === "localhost" &&
+    globalThis.location.port === "8002";
+  const isE2EMode = appEnvironment.BF_E2E_MODE === true || isCodebot ||
+    isLocalE2E;
 
   // Debug logging removed to avoid console usage
 
@@ -42,24 +64,12 @@ export const LoginPage = iso(`
         <p>Sign in with your Google Workspace account to continue</p>
         <LoginWithGoogleButton />
 
-        {isCodebot && (
+        {(isCodebot || isE2EMode) && (
           <>
             <div style={{ margin: "30px 0", borderTop: "1px solid #e0e0e0" }}>
             </div>
             <h3>Development Options</h3>
-            {isE2EMode
-              ? <DevAuthButton />
-              : (
-                <p style={{ color: "#666", fontSize: "14px" }}>
-                  To use development authentication, restart the server
-                  with:<br />
-                  <code
-                    style={{ backgroundColor: "#f5f5f5", padding: "2px 6px" }}
-                  >
-                    BF_E2E_MODE=true bft dev boltfoundry-com
-                  </code>
-                </p>
-              )}
+            <DevAuthButton />
           </>
         )}
       </div>

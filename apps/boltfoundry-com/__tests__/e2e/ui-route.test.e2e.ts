@@ -1,106 +1,114 @@
+#!/usr/bin/env -S bff e2e
+
 import { assert, assertEquals } from "@std/assert";
 import {
   navigateTo,
   teardownE2ETest,
 } from "@bfmono/infra/testing/e2e/setup.ts";
-import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { setupBoltFoundryComTest } from "../helpers.ts";
+import { takeScreenshot, withVideoRecording } from "./shared/video-helpers.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
-Deno.test("UI route renders UIDemo component correctly", async () => {
+Deno.test("UI route renders UIDemo component correctly", async (t) => {
   const context = await setupBoltFoundryComTest();
 
   try {
-    // Start annotated video recording
-    const { stop, showSubtitle } = await context
-      .startAnnotatedVideoRecording(
-        "ui-route-demo",
-        {
-          outputFormat: "mp4" as const,
-          framerate: 24,
-          quality: "medium" as const,
-        },
-      );
+    await withVideoRecording(
+      context,
+      "ui-route-demo",
+      async (showSubtitle) => {
+        await showSubtitle("UI Route - BfDs Design System Demo");
 
-    await showSubtitle("UI route rendering test");
+        await t.step(
+          "Navigate to UI route and verify basic rendering",
+          async () => {
+            // Navigate to the /ui route
+            await navigateTo(context, "/ui");
+            await context.page.waitForNetworkIdle({ timeout: 3000 });
 
-    // Navigate to the /ui route
-    await navigateTo(context, "/ui");
+            // Verify the page title
+            const title = await context.page.title();
+            assertEquals(title, "Bolt Foundry");
+            logger.info(`UI page title: ${title}`);
 
-    // Wait for content to ensure page loaded
-    const title = await context.page.title();
-    logger.info(`UI page title: ${title}`);
+            // Check the current URL
+            const currentUrl = await context.page.url();
+            assert(currentUrl.includes("/ui"), "Should be on /ui route");
+            logger.info(`Current URL: ${currentUrl}`);
+          },
+        );
 
-    // Check the current URL
-    const currentUrl = await context.page.url();
-    logger.info(`Current URL: ${currentUrl}`);
+        await t.step("Verify UIDemo content is rendered", async () => {
+          // Check if the page contains expected UIDemo content
+          const pageContent = await context.page.evaluate(() => {
+            const bodyText = document.body.textContent || "";
+            return {
+              hasBfDsDemo: bodyText.includes("BfDs Demo"),
+              hasDescription: bodyText.includes(
+                "Interactive examples of BfDs design system components",
+              ),
+              hasButtonExamples: bodyText.includes("Button") &&
+                bodyText.includes("Examples"),
+              hasPrimaryButton: bodyText.includes("Primary"),
+              hasSecondaryButton: bodyText.includes("Secondary"),
+              hasTextStyles: bodyText.includes("Text Styles") ||
+                bodyText.includes("Typography"),
+            };
+          });
 
-    // Check the environment and routing state
-    const routingInfo = await context.page.evaluate(() => {
-      return {
-        pathname: globalThis.location.pathname,
-        // @ts-expect-error - Accessing global variable
-        environment: globalThis.__ENVIRONMENT__,
-        // @ts-expect-error - Accessing global variable
-        hasRehydrate: typeof globalThis.__REHYDRATE__ !== "undefined",
-      };
-    });
-    logger.info(`Routing info: ${JSON.stringify(routingInfo, null, 2)}`);
+          // Verify all expected content is present
+          assert(
+            pageContent.hasBfDsDemo,
+            "Page should contain 'BfDs Demo' heading",
+          );
+          assert(
+            pageContent.hasDescription,
+            "Page should contain UIDemo description",
+          );
+          assert(
+            pageContent.hasButtonExamples,
+            "Page should contain button examples",
+          );
+          assert(
+            pageContent.hasPrimaryButton,
+            "Page should contain Primary button",
+          );
+          assert(
+            pageContent.hasSecondaryButton,
+            "Page should contain Secondary button",
+          );
 
-    // Wait a bit for hydration to complete
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+          logger.info("UIDemo content verified successfully");
+        });
 
-    // Verify the page title is correct
-    assertEquals(title, "Bolt Foundry", "Page title should be 'Bolt Foundry'");
+        await t.step("Check React hydration and environment", async () => {
+          // Check the environment and routing state
+          const routingInfo = await context.page.evaluate(() => {
+            return {
+              pathname: globalThis.location.pathname,
+              // @ts-expect-error - Accessing global variable
+              environment: globalThis.__ENVIRONMENT__,
+              // @ts-expect-error - Accessing global variable
+              hasRehydrate: typeof globalThis.__REHYDRATE__ !== "undefined",
+              isHydrated: document.querySelector("#root") != null,
+            };
+          });
 
-    // Check if the page contains expected UIDemo content
-    const bodyText = await context.page.evaluate(() =>
-      document.body.textContent
+          logger.info(`Routing info: ${JSON.stringify(routingInfo, null, 2)}`);
+          assertEquals(routingInfo.pathname, "/ui", "Should be on /ui path");
+          assert(routingInfo.isHydrated, "React should be hydrated");
+        });
+
+        // Take a screenshot to show the UI route
+        await takeScreenshot(context, "ui-route-current-state");
+
+        logger.info("UI route test completed successfully");
+      },
     );
-
-    // Verify UIDemo-specific content is present
-    assert(
-      bodyText?.includes("BfDs Demo"),
-      "Page should contain 'BfDs Demo' heading",
-    );
-
-    assert(
-      bodyText?.includes(
-        "Interactive examples of BfDs design system components",
-      ),
-      "Page should contain UIDemo description",
-    );
-
-    assert(
-      bodyText?.includes("Button") && bodyText?.includes("Examples"),
-      "Page should contain component examples",
-    );
-
-    assert(
-      bodyText?.includes("Primary"),
-      "Page should contain Primary button example",
-    );
-
-    assert(
-      bodyText?.includes("Secondary"),
-      "Page should contain Secondary button example",
-    );
-
-    // Take a screenshot to show what the UI route looks like
-    await context.takeScreenshot("ui-route-current-state");
-
-    logger.info("UI route test completed successfully");
-
-    // Stop video recording
-    const videoResult = await stop();
-    if (videoResult) {
-      logger.info(`Video saved to: ${videoResult.videoPath}`);
-    } else {
-      logger.error("Video recording failed: No result returned");
-    }
   } catch (error) {
-    await context.takeScreenshot("ui-route-test-error");
+    await takeScreenshot(context, "ui-route-test-error");
     logger.error("UI route test failed:", error);
     throw error;
   } finally {

@@ -530,6 +530,178 @@ const plugin: any = {
         };
       },
     },
+
+    /* ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
+    /*  10. Enforce smooth-ui functions in e2e tests for natural interactions */
+    /* ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
+    "use-smooth-ui": {
+      create(context: any) {
+        const { filename, sourceCode } = context;
+
+        // Only apply to e2e test files
+        if (
+          !filename.includes(".e2e.ts") && !filename.includes(".test.e2e.ts")
+        ) {
+          return {};
+        }
+
+        // Check if smooth-ui functions are imported
+        function getSmoothUIImports() {
+          const imports = new Set<string>();
+          sourceCode.ast.body.forEach((n: any) => {
+            if (
+              n.type === "ImportDeclaration" &&
+              n.source.value.includes("smooth-ui.ts")
+            ) {
+              n.specifiers.forEach((s: any) => {
+                if (s.type === "ImportSpecifier") {
+                  imports.add(s.local.name);
+                }
+              });
+            }
+          });
+          return imports;
+        }
+
+        return {
+          // Match element.click() or page.click() calls
+          'CallExpression[callee.property.name="click"]'(node: any) {
+            // Skip if it's already a smoothClick call
+            if (node.callee.object.name === "smoothClick") {
+              return;
+            }
+
+            // Report regular .click() usage
+            context.report({
+              node,
+              message:
+                "Use smoothClick() instead of .click() in e2e tests for natural interactions",
+              fix(fixer: any) {
+                const fixes = [];
+                const imports = getSmoothUIImports();
+
+                // Add import if not present
+                if (!imports.has("smoothClick")) {
+                  const firstImport = sourceCode.ast.body.find(
+                    (n: any) => n.type === "ImportDeclaration",
+                  );
+
+                  // Check if there's already a smooth-ui import
+                  const smoothUIImport = sourceCode.ast.body.find(
+                    (n: any) =>
+                      n.type === "ImportDeclaration" &&
+                      n.source.value.includes("smooth-ui.ts"),
+                  );
+
+                  if (smoothUIImport) {
+                    // Add to existing import
+                    const lastSpecifier = smoothUIImport
+                      .specifiers[smoothUIImport.specifiers.length - 1];
+                    fixes.push(
+                      fixer.insertTextAfter(lastSpecifier, ", smoothClick"),
+                    );
+                  } else if (firstImport) {
+                    // Add new import
+                    fixes.push(
+                      fixer.insertTextBefore(
+                        firstImport,
+                        'import { smoothClick } from "@bfmono/infra/testing/video-recording/smooth-ui.ts";\n',
+                      ),
+                    );
+                  }
+                }
+
+                return fixes;
+              },
+            });
+          },
+
+          // Match page.type() calls
+          'CallExpression[callee.property.name="type"]'(node: any) {
+            // Skip if it's already a smoothType call
+            if (node.callee.object.name === "smoothType") {
+              return;
+            }
+
+            // Only flag if it looks like a Puppeteer type call (has selector and text arguments)
+            if (node.arguments.length >= 2) {
+              context.report({
+                node,
+                message:
+                  "Use smoothType() instead of .type() in e2e tests for natural typing animations",
+                fix(fixer: any) {
+                  const fixes = [];
+                  const imports = getSmoothUIImports();
+
+                  // Add import if not present
+                  if (!imports.has("smoothType")) {
+                    const firstImport = sourceCode.ast.body.find(
+                      (n: any) => n.type === "ImportDeclaration",
+                    );
+
+                    // Check if there's already a smooth-ui import
+                    const smoothUIImport = sourceCode.ast.body.find(
+                      (n: any) =>
+                        n.type === "ImportDeclaration" &&
+                        n.source.value.includes("smooth-ui.ts"),
+                    );
+
+                    if (smoothUIImport) {
+                      // Add to existing import
+                      const lastSpecifier = smoothUIImport
+                        .specifiers[smoothUIImport.specifiers.length - 1];
+                      fixes.push(
+                        fixer.insertTextAfter(lastSpecifier, ", smoothType"),
+                      );
+                    } else if (firstImport) {
+                      // Add new import
+                      fixes.push(
+                        fixer.insertTextBefore(
+                          firstImport,
+                          'import { smoothType } from "@bfmono/infra/testing/video-recording/smooth-ui.ts";\n',
+                        ),
+                      );
+                    }
+                  }
+
+                  return fixes;
+                },
+              });
+            }
+          },
+
+          // Check for evaluate blocks that contain .click() or direct value assignment
+          'CallExpression[callee.property.name="evaluate"]'(node: any) {
+            if (node.arguments.length > 0) {
+              const funcArg = node.arguments[0];
+              if (
+                funcArg.type === "ArrowFunctionExpression" ||
+                funcArg.type === "FunctionExpression"
+              ) {
+                const bodyText = sourceCode.getText(funcArg.body);
+
+                if (bodyText.includes(".click()")) {
+                  context.report({
+                    node: funcArg,
+                    message:
+                      "Consider using smoothClick() instead of .click() inside evaluate blocks for consistent e2e test interactions",
+                  });
+                }
+
+                // Check for direct value assignment to input elements
+                if (bodyText.match(/\.(value|innerText|textContent)\s*=\s*/)) {
+                  context.report({
+                    node: funcArg,
+                    message:
+                      "Consider using smoothType() instead of direct value assignment for natural typing animations in e2e tests",
+                  });
+                }
+              }
+            }
+          },
+        };
+      },
+    },
   },
 };
 

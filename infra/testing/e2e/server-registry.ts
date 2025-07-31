@@ -59,6 +59,7 @@ export const E2E_SERVER_REGISTRY: Array<ServerRegistryEntry> = [
       envVar: "BF_E2E_BOLTFOUNDRY_COM_URL",
       env: {
         "BF_E2E_MODE": "true",
+        "JWT_SECRET": "test-secret-for-e2e-tests-only",
       },
     },
   },
