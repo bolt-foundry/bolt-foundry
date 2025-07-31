@@ -5,15 +5,13 @@
     "@anthropic-ai/claude-code": "npm:@anthropic-ai/claude-code@^1.0.64",
     "@bfmono/": "./",
     "@bolt-foundry/bolt-foundry": "./packages/bolt-foundry/bolt-foundry.ts",
-    "@bolt-foundry/bolt-foundry/": "./packages/bolt-foundry/",
+    "@bolt-foundry/inject-environment": "./packages/inject-environment/inject-environment.ts",
+    "@bolt-foundry/get-configuration-var": "./packages/inject-environment/inject-environment.ts",
     "@bolt-foundry/logger": "./packages/logger/logger.ts",
-    "@bolt-foundry/get-configuration-var": "./packages/get-configuration-var/get-configuration-var.ts",
 
     "@b-fuze/deno-dom": "jsr:@b-fuze/deno-dom@^0.1.49",
     "@deno/cache-dir": "jsr:@deno/cache-dir@^0.22.3",
     "@deno/dnt": "jsr:@deno/dnt@^0.41.3",
-    "@iso": "./apps/boltFoundry/__generated__/__isograph/iso.ts",
-    "@iso/": "./apps/boltFoundry/__generated__/__isograph/",
     "@iso-bfc": "./apps/boltfoundry-com/__generated__/__isograph/iso.ts",
     "@iso-bfc/": "./apps/boltfoundry-com/__generated__/__isograph/",
     "@isograph/babel-plugin": "npm:@isograph/babel-plugin@^0.3.1",
@@ -33,6 +31,7 @@
     "@std/assert": "jsr:@std/assert@^1.0.11",
     "@std/async": "jsr:@std/async@^1.0.13",
     "@std/cli": "jsr:@std/cli@^1.0.20",
+    "@std/dotenv": "jsr:@std/dotenv@^0.225.0",
     "@std/encoding": "jsr:@std/encoding@^1.0.10",
     "@std/flags": "jsr:@std/flags@^0.224.0",
     "@std/fmt": "jsr:@std/fmt@^1.0.8",
@@ -73,6 +72,9 @@
     "util/": "./util/",
     "posthog-js/react": "./node_modules/posthog-js/react/dist/esm/index.js",
     "react/jsx-runtime": "npm:react/jsx-runtime",
+    "loglevel": "npm:loglevel@^1.9.2",
+    "loglevel-plugin-prefix": "npm:loglevel-plugin-prefix@^0.8.4",
+    "chalk": "npm:chalk@^5.4.1",
     "content/": "./content/",
     "build/content/": "./build/content/",
     "docs/": "./docs/",
@@ -126,7 +128,8 @@
     "**/dist/**",
     "**/.vite/**",
     "packages/aibff",
-    "apps/contacts/**"
+    "apps/contacts/**",
+    "deprecated/**"
   ],
   "lint": {
     "exclude": [
@@ -176,7 +179,7 @@
     "apps/boltfoundry-com",
     "packages/bolt-foundry",
     "packages/logger",
-    "packages/get-configuration-var"
+    "packages/inject-environment"
   ],
   "vendor": true
 }

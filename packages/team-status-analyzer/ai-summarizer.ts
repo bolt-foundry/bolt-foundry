@@ -6,7 +6,7 @@
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { readLocalDeck } from "@bfmono/packages/bolt-foundry/bolt-foundry.ts";
 import type { CompanyContext, WorkItem } from "./types.ts";
-import { getSecret } from "@bfmono/packages/get-configuration-var/get-configuration-var.ts";
+import { getSecret } from "@bolt-foundry/get-configuration-var";
 
 const logger = getLogger(import.meta);
 

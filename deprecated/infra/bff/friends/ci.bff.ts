@@ -6,7 +6,7 @@ import { register } from "@bfmono/infra/bff/bff.ts";
 import { runShellCommandWithOutput } from "@bfmono/infra/bff/shellBase.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { loggerGithub } from "@bfmono/infra/bff/githubLogger.ts";
-import { refreshAllSecrets } from "@bfmono/packages/get-configuration-var/get-configuration-var.ts";
+import { refreshAllSecrets } from "@bolt-foundry/get-configuration-var";
 
 const logger = getLogger(import.meta);
 

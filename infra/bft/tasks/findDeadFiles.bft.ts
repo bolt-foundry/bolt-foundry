@@ -163,7 +163,7 @@ async function extractDependencies(
         resolvedPath = "packages/logger/logger.ts";
       } else if (packageName === "get-configuration-var") {
         resolvedPath =
-          "packages/get-configuration-var/get-configuration-var.ts";
+          "deprecated/packages/get-configuration-var/get-configuration-var.ts";
       } else {
         // Try to find the package
         resolvedPath = `packages/${packageName}/${packageName}.ts`;

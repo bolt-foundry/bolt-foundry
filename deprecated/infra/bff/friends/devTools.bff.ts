@@ -93,7 +93,7 @@ async function stopSapling() {
 async function startTools() {
   logger.info("Starting Tools...");
   try {
-    const cmd = ["./apps/web/tools.tsx"];
+    const cmd = ["./deprecated/apps/web/tools.tsx"];
     await runShellCommand(cmd);
     logger.info("Tools started successfully");
     return 0;
@@ -357,7 +357,7 @@ register(
           args: [
             "notebook",
             "--config",
-            "./infra/jupyter/config.py",
+            "./deprecated/infra/jupyter/config.py",
             "--ip=0.0.0.0",
             "--port=8888",
             "--no-browser",

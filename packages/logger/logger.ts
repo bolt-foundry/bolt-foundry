@@ -9,7 +9,7 @@ import log from "loglevel";
 //   yellow,
 // } from "@std/fmt/colors";
 import logLevelPrefixPlugin from "loglevel-plugin-prefix";
-import { getConfigurationVariable } from "../get-configuration-var/get-configuration-var.ts";
+import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 
 log.setDefaultLevel(log.levels.INFO);
 

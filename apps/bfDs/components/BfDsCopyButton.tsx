@@ -1,6 +1,6 @@
 import * as React from "react";
 import { BfDsButton, type BfDsButtonProps } from "./BfDsButton.tsx";
-import { useCopyToClipboard } from "@bfmono/apps/boltFoundry/hooks/useCopyToClipboard.ts";
+import { useCopyToClipboard } from "../hooks/useCopyToClipboard.ts";
 
 const { useState } = React;
 

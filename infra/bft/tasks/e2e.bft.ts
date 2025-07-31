@@ -1,5 +1,5 @@
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
-import { runShellCommand } from "@bfmono/infra/bff/shellBase.ts";
+import { runShellCommand } from "@bfmono/infra/shell/runCommand.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import type { TaskDefinition } from "@bfmono/infra/bft/bft.ts";
 import {

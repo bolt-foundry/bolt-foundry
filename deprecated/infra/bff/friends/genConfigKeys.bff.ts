@@ -2,7 +2,7 @@
 //
 // Generate a key‑only helper file from 1Password.
 //
-//   ➜ apps/boltFoundry/__generated__/configKeys.ts
+//   ➜ deprecated/apps/boltFoundry/__generated__/configKeys.ts
 //
 // It exports:
 //
@@ -89,9 +89,9 @@ export async function genConfigKeys(
   }
 
   /* ------------------------------------------------------------------ */
-  /*  Emit apps/boltFoundry/__generated__/configKeys.ts                  */
+  /*  Emit deprecated/apps/boltFoundry/__generated__/configKeys.ts       */
   /* ------------------------------------------------------------------ */
-  const dest = "apps/boltFoundry/__generated__/configKeys.ts";
+  const dest = "deprecated/apps/boltFoundry/__generated__/configKeys.ts";
 
   const lines: Array<string> = [
     "/* @generated */",

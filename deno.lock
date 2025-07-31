@@ -2,7 +2,6 @@
   "version": "5",
   "specifiers": {
     "jsr:@b-fuze/deno-dom@~0.1.49": "0.1.51",
-    "jsr:@bolt-foundry/get-configuration-var@0.0.0-dev.0": "0.0.0-dev.0",
     "jsr:@david/code-block-writer@^13.0.2": "13.0.3",
     "jsr:@deno/cache-dir@~0.10.3": "0.10.3",
     "jsr:@deno/cache-dir@~0.22.3": "0.22.3",
@@ -27,6 +26,7 @@
     "jsr:@std/cli@^1.0.20": "1.0.20",
     "jsr:@std/collections@^1.1.1": "1.1.2",
     "jsr:@std/data-structures@^1.0.8": "1.0.8",
+    "jsr:@std/dotenv@0.225.0": "0.225.0",
     "jsr:@std/encoding@1": "1.0.10",
     "jsr:@std/encoding@^1.0.10": "1.0.10",
     "jsr:@std/flags@0.224": "0.224.0",
@@ -133,9 +133,6 @@
         "jsr:@denosaurs/plug"
       ]
     },
-    "@bolt-foundry/get-configuration-var@0.0.0-dev.0": {
-      "integrity": "04ec312462ae6f0f6ed85e82fb444d18a8782754ecd2d920a4947fffb0435a58"
-    },
     "@david/code-block-writer@13.0.3": {
       "integrity": "f98c77d320f5957899a61bfb7a9bead7c6d83ad1515daee92dbacc861e13bb7f"
     },
@@ -238,6 +235,9 @@
     },
     "@std/data-structures@1.0.8": {
       "integrity": "2fb7219247e044c8fcd51341788547575653c82ae2c759ff209e0263ba7d9b66"
+    },
+    "@std/dotenv@0.225.0": {
+      "integrity": "44db32932c67df82790a3e6847d7007befb6cc22d71f2f3ee7b7d00e1f0d6c94"
     },
     "@std/encoding@1.0.10": {
       "integrity": "8783c6384a2d13abd5e9e87a7ae0520a30e9f56aeeaa3bdf910a3eaaf5c811a1"
@@ -3402,6 +3402,7 @@
       "jsr:@std/assert@^1.0.11",
       "jsr:@std/async@^1.0.13",
       "jsr:@std/cli@^1.0.20",
+      "jsr:@std/dotenv@0.225",
       "jsr:@std/encoding@^1.0.10",
       "jsr:@std/flags@0.224",
       "jsr:@std/fmt@^1.0.8",
@@ -3431,10 +3432,13 @@
       "npm:@types/pg@^8.15.4",
       "npm:@types/react@19",
       "npm:assemblyai@^4.14.0",
+      "npm:chalk@^5.4.1",
       "npm:graphql-relay@~0.10.2",
       "npm:graphql-yoga@^5.14.0",
       "npm:graphql@^16.11.0",
       "npm:lexical@0.33",
+      "npm:loglevel-plugin-prefix@~0.8.4",
+      "npm:loglevel@^1.9.2",
       "npm:marked@16",
       "npm:matter-js@0.20",
       "npm:pg@^8.16.3",
@@ -3471,14 +3475,6 @@
           "npm:react-dom@^19.1.0",
           "npm:react@*",
           "npm:react@^19.1.0"
-        ]
-      },
-      "packages/logger": {
-        "dependencies": [
-          "jsr:@bolt-foundry/get-configuration-var@0.0.0-dev.0",
-          "npm:chalk@^5.4.1",
-          "npm:loglevel-plugin-prefix@~0.8.4",
-          "npm:loglevel@^1.9.2"
         ]
       }
     }

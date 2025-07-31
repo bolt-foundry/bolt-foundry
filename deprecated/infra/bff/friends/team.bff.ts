@@ -2,7 +2,7 @@
 
 import { register } from "@bfmono/infra/bff/bff.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
-import { getSecret } from "@bfmono/packages/get-configuration-var/get-configuration-var.ts";
+import { getSecret } from "@bolt-foundry/get-configuration-var";
 import { TeamStatusAnalyzer } from "@bfmono/packages/team-status-analyzer/mod.ts";
 import { TeamStatusGenerator } from "@bfmono/packages/team-status-generator/mod.ts";
 import type { AnalyzerConfig } from "@bfmono/packages/team-status-analyzer/types.ts";
