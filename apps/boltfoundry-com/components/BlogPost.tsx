@@ -1,47 +1,23 @@
-import { iso } from "@iso-bfc";
-import { getLogger } from "@bfmono/packages/logger/logger.ts";
-import { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
 import { Nav } from "./Nav.tsx";
+import { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
 
-const _logger = getLogger(import.meta);
-
-// Main Blog component that switches between list and single post
-export const Blog = iso(`
-  field Query.Blog @component {
-    blogPosts(first: 10) {
-      BlogPostList
-    }
-  }
-`)(function Blog({ data, parameters = {} }) {
-  const hasSlug = Boolean(parameters?.slug);
-
-  // If data is not available, show loading
-  if (!data) {
-    return (
-      <div className="landing-page">
-        <Nav page="blog" />
-        <section className="docs-section">
-          <div className="landing-content">
-            <div className="blog-layout">
-              <div>Loading...</div>
-            </div>
-          </div>
-        </section>
-      </div>
-    );
-  }
-
+// Placeholder for individual blog post view
+export function BlogPost({ slug }: { slug: string }) {
   return (
     <div className="landing-page">
-      {/* Header */}
       <Nav page="blog" />
-      {/* Blog Content */}
       <section className="docs-section">
         <div className="landing-content">
           <div className="blog-layout">
-            {data.blogPosts
-              ? <data.blogPosts.BlogPostList />
-              : <div>Loading blog posts...</div>}
+            <h1>Blog Post: {slug}</h1>
+            <p>
+              Individual blog post functionality is coming soon. This will
+              display the full content of the blog post with slug: {slug}
+            </p>
+            <p>
+              Due to GraphQL schema limitations, individual blog posts are not
+              yet available.
+            </p>
           </div>
         </div>
         <div className="landing-footer">
@@ -70,4 +46,4 @@ export const Blog = iso(`
       </section>
     </div>
   );
-});
+}
