@@ -5,7 +5,7 @@ import { ui } from "@bfmono/packages/cli-ui/cli-ui.ts";
 import { parseArgs } from "@std/cli";
 import { getLogger } from "@bolt-foundry/logger";
 
-const _logger = getLogger(import.meta);
+const logger = getLogger(import.meta);
 
 async function dev(args: Array<string>): Promise<number> {
   // Check for global help flag
@@ -226,7 +226,7 @@ Examples:
           }
         }
       } catch (error) {
-        _logger.error("Error piping to log:", error);
+        logger.error("Error piping to log:", error);
       } finally {
         reader.releaseLock();
       }
@@ -316,7 +316,7 @@ Examples:
           }
         }
       } catch (error) {
-        _logger.error("Error piping to log:", error);
+        logger.error("Error piping to log:", error);
       } finally {
         reader.releaseLock();
       }
