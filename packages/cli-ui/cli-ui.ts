@@ -5,6 +5,9 @@
  * and actual command output that might be piped or processed.
  */
 
+// Re-export titlebar utilities
+export * from "./titlebar.ts";
+
 // deno-lint-ignore-file no-console
 // This file is specifically for console output utilities
 
