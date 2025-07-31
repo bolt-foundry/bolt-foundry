@@ -71,31 +71,28 @@ export function BfDsIconExample() {
 
   const iconNames = Object.keys(icons) as Array<keyof typeof icons>;
 
-  // Create a list that includes both original icons and their aliases
-  const allIconNames: Array<
-    { name: BfDsIconName; isAlias: boolean; aliasOf?: BfDsIconName }
-  > = [];
+  // Create a map of original icons to their aliases
+  const iconToAliases: Map<BfDsIconName, Array<BfDsIconName>> = new Map();
 
   iconNames.forEach((iconName) => {
-    // Add the original icon
-    allIconNames.push({ name: iconName, isAlias: false });
-
-    // Add any aliases
     const iconData = icons[iconName];
     if (iconData && "aliases" in iconData && iconData.aliases) {
-      iconData.aliases.forEach((alias: string) => {
-        allIconNames.push({
-          name: alias as BfDsIconName,
-          isAlias: true,
-          aliasOf: iconName,
-        });
-      });
+      iconToAliases.set(iconName, iconData.aliases as Array<BfDsIconName>);
     }
   });
 
+  // Create a list that includes only original icons (not aliases)
+  const allIconNames: Array<
+    { name: BfDsIconName; isAlias: boolean; aliasOf?: BfDsIconName }
+  > = iconNames.map((name) => ({ name, isAlias: false }));
+
   const filteredIcons = allIconNames.filter(({ name, aliasOf }) => {
-    // Check if name matches search term
-    const matchesSearch = name.toLowerCase().includes(searchTerm.toLowerCase());
+    // Check if name or any of its aliases match search term
+    const aliases = iconToAliases.get(name) || [];
+    const allNames = [name, ...aliases];
+    const matchesSearch = allNames.some((n) =>
+      n.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     // Check if icon is generated (if filtering by generated only)
     if (showGeneratedOnly) {
@@ -210,7 +207,7 @@ export function BfDsIconExample() {
         </h3>
         <div className="bfds-example__grid">
           {filteredIcons.map((iconInfo) => {
-            const { name: iconName, isAlias, aliasOf } = iconInfo;
+            const { name: iconName, aliasOf } = iconInfo;
             const lookupName = (aliasOf || iconName) as keyof typeof icons;
             const iconData = icons[lookupName];
             const isGenerated = !!(iconData && "generated" in iconData &&
@@ -254,24 +251,6 @@ export function BfDsIconExample() {
                     <BfDsIcon name="sparkle" size="small" />
                   </BfDsBadge>
                 )}
-                {isAlias && (
-                  <BfDsBadge
-                    variant="secondary"
-                    size="small"
-                    style={{
-                      position: "absolute",
-                      top: isGenerated ? "26px" : "2px",
-                      left: "2px",
-                      fontSize: "10px",
-                      padding: "2px 4px",
-                      whiteSpace: "nowrap",
-                      zIndex: 1,
-                    }}
-                    title={aliasOf ? `alias of ${aliasOf}` : undefined}
-                  >
-                    alias
-                  </BfDsBadge>
-                )}
                 <div
                   style={{
                     display: "inline-flex",
@@ -282,7 +261,13 @@ export function BfDsIconExample() {
                   <BfDsIcon name={iconName} size={selectedSize} />
                 </div>
                 <div className="bfds-example__grid-item-label">
-                  {iconName}
+                  {(() => {
+                    const aliases = iconToAliases.get(iconName) || [];
+                    if (aliases.length > 0) {
+                      return `${iconName}, ${aliases.join(", ")}`;
+                    }
+                    return iconName;
+                  })()}
                 </div>
               </div>
             );
@@ -346,11 +331,9 @@ export function BfDsIconExample() {
               {overlayIcon}
             </div>
             {(() => {
-              // Check if current icon is an alias
-              const iconInfo = allIconNames.find((icon) =>
-                icon.name === overlayIcon
-              );
-              if (iconInfo?.isAlias && iconInfo.aliasOf) {
+              // Show aliases if this icon has any
+              const aliases = iconToAliases.get(overlayIcon) || [];
+              if (aliases.length > 0) {
                 return (
                   <div
                     style={{
@@ -360,7 +343,7 @@ export function BfDsIconExample() {
                       fontStyle: "italic",
                     }}
                   >
-                    alias of {iconInfo.aliasOf}
+                    Also available as: {aliases.join(", ")}
                   </div>
                 );
               }
