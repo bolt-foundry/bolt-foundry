@@ -235,6 +235,9 @@ export async function setupE2ETest(options: {
       args: [
         "--no-sandbox",
         "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage", // Critical for Docker - use /tmp instead of /dev/shm
+        "--disable-gpu", // Disable GPU hardware acceleration in containers
+        "--disable-software-rasterizer",
         "--window-size=1280,720",
       ],
       defaultViewport: { width: 1280, height: 720 },
