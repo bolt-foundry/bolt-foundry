@@ -52,6 +52,11 @@ if [ -n "$HOSTNAME" ] && ! grep -q "$HOSTNAME.codebot.local" /etc/hosts 2>/dev/n
     echo "127.0.0.1        $HOSTNAME.codebot.local $HOSTNAME" | sudo -n tee -a /etc/hosts > /dev/null 2>&1\n\
 fi\n\
 \n\
+# Add host.codebot.local entry for accessing host machine\n\
+if ! grep -q "host.codebot.local" /etc/hosts 2>/dev/null; then\n\
+    echo "192.168.64.1     host.codebot.local" | sudo -n tee -a /etc/hosts > /dev/null 2>&1\n\
+fi\n\
+\n\
 # Execute bash with login shell\n\
 exec /bin/bash -l "$@"\n' > /usr/local/bin/docker-entrypoint.sh && \
     chmod +x /usr/local/bin/docker-entrypoint.sh

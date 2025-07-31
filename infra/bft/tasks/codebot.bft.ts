@@ -293,66 +293,8 @@ FIRST TIME SETUP:
     );
   }
 
-  // Ensure DNS server is running for *.codebot.local resolution
-  try {
-    ui.output("🌐 Checking DNS server for *.codebot.local...");
-
-    // Check if DNS server is already running
-    const psCmd = new Deno.Command("pgrep", {
-      args: ["-f", "dns-server.ts"],
-    });
-    const psResult = await psCmd.output();
-
-    if (!psResult.success) {
-      // DNS server not running, start it
-      ui.output("🚀 Starting DNS server for *.codebot.local resolution...");
-
-      const dnsServerPath = "./infra/apps/codebot/dns-server.ts";
-      const dnsCmd = new Deno.Command("deno", {
-        args: [
-          "run",
-          "--allow-net",
-          "--allow-run",
-          "--allow-env",
-          dnsServerPath,
-        ],
-        stdout: "null",
-        stderr: "null",
-      });
-
-      // Start DNS server in background
-      const dnsChild = dnsCmd.spawn();
-
-      // Give it a moment to start and check if it's still running
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Verify DNS server started successfully
-      const verifyCmd = new Deno.Command("pgrep", {
-        args: ["-f", "dns-server.ts"],
-      });
-      const verifyResult = await verifyCmd.output();
-
-      if (verifyResult.success) {
-        ui.output("✅ DNS server started for *.codebot.local domains");
-        dnsChild.unref(); // Don't wait for it to finish
-      } else {
-        ui.output("⚠️ DNS server may have failed to start");
-        // Don't fail the entire command, but warn user
-      }
-    } else {
-      ui.output("✅ DNS server already running");
-    }
-  } catch (error) {
-    // Don't fail the entire command if DNS server fails
-    ui.output(
-      `⚠️ DNS server setup failed: ${
-        error instanceof Error ? error.message : String(error)
-      }`,
-    );
-    ui.output(
-      "📝 You may need to manually configure DNS for *.codebot.local domains",
-    );
-  }
+  // DNS will be configured directly in container using --dns options
+  ui.output("🌐 DNS will be configured using container platform DNS options");
 
   // Check for .claude directory in user's home
   const homeDir = getConfigurationVariable("HOME");
@@ -793,6 +735,14 @@ FIRST TIME SETUP:
       parsed.memory || autoMemory,
       "--cpus",
       parsed.cpus || autoCpus,
+      "--dns",
+      "8.8.8.8",
+      "--dns",
+      "1.1.1.1",
+      "--dns-search",
+      "codebot.local",
+      "--dns-option",
+      "ndots:0",
       "--volume",
       `${claudeDir}:/home/codebot/.claude`,
       "--volume",
@@ -842,6 +792,14 @@ FIRST TIME SETUP:
       parsed.memory || autoMemory,
       "--cpus",
       parsed.cpus || autoCpus,
+      "--dns",
+      "8.8.8.8",
+      "--dns",
+      "1.1.1.1",
+      "--dns-search",
+      "codebot.local",
+      "--dns-option",
+      "ndots:0",
       "--volume",
       `${claudeDir}:/home/codebot/.claude`,
       "--volume",
@@ -877,9 +835,6 @@ FIRST TIME SETUP:
   // Default mode: Start Claude Code CLI
   ui.output("🤖 Starting Claude Code...");
   ui.output(
-    `📡 Workspace will be available at: http://${workspaceId}.codebot.local:8000`,
-  );
-  ui.output(
     `💾 Memory: ${parsed.memory || autoMemory} | CPUs: ${
       parsed.cpus || autoCpus
     }`,
@@ -913,6 +868,14 @@ FIRST TIME SETUP:
     parsed.memory || autoMemory,
     "--cpus",
     parsed.cpus || autoCpus,
+    "--dns",
+    "8.8.8.8",
+    "--dns",
+    "1.1.1.1",
+    "--dns-search",
+    "codebot.local",
+    "--dns-option",
+    "ndots:0",
     "--volume",
     `${claudeDir}:/home/codebot/.claude`,
     "--volume",
