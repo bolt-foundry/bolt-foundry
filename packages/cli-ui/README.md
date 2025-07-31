@@ -56,8 +56,44 @@ capture.info("test");
 assertEquals(capture.captured[0], { type: "info", message: "test" });
 ```
 
+## Terminal Titlebar
+
+Update the terminal titlebar to provide visual feedback:
+
+```typescript
+import {
+  clearTitlebar,
+  createTitlebarUpdater,
+  supportsTitlebar,
+  updateTitlebar,
+} from "@bfmono/packages/cli-ui/cli-ui.ts";
+
+// Check if terminal supports titlebar updates
+if (supportsTitlebar()) {
+  // Basic title update
+  await updateTitlebar("My App - Processing...");
+
+  // Clear title (reset to default)
+  await clearTitlebar();
+
+  // Use a prefixed updater
+  const titlebar = createTitlebarUpdater("MyApp");
+  await titlebar.update("Loading..."); // Sets "MyApp: Loading..."
+  await titlebar.clear();
+}
+```
+
+### Titlebar Functions
+
+- `updateTitlebar(title)` - Set the terminal title
+- `clearTitlebar()` - Reset to default terminal title
+- `createTitlebarUpdater(prefix)` - Create a prefixed updater
+- `supportsTitlebar()` - Check if terminal supports title updates
+
 ## Best practices
 
 1. Use `ui.output()` only for the actual command result
 2. All status messages should use `info()`, `warn()`, or `error()`
 3. This ensures scripts can safely pipe output: `bft task | jq .`
+4. Check `supportsTitlebar()` before updating titles in production code
+5. Always clear or restore titles when your process completes
