@@ -12,7 +12,7 @@ export const Blog = iso(`
       BlogPostList
     }
   }
-`)(function Blog({ data, parameters = {} }) {
+`)(function Blog({ data, _parameters = {} }) {
   // If data is not available, show loading
   if (!data) {
     return (
