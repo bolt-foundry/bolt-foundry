@@ -7,8 +7,8 @@ export const EntrypointBlog = iso(`
   field Query.EntrypointBlog {
     Blog
   }
-`)(function EntrypointBlog({ data }) {
+`)(function EntrypointBlog({ data, parameters }) {
   const Body = data.Blog;
   const title = "Blog";
-  return { Body, title };
+  return { Body, title, parameters };
 });
