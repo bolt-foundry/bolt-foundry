@@ -91,8 +91,8 @@ RUN curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/
 ENV PATH="${PATH}:/nix/var/nix/profiles/default/bin"
 
 # Copy flake files for caching
-COPY flake.nix flake.lock /workspace/
-WORKDIR /workspace
+COPY flake.nix flake.lock /@bfmono/
+WORKDIR /@bfmono
 
 # Install development tools from flake (includes gh, deno, sapling, etc.)
 RUN nix profile install .#codebot-env --accept-flake-config
@@ -163,9 +163,9 @@ if [ "\$CODEBOT_INITIALIZED" != "1" ]; then
   export CODEBOT_INITIALIZED=1
   
   # .claude directory is mounted directly from host
-  # Copy .claude.json from workspace/tmp if it exists
-  if [ -f "/workspace/tmp/.claude.json" ]; then
-    cp /workspace/tmp/.claude.json /home/codebot/.claude.json
+  # Copy .claude.json from @bfmono/tmp if it exists
+  if [ -f "/@bfmono/tmp/.claude.json" ]; then
+    cp /@bfmono/tmp/.claude.json /home/codebot/.claude.json
   fi
   
   # Configure Sapling identity for codebot
@@ -179,9 +179,9 @@ if [ "\$CODEBOT_INITIALIZED" != "1" ]; then
     git config --global url."https://x-access-token:\${GITHUB_TOKEN}@github.com/".insteadOf "https://github.com/"
   fi
   
-  # Change to workspace directory
-  if [ -d "/workspace" ]; then
-    cd /workspace
+  # Change to @bfmono directory
+  if [ -d "/@bfmono" ]; then
+    cd /@bfmono
   fi
 fi
 
@@ -198,8 +198,8 @@ export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 export PUPPETEER_DISABLE_DEV_SHM_USAGE=true
 
 # Source shared environment setup
-if [ -f "/workspace/infra/env-setup.sh" ]; then
-  source /workspace/infra/env-setup.sh
+if [ -f "/@bfmono/infra/env-setup.sh" ]; then
+  source /@bfmono/infra/env-setup.sh
 fi
 EOF
 
