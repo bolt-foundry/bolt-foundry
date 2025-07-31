@@ -10,6 +10,31 @@ export function BfDsSpinnerExample() {
         <h2>BfDsSpinner Examples</h2>
 
         <div className="bfds-example__section">
+          <h3>Usage</h3>
+          <pre className="bfds-example__code">
+{`import { BfDsSpinner, BfDsFullPageSpinner } from "@bfmono/apps/bfDs/components/BfDsSpinner.tsx";
+
+// Basic spinner
+<BfDsSpinner />
+
+// All available props
+<BfDsSpinner
+  size={48}              // number - size in pixels
+  color="currentColor"   // string - color (inherits text color by default)
+  offset={0}             // number - 0-1 percentage to offset starting point
+  waitIcon={false}       // boolean - show animated icon inside spinner
+/>
+
+// Full page loading spinner
+<BfDsFullPageSpinner
+  show={true}            // boolean - show/hide spinner
+  size={200}             // number - spinner size
+  waitIcon={false}       // boolean - show animated icon
+/>`}
+          </pre>
+        </div>
+
+        <div className="bfds-example__section">
           <h3>Basic Spinner</h3>
           <div className="bfds-example__group">
             <BfDsSpinner />

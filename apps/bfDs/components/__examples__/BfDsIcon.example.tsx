@@ -111,6 +111,25 @@ export function BfDsIconExample() {
       <h2>BfDsIcon Examples</h2>
 
       <div className="bfds-example__section">
+        <h3>Usage</h3>
+        <pre className="bfds-example__code">
+{`import { BfDsIcon } from "@bfmono/apps/bfDs/components/BfDsIcon.tsx";
+
+// Basic usage
+<BfDsIcon name="star" />
+
+// All available props
+<BfDsIcon
+  name="star"                     // BfDsIconName (required)
+  size="medium"                   // "small" | "medium" | "large" | number
+  color="currentColor"            // string - CSS color value
+  className=""                    // string - additional CSS
+  style={{}}                      // React.CSSProperties
+/>`}
+        </pre>
+      </div>
+
+      <div className="bfds-example__section">
         <h3>Size Comparison</h3>
         <div className="bfds-example__group bfds-example__group--align-end">
           <div className="bfds-example__item">

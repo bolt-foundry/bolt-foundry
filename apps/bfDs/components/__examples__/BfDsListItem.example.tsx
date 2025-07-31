@@ -12,6 +12,31 @@ export function BfDsListItemExample() {
       <h2>BfDsListItem Examples</h2>
 
       <div className="bfds-example__section">
+        <h3>Usage</h3>
+        <pre className="bfds-example__code">
+{`import { BfDsListItem } from "@bfmono/apps/bfDs/components/BfDsListItem.tsx";
+import { BfDsList } from "@bfmono/apps/bfDs/components/BfDsList.tsx";
+
+// Basic usage (use with BfDsList)
+<BfDsList>
+  <BfDsListItem>Item 1</BfDsListItem>
+  <BfDsListItem>Item 2</BfDsListItem>
+</BfDsList>
+
+// All available props
+<BfDsListItem
+  active={false}                  // boolean - show active state
+  disabled={false}                // boolean - disable interaction
+  onClick={() => {}}              // () => void - click handler
+  className=""                    // string - additional CSS classes
+  expandContents={<div />}        // ReactNode - expandable content
+>
+  List item content
+</BfDsListItem>`}
+        </pre>
+      </div>
+
+      <div className="bfds-example__section">
         <h3>Item States</h3>
         <ul className="bfds-list">
           <BfDsListItem>Normal Item</BfDsListItem>

@@ -22,6 +22,33 @@ export function BfDsCheckboxExample() {
       <h2>BfDsCheckbox Examples</h2>
 
       <div className="bfds-example__section">
+        <h3>Usage</h3>
+        <pre className="bfds-example__code">
+{`import { BfDsCheckbox } from "@bfmono/apps/bfDs/components/BfDsCheckbox.tsx";
+
+// Basic usage
+<BfDsCheckbox
+  label="I agree to the terms"
+  checked={checked}
+  onChange={(isChecked) => setChecked(isChecked)}
+/>
+
+// All available props
+<BfDsCheckbox
+  name="terms"                    // string - form field name
+  checked={true}                  // boolean - controlled state
+  defaultChecked={false}          // boolean - uncontrolled default
+  onChange={(checked) => {}}      // (checked: boolean) => void
+  label="I agree"                 // string - label text
+  required={false}                // boolean
+  disabled={false}                // boolean
+  className=""                    // string
+  id="checkbox-1"                 // string - element ID
+/>`}
+        </pre>
+      </div>
+
+      <div className="bfds-example__section">
         <h3>Controlled vs Uncontrolled</h3>
         <div className="bfds-example__group">
           <BfDsCheckbox

@@ -23,6 +23,39 @@ export function BfDsEmptyStateExample() {
       <h2>BfDsEmptyState Component</h2>
 
       <div className="bfds-example__section">
+        <h3>Usage</h3>
+        <pre className="bfds-example__code">
+{`import { BfDsEmptyState } from "@bfmono/apps/bfDs/components/BfDsEmptyState.tsx";
+
+// Basic usage
+<BfDsEmptyState
+  title="No items found"
+  icon="plus"
+/>
+
+// All available props
+<BfDsEmptyState
+  icon="plus"                     // BfDsIconName (optional)
+  title="No items found"          // string (required)
+  description="Add some items"    // string (optional)
+  size="medium"                   // "small" | "medium" | "large"
+  action={{                       // Optional primary action
+    label: "Add Item",
+    onClick: () => {},
+    variant: "primary"            // "primary" | "secondary" | "outline"
+  }}
+  secondaryAction={{              // Optional secondary action
+    label: "Learn More",
+    onClick: () => {}
+  }}
+  className=""                    // string (optional)
+>
+  {/* Optional custom content */}
+</BfDsEmptyState>`}
+        </pre>
+      </div>
+
+      <div className="bfds-example__section">
         <h3>Basic Empty State</h3>
         <div
           style={{

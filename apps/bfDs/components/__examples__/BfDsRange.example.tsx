@@ -20,6 +20,48 @@ export function BfDsRangeExample() {
     <div className="bfds-example">
       <h2 className="bfds-example__title">BfDsRange Examples</h2>
 
+      <div className="bfds-example__section">
+        <h3>Usage</h3>
+        <pre className="bfds-example__code">
+{`import { BfDsRange } from "@bfmono/apps/bfDs/components/BfDsRange.tsx";
+
+// Basic usage
+<BfDsRange
+  label="Volume"
+  value={50}
+  onChange={(e) => setValue(e.target.value)}
+/>
+
+// All available props
+<BfDsRange
+  name="volume"                     // string - form field name
+  value={50}                        // number - controlled value
+  defaultValue={50}                 // number - uncontrolled default
+  onChange={(e) => {}}              // (e: ChangeEvent) => void
+  label="Volume"                    // string - label text
+  min={0}                          // number - minimum value
+  max={100}                        // number - maximum value
+  step={1}                         // number - step increment
+  showValue={true}                 // boolean - show current value
+  formatValue={(v) => v + "%"}     // (value: number) => string
+  showTicks={false}                // boolean - show tick marks
+  tickLabels={[                    // Array - custom tick labels
+    { value: 0, label: "Min" },
+    { value: 100, label: "Max" }
+  ]}
+  size="medium"                    // "small" | "medium" | "large"
+  state="default"                  // "default" | "error" | "success" | "disabled"
+  color="#007bff"                  // string - custom color
+  errorMessage=""                  // string - error message
+  successMessage=""                // string - success message
+  helpText=""                      // string - help text
+  disabled={false}                 // boolean
+  required={false}                 // boolean
+  className=""                     // string
+/>`}
+        </pre>
+      </div>
+
       <section className="bfds-example__section">
         <h3 className="bfds-example__subtitle">Controlled vs Uncontrolled</h3>
         <div className="bfds-example__items">

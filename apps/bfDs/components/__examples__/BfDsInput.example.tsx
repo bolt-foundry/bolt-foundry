@@ -10,6 +10,42 @@ export function BfDsInputExample() {
       <h2>BfDsInput Examples</h2>
 
       <div className="bfds-example__section">
+        <h3>Usage</h3>
+        <pre className="bfds-example__code">
+{`import { BfDsInput } from "@bfmono/apps/bfDs/components/BfDsInput.tsx";
+
+// Basic usage
+<BfDsInput
+  label="Name"
+  placeholder="Enter your name"
+  value={value}
+  onChange={(e) => setValue(e.target.value)}
+/>
+
+// All available props (extends HTML input attributes)
+<BfDsInput
+  name="username"                 // string - form field name
+  value=""                        // string - controlled value
+  defaultValue=""                 // string - uncontrolled default
+  onChange={(e) => {}}            // (e: ChangeEvent) => void
+  label="Username"                // string - label text
+  placeholder="Enter username"    // string - placeholder text
+  required={false}                // boolean - required field
+  state="default"                 // "default" | "error" | "success" | "disabled"
+  errorMessage=""                 // string - error message
+  successMessage=""               // string - success message
+  helpText=""                     // string - help text
+  className=""                    // string - additional CSS
+  type="text"                     // HTML input type
+  disabled={false}                // boolean
+  readOnly={false}                // boolean
+  autoComplete="off"              // string
+  // ... other HTML input attributes
+/>`}
+        </pre>
+      </div>
+
+      <div className="bfds-example__section">
         <h3>Controlled vs Uncontrolled</h3>
         <div className="bfds-example__group">
           <BfDsInput
