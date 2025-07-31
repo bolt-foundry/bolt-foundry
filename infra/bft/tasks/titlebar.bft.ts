@@ -3,6 +3,7 @@
  * Test the terminal titlebar functionality
  */
 
+import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 import type { TaskDefinition } from "../bft.ts";
 import { parseArgs } from "@std/cli";
 import {
@@ -63,8 +64,8 @@ EXAMPLES:
 
     // Always show terminal details for debugging
     ui.info("Terminal details:");
-    ui.info(`  TERM: ${Deno.env.get("TERM") || "(not set)"}`);
-    ui.info(`  TERM_PROGRAM: ${Deno.env.get("TERM_PROGRAM") || "(not set)"}`);
+    ui.info(`  TERM: ${getConfigurationVariable("TERM") || "(not set)"}`);
+    ui.info(`  TERM_PROGRAM: ${getConfigurationVariable("TERM_PROGRAM") || "(not set)"}`);
     ui.info(`  isTerminal: ${Deno.stdout.isTerminal()}`);
 
     if (!supported) {

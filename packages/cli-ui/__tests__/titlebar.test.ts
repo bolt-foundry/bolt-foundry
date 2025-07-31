@@ -1,6 +1,6 @@
 #!/usr/bin/env -S deno test
-// deno-lint-ignore-file no-console
 
+import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 import { assertEquals } from "@std/assert";
 import {
   clearTitlebar,
@@ -15,7 +15,7 @@ Deno.test("titlebar: updateTitlebar writes correct escape sequence", async () =>
 
   try {
     // Mock Deno.stdout.write
-    Deno.stdout.write = async (data: Uint8Array) => {
+    Deno.stdout.write = (data: Uint8Array) => {
       capturedData = data;
       return data.length;
     };
@@ -36,7 +36,7 @@ Deno.test("titlebar: clearTitlebar sends empty title", async () => {
   let capturedData: Uint8Array | undefined;
 
   try {
-    Deno.stdout.write = async (data: Uint8Array) => {
+    Deno.stdout.write = (data: Uint8Array) => {
       capturedData = data;
       return data.length;
     };
@@ -56,7 +56,7 @@ Deno.test("titlebar: createTitlebarUpdater adds prefix", async () => {
   let capturedData: Uint8Array | undefined;
 
   try {
-    Deno.stdout.write = async (data: Uint8Array) => {
+    Deno.stdout.write = (data: Uint8Array) => {
       capturedData = data;
       return data.length;
     };
@@ -74,8 +74,8 @@ Deno.test("titlebar: createTitlebarUpdater adds prefix", async () => {
 
 Deno.test("titlebar: supportsTitlebar detects terminal support", () => {
   const originalIsTerminal = Deno.stdout.isTerminal;
-  const originalTerm = Deno.env.get("TERM");
-  const originalTermProgram = Deno.env.get("TERM_PROGRAM");
+  const originalTerm = getConfigurationVariable("TERM");
+  const originalTermProgram = getConfigurationVariable("TERM_PROGRAM");
 
   try {
     // Test when not a terminal
@@ -121,7 +121,7 @@ Deno.test("titlebar: updateTitlebar handles write errors gracefully", async () =
 
   try {
     // Mock write to throw an error
-    Deno.stdout.write = async () => {
+    Deno.stdout.write = () => {
       throw new Error("Write failed");
     };
 
