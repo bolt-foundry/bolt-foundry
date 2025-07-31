@@ -125,19 +125,17 @@ export function LoginWithGoogleButton() {
     return <div>{error}</div>;
   }
 
-  // Check if we're in a codebot environment (dynamic hostname)
-  const isCodebot = typeof window !== "undefined" &&
-    !globalThis.location.hostname.includes("localhost") &&
-    !globalThis.location.hostname.includes("127.0.0.1");
+  // Check if we're in development mode
+  const isDevelopment = appEnvironment.mode === "development";
 
   // Show Google Sign-In button
   return (
     <div>
       <div ref={googleButtonRef}></div>
-      {isCodebot && (
+      {isDevelopment && (
         <BfDsCallout variant="warning" className="mt-5">
           <div>
-            <h4>Codebot Environment Detected</h4>
+            <h4>Development Environment</h4>
             <p>
               Google OAuth won't work with dynamic hostnames like{" "}
               <code>{globalThis.location.hostname}</code>.
