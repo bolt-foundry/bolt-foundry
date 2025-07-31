@@ -1,0 +1,3343 @@
+{
+  "generatedAt": "2025-06-13T16:27:33.454Z",
+  "periodStart": "2025-05-30T00:00:00.000Z",
+  "periodEnd": "2025-06-13T16:27:33.454Z",
+  "totalPRsAnalyzed": 156,
+  "teamMembers": [
+    {
+      "username": "randallb",
+      "displayName": "randallb",
+      "currentFocus": "Feature development",
+      "recentWork": [
+        {
+          "prNumber": 1088,
+          "title": "chmod eval",
+          "description": "Summary:   <",
+          "category": "other",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-12T22:10:02.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": "Supports technical philosophy around evaluation",
+            "suggestedContentType": null
+          }
+        },
+        {
+          "prNumber": 1086,
+          "title": "Update Claude Code to v1.0.21 and add MCP server config",
+          "description": "Update @anthropic-ai/claude-code dependency from 1",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-12T01:48:13.000Z",
+          "mergedAt": "2025-06-12T02:00:00.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "infrastructure",
+            "integration"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 1085,
+          "title": "Fix BlogPost.listAll() to filter future posts and sort by publishedAt",
+          "description": "Improve blog post listing logic to correctly handle post visibility and ordering based on actual published dates rather than filename dates",
+          "category": "bugfix",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-12T01:38:33.000Z",
+          "mergedAt": "2025-06-12T01:40:08.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: When you make calibrating your actual data the first thing in your process, and\nthen grade the grade...",
+            "companyAlignment": null,
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1084,
+          "title": "Add Deno MCP server for exposing LSP diagnostics",
+          "description": "Implement a minimal Model Context Protocol (MCP) server that provides on-demand TypeScript/JavaScript diagnostics via Deno's language server",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-12T01:23:06.000Z",
+          "mergedAt": "2025-06-12T01:29:51.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "infrastructure"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": "Aligns with company focus on model",
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 1083,
+          "title": "Add Deno MCP server for exposing LSP diagnostics",
+          "description": "Implement a minimal Model Context Protocol (MCP) server that provides on-demand TypeScript/JavaScript diagnostics via Deno's language server",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-12T00:56:19.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "infrastructure"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": "Aligns with company focus on model",
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 1082,
+          "title": "Add merge queue support and improve Deno caching in CI",
+          "description": "Enable GitHub merge queue workflow by adding merge_group trigger with checks_requested type",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-11T23:33:05.000Z",
+          "mergedAt": "2025-06-11T23:46:19.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "infrastructure",
+            "api-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: The most common approach to fixing it would be to stuff the prompt with more\ncontext and examples, t...",
+            "companyAlignment": null,
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1080,
+          "title": "mcp implementation plan",
+          "description": "",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-11T20:05:13.000Z",
+          "mergedAt": "2025-06-11T23:51:07.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": null
+          }
+        },
+        {
+          "prNumber": 1079,
+          "title": "Add aibff eval command for deck evaluation",
+          "description": "Implement the core eval functionality for aibff, a standalone tool for evaluating AI responses using markdown deck files (",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-11T19:53:27.000Z",
+          "mergedAt": "2025-06-11T23:51:07.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "core-functionality",
+            "api-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: ## A 60-minute fix ⏰\n\nWithout even using our software and only using\n**[our prompt philosophy](docs/...",
+            "companyAlignment": "Aligns with company focus on using",
+            "suggestedContentType": "technical-deep-dive"
+          }
+        },
+        {
+          "prNumber": 1078,
+          "title": "aibff plans",
+          "description": "Summary:  --- [//]: # (BEGIN SAPLING FOOTER) Stack created with [Sapling](https://sapling-scm",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-11T19:53:27.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": null,
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1077,
+          "title": "Fix build script for simplified bff-eval package",
+          "description": "Update the build process to handle bff-eval as a simple wrapper script instead of a TypeScript package that needs compilation",
+          "category": "bugfix",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-11T19:44:20.000Z",
+          "mergedAt": "2025-06-11T21:37:42.000Z",
+          "nextSteps": [],
+          "externalRelevance": "Potentially relevant for external communication",
+          "majorUpdateFlags": [
+            "user-experience",
+            "integration"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": "Supports technical philosophy around evaluation",
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 1076,
+          "title": "Fix eval grader for markdown decks and add debug logging",
+          "description": "Fix the sports-news-grader evaluation by properly wrapping markdown-based graders with makeGraderDeckBuilder",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-11T19:37:40.000Z",
+          "mergedAt": "2025-06-11T19:38:18.000Z",
+          "nextSteps": [],
+          "externalRelevance": "Potentially relevant for external communication",
+          "majorUpdateFlags": [
+            "user-experience",
+            "infrastructure"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": "Aligns with company focus on grader",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1075,
+          "title": "ai safe ci",
+          "description": "",
+          "category": "infrastructure",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-11T16:57:17.000Z",
+          "mergedAt": "2025-06-11T17:54:53.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "infrastructure"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 1074,
+          "title": "markdown draft",
+          "description": "--- [//]: # (BEGIN SAPLING FOOTER) Stack created with [Sapling](https://sapling-scm",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-11T15:16:15.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": null,
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1073,
+          "title": "Claude version bump",
+          "description": "Summary:   <",
+          "category": "other",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-11T15:12:32.000Z",
+          "mergedAt": "2025-06-11T15:13:12.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": null
+          }
+        },
+        {
+          "prNumber": 1072,
+          "title": "graders for markdown",
+          "description": "--- [//]: # (BEGIN SAPLING FOOTER) Stack created with [Sapling](https://sapling-scm",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-11T01:05:09.000Z",
+          "mergedAt": "2025-06-11T01:21:28.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": "Aligns with company focus on grader",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1071,
+          "title": "Implement Document GraphQL system with PublishableContent base class",
+          "description": "- Add Document node type extending PublishableContent for docs/guides content - Create PublishableContent base class with file loading, caching, and Relay connections - Refactor BlogPost to extend PublishableContent for code reuse - Update GraphQL schema with Document, DocumentConnection, and DocumentEdge types - Add documents connection and documentsBySlug queries to Query root - Implement comprehensive test suites for all new components - Update E2E tests for more robust blog post testing - Add document ordering system plan and implementation structure - Generate updated GraphQL types and schema files  🤖 Generated with [Claude Code](https://claude",
+          "category": "feature",
+          "impact": "low",
+          "author": "randallb",
+          "createdAt": "2025-06-10T22:24:57.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": "Potentially relevant for external communication",
+          "majorUpdateFlags": [
+            "breaking-change",
+            "user-experience",
+            "integration",
+            "api-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Custom excerpts for better SEO\n\nThis makes our blog system more powerful and flexible...",
+            "companyAlignment": "Aligns with company focus on system",
+            "suggestedContentType": "technical-deep-dive"
+          }
+        },
+        {
+          "prNumber": 1070,
+          "title": "Add markdown deck embed types and grader base deck",
+          "description": "Extend markdown decks implementation to support positional embed types: - Regular embeds (",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-10T19:30:01.000Z",
+          "mergedAt": "2025-06-10T20:21:04.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": "Aligns with company focus on grader",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1069,
+          "title": "Fix lint rules: newline highlighting and ts-expect-error enforcement",
+          "description": "Improve the custom lint rules in the Bolt Foundry linting plugin:  1",
+          "category": "feature",
+          "impact": "low",
+          "author": "randallb",
+          "createdAt": "2025-06-10T19:12:41.000Z",
+          "mergedAt": "2025-06-10T20:21:14.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Uses novelty indicator: \"custom\"",
+            "companyAlignment": "Aligns with company focus on foundry",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1068,
+          "title": "remove ssr carveout",
+          "description": "",
+          "category": "other",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-10T18:43:12.000Z",
+          "mergedAt": "2025-06-10T20:21:26.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "breaking-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 1067,
+          "title": "Add TOML front matter support for blog posts",
+          "description": "Enable blog posts to use TOML front matter (with +++ delimiters) for metadata including author, publishedAt, updatedAt, tags, and excerpt fields",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-10T18:17:24.000Z",
+          "mergedAt": "2025-06-11T02:30:42.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "security"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Better metadata organization\n2...",
+            "companyAlignment": null,
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1066,
+          "title": "Integrate full precommit checks into commit and amend commands",
+          "description": "Update both bff commit and bff amend to use the full bff precommit command instead of partial or minimal checks",
+          "category": "other",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-10T17:50:12.000Z",
+          "mergedAt": "2025-06-11T01:21:30.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "integration"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: The most common approach to fixing it would be to stuff the prompt with more\ncontext and examples, t...",
+            "companyAlignment": null,
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1065,
+          "title": "Update precommit to run lint with --fix after formatting",
+          "description": "Enhance the precommit process to automatically fix linting issues and ensure proper execution order for all checks",
+          "category": "bugfix",
+          "impact": "low",
+          "author": "randallb",
+          "createdAt": "2025-06-10T17:50:11.000Z",
+          "mergedAt": "2025-06-10T18:18:08.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "user-experience"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: The most common approach to fixing it would be to stuff the prompt with more\ncontext and examples, t...",
+            "companyAlignment": null,
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1064,
+          "title": "Add PublishableContent implementation plan",
+          "description": "Create a plan for refactoring blog and docs to use a shared base class",
+          "category": "feature",
+          "impact": "low",
+          "author": "randallb",
+          "createdAt": "2025-06-10T17:44:49.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "breaking-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": null,
+            "suggestedContentType": "technical-deep-dive"
+          }
+        },
+        {
+          "prNumber": 1063,
+          "title": "Standardize all 404 links to use absolute path /404.md",
+          "description": "Update broken link handling to use consistent absolute paths for 404 pages and improve report management by storing in tmp directory",
+          "category": "refactor",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-10T17:29:22.000Z",
+          "mergedAt": "2025-06-10T18:17:47.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": null
+          }
+        },
+        {
+          "prNumber": 1062,
+          "title": "Fix broken markdown links and add 404 fallback page",
+          "description": "Implement automated broken link fixing with fallback to 404",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-10T12:18:51.000Z",
+          "mergedAt": "2025-06-10T17:10:22.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: The most common approach to fixing it would be to stuff the prompt with more\ncontext and examples, t...",
+            "companyAlignment": null,
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1061,
+          "title": "Add TOML contexts and card embedding to markdown decks",
+          "description": "Enhance the markdown deck system with two major features:  1",
+          "category": "feature",
+          "impact": "high",
+          "author": "randallb",
+          "createdAt": "2025-06-10T12:12:39.000Z",
+          "mergedAt": "2025-06-11T17:54:05.000Z",
+          "nextSteps": [
+            "for implementation"
+          ],
+          "externalRelevance": "New product feature or capability",
+          "majorUpdateFlags": [
+            "core-functionality"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Custom excerpts for better SEO\n\nThis makes our blog system more powerful and flexible...",
+            "companyAlignment": "Aligns with company focus on system",
+            "suggestedContentType": "technical-deep-dive"
+          }
+        },
+        {
+          "prNumber": 1060,
+          "title": "markdown draft",
+          "description": "--- [//]: # (BEGIN SAPLING FOOTER) Stack created with [Sapling](https://sapling-scm",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-10T12:12:38.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": null,
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1058,
+          "title": "Run format before amending commits in bff amend",
+          "description": "Ensure code is properly formatted before amending commits by running deno fmt automatically at the start of the amend process",
+          "category": "other",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-09T16:39:46.000Z",
+          "mergedAt": "2025-06-09T17:16:14.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "user-experience"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": null,
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1056,
+          "title": "Update markdown decks to use hierarchical dot syntax for card references",
+          "description": "Implement a hierarchical ID system that aligns with TOML's dot notation",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-09T15:01:31.000Z",
+          "mergedAt": "2025-06-09T16:26:48.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Custom excerpts for better SEO\n\nThis makes our blog system more powerful and flexible...",
+            "companyAlignment": "Aligns with company focus on system",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1054,
+          "title": "Add markdown decks implementation plan and initial structure",
+          "description": "Create foundation for transitioning from TypeScript to Markdown-based deck creation",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-09T13:49:21.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": null,
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1053,
+          "title": "Add implementation plan for deck system .lead() method",
+          "description": "Create plan for adding transitional content support to the deck system through a new",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-09T00:41:46.000Z",
+          "mergedAt": "2025-06-09T14:22:34.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Custom excerpts for better SEO\n\nThis makes our blog system more powerful and flexible...",
+            "companyAlignment": "Aligns with company focus on system",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1052,
+          "title": "eol lint rule",
+          "description": "",
+          "category": "other",
+          "impact": "low",
+          "author": "randallb",
+          "createdAt": "2025-06-09T00:09:09.000Z",
+          "mergedAt": "2025-06-09T00:14:20.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": null
+          }
+        },
+        {
+          "prNumber": 1051,
+          "title": "Fix BlogPost test expectations to work with existing blog content",
+          "description": "The BlogPost connection tests were failing because they assumed an empty blog directory, but the docs/blog directory contains actual blog posts",
+          "category": "bugfix",
+          "impact": "low",
+          "author": "randallb",
+          "createdAt": "2025-06-08T23:56:45.000Z",
+          "mergedAt": "2025-06-09T00:08:59.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "integration"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: When you make calibrating your actual data the first thing in your process, and\nthen grade the grade...",
+            "companyAlignment": "Supports technical philosophy around evaluation",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1050,
+          "title": "e2e testing uses browsers you can see",
+          "description": "",
+          "category": "testing",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-08T23:55:50.000Z",
+          "mergedAt": "2025-06-08T23:59:16.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": "Supports technical philosophy around evaluation",
+            "suggestedContentType": null
+          }
+        },
+        {
+          "prNumber": 1049,
+          "title": "Implementation plan for spacial extractor",
+          "description": "Summary:   <",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-08T20:31:18.000Z",
+          "mergedAt": "2025-06-08T20:34:45.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "infrastructure"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 1048,
+          "title": "Add line item extractor implementation plan for ExampleCustomer",
+          "description": "Create comprehensive implementation plan for restaurant invoice line item spatial extractor following Bolt Foundry's planning process",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-08T20:03:51.000Z",
+          "mergedAt": null,
+          "nextSteps": [
+            "and open questions",
+            "List:**"
+          ],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "api-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": "Aligns with company focus on foundry",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1047,
+          "title": "Implement blog pagination with Relay connections",
+          "description": "Add full Relay connection support to BlogPost GraphQL type with cursor-based pagination",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-07T23:01:28.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "integration",
+            "api-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 1046,
+          "title": "eval.builders spec",
+          "description": "",
+          "category": "infrastructure",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-07T20:53:30.000Z",
+          "mergedAt": "2025-06-07T23:05:03.000Z",
+          "nextSteps": [],
+          "externalRelevance": "Potentially relevant for external communication",
+          "majorUpdateFlags": [
+            "user-experience"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": "Supports technical philosophy around evaluation",
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 1045,
+          "title": "Apply prefer-generic-array-syntax codemod",
+          "description": "Update all existing Type[] syntax to Array<Type> across the codebase",
+          "category": "other",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-07T15:33:16.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": "Potentially relevant for external communication",
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": null
+          }
+        },
+        {
+          "prNumber": 1044,
+          "title": "Apply prefer-generic-array-syntax codemod",
+          "description": "Update all existing Type[] syntax to Array<Type> across the codebase",
+          "category": "other",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-07T15:25:55.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": "Potentially relevant for external communication",
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": null
+          }
+        },
+        {
+          "prNumber": 1043,
+          "title": "Add prefer-generic-array-syntax lint rule",
+          "description": "Add new lint rule to enforce Array<Type> syntax over Type[] for consistency",
+          "category": "feature",
+          "impact": "low",
+          "author": "randallb",
+          "createdAt": "2025-06-07T15:25:54.000Z",
+          "mergedAt": "2025-06-07T16:17:33.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": null
+          }
+        },
+        {
+          "prNumber": 1042,
+          "title": "Add prefer-generic-array-syntax lint rule and fix violations",
+          "description": "Enforce using Array<Type> syntax instead of Type[] for consistency across the codebase",
+          "category": "feature",
+          "impact": "low",
+          "author": "randallb",
+          "createdAt": "2025-06-07T15:18:06.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: ## A 60-minute fix ⏰\n\nWithout even using our software and only using\n**[our prompt philosophy](docs/...",
+            "companyAlignment": "Aligns with company focus on using",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1041,
+          "title": "Remove project-level versioning concept",
+          "description": "Simplify project management by removing version tables and version-specific documentation",
+          "category": "refactor",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-07T15:18:05.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "breaking-change",
+            "infrastructure"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: This is a git submodule\npointing to a private GitHub repository that only specific team members have...",
+            "companyAlignment": "Aligns with company focus on documentation",
+            "suggestedContentType": "technical-deep-dive"
+          }
+        },
+        {
+          "prNumber": 1040,
+          "title": "Add Relay Connection support to GraphQL builder",
+          "description": "Implement Relay-style pagination with connections, edges, and page info for GraphQL APIs",
+          "category": "feature",
+          "impact": "high",
+          "author": "randallb",
+          "createdAt": "2025-06-07T14:58:42.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": "Public API or interface change",
+          "majorUpdateFlags": [
+            "user-experience",
+            "integration",
+            "api-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 1036,
+          "title": "Convert technical-writer from card to deck format",
+          "description": "Transform technical-writer",
+          "category": "other",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-06T19:03:50.000Z",
+          "mergedAt": "2025-06-07T02:09:15.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "user-experience"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: When you make calibrating your actual data the first thing in your process, and\nthen grade the grade...",
+            "companyAlignment": null,
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1035,
+          "title": "Update AI tooling and clean up generated files",
+          "description": "Enable bff ai: commands in GitHub Claude workflow and update documentation to reflect current build process",
+          "category": "refactor",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-06T18:57:56.000Z",
+          "mergedAt": "2025-06-07T02:08:32.000Z",
+          "nextSteps": [],
+          "externalRelevance": "Potentially relevant for external communication",
+          "majorUpdateFlags": [
+            "user-experience"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": "Aligns with company focus on documentation",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1034,
+          "title": "Add bff ai to essential commands in AGENTS.md",
+          "description": "Include the AI-safe command namespace in the essential commands list since AI agents need to know about commands they can safely use",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-06T18:56:33.000Z",
+          "mergedAt": "2025-06-06T19:01:26.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "core-functionality"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": "Aligns with company focus on about",
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 1033,
+          "title": "Streamline AGENTS.md to be a concise AI agent configuration",
+          "description": "Replace the full project documentation copy with a focused quick-start guide for AI coding assistants",
+          "category": "documentation",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-06T18:54:19.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": "Potentially relevant for external communication",
+          "majorUpdateFlags": [
+            "user-experience",
+            "infrastructure"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": "Aligns with company focus on documentation",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1032,
+          "title": "Rename cards/ directory to decks/ per documentation philosophy",
+          "description": "Align directory structure with documentation philosophy that defines decks/ as the home for structured behaviors and specifications",
+          "category": "documentation",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-06T18:50:41.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "infrastructure",
+            "api-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: This is a git submodule\npointing to a private GitHub repository that only specific team members have...",
+            "companyAlignment": "Aligns with company focus on structured",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1031,
+          "title": "Apply fractal documentation structure to component docs",
+          "description": "Reorganize all component-level documentation to mirror the top-level docs/memos/decks structure for consistency across the codebase",
+          "category": "documentation",
+          "impact": "low",
+          "author": "randallb",
+          "createdAt": "2025-06-06T18:45:04.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": "Aligns with company focus on documentation",
+            "suggestedContentType": null
+          }
+        },
+        {
+          "prNumber": 1030,
+          "title": "Reorganize documentation structure per docs philosophy",
+          "description": "- Move builder guides from docs/ to memos/guides/ - Move plans from docs/ to memos/plans/ with 2025-06 date prefixes - Move blog from content/blog/ to docs/blog/ - Move user docs to docs/guides/ - Remove MDX support, convert remaining",
+          "category": "feature",
+          "impact": "low",
+          "author": "randallb",
+          "createdAt": "2025-06-06T18:20:32.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": "Direct customer-facing improvement",
+          "majorUpdateFlags": [
+            "core-functionality",
+            "breaking-change",
+            "user-experience"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": "Aligns with company focus on documentation",
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 1028,
+          "title": "e2e blog screenshots",
+          "description": "",
+          "category": "testing",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-06T06:35:16.000Z",
+          "mergedAt": "2025-06-06T17:28:15.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": null
+          }
+        },
+        {
+          "prNumber": 1027,
+          "title": "Add documentation philosophy guide",
+          "description": "Establish a clear structure for organizing documentation at Bolt Foundry: - content/ for user-facing documentation (docs and blogs) - memos/ for builder documentation (guides and plans) - decks/ for structured behaviors and specifications  This philosophy document: - Defines the three-part documentation structure - Explains the users vs builders distinction - Clarifies evergreen vs dated documentation - Documents naming conventions (date prefixes for plans and blogs) - Positions documentation as essential for team clarity and focus  The new structure ensures nobody (AI or human, customer or team member) is confused about what we're working on, keeping everyone's attention focused on understanding what they need to know to work with us",
+          "category": "feature",
+          "impact": "low",
+          "author": "randallb",
+          "createdAt": "2025-06-06T06:09:24.000Z",
+          "mergedAt": "2025-06-06T17:45:23.000Z",
+          "nextSteps": [],
+          "externalRelevance": "Direct customer-facing improvement",
+          "majorUpdateFlags": [
+            "core-functionality",
+            "user-experience",
+            "infrastructure",
+            "api-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Uses novelty indicator: \"custom\"",
+            "companyAlignment": "Aligns with company focus on structured",
+            "suggestedContentType": "technical-deep-dive"
+          }
+        },
+        {
+          "prNumber": 1026,
+          "title": "feat: implement blog system with MDX support",
+          "description": "Add a simple blog system by copying the docs pattern to enable MDX-based blog posts",
+          "category": "feature",
+          "impact": "low",
+          "author": "randallb",
+          "createdAt": "2025-06-06T05:35:56.000Z",
+          "mergedAt": "2025-06-06T05:39:25.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Custom excerpts for better SEO\n\nThis makes our blog system more powerful and flexible...",
+            "companyAlignment": "Aligns with company focus on system",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1025,
+          "title": "Build eval folder",
+          "description": "Summary:  --- [//]: # (BEGIN SAPLING FOOTER) Stack created with [Sapling](https://sapling-scm",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-06T05:33:36.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": "Potentially relevant for external communication",
+          "majorUpdateFlags": [
+            "user-experience"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": "Supports technical philosophy around evaluation",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1024,
+          "title": "Fix outdated documentation in bff-eval package",
+          "description": "Update bff-eval package documentation to match implementation:  Changes: - Replace 'groundTruthScore' with 'score' field in docs/evals-overview",
+          "category": "feature",
+          "impact": "low",
+          "author": "randallb",
+          "createdAt": "2025-06-06T05:18:38.000Z",
+          "mergedAt": "2025-06-06T05:54:03.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "core-functionality",
+            "integration"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": "Aligns with company focus on documentation",
+            "suggestedContentType": "technical-deep-dive"
+          }
+        },
+        {
+          "prNumber": 1023,
+          "title": "Update waitlist e2e test for new inline form design",
+          "description": "Remove modal-based waitlist flow in favor of inline form on homepage",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-06T05:10:31.000Z",
+          "mergedAt": "2025-06-06T05:13:57.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "breaking-change",
+            "user-experience"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": "Supports technical philosophy around evaluation",
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 1021,
+          "title": "fix: update bff-eval README scoring terminology",
+          "description": "Fixes #issue-1018\r \r Updated the bff-eval README to use \"score\" instead of \"ground truth score\" terminology throughout the document",
+          "category": "bugfix",
+          "impact": "low",
+          "author": "randallb",
+          "createdAt": "2025-06-06T01:06:25.000Z",
+          "mergedAt": "2025-06-06T01:09:49.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "core-functionality"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": "Aligns with company focus on score",
+            "suggestedContentType": "technical-deep-dive"
+          }
+        },
+        {
+          "prNumber": 1011,
+          "title": "Add helpful error message for missing OPENROUTER_API_KEY",
+          "description": "When the OPENROUTER_API_KEY environment variable is not set, bff-eval now provides a clear and actionable error message with setup instructions",
+          "category": "feature",
+          "impact": "high",
+          "author": "randallb",
+          "createdAt": "2025-06-05T15:54:35.000Z",
+          "mergedAt": "2025-06-05T15:56:11.000Z",
+          "nextSteps": [],
+          "externalRelevance": "Public API or interface change",
+          "majorUpdateFlags": [
+            "core-functionality",
+            "integration",
+            "api-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": "Supports technical philosophy around evaluation",
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 1010,
+          "title": "Fix bff-eval CI build by adding bolt-foundry build step",
+          "description": "The bff-eval package depends on @bolt-foundry/bolt-foundry@0",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-05T15:38:06.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": "Potentially relevant for external communication",
+          "majorUpdateFlags": [
+            "user-experience",
+            "infrastructure",
+            "integration"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": "Aligns with company focus on foundry",
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 1009,
+          "title": "Fix bff-eval CI build by adding bolt-foundry build step",
+          "description": "The bff-eval package depends on @bolt-foundry/bolt-foundry@0",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-05T15:33:35.000Z",
+          "mergedAt": "2025-06-05T15:39:29.000Z",
+          "nextSteps": [],
+          "externalRelevance": "Potentially relevant for external communication",
+          "majorUpdateFlags": [
+            "user-experience",
+            "infrastructure",
+            "integration"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": "Aligns with company focus on foundry",
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 1008,
+          "title": "npm build fix?",
+          "description": "Summary:   <",
+          "category": "bugfix",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-05T15:25:42.000Z",
+          "mergedAt": "2025-06-05T15:25:59.000Z",
+          "nextSteps": [],
+          "externalRelevance": "Potentially relevant for external communication",
+          "majorUpdateFlags": [
+            "user-experience"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 1007,
+          "title": "Remove prepublish and postpublish scripts from bff-eval",
+          "description": "Simplify the bff-eval package by removing the npm lifecycle scripts that were running prepare-publish",
+          "category": "refactor",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-05T15:16:18.000Z",
+          "mergedAt": "2025-06-05T15:16:42.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "breaking-change",
+            "integration"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": "Supports technical philosophy around evaluation",
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 1006,
+          "title": "Fix TypeScript imports and remove .ts grader files",
+          "description": "Update imports to use main export instead of subpath exports to fix CI build issues",
+          "category": "bugfix",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-05T15:05:08.000Z",
+          "mergedAt": "2025-06-05T15:05:54.000Z",
+          "nextSteps": [],
+          "externalRelevance": "Potentially relevant for external communication",
+          "majorUpdateFlags": [
+            "core-functionality",
+            "breaking-change",
+            "user-experience",
+            "infrastructure",
+            "integration"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": "Aligns with company focus on grader",
+            "suggestedContentType": "technical-deep-dive"
+          }
+        },
+        {
+          "prNumber": 1005,
+          "title": "Simplify bff-eval TypeScript support and update dependencies",
+          "description": "Remove tsx dependency and TypeScript-specific handling from bff-eval package",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-05T14:45:45.000Z",
+          "mergedAt": "2025-06-05T14:52:01.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "breaking-change",
+            "infrastructure",
+            "integration"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: This is a git submodule\npointing to a private GitHub repository that only specific team members have...",
+            "companyAlignment": "Supports technical philosophy around evaluation",
+            "suggestedContentType": "technical-deep-dive"
+          }
+        },
+        {
+          "prNumber": 1004,
+          "title": "Disable jsr",
+          "description": "--- [//]: # (BEGIN SAPLING FOOTER) Stack created with [Sapling](https://sapling-scm",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-05T14:25:28.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": null,
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1003,
+          "title": "update publish workflow",
+          "description": "--- [//]: # (BEGIN SAPLING FOOTER) Stack created with [Sapling](https://sapling-scm",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-05T14:15:39.000Z",
+          "mergedAt": "2025-06-05T14:18:09.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": null,
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1002,
+          "title": "cut new version",
+          "description": "",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-05T14:02:52.000Z",
+          "mergedAt": "2025-06-05T14:04:35.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": null
+          }
+        },
+        {
+          "prNumber": 1001,
+          "title": "Add npm install step to bff-eval build process",
+          "description": "Ensure bff-eval dependencies are installed before building during the main build process",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-05T13:50:44.000Z",
+          "mergedAt": "2025-06-05T13:56:10.000Z",
+          "nextSteps": [],
+          "externalRelevance": "Potentially relevant for external communication",
+          "majorUpdateFlags": [
+            "core-functionality",
+            "user-experience",
+            "infrastructure"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: When you make calibrating your actual data the first thing in your process, and\nthen grade the grade...",
+            "companyAlignment": "Supports technical philosophy around evaluation",
+            "suggestedContentType": "technical-deep-dive"
+          }
+        },
+        {
+          "prNumber": 999,
+          "title": "Add parallel processing and enhanced feedback to bff-eval",
+          "description": "Improve bff-eval performance and user experience with parallel sample processing and detailed progress reporting",
+          "category": "feature",
+          "impact": "high",
+          "author": "randallb",
+          "createdAt": "2025-06-05T13:43:14.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": "Direct customer-facing improvement",
+          "majorUpdateFlags": [
+            "performance",
+            "user-experience"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Your first prompt should be your eval grader\n\nWe've built a number of LLM apps, and while we could s...",
+            "companyAlignment": "Supports technical philosophy around evaluation",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 998,
+          "title": "Add path resolution and TypeScript grader support to bff-eval",
+          "description": "Enable relative path resolution for input/grader files and add runtime TypeScript support",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-05T13:24:32.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": "Aligns with company focus on grader",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 996,
+          "title": "Add bff-eval npm build step to build pipeline",
+          "description": "- Added bff-eval package build after bolt-foundry build - Updated bff-eval version from 0",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-05T04:54:47.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": "Potentially relevant for external communication",
+          "majorUpdateFlags": [
+            "user-experience",
+            "integration"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": "Aligns with company focus on foundry",
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 994,
+          "title": "Create demo files for bff-eval",
+          "description": "--- [//]: # (BEGIN SAPLING FOOTER) Stack created with [Sapling](https://sapling-scm",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-05T04:35:32.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": "Potentially relevant for external communication",
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": "Supports technical philosophy around evaluation",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 993,
+          "title": "Update eval documentation for consistent terminology and CLI usage",
+          "description": "Standardize eval documentation to use consistent naming and command formats",
+          "category": "documentation",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-05T04:02:43.000Z",
+          "mergedAt": "2025-06-05T04:36:51.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "user-experience"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": "Aligns with company focus on documentation",
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 992,
+          "title": "Change eval CLI argument from --deck to --grader",
+          "description": "Update the evaluation command interface to use more intuitive terminology",
+          "category": "other",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-05T03:39:04.000Z",
+          "mergedAt": "2025-06-05T03:48:18.000Z",
+          "nextSteps": [],
+          "externalRelevance": "Public API or interface change",
+          "majorUpdateFlags": [
+            "user-experience",
+            "api-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": "Aligns with company focus on grader",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 991,
+          "title": "yay",
+          "description": "--- [//]: # (BEGIN SAPLING FOOTER) Stack created with [Sapling](https://sapling-scm",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-05T03:30:15.000Z",
+          "mergedAt": "2025-06-05T03:50:30.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": null,
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 988,
+          "title": "Add bff-eval CLI package and update Node.js to v22",
+          "description": "Create a new Node",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-05T01:09:06.000Z",
+          "mergedAt": "2025-06-05T02:56:46.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "integration"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": "Supports technical philosophy around evaluation",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 987,
+          "title": "Refactor: Update nomenclature from judge to grader throughout evals",
+          "description": "This change updates all references from 'judge' to 'grader' in the bolt-foundry evals package to better reflect the evaluation functionality",
+          "category": "refactor",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-05T00:36:31.000Z",
+          "mergedAt": "2025-06-05T01:10:24.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "breaking-change",
+            "integration"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Better metadata organization\n2...",
+            "companyAlignment": "Aligns with company focus on foundry",
+            "suggestedContentType": "technical-deep-dive"
+          }
+        },
+        {
+          "prNumber": 984,
+          "title": "Add concise vs curt tone evaluation example",
+          "description": "Create evaluation dataset and judge to distinguish between appropriately concise responses (brief but helpful) and inappropriately curt responses (rudely brief or dismissive)",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-04T18:02:12.000Z",
+          "mergedAt": "2025-06-04T18:42:40.000Z",
+          "nextSteps": [],
+          "externalRelevance": "Potentially relevant for external communication",
+          "majorUpdateFlags": [
+            "user-experience",
+            "infrastructure",
+            "api-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": "Supports technical philosophy around evaluation",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 983,
+          "title": "Add sample field to JudgementResult for better disagreement analysis",
+          "description": "Store complete original sample data in evaluation results to improve disagreement analysis",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-04T17:33:42.000Z",
+          "mergedAt": "2025-06-04T17:39:28.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Better metadata organization\n2...",
+            "companyAlignment": "Supports technical philosophy around evaluation",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 980,
+          "title": "Temporary Commit at 6/4/2025, 8:09:35 AM",
+          "description": "Summary:  --- [//]: # (BEGIN SAPLING FOOTER) Stack created with [Sapling](https://sapling-scm",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-04T15:32:22.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": null,
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 979,
+          "title": "Add array pattern support for samples API alongside builder pattern",
+          "description": "Implement Phase 1 of the samples API refactor to support both array and builder patterns for defining samples",
+          "category": "feature",
+          "impact": "high",
+          "author": "randallb",
+          "createdAt": "2025-06-04T14:55:32.000Z",
+          "mergedAt": "2025-06-04T15:40:03.000Z",
+          "nextSteps": [],
+          "externalRelevance": "Public API or interface change",
+          "majorUpdateFlags": [
+            "breaking-change",
+            "user-experience",
+            "integration",
+            "api-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": "Aligns with company focus on samples",
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 978,
+          "title": "Enhance eval command output formatting and user experience",
+          "description": "Improve the evaluation command's output formatting for better clarity and usability:  Changes: - Replace logger",
+          "category": "refactor",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-04T14:28:46.000Z",
+          "mergedAt": "2025-06-04T14:35:21.000Z",
+          "nextSteps": [],
+          "externalRelevance": "Direct customer-facing improvement",
+          "majorUpdateFlags": [
+            "user-experience"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Better metadata organization\n2...",
+            "companyAlignment": "Supports technical philosophy around evaluation",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 977,
+          "title": "Add samples API refactor and eval reconciler plans",
+          "description": "This commit introduces comprehensive planning documentation for two major improvements to the Bolt Foundry SDK:  - Document plan to unify sample types across builders and evals - Change from builder pattern to simpler array pattern - Consolidate rating/groundTruthScore to single 'score' field - Add metadata support for extensibility - Phased implementation approach to minimize breaking changes  - Design new reconciliation capability for evaluation system - Verify judge adherence to specified evaluation criteria - Track coverage metrics and identify missing criteria - Support both rule-based and LLM-powered analysis strategies  - Update README",
+          "category": "feature",
+          "impact": "high",
+          "author": "randallb",
+          "createdAt": "2025-06-04T14:23:17.000Z",
+          "mergedAt": "2025-06-04T14:29:39.000Z",
+          "nextSteps": [],
+          "externalRelevance": "Public API or interface change",
+          "majorUpdateFlags": [
+            "core-functionality",
+            "breaking-change",
+            "user-experience",
+            "infrastructure",
+            "integration",
+            "api-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Better metadata organization\n2...",
+            "companyAlignment": "Aligns with company focus on foundry",
+            "suggestedContentType": "technical-deep-dive"
+          }
+        },
+        {
+          "prNumber": 976,
+          "title": "output ergonomics",
+          "description": "Summary:  --- [//]: # (BEGIN SAPLING FOOTER) Stack created with [Sapling](https://sapling-scm",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-04T14:10:22.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": null,
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 975,
+          "title": "reconciler and samples update project plans",
+          "description": "Summary:  --- [//]: # (BEGIN SAPLING FOOTER) Stack created with [Sapling](https://sapling-scm",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-04T14:10:21.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "infrastructure"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": "Aligns with company focus on samples",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 974,
+          "title": "Fix flake",
+          "description": "Summary:",
+          "category": "bugfix",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-04T01:51:08.000Z",
+          "mergedAt": "2025-06-04T02:28:19.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": null
+          }
+        },
+        {
+          "prNumber": 973,
+          "title": "Add meta judge analysis to Bolt Foundry Evals",
+          "description": "Implement judge calibration system that compares judge scores against ground truth data to validate and improve judge quality",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-04T01:09:00.000Z",
+          "mergedAt": "2025-06-04T14:20:11.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "core-functionality"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Innovative approach to core capability: ai",
+            "companyAlignment": "Aligns with company focus on foundry",
+            "suggestedContentType": "technical-deep-dive"
+          }
+        },
+        {
+          "prNumber": 970,
+          "title": "fix deploy",
+          "description": "",
+          "category": "bugfix",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-03T16:15:14.000Z",
+          "mergedAt": "2025-06-03T16:16:13.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "infrastructure"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 969,
+          "title": "evals scratchpad",
+          "description": "Summary:  --- [//]: # (BEGIN SAPLING FOOTER) Stack created with [Sapling](https://sapling-scm",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-03T13:57:44.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": "Supports technical philosophy around evaluation",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 968,
+          "title": "Initial plans for evals",
+          "description": "Summary:  --- [//]: # (BEGIN SAPLING FOOTER) Stack created with [Sapling](https://sapling-scm",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-03T13:57:32.000Z",
+          "mergedAt": "2025-06-04T14:11:12.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": "Supports technical philosophy around evaluation",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 966,
+          "title": "Add GraphQL mutation for Substack newsletter subscription",
+          "description": "Implement a new GraphQL mutation to allow users to subscribe to our newsletter via Substack API integration",
+          "category": "feature",
+          "impact": "high",
+          "author": "randallb",
+          "createdAt": "2025-06-02T22:35:43.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": "Direct customer-facing improvement",
+          "majorUpdateFlags": [
+            "user-experience",
+            "integration",
+            "api-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 964,
+          "title": "Add GithubRepoStats GraphQL node for repository star tracking",
+          "description": "Implement a new GraphQL node that queries and caches GitHub repository stars for the bolt-foundry/bolt-foundry repository",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-02T22:23:09.000Z",
+          "mergedAt": "2025-06-02T23:17:34.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "api-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: This is a git submodule\npointing to a private GitHub repository that only specific team members have...",
+            "companyAlignment": "Aligns with company focus on foundry",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 963,
+          "title": "Refactor CLAUDE.md to remove overlaps with development cards",
+          "description": "Replace duplicated content with links to specialized cards for better maintainability and single source of truth",
+          "category": "refactor",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-02T20:52:39.000Z",
+          "mergedAt": "2025-06-02T22:19:33.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "core-functionality",
+            "breaking-change",
+            "infrastructure"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Better metadata organization\n2...",
+            "companyAlignment": "Aligns with company focus on cards",
+            "suggestedContentType": "technical-deep-dive"
+          }
+        },
+        {
+          "prNumber": 962,
+          "title": "Add big-picture strategy document",
+          "description": "Introduce a modern, concise articulation of Bolt Foundry's vision and strategy",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-02T20:02:57.000Z",
+          "mergedAt": "2025-06-02T20:35:34.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "infrastructure"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": "Aligns with company focus on foundry",
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 961,
+          "title": "Update GraphQL schema generation for improved type loading",
+          "description": "Enhance GraphQL schema generation to better handle BlogPost and other node types",
+          "category": "refactor",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-02T19:31:55.000Z",
+          "mergedAt": "2025-06-02T22:10:19.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "api-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Better metadata organization\n2...",
+            "companyAlignment": null,
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 960,
+          "title": "Add BlogPost node type with findX method for file loading",
+          "description": "Implement BlogPost",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-02T19:02:46.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": null
+          }
+        },
+        {
+          "prNumber": 959,
+          "title": "Add bff run and serve commands for streamlined development",
+          "description": "Implement two new BFF commands to simplify running applications: - bff run <directory>: Execute bff",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-02T17:50:40.000Z",
+          "mergedAt": "2025-06-02T19:42:10.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": null
+          }
+        },
+        {
+          "prNumber": 958,
+          "title": "Convert PageDocs to use Isograph for documentation rendering",
+          "description": "Remove direct file system access from frontend by converting the docs page to fetch content via GraphQL",
+          "category": "documentation",
+          "impact": "low",
+          "author": "randallb",
+          "createdAt": "2025-06-02T17:43:58.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "breaking-change",
+            "security",
+            "user-experience",
+            "api-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Custom excerpts for better SEO\n\nThis makes our blog system more powerful and flexible...",
+            "companyAlignment": "Aligns with company focus on documentation",
+            "suggestedContentType": "technical-deep-dive"
+          }
+        },
+        {
+          "prNumber": 957,
+          "title": "Claude updates",
+          "description": "Summary:  --- [//]: # (BEGIN SAPLING FOOTER) Stack created with [Sapling](https://sapling-scm",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-02T17:43:57.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": null,
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 956,
+          "title": "Update v0.1 docs plan to focus on markdown rendering",
+          "description": "Refocus the documentation implementation plan on rendering plain markdown files from /docs/ directory rather than MDX integration",
+          "category": "feature",
+          "impact": "low",
+          "author": "randallb",
+          "createdAt": "2025-06-02T15:06:53.000Z",
+          "mergedAt": "2025-06-02T15:11:49.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "integration"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": "Aligns with company focus on documentation",
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 955,
+          "title": "Enhance bff commit to automatically stage all file changes",
+          "description": "Update the bff commit command to automatically add new files and remove deleted files when no specific files are provided, matching the behavior of bff precommit",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-02T14:42:02.000Z",
+          "mergedAt": "2025-06-02T14:46:37.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "breaking-change",
+            "infrastructure"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": "Aligns with company focus on behavior",
+            "suggestedContentType": "technical-deep-dive"
+          }
+        },
+        {
+          "prNumber": 954,
+          "title": "Remove DocsPage and related documentation infrastructure",
+          "description": "The DocsPage component and its associated routes were removed to clean up  Changes: - Remove DocsPage import and routes from apps/boltFoundry/routes",
+          "category": "refactor",
+          "impact": "low",
+          "author": "randallb",
+          "createdAt": "2025-06-02T14:35:25.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "breaking-change",
+            "infrastructure",
+            "integration",
+            "api-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": "Aligns with company focus on foundry",
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 953,
+          "title": "Version control restart",
+          "description": "Summary:  --- [//]: # (BEGIN SAPLING FOOTER) Stack created with [Sapling](https://sapling-scm",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-02T14:35:23.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "api-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": null,
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 952,
+          "title": "Mark build as ai safe",
+          "description": "Summary:  --- [//]: # (BEGIN SAPLING FOOTER) Stack created with [Sapling](https://sapling-scm",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-02T14:35:22.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": "Potentially relevant for external communication",
+          "majorUpdateFlags": [
+            "user-experience"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": null,
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 951,
+          "title": "Remove old MDX documentation system files",
+          "description": "Remove all files from the previous MDX documentation implementation that was moved to tmp/garbage",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-05-31T03:29:18.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "breaking-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Custom excerpts for better SEO\n\nThis makes our blog system more powerful and flexible...",
+            "companyAlignment": "Aligns with company focus on documentation",
+            "suggestedContentType": "technical-deep-dive"
+          }
+        },
+        {
+          "prNumber": 950,
+          "title": "Add documentation system planning and backlog items",
+          "description": "Create comprehensive planning documents for the documentation publishing system following discovery-before-development principles",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-05-31T03:29:17.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "infrastructure"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Custom excerpts for better SEO\n\nThis makes our blog system more powerful and flexible...",
+            "companyAlignment": "Aligns with company focus on documentation",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 949,
+          "title": "Add temporary GraphQL fields for documentation",
+          "description": "Implement a janky but functional way to query documentation via GraphQL",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-05-31T03:29:16.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "api-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": "Aligns with company focus on documentation",
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 948,
+          "title": "Integrate documentation build into main build process",
+          "description": "Hook the MDX documentation build into bff build command",
+          "category": "documentation",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-05-31T03:29:15.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": "Potentially relevant for external communication",
+          "majorUpdateFlags": [
+            "core-functionality",
+            "user-experience",
+            "integration"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": "Aligns with company focus on documentation",
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 947,
+          "title": "Implement MDX build pipeline for documentation",
+          "description": "Add core infrastructure to compile markdown files to JavaScript modules using @mdx-js/mdx",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-05-31T03:29:14.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": "Potentially relevant for external communication",
+          "majorUpdateFlags": [
+            "core-functionality",
+            "user-experience",
+            "infrastructure"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: ## A 60-minute fix ⏰\n\nWithout even using our software and only using\n**[our prompt philosophy](docs/...",
+            "companyAlignment": "Aligns with company focus on documentation",
+            "suggestedContentType": "technical-deep-dive"
+          }
+        },
+        {
+          "prNumber": 944,
+          "title": "Add MDX build pipeline for documentation system",
+          "description": "Implement the foundation for processing markdown documentation files into JavaScript modules using MDX compilation",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-05-31T02:33:56.000Z",
+          "mergedAt": null,
+          "nextSteps": [
+            "will integrate this into the main build and add GraphQL/routing."
+          ],
+          "externalRelevance": "Potentially relevant for external communication",
+          "majorUpdateFlags": [
+            "user-experience"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Custom excerpts for better SEO\n\nThis makes our blog system more powerful and flexible...",
+            "companyAlignment": "Aligns with company focus on documentation",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 941,
+          "title": "Add early content marketing plan for launch week",
+          "description": "Create structured plan for Monday launch including: - Strategic positioning with teaching-first approach - Eval framework MVP specifications - Customer case study framework (anonymized) - Social post strategy for developer communities  Changes: - Add docs/early-content-plan",
+          "category": "feature",
+          "impact": "high",
+          "author": "randallb",
+          "createdAt": "2025-05-30T22:26:44.000Z",
+          "mergedAt": "2025-05-30T23:17:24.000Z",
+          "nextSteps": [],
+          "externalRelevance": "Direct customer-facing improvement",
+          "majorUpdateFlags": [
+            "infrastructure",
+            "api-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Uses novelty indicator: \"custom\"",
+            "companyAlignment": "Aligns with company focus on structured",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 937,
+          "title": "Simplify Bolt Foundry package README for better developer onboarding",
+          "description": "Rewrite the README to focus on getting developers started quickly rather than technical implementation details",
+          "category": "feature",
+          "impact": "low",
+          "author": "randallb",
+          "createdAt": "2025-05-30T15:38:41.000Z",
+          "mergedAt": "2025-05-30T17:53:57.000Z",
+          "nextSteps": [],
+          "externalRelevance": "Potentially relevant for external communication",
+          "majorUpdateFlags": [
+            "breaking-change",
+            "user-experience",
+            "integration"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Better metadata organization\n2...",
+            "companyAlignment": "Aligns with company focus on foundry",
+            "suggestedContentType": "technical-deep-dive"
+          }
+        },
+        {
+          "prNumber": 936,
+          "title": "Add library vision document for NPM developers",
+          "description": "Create a concise vision document specifically for developers discovering Bolt Foundry through NPM",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-05-30T15:30:25.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "infrastructure",
+            "integration"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": "Aligns with company focus on foundry",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 934,
+          "title": "Fix non-deterministic ordering in docsImportMap generation",
+          "description": "Sort mdxFiles array alphabetically by slug before generating the import map to ensure consistent ordering regardless of filesystem behavior",
+          "category": "bugfix",
+          "impact": "low",
+          "author": "randallb",
+          "createdAt": "2025-05-30T13:12:22.000Z",
+          "mergedAt": "2025-05-30T13:16:26.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "integration"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Custom excerpts for better SEO\n\nThis makes our blog system more powerful and flexible...",
+            "companyAlignment": "Aligns with company focus on behavior",
+            "suggestedContentType": "explainer"
+          }
+        }
+      ],
+      "nextSteps": [
+        "for implementation",
+        "and open questions",
+        "List:**",
+        "will integrate this into the main build and add GraphQL/routing."
+      ],
+      "externalImpact": [
+        "Fix build script for simplified bff-eval package: Potentially relevant for external communication",
+        "Fix eval grader for markdown decks and add debug logging: Potentially relevant for external communication",
+        "Add TOML contexts and card embedding to markdown decks: New product feature or capability"
+      ],
+      "totalPRs": 115
+    },
+    {
+      "username": "justicart",
+      "displayName": "justicart",
+      "currentFocus": "Feature development",
+      "recentWork": [
+        {
+          "prNumber": 1087,
+          "title": "fix block quotes and html characters",
+          "description": "Summary:   <",
+          "category": "bugfix",
+          "impact": "medium",
+          "author": "justicart",
+          "createdAt": "2025-06-12T16:11:33.000Z",
+          "mergedAt": "2025-06-12T16:15:50.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": null
+          }
+        },
+        {
+          "prNumber": 1059,
+          "title": "blog paper style, dry nav bar",
+          "description": "Summary:",
+          "category": "other",
+          "impact": "medium",
+          "author": "justicart",
+          "createdAt": "2025-06-09T17:40:53.000Z",
+          "mergedAt": "2025-06-09T17:46:51.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": null
+          }
+        },
+        {
+          "prNumber": 1057,
+          "title": "add backup waitlist key",
+          "description": "Summary:",
+          "category": "feature",
+          "impact": "medium",
+          "author": "justicart",
+          "createdAt": "2025-06-09T16:28:38.000Z",
+          "mergedAt": "2025-06-09T16:33:29.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "core-functionality"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 1038,
+          "title": "[deck visualizer] nested corners",
+          "description": "Summary:  --- [//]: # (BEGIN SAPLING FOOTER) Stack created with [Sapling](https://sapling-scm",
+          "category": "feature",
+          "impact": "medium",
+          "author": "justicart",
+          "createdAt": "2025-06-06T21:53:52.000Z",
+          "mergedAt": "2025-06-06T22:43:44.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": null,
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1037,
+          "title": "[deck visualizer] Change to samples array, change url to `/deckDemo`, fix handling of trailing commas",
+          "description": "--- [//]: # (BEGIN SAPLING FOOTER) Stack created with [Sapling](https://sapling-scm",
+          "category": "feature",
+          "impact": "medium",
+          "author": "justicart",
+          "createdAt": "2025-06-06T21:00:22.000Z",
+          "mergedAt": null,
+          "nextSteps": [
+            "List:"
+          ],
+          "externalRelevance": "Potentially relevant for external communication",
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": "Aligns with company focus on samples",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1029,
+          "title": "tweak decks page layout",
+          "description": "Summary:   <",
+          "category": "other",
+          "impact": "medium",
+          "author": "justicart",
+          "createdAt": "2025-06-06T16:49:26.000Z",
+          "mergedAt": "2025-06-06T16:52:55.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "user-experience"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 1022,
+          "title": "Deck visualization",
+          "description": "<img width=\"1281\" alt=\"image\" src=\"https://github",
+          "category": "other",
+          "impact": "medium",
+          "author": "justicart",
+          "createdAt": "2025-06-06T03:39:09.000Z",
+          "mergedAt": "2025-06-06T15:41:33.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: This is a git submodule\npointing to a private GitHub repository that only specific team members have...",
+            "companyAlignment": null,
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1020,
+          "title": "fix: update npm library references from @bolt-foundry/sdk to @bolt-foundry/bolt-foundry",
+          "description": "- Updated installation instructions and import statements across documentation - Fixed package references in quickstart, getting-started, product-plan, examples README, and status docs - Corrected NPM package link in STATUS",
+          "category": "bugfix",
+          "impact": "low",
+          "author": "justicart",
+          "createdAt": "2025-06-06T00:57:34.000Z",
+          "mergedAt": "2025-06-06T03:50:26.000Z",
+          "nextSteps": [
+            "List:",
+            "~~Run `bff format` to format the code~~",
+            "~~Check for any formatting changes~~",
+            "~~Amend commit if changes were made~~"
+          ],
+          "externalRelevance": "New product feature or capability",
+          "majorUpdateFlags": [
+            "user-experience",
+            "integration"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": "Aligns with company focus on foundry",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1017,
+          "title": "fix absolute links with extension",
+          "description": "Summary:   <",
+          "category": "bugfix",
+          "impact": "medium",
+          "author": "justicart",
+          "createdAt": "2025-06-05T22:03:09.000Z",
+          "mergedAt": "2025-06-05T22:07:02.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": null
+          }
+        },
+        {
+          "prNumber": 1016,
+          "title": "add back doc extensions so links work in gh",
+          "description": "Summary:",
+          "category": "feature",
+          "impact": "medium",
+          "author": "justicart",
+          "createdAt": "2025-06-05T19:55:58.000Z",
+          "mergedAt": "2025-06-05T20:03:05.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": null
+          }
+        },
+        {
+          "prNumber": 1015,
+          "title": "change code to copy to bf-eval",
+          "description": "Summary:   <",
+          "category": "other",
+          "impact": "medium",
+          "author": "justicart",
+          "createdAt": "2025-06-05T19:14:21.000Z",
+          "mergedAt": "2025-06-05T19:18:16.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": "Supports technical philosophy around evaluation",
+            "suggestedContentType": null
+          }
+        },
+        {
+          "prNumber": 1014,
+          "title": "make links absolute",
+          "description": "If you go to /docs, the links would be relative and open /team so now it will go to /docs/team  Summary:",
+          "category": "documentation",
+          "impact": "low",
+          "author": "justicart",
+          "createdAt": "2025-06-05T17:25:34.000Z",
+          "mergedAt": "2025-06-05T17:30:21.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: The most common approach to fixing it would be to stuff the prompt with more\ncontext and examples, t...",
+            "companyAlignment": null,
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1013,
+          "title": "fix links",
+          "description": "Summary:",
+          "category": "bugfix",
+          "impact": "medium",
+          "author": "justicart",
+          "createdAt": "2025-06-05T17:04:12.000Z",
+          "mergedAt": "2025-06-05T17:09:53.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": null
+          }
+        },
+        {
+          "prNumber": 1012,
+          "title": "rm blog link, fix favicon",
+          "description": "Summary:",
+          "category": "bugfix",
+          "impact": "medium",
+          "author": "justicart",
+          "createdAt": "2025-06-05T16:14:44.000Z",
+          "mergedAt": "2025-06-05T16:19:48.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": null
+          }
+        },
+        {
+          "prNumber": 986,
+          "title": "mobile friendly docs section",
+          "description": "Summary:",
+          "category": "documentation",
+          "impact": "low",
+          "author": "justicart",
+          "createdAt": "2025-06-05T00:11:28.000Z",
+          "mergedAt": "2025-06-05T00:21:37.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": null
+          }
+        },
+        {
+          "prNumber": 985,
+          "title": "Add real docs",
+          "description": "Summary:",
+          "category": "feature",
+          "impact": "low",
+          "author": "justicart",
+          "createdAt": "2025-06-04T20:40:09.000Z",
+          "mergedAt": "2025-06-04T20:45:34.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": null
+          }
+        },
+        {
+          "prNumber": 982,
+          "title": "Replace substack form with old waitlist",
+          "description": "Summary:",
+          "category": "other",
+          "impact": "medium",
+          "author": "justicart",
+          "createdAt": "2025-06-04T17:30:17.000Z",
+          "mergedAt": "2025-06-04T20:57:56.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "user-experience"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 981,
+          "title": "concise eval test",
+          "description": "Summary:    bff eval --input packages/bolt-foundry/evals/examples/concise-sample-data",
+          "category": "infrastructure",
+          "impact": "medium",
+          "author": "justicart",
+          "createdAt": "2025-06-04T17:22:02.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "infrastructure",
+            "integration"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": "Aligns with company focus on foundry",
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 972,
+          "title": "docs tweak",
+          "description": "Summary:  --- [//]: # (BEGIN SAPLING FOOTER) Stack created with [Sapling](https://sapling-scm",
+          "category": "feature",
+          "impact": "low",
+          "author": "justicart",
+          "createdAt": "2025-06-03T18:03:50.000Z",
+          "mergedAt": "2025-06-03T18:49:03.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": null,
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 971,
+          "title": "landing changes",
+          "description": "Summary:  --- [//]: # (BEGIN SAPLING FOOTER) Stack created with [Sapling](https://sapling-scm",
+          "category": "feature",
+          "impact": "medium",
+          "author": "justicart",
+          "createdAt": "2025-06-03T17:25:41.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": null,
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 946,
+          "title": "Include README.md in npm package build",
+          "description": "Add postBuild hook to copy README",
+          "category": "feature",
+          "impact": "low",
+          "author": "justicart",
+          "createdAt": "2025-05-31T03:28:23.000Z",
+          "mergedAt": "2025-05-31T03:33:00.000Z",
+          "nextSteps": [],
+          "externalRelevance": "Potentially relevant for external communication",
+          "majorUpdateFlags": [
+            "user-experience",
+            "integration"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 945,
+          "title": "Improve dynamic context documentation with clearer explanations",
+          "description": "Enhanced the dynamic context section to better explain context variables: - Added clear explanation of variable name vs AI prompt parameters - Fixed typo: 'Descript' -> 'Describe' - Added inline comments showing how context values answer prompts - Reorganized content for better readability - Added boolean example to show different data types  🤖 Generated with [Claude Code](https://claude",
+          "category": "feature",
+          "impact": "low",
+          "author": "justicart",
+          "createdAt": "2025-05-31T03:11:01.000Z",
+          "mergedAt": "2025-05-31T03:15:11.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Better metadata organization\n2...",
+            "companyAlignment": "Aligns with company focus on prompt",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 943,
+          "title": "Add card examples to packages/bolt-foundry README",
+          "description": "Added comprehensive card examples section showing: - Technical writer persona with multiple cards - Code assistant with TDD samples and ratings - Writing style enforcer with capitalization/punctuation examples  Examples demonstrate deck",
+          "category": "feature",
+          "impact": "high",
+          "author": "justicart",
+          "createdAt": "2025-05-31T02:24:46.000Z",
+          "mergedAt": "2025-05-31T02:38:23.000Z",
+          "nextSteps": [],
+          "externalRelevance": "Public API or interface change",
+          "majorUpdateFlags": [
+            "integration",
+            "api-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: When you make calibrating your actual data the first thing in your process, and\nthen grade the grade...",
+            "companyAlignment": "Aligns with company focus on foundry",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 942,
+          "title": "Comprehensive rename: cards→deck, specs→cards for improved API clarity",
+          "description": "This major refactor improves the mental model and eliminates naming confusion: - Card (top-level) → Deck (collection of cards) - Spec → Card (individual specification items) -",
+          "category": "refactor",
+          "impact": "high",
+          "author": "justicart",
+          "createdAt": "2025-05-31T00:15:00.000Z",
+          "mergedAt": "2025-05-31T00:53:52.000Z",
+          "nextSteps": [],
+          "externalRelevance": "Public API or interface change",
+          "majorUpdateFlags": [
+            "core-functionality",
+            "breaking-change",
+            "infrastructure",
+            "integration",
+            "api-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: This is a git submodule\npointing to a private GitHub repository that only specific team members have...",
+            "companyAlignment": "Aligns with company focus on cards",
+            "suggestedContentType": "technical-deep-dive"
+          }
+        },
+        {
+          "prNumber": 940,
+          "title": "convert generate-hint to bf format",
+          "description": "Summary:  --- [//]: # (BEGIN SAPLING FOOTER) Stack created with [Sapling](https://sapling-scm",
+          "category": "feature",
+          "impact": "medium",
+          "author": "justicart",
+          "createdAt": "2025-05-30T21:30:58.000Z",
+          "mergedAt": "2025-05-30T22:33:39.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "user-experience"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": null,
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 939,
+          "title": "convert generate-question to bf format",
+          "description": "Summary:  --- [//]: # (BEGIN SAPLING FOOTER) Stack created with [Sapling](https://sapling-scm",
+          "category": "feature",
+          "impact": "medium",
+          "author": "justicart",
+          "createdAt": "2025-05-30T20:01:30.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "user-experience"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": null,
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 938,
+          "title": "javascript tutor",
+          "description": "Summary:  --- [//]: # (BEGIN SAPLING FOOTER) Stack created with [Sapling](https://sapling-scm",
+          "category": "feature",
+          "impact": "medium",
+          "author": "justicart",
+          "createdAt": "2025-05-30T20:01:29.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": null,
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 895,
+          "title": "Update Formatter project status documentation",
+          "description": "Document the completion of the comprehensive Formatter implementation including GraphQL integration, dual bolt workflow, and LLM service integration",
+          "category": "feature",
+          "impact": "medium",
+          "author": "justicart",
+          "createdAt": "2025-05-24T21:33:20.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "user-experience",
+            "integration",
+            "api-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": "Aligns with company focus on documentation",
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 894,
+          "title": "Add GraphQL client functions for Formatter operations",
+          "description": "Implement client-side GraphQL functions to interact with the Formatter mutations and queries, providing type-safe interfaces for bolt management",
+          "category": "feature",
+          "impact": "medium",
+          "author": "justicart",
+          "createdAt": "2025-05-24T21:33:19.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": "Direct customer-facing improvement",
+          "majorUpdateFlags": [
+            "user-experience",
+            "api-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 893,
+          "title": "Add GraphQL schema foundation for Formatter",
+          "description": "Summary:    Create comprehensive GraphQL types and mutations to support the Formatter feature with proper bolt, card, variable, and turn management",
+          "category": "feature",
+          "impact": "medium",
+          "author": "justicart",
+          "createdAt": "2025-05-24T21:33:18.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": "New product feature or capability",
+          "majorUpdateFlags": [
+            "user-experience",
+            "api-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": null,
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 892,
+          "title": "Add context",
+          "description": "Summary:   <",
+          "category": "feature",
+          "impact": "medium",
+          "author": "justicart",
+          "createdAt": "2025-05-24T21:33:17.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": null
+          }
+        }
+      ],
+      "nextSteps": [
+        "List:",
+        "~~Run `bff format` to format the code~~",
+        "~~Check for any formatting changes~~",
+        "~~Amend commit if changes were made~~"
+      ],
+      "externalImpact": [
+        "[deck visualizer] Change to samples array, change url to `/deckDemo`, fix handling of trailing commas: Potentially relevant for external communication",
+        "fix: update npm library references from @bolt-foundry/sdk to @bolt-foundry/bolt-foundry: New product feature or capability",
+        "Include README.md in npm package build: Potentially relevant for external communication"
+      ],
+      "totalPRs": 31
+    },
+    {
+      "username": "dansisco",
+      "displayName": "dansisco",
+      "currentFocus": "Feature development",
+      "recentWork": [
+        {
+          "prNumber": 1081,
+          "title": "Make blog post publishedAt optional for draft support",
+          "description": "Support draft blog posts by making publishedAt optional in BlogPost model",
+          "category": "feature",
+          "impact": "medium",
+          "author": "dansisco",
+          "createdAt": "2025-06-11T21:03:31.000Z",
+          "mergedAt": "2025-06-11T23:51:07.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": "Aligns with company focus on model",
+            "suggestedContentType": null
+          }
+        },
+        {
+          "prNumber": 1039,
+          "title": "Add blog post: 5 things about LLM prompts everyone should know",
+          "description": "Publish comprehensive guide on LLM prompt engineering best practices",
+          "category": "feature",
+          "impact": "medium",
+          "author": "dansisco",
+          "createdAt": "2025-06-07T01:06:35.000Z",
+          "mergedAt": "2025-06-10T20:21:40.000Z",
+          "nextSteps": [],
+          "externalRelevance": "Potentially relevant for external communication",
+          "majorUpdateFlags": [
+            "user-experience"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Your first prompt should be your eval grader\n\nWe've built a number of LLM apps, and while we could s...",
+            "companyAlignment": "Aligns with company focus on prompt",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1000,
+          "title": "Add Evals documentation to sidebar navigation, Split of \"Add Evals documentation to sidebar navigation\"",
+          "description": "Include the Bolt Foundry Evals README in the docs sidebar under the Development section for easier access to evaluation documentation",
+          "category": "feature",
+          "impact": "low",
+          "author": "dansisco",
+          "createdAt": "2025-06-05T13:47:00.000Z",
+          "mergedAt": "2025-06-05T15:49:39.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "security"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": "Aligns with company focus on foundry",
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 997,
+          "title": "Update RLHF definition to include hotdog fingers with GIF link",
+          "description": "Clarify RLHF definition in the wut",
+          "category": "other",
+          "impact": "medium",
+          "author": "dansisco",
+          "createdAt": "2025-06-05T13:08:47.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": null
+          }
+        },
+        {
+          "prNumber": 995,
+          "title": "Comment out .mdx file references in DocsSidebar",
+          "description": "Temporarily disable broken documentation links by commenting out references to",
+          "category": "documentation",
+          "impact": "low",
+          "author": "dansisco",
+          "createdAt": "2025-06-05T04:41:42.000Z",
+          "mergedAt": "2025-06-05T04:54:30.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": "Aligns with company focus on documentation",
+            "suggestedContentType": null
+          }
+        },
+        {
+          "prNumber": 990,
+          "title": "Updated README in /Docs and also did a thing with the nav but undid it maybe?? ",
+          "description": "Reverted the Docs button in the landing page navigation to point to the internal /docs route instead of linking to external GitHub documentation",
+          "category": "documentation",
+          "impact": "low",
+          "author": "dansisco",
+          "createdAt": "2025-06-05T03:29:00.000Z",
+          "mergedAt": "2025-06-05T03:47:00.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "user-experience",
+            "integration",
+            "api-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: When you make calibrating your actual data the first thing in your process, and\nthen grade the grade...",
+            "companyAlignment": "Aligns with company focus on documentation",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 989,
+          "title": "documents, Fix Docs navigation to use internal route instead of external GitHub",
+          "description": "Reverted the Docs button in the landing page navigation to point to the internal /docs route instead of linking to external GitHub documentation",
+          "category": "bugfix",
+          "impact": "low",
+          "author": "dansisco",
+          "createdAt": "2025-06-05T03:28:59.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "user-experience",
+            "integration",
+            "api-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: This is a git submodule\npointing to a private GitHub repository that only specific team members have...",
+            "companyAlignment": "Aligns with company focus on documentation",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 967,
+          "title": "fix blog button",
+          "description": "Summary:",
+          "category": "bugfix",
+          "impact": "medium",
+          "author": "dansisco",
+          "createdAt": "2025-06-03T02:43:37.000Z",
+          "mergedAt": "2025-06-03T04:34:07.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "user-experience"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 965,
+          "title": "Enhance home page with custom subscription form and improved styling",
+          "description": "- Replace react-github-btn with custom BfDs button component - Add custom email subscription form using BfDs components - Improve hero section layout with background image and responsive design - Update color palette for better contrast (text color adjustment) - Add smooth scroll navigation between sections - Remove react-github-btn dependency from package",
+          "category": "feature",
+          "impact": "medium",
+          "author": "dansisco",
+          "createdAt": "2025-06-02T22:33:08.000Z",
+          "mergedAt": "2025-06-03T00:30:44.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "breaking-change",
+            "user-experience",
+            "integration"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Uses novelty indicator: \"custom\"",
+            "companyAlignment": "Aligns with company focus on using",
+            "suggestedContentType": "technical-deep-dive"
+          }
+        },
+        {
+          "prNumber": 935,
+          "title": "Add comprehensive 30-day content marketing tactical plan",
+          "description": "Establish content marketing operations with docs section and weekly podcast",
+          "category": "feature",
+          "impact": "low",
+          "author": "dansisco",
+          "createdAt": "2025-05-30T14:42:40.000Z",
+          "mergedAt": "2025-05-30T22:30:39.000Z",
+          "nextSteps": [],
+          "externalRelevance": "Potentially relevant for external communication",
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": null
+          }
+        }
+      ],
+      "nextSteps": [],
+      "externalImpact": [
+        "Add blog post: 5 things about LLM prompts everyone should know: Potentially relevant for external communication",
+        "Add comprehensive 30-day content marketing tactical plan: Potentially relevant for external communication"
+      ],
+      "totalPRs": 10
+    }
+  ],
+  "workCategorySummary": {
+    "feature": 98,
+    "bugfix": 17,
+    "refactor": 10,
+    "documentation": 10,
+    "infrastructure": 3,
+    "testing": 2,
+    "other": 16
+  },
+  "upcomingPriorities": [],
+  "blogWorthyHighlights": [
+    "#1085: Fix BlogPost.listAll() to filter future posts and sort by publishedAt (explainer - Innovative approach to core capability)",
+    "#1079: Add aibff eval command for deck evaluation (technical-deep-dive - Innovative approach to core capability)",
+    "#1082: Add merge queue support and improve Deno caching in CI (explainer - Innovative approach to core capability)",
+    "#1037: [deck visualizer] Change to samples array, change url to `/deckDemo`, fix handling of trailing commas (explainer - Innovative approach to core capability)",
+    "#1038: [deck visualizer] nested corners (explainer - Innovative approach to core capability)"
+  ],
+  "majorUpdatesOverview": [
+    "🎨 User Experience: 48 PRs",
+    "🔗 Integration: 35 PRs",
+    "🏭 Infrastructure: 30 PRs",
+    "🔄 API Changes: 28 PRs",
+    "💥 Breaking Changes: 20 PRs",
+    "🏗️ Core Functionality: 17 PRs",
+    "🔒 Security: 3 PRs",
+    "⚡ Performance: 1 PR"
+  ],
+  "exportedAt": "2025-06-13T16:28:24.331Z",
+  "version": "1.0"
+}
