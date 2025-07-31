@@ -511,6 +511,40 @@ FIRST TIME SETUP:
   const copyWorkspacePromise = reusingWorkspace
     ? Promise.resolve()
     : (async () => {
+      // Pull internalbf-docs before copying
+      ui.output("📥 Pulling internalbf-docs repository...");
+      const slPullCmd = new Deno.Command("sl", {
+        args: ["pull"],
+        cwd: "../internalbf-docs",
+        stdout: "piped",
+        stderr: "piped",
+      });
+      const slPullResult = await slPullCmd.output();
+
+      if (!slPullResult.success) {
+        const errorText = new TextDecoder().decode(slPullResult.stderr);
+        ui.output(`⚠️ Failed to pull internalbf-docs: ${errorText}`);
+      } else {
+        ui.output("✅ Pulled internalbf-docs successfully");
+      }
+
+      // Go to remote/main with --clean
+      ui.output("🔄 Switching to remote/main --clean...");
+      const slGotoCmd = new Deno.Command("sl", {
+        args: ["goto", "remote/main", "--clean"],
+        cwd: "../internalbf-docs",
+        stdout: "piped",
+        stderr: "piped",
+      });
+      const slGotoResult = await slGotoCmd.output();
+
+      if (!slGotoResult.success) {
+        const errorText = new TextDecoder().decode(slGotoResult.stderr);
+        ui.output(`⚠️ Failed to switch to remote/main: ${errorText}`);
+      } else {
+        ui.output("✅ Switched to remote/main successfully");
+      }
+
       // Create the workspace directory structure first to avoid race conditions
       await Deno.mkdir(`${workspacePath}/@bfmono`, { recursive: true });
       await Deno.mkdir(`${workspacePath}/@internalbf-docs`, {
@@ -579,6 +613,27 @@ FIRST TIME SETUP:
           abortController.abort(); // Cancel container build
           throw new Error(`💥 CRITICAL: Workspace copy failed - ${errorText}`);
         }
+      }
+
+      // Copy internalbf-docs directory
+      ui.output("📋 Copying internalbf-docs with CoW...");
+      const copyInternalDocsCmd = new Deno.Command("cp", {
+        args: [
+          "--reflink=auto",
+          "-R",
+          "../internalbf-docs/.",
+          `${workspacePath}/@internalbf-docs/`,
+        ],
+      });
+      const copyInternalDocsResult = await copyInternalDocsCmd.output();
+
+      if (!copyInternalDocsResult.success) {
+        const errorText = new TextDecoder().decode(
+          copyInternalDocsResult.stderr,
+        );
+        ui.output(`⚠️ Failed to copy internalbf-docs: ${errorText}`);
+      } else {
+        ui.output("✅ Copied internalbf-docs successfully");
       }
 
       ui.output("📂 Workspace copy complete");
