@@ -12,6 +12,44 @@ export function BfDsTextAreaExample() {
       <h2>BfDsTextArea Examples</h2>
 
       <div className="bfds-example__section">
+        <h3>Usage</h3>
+        <pre className="bfds-example__code">
+{`import { BfDsTextArea } from "@bfmono/apps/bfDs/components/BfDsTextArea.tsx";
+
+// Basic usage
+<BfDsTextArea
+  label="Message"
+  placeholder="Enter your message..."
+  value={value}
+  onChange={(e) => setValue(e.target.value)}
+/>
+
+// All available props (extends HTML textarea attributes)
+<BfDsTextArea
+  name="message"                  // string - form field name
+  value=""                        // string - controlled value
+  defaultValue=""                 // string - uncontrolled default
+  onChange={(e) => {}}            // (e: ChangeEvent) => void
+  label="Message"                 // string - label text
+  placeholder="Enter text"        // string - placeholder
+  required={false}                // boolean
+  state="default"                 // "default" | "error" | "success" | "disabled"
+  errorMessage=""                 // string - error message
+  successMessage=""               // string - success message
+  helpText=""                     // string - help text
+  className=""                    // string
+  resize="vertical"               // "none" | "both" | "horizontal" | "vertical"
+  rows={4}                        // number - visible rows
+  cols={20}                       // number - visible columns
+  disabled={false}                // boolean
+  readOnly={false}                // boolean
+  maxLength={500}                 // number
+  // ... other HTML textarea attributes
+/>`}
+        </pre>
+      </div>
+
+      <div className="bfds-example__section">
         <h3>Controlled vs Uncontrolled</h3>
         <div className="bfds-example__group">
           <BfDsTextArea

@@ -238,6 +238,42 @@ export function BfDsSelectExample() {
       <h2>BfDsSelect Examples</h2>
 
       <div className="bfds-example__section">
+        <h3>Usage</h3>
+        <pre className="bfds-example__code">
+{`import { BfDsSelect, type BfDsSelectOption } from "@bfmono/apps/bfDs/components/BfDsSelect.tsx";
+
+// Define options
+const options: BfDsSelectOption[] = [
+  { value: "1", label: "Option 1" },
+  { value: "2", label: "Option 2", disabled: true }
+];
+
+// Basic usage
+<BfDsSelect
+  options={options}
+  value={value}
+  onChange={(val) => setValue(val)}
+/>
+
+// All available props
+<BfDsSelect
+  name="country"                  // string - form field name
+  value=""                        // string - controlled value
+  defaultValue=""                 // string - uncontrolled default
+  onChange={(value) => {}}        // (value: string) => void
+  options={options}               // Array<BfDsSelectOption> (required)
+  placeholder="Select..."         // string - placeholder text
+  label="Country"                 // string - field label
+  required={false}                // boolean
+  disabled={false}                // boolean
+  className=""                    // string
+  id="select-1"                   // string - element ID
+  typeahead={false}               // boolean - enable search
+/>`}
+        </pre>
+      </div>
+
+      <div className="bfds-example__section">
         <h3>Controlled vs Uncontrolled</h3>
         <div className="bfds-example__group">
           <BfDsSelect

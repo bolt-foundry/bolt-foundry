@@ -14,6 +14,30 @@ export function BfDsListExample() {
       <h2>BfDsList Examples</h2>
 
       <div className="bfds-example__section">
+        <h3>Usage</h3>
+        <pre className="bfds-example__code">
+{`import { BfDsList } from "@bfmono/apps/bfDs/components/BfDsList.tsx";
+import { BfDsListItem } from "@bfmono/apps/bfDs/components/BfDsListItem.tsx";
+
+// Basic usage
+<BfDsList>
+  <BfDsListItem>Item 1</BfDsListItem>
+  <BfDsListItem>Item 2</BfDsListItem>
+  <BfDsListItem>Item 3</BfDsListItem>
+</BfDsList>
+
+// All available props
+<BfDsList
+  accordion={false}               // boolean - only one item expanded at a time
+  header="List Title"             // string - optional header text
+  className=""                    // string - additional CSS classes
+>
+  <BfDsListItem>Content</BfDsListItem>
+</BfDsList>`}
+        </pre>
+      </div>
+
+      <div className="bfds-example__section">
         <h3>Simple List</h3>
         <BfDsList>
           <BfDsListItem>Home</BfDsListItem>

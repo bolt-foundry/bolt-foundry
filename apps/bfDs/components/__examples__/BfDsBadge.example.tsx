@@ -35,6 +35,33 @@ export function BfDsBadgeExample() {
       <h2>BfDsBadge Component</h2>
 
       <div className="bfds-example__section">
+        <h3>Usage</h3>
+        <pre className="bfds-example__code">
+{`import { BfDsBadge } from "@bfmono/apps/bfDs/components/BfDsBadge.tsx";
+
+// Basic usage
+<BfDsBadge>Default Badge</BfDsBadge>
+
+// All available props
+<BfDsBadge
+  variant="primary"       // "default" | "primary" | "secondary" | "success" | "warning" | "error" | "info"
+  size="medium"          // "small" | "medium" | "large"
+  icon="checkCircle"     // BfDsIconName
+  outlined={false}       // boolean
+  rounded={false}        // boolean
+  clickable={false}      // boolean
+  onClick={() => {}}     // () => void
+  removable={false}      // boolean
+  onRemove={() => {}}    // () => void
+  className=""           // string
+  style={{}}            // React.CSSProperties
+>
+  Badge Content
+</BfDsBadge>`}
+        </pre>
+      </div>
+
+      <div className="bfds-example__section">
         <h3>Basic Variants</h3>
         <div
           className="bfds-example__group"

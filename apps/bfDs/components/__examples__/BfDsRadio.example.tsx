@@ -41,6 +41,45 @@ export function BfDsRadioExample() {
       <h2>BfDsRadio Examples</h2>
 
       <div className="bfds-example__section">
+        <h3>Usage</h3>
+        <pre className="bfds-example__code">
+{`import { BfDsRadio } from "@bfmono/apps/bfDs/components/BfDsRadio.tsx";
+
+// Basic usage
+<BfDsRadio
+  name="choice"
+  options={[
+    { value: "yes", label: "Yes" },
+    { value: "no", label: "No" }
+  ]}
+  value={selectedValue}
+  onChange={(value) => setSelectedValue(value)}
+/>
+
+// All available props
+<BfDsRadio
+  name="choice"                   // string (required) - field name
+  value="yes"                     // string - controlled value
+  defaultValue="no"               // string - uncontrolled default
+  onChange={(value) => {}}        // (value: string) => void
+  options={[                      // Array<BfDsRadioOption> (required)
+    {
+      value: "option1",          // string - submitted value
+      label: "Option 1",         // string - display text
+      disabled: false            // boolean - disable option
+    }
+  ]}
+  label="Select an option"        // string - group label
+  required={false}                // boolean
+  disabled={false}                // boolean - disable all options
+  orientation="vertical"          // "vertical" | "horizontal"
+  size="medium"                   // "small" | "medium" | "large"
+  className=""                    // string
+/>`}
+        </pre>
+      </div>
+
+      <div className="bfds-example__section">
         <h3>Controlled vs Uncontrolled</h3>
         <div className="bfds-example__group">
           <BfDsRadio

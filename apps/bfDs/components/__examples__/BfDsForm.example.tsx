@@ -58,6 +58,37 @@ export function BfDsFormExample() {
       <h2>BfDsForm Examples</h2>
 
       <div className="bfds-example__section">
+        <h3>Usage</h3>
+        <pre className="bfds-example__code">
+{`import { BfDsForm } from "@bfmono/apps/bfDs/components/BfDsForm.tsx";
+import { BfDsInput } from "@bfmono/apps/bfDs/components/BfDsInput.tsx";
+import { BfDsFormSubmitButton } from "@bfmono/apps/bfDs/components/BfDsFormSubmitButton.tsx";
+
+// Basic usage
+<BfDsForm
+  initialData={{ name: "", email: "" }}
+  onSubmit={(data) => console.log(data)}
+>
+  <BfDsInput name="name" label="Name" required />
+  <BfDsInput name="email" label="Email" type="email" required />
+  <BfDsFormSubmitButton />
+</BfDsForm>
+
+// All available props
+<BfDsForm<T>
+  initialData={T}                 // T (required) - initial form values
+  onSubmit={(data: T) => {}}      // (data: T) => void
+  onChange={(data: T) => {}}      // (data: T) => void
+  onError={(errors) => {}}        // (errors: FormErrors) => void
+  className=""                    // string
+  testId=""                       // string - for testing
+>
+  {/* Form controls with 'name' prop will auto-bind */}
+</BfDsForm>`}
+        </pre>
+      </div>
+
+      <div className="bfds-example__section">
         <h3>Complete Form with Context Integration</h3>
         <p className="bfds-example__label">
           All form fields automatically sync with centralized form state without

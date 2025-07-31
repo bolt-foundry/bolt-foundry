@@ -22,6 +22,33 @@ export function BfDsToggleExample() {
       <h2>BfDsToggle Examples</h2>
 
       <div className="bfds-example__section">
+        <h3>Usage</h3>
+        <pre className="bfds-example__code">
+{`import { BfDsToggle } from "@bfmono/apps/bfDs/components/BfDsToggle.tsx";
+
+// Basic usage
+<BfDsToggle
+  label="Enable notifications"
+  checked={checked}
+  onChange={(isChecked) => setChecked(isChecked)}
+/>
+
+// All available props
+<BfDsToggle
+  name="notifications"            // string - form field name
+  checked={true}                  // boolean - controlled state
+  defaultChecked={false}          // boolean - uncontrolled default
+  onChange={(checked) => {}}      // (checked: boolean) => void
+  label="Enable feature"          // string - label text
+  disabled={false}                // boolean
+  size="medium"                   // "small" | "medium" | "large"
+  className=""                    // string
+  id="toggle-1"                   // string - element ID
+/>`}
+        </pre>
+      </div>
+
+      <div className="bfds-example__section">
         <h3>Standalone Toggle</h3>
         <div className="bfds-example__group">
           <BfDsToggle

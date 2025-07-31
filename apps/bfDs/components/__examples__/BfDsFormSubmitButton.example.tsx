@@ -17,6 +17,36 @@ export function BfDsFormSubmitButtonExample() {
       <h2>BfDsFormSubmitButton Examples</h2>
 
       <div className="bfds-example__section">
+        <h3>Usage</h3>
+        <pre className="bfds-example__code">
+{`import { BfDsFormSubmitButton } from "@bfmono/apps/bfDs/components/BfDsFormSubmitButton.tsx";
+import { BfDsForm } from "@bfmono/apps/bfDs/components/BfDsForm.tsx";
+
+// Basic usage (inside BfDsForm)
+<BfDsForm onSubmit={handleSubmit}>
+  <BfDsFormSubmitButton />
+</BfDsForm>
+
+// All available props (inherits from BfDsButton)
+<BfDsFormSubmitButton
+  text="Submit"           // string (default: "Submit")
+  onClick={(e) => {}}     // (e: MouseEvent) => void (optional)
+  variant="primary"       // "primary" | "secondary" | "ghost" | "outline" | "danger"
+  size="medium"          // "small" | "medium" | "large"
+  disabled={false}        // boolean
+  loading={false}         // boolean
+  loadingText="..."       // string
+  icon="send"            // BfDsIconName
+  iconPosition="left"    // "left" | "right"
+  fullWidth={false}       // boolean
+  className=""           // string
+>
+  Custom Submit Text
+</BfDsFormSubmitButton>`}
+        </pre>
+      </div>
+
+      <div className="bfds-example__section">
         <h3>Form Integration</h3>
         <p className="bfds-example__label">
           Submit button automatically integrates with form context for

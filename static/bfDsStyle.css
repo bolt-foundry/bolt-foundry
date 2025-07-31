@@ -2320,6 +2320,14 @@ a.bfds-button:hover {
   margin-bottom: 24px;
 }
 
+.bfds-example__code {
+  background-color: var(--bfds-text-005);
+  padding: 1rem;
+  border-radius: 8px;
+  overflow: auto;
+  font-family: var(--fontFamilyMono);
+}
+
 .bfds-example__group {
   display: flex;
   gap: 12px;
