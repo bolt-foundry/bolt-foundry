@@ -678,17 +678,6 @@ FIRST TIME SETUP:
             `🔄 Container '${workspaceId}' is already running - attaching to it...`,
           );
 
-          // Update Ghostty titlebar
-          try {
-            await Deno.stdout.write(
-              new TextEncoder().encode(
-                `\x1b]0;codebot (resumed): ${workspaceId}\x07`,
-              ),
-            );
-          } catch {
-            // Ignore errors
-          }
-
           // Attach to the running container
           const attachCmd = new Deno.Command("container", {
             args: ["attach", workspaceId],
@@ -716,15 +705,6 @@ FIRST TIME SETUP:
   }
 
   if (parsed.shell) {
-    // Update Ghostty titlebar with container name
-    try {
-      await Deno.stdout.write(
-        new TextEncoder().encode(`\x1b]0;codebot shell: ${workspaceId}\x07`),
-      );
-    } catch {
-      // Ignore errors if not running in a terminal that supports title updates
-    }
-
     const containerArgs = [
       "run",
       "--rm",
@@ -774,15 +754,6 @@ FIRST TIME SETUP:
   }
 
   if (parsed.exec) {
-    // Update Ghostty titlebar with container name
-    try {
-      await Deno.stdout.write(
-        new TextEncoder().encode(`\x1b]0;codebot exec: ${workspaceId}\x07`),
-      );
-    } catch {
-      // Ignore errors if not running in a terminal that supports title updates
-    }
-
     const containerArgs = [
       "run",
       "--rm",
@@ -839,15 +810,6 @@ FIRST TIME SETUP:
       parsed.cpus || autoCpus
     }`,
   );
-
-  // Update Ghostty titlebar with container name
-  try {
-    await Deno.stdout.write(
-      new TextEncoder().encode(`\x1b]0;codebot: ${workspaceId}\x07`),
-    );
-  } catch {
-    // Ignore errors if not running in a terminal that supports title updates
-  }
 
   // Check if this is first run (no credentials)
   try {
