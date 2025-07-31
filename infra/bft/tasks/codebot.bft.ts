@@ -100,6 +100,67 @@ async function getWorkspacesWithStatus(): Promise<Array<WorkspaceInfo>> {
   return workspaces;
 }
 
+interface ContainerConfig {
+  workspaceId: string;
+  workspacePath: string;
+  claudeDir: string;
+  githubToken: string;
+  memory: string;
+  cpus: string;
+  interactive?: boolean;
+  removeOnExit?: boolean;
+}
+
+function buildContainerArgs(config: ContainerConfig): Array<string> {
+  const baseArgs = [
+    "run",
+    "--name",
+    config.workspaceId,
+    "--memory",
+    config.memory,
+    "--cpus",
+    config.cpus,
+    "--dns",
+    "8.8.8.8",
+    "--dns",
+    "1.1.1.1",
+    "--dns-search",
+    "codebot.local",
+    "--dns-option",
+    "ndots:0",
+    "--volume",
+    `${config.claudeDir}:/home/codebot/.claude`,
+    "--volume",
+    `${config.workspacePath}/@bfmono:/@bfmono`,
+    "--volume",
+    `${config.workspacePath}/@internalbf-docs:/@internalbf-docs`,
+    "--volume",
+    "/tmp:/dev/shm", // Use host /tmp as shared memory for Chrome
+    "-e",
+    `GITHUB_TOKEN=${config.githubToken}`,
+    "-e",
+    "BF_E2E_MODE=true",
+    "-e",
+    "PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable",
+    "-e",
+    "PUPPETEER_DISABLE_DEV_SHM_USAGE=true",
+    "-e",
+    "PUPPETEER_NO_SANDBOX=true", // Container already provides isolation
+    "-e",
+    "DISPLAY=:99", // Virtual display for headless Chrome
+  ];
+
+  if (config.removeOnExit) {
+    baseArgs.splice(1, 0, "--rm");
+  }
+
+  if (config.interactive) {
+    baseArgs.splice(1, 0, "-it");
+  }
+
+  return baseArgs;
+}
+
 async function codebot(args: Array<string>): Promise<number> {
   const logger = getLogger("codebot");
 
@@ -759,46 +820,19 @@ FIRST TIME SETUP:
   }
 
   if (parsed.shell) {
-    const containerArgs = [
-      "run",
-      "--rm",
-      "-it",
-      "--name",
+    const containerArgs = buildContainerArgs({
       workspaceId,
-      "--memory",
-      parsed.memory || autoMemory,
-      "--cpus",
-      parsed.cpus || autoCpus,
-      "--dns",
-      "8.8.8.8",
-      "--dns",
-      "1.1.1.1",
-      "--dns-search",
-      "codebot.local",
-      "--dns-option",
-      "ndots:0",
-      "--volume",
-      `${claudeDir}:/home/codebot/.claude`,
-      "--volume",
-      `${workspacePath}/@bfmono:/@bfmono`,
-      "--volume",
-      `${workspacePath}/@internalbf-docs:/@internalbf-docs`,
-      "--volume",
-      "/tmp:/dev/shm", // Use host /tmp as shared memory for Chrome
-      "-e",
-      `GITHUB_TOKEN=${githubToken}`,
-      "-e",
-      "BF_E2E_MODE=true",
-      "-e",
-      "PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable",
-      "-e",
-      "PUPPETEER_DISABLE_DEV_SHM_USAGE=true",
-      "-e",
-      "PUPPETEER_NO_SANDBOX=true", // Container already provides isolation
-      "-e",
-      "DISPLAY=:99", // Virtual display for headless Chrome
-      "codebot",
-    ];
+      workspacePath,
+      claudeDir,
+      githubToken,
+      memory: parsed.memory || autoMemory,
+      cpus: parsed.cpus || autoCpus,
+      interactive: true,
+      removeOnExit: true,
+    });
+
+    // Add container image
+    containerArgs.push("codebot");
 
     const child = new Deno.Command("container", {
       args: containerArgs,
@@ -820,47 +854,19 @@ FIRST TIME SETUP:
   }
 
   if (parsed.exec) {
-    const containerArgs = [
-      "run",
-      "--rm",
-      "--name",
+    const containerArgs = buildContainerArgs({
       workspaceId,
-      "--memory",
-      parsed.memory || autoMemory,
-      "--cpus",
-      parsed.cpus || autoCpus,
-      "--dns",
-      "8.8.8.8",
-      "--dns",
-      "1.1.1.1",
-      "--dns-search",
-      "codebot.local",
-      "--dns-option",
-      "ndots:0",
-      "--volume",
-      `${claudeDir}:/home/codebot/.claude`,
-      "--volume",
-      `${workspacePath}/@bfmono:/@bfmono`,
-      "--volume",
-      `${workspacePath}/@internalbf-docs:/@internalbf-docs`,
-      "--volume",
-      "/tmp:/dev/shm", // Use host /tmp as shared memory for Chrome
-      "-e",
-      `GITHUB_TOKEN=${githubToken}`,
-      "-e",
-      "BF_E2E_MODE=true",
-      "-e",
-      "PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable",
-      "-e",
-      "PUPPETEER_DISABLE_DEV_SHM_USAGE=true",
-      "-e",
-      "PUPPETEER_NO_SANDBOX=true", // Container already provides isolation
-      "-e",
-      "DISPLAY=:99", // Virtual display for headless Chrome
-      "codebot",
-      "-c",
-      parsed.exec,
-    ];
+      workspacePath,
+      claudeDir,
+      githubToken,
+      memory: parsed.memory || autoMemory,
+      cpus: parsed.cpus || autoCpus,
+      interactive: false,
+      removeOnExit: true,
+    });
+
+    // Add container image and command
+    containerArgs.push("codebot", "-c", parsed.exec);
 
     const child = new Deno.Command("container", {
       args: containerArgs,
@@ -898,46 +904,23 @@ FIRST TIME SETUP:
     );
   }
 
-  const containerArgs = [
-    "run",
-    "--rm",
-    "-it",
-    "--name",
+  const containerArgs = buildContainerArgs({
     workspaceId,
-    "--memory",
-    parsed.memory || autoMemory,
-    "--cpus",
-    parsed.cpus || autoCpus,
-    "--dns",
-    "8.8.8.8",
-    "--dns",
-    "1.1.1.1",
-    "--dns-search",
-    "codebot.local",
-    "--dns-option",
-    "ndots:0",
-    "--volume",
-    `${claudeDir}:/home/codebot/.claude`,
-    "--volume",
-    `${workspacePath}:/workspace`,
-    "--volume",
-    "/tmp:/dev/shm", // Use host /tmp as shared memory for Chrome
-    "-e",
-    `GITHUB_TOKEN=${githubToken}`,
-    "-e",
-    "BF_E2E_MODE=true",
-    "-e",
-    "PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable",
-    "-e",
-    "PUPPETEER_DISABLE_DEV_SHM_USAGE=true",
-    "-e",
-    "PUPPETEER_NO_SANDBOX=true", // Container already provides isolation
-    "-e",
-    "DISPLAY=:99", // Virtual display for headless Chrome
+    workspacePath,
+    claudeDir,
+    githubToken,
+    memory: parsed.memory || autoMemory,
+    cpus: parsed.cpus || autoCpus,
+    interactive: true,
+    removeOnExit: true,
+  });
+
+  // Add container image and command
+  containerArgs.push(
     "codebot",
     "-c",
     "claude --dangerously-skip-permissions; exec /bin/bash",
-  ];
+  );
 
   const child = new Deno.Command("container", {
     args: containerArgs,
