@@ -488,6 +488,22 @@ FIRST TIME SETUP:
     // Ignore errors if not running in a terminal that supports title updates
   }
 
+  // Open the workspace folder in Finder on macOS immediately after creating/selecting workspace
+  if (!reusingWorkspace) {
+    try {
+      const openCmd = new Deno.Command("open", {
+        args: [workspacePath],
+        stdout: "null",
+        stderr: "null",
+      });
+      await openCmd.output();
+      ui.output(`📂 Opened workspace folder in Finder`);
+    } catch (error) {
+      // Don't fail if open command fails, just log it
+      logger.debug(`Failed to open workspace folder: ${error}`);
+    }
+  }
+
   // Create abort controller for cancelling operations
   const abortController = new AbortController();
 
@@ -937,22 +953,6 @@ FIRST TIME SETUP:
     await Deno.remove(workspacePath, { recursive: true });
   } else {
     ui.output(`📁 Workspace preserved at: ${workspacePath}`);
-
-    // Open the workspace folder in Finder on macOS (only for new workspaces)
-    if (!reusingWorkspace) {
-      try {
-        const openCmd = new Deno.Command("open", {
-          args: [workspacePath],
-          stdout: "null",
-          stderr: "null",
-        });
-        await openCmd.output();
-        ui.output(`📂 Opened workspace folder in Finder`);
-      } catch (error) {
-        // Don't fail if open command fails, just log it
-        logger.debug(`Failed to open workspace folder: ${error}`);
-      }
-    }
   }
   return success ? 0 : 1;
 }
