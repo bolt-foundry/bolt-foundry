@@ -11,14 +11,18 @@
       <header class="app-header">
         <h1>Codebot BFF</h1>
         <div class="header-controls">
-          <button id="new-workspace-btn" class="btn btn-primary">New Workspace</button>
-          <button id="resume-workspace-btn" class="btn">Resume Workspace</button>
+          <button id="new-workspace-btn" class="btn btn-primary">
+            New Workspace
+          </button>
+          <button id="resume-workspace-btn" class="btn">
+            Resume Workspace
+          </button>
           <div class="status-indicator">
             <span id="container-status" class="status-badge">No Container</span>
           </div>
         </div>
       </header>
-      
+
       <div class="main-content">
         <div class="split-container">
           <!-- Terminal Panel -->
@@ -27,12 +31,14 @@
               <h2>Terminal</h2>
               <div class="terminal-controls">
                 <button id="clear-terminal" class="btn btn-sm">Clear</button>
-                <button id="restart-container" class="btn btn-sm">Restart</button>
+                <button id="restart-container" class="btn btn-sm">
+                  Restart
+                </button>
               </div>
             </div>
             <div id="terminal-container" class="terminal-content"></div>
           </div>
-          
+
           <!-- File Viewer Panel -->
           <div class="panel file-viewer-panel">
             <div class="panel-header">
@@ -47,7 +53,7 @@
           </div>
         </div>
       </div>
-      
+
       <!-- Status Bar -->
       <footer class="status-bar">
         <div class="status-item">
@@ -64,6 +70,6 @@
         </div>
       </footer>
     </div>
-    <script type="module" src="/src/main.ts"></script>
+    <script type="module" src="/src/main.ts" defer></script>
   </body>
 </html>

@@ -3,7 +3,7 @@
   font-size: 16px;
   line-height: 1.5;
   font-weight: 400;
-  
+
   --primary-color: #24c8db;
   --bg-color: #1a1a1a;
   --panel-bg: #2a2a2a;
@@ -12,10 +12,10 @@
   --border-color: #444;
   --btn-bg: #333;
   --btn-hover: #444;
-  
+
   color: var(--text-color);
   background-color: var(--bg-color);
-  
+
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -229,12 +229,12 @@ body {
   .split-container {
     flex-direction: column;
   }
-  
+
   .panel {
     border-right: none;
     border-bottom: 1px solid var(--border-color);
   }
-  
+
   .panel:last-child {
     border-bottom: none;
   }

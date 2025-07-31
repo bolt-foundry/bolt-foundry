@@ -1,6 +1,16 @@
 # Codebot BFF
 
-A Tauri-based desktop GUI for managing bft codebot containers.
+A Tauri-based desktop GUI for managing bft codebot containers with embedded Deno
+runtime.
+
+## Architecture
+
+This app uses a unique architecture that combines:
+
+- **Tauri** for native window management and system APIs
+- **Embedded Deno Runtime** for running TypeScript directly without bundling
+- **Direct monorepo imports** - uses BfDs components and other modules directly
+- **Single binary distribution** - everything packed into one executable
 
 ## Features
 

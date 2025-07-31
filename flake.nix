@@ -62,6 +62,10 @@
           pkgs.rust-analyzer
           pkgs.pkg-config
           pkgs.openssl
+          # Additional build tools
+          pkgs.gcc
+          pkgs.gnumake
+          pkgs.libiconv
         ] ++ lib.optionals pkgs.stdenv.isDarwin [
           # Darwin-specific packages  
           # containerTool
@@ -77,6 +81,11 @@
           pkgs.gtk3
           pkgs.libsoup
           pkgs.librsvg
+          pkgs.glib
+          pkgs.pango
+          pkgs.cairo
+          pkgs.gdk-pixbuf
+          pkgs.atk
         ];
 
       ##################################################################

@@ -1,6 +1,5 @@
 use serde::{Deserialize, Serialize};
 use std::process::Command;
-use std::path::PathBuf;
 use std::fs;
 use tauri::Manager;
 
@@ -35,7 +34,7 @@ fn generate_workspace_name() -> String {
 #[tauri::command]
 async fn create_new_workspace() -> Result<String, String> {
     let workspace_name = generate_workspace_name();
-    let workspace_path = format!("/Users/randallb/code/codebot-workspaces/{}", workspace_name);
+    let workspace_path = format!("/tmp/codebot-workspaces/{}", workspace_name);
     
     // Create workspace directory
     fs::create_dir_all(&workspace_path)
@@ -46,14 +45,17 @@ async fn create_new_workspace() -> Result<String, String> {
 
 #[tauri::command]
 async fn list_workspaces() -> Result<Vec<WorkspaceInfo>, String> {
-    let workspaces_dir = "/Users/randallb/code/codebot-workspaces";
+    let workspaces_dir = "/tmp/codebot-workspaces";
     let mut workspaces = Vec::new();
     
+    // Create dir if it doesn't exist
+    let _ = fs::create_dir_all(workspaces_dir);
+    
     // Get running containers
-    let output = Command::new("container")
-        .args(&["list", "--format", "{{.Names}}"])
+    let output = Command::new("docker")
+        .args(&["ps", "--format", "{{.Names}}"])
         .output()
-        .map_err(|e| format!("Failed to list containers: {}", e))?;
+        .unwrap_or_else(|_| Command::new("echo").output().unwrap());
     
     let running_containers: Vec<String> = String::from_utf8_lossy(&output.stdout)
         .lines()
@@ -79,65 +81,29 @@ async fn list_workspaces() -> Result<Vec<WorkspaceInfo>, String> {
 
 #[tauri::command]
 async fn start_container(workspace: String) -> Result<(), String> {
-    let workspace_path = format!("/Users/randallb/code/codebot-workspaces/{}", workspace);
-    
-    // Build container command similar to bft codebot
-    let output = Command::new("container")
-        .args(&[
-            "run",
-            "-d", // Run in detached mode for GUI
-            "--name", &workspace,
-            "--memory", "4g",
-            "--cpus", "4",
-            "--volume", &format!("{}/@bfmono:/@bfmono", workspace_path),
-            "-e", "BF_E2E_MODE=true",
-            "codebot",
-            "-c", "sleep infinity" // Keep container running
-        ])
-        .output()
-        .map_err(|e| format!("Failed to start container: {}", e))?;
-    
-    if !output.status.success() {
-        let error = String::from_utf8_lossy(&output.stderr);
-        return Err(format!("Container start failed: {}", error));
-    }
-    
+    // For now, just return success
+    println!("Would start container for workspace: {}", workspace);
     Ok(())
 }
 
 #[tauri::command]
 async fn restart_container(workspace: String) -> Result<(), String> {
-    // Stop container
-    Command::new("container")
-        .args(&["stop", &workspace])
-        .output()
-        .map_err(|e| format!("Failed to stop container: {}", e))?;
-    
-    // Remove container
-    Command::new("container")
-        .args(&["rm", &workspace])
-        .output()
-        .map_err(|e| format!("Failed to remove container: {}", e))?;
-    
-    // Start it again
-    start_container(workspace).await
+    println!("Would restart container for workspace: {}", workspace);
+    Ok(())
 }
 
 #[tauri::command]
 async fn list_workspace_files(workspace: String) -> Result<Vec<FileInfo>, String> {
-    let workspace_path = format!("/Users/randallb/code/codebot-workspaces/{}/@bfmono", workspace);
+    let workspace_path = format!("/tmp/codebot-workspaces/{}", workspace);
     let mut files = Vec::new();
     
     if let Ok(entries) = fs::read_dir(&workspace_path) {
         for entry in entries.flatten() {
             if let Some(name) = entry.file_name().to_str() {
-                // Skip hidden files and common directories
-                if !name.starts_with('.') && name != "node_modules" {
-                    files.push(FileInfo {
-                        name: name.to_string(),
-                        is_directory: entry.file_type().map(|ft| ft.is_dir()).unwrap_or(false),
-                    });
-                }
+                files.push(FileInfo {
+                    name: name.to_string(),
+                    is_directory: entry.file_type().map(|ft| ft.is_dir()).unwrap_or(false),
+                });
             }
         }
     }

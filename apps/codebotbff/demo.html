@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Codebotbff Demo - Web Version</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: #1a1a1a;
+        color: #f6f6f6;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      #app {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Header */
+      .header {
+        background: #222;
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #444;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .header h1 {
+        font-size: 1.5rem;
+        color: #24c8db;
+      }
+
+      /* Main Layout */
+      .main-content {
+        flex: 1;
+        display: flex;
+        overflow: hidden;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        width: 300px;
+        background: #2a2a2a;
+        border-right: 1px solid #444;
+        overflow-y: auto;
+      }
+
+      .sidebar-section {
+        padding: 1rem;
+        border-bottom: 1px solid #333;
+      }
+
+      .sidebar-section h3 {
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        color: #999;
+        margin-bottom: 0.5rem;
+      }
+
+      /* Workspace List */
+      .workspace-list {
+        list-style: none;
+      }
+
+      .workspace-item {
+        padding: 0.75rem;
+        margin: 0.25rem 0;
+        background: #333;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .workspace-item:hover {
+        background: #3a3a3a;
+        transform: translateX(2px);
+      }
+
+      .workspace-item.active {
+        background: #24c8db;
+        color: #000;
+      }
+
+      .workspace-status {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 12px;
+        background: #444;
+        color: #999;
+      }
+
+      .workspace-status.running {
+        background: #1a4f1a;
+        color: #4ade80;
+      }
+
+      /* Terminal Area */
+      .terminal-area {
+        flex: 1;
+        background: #000;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .terminal-tabs {
+        background: #1a1a1a;
+        border-bottom: 1px solid #444;
+        display: flex;
+        padding: 0 0.5rem;
+      }
+
+      .terminal-tab {
+        padding: 0.75rem 1rem;
+        background: #2a2a2a;
+        border: 1px solid #444;
+        border-bottom: none;
+        margin-right: 0.25rem;
+        cursor: pointer;
+        border-radius: 4px 4px 0 0;
+        transition: background 0.2s;
+      }
+
+      .terminal-tab.active {
+        background: #000;
+        border-color: #444;
+      }
+
+      .terminal-content {
+        flex: 1;
+        padding: 1rem;
+        font-family: "Menlo", "Monaco", "Courier New", monospace;
+        font-size: 14px;
+        overflow-y: auto;
+        white-space: pre-wrap;
+      }
+
+      /* Button Styles (BfDs-like) */
+      .btn {
+        padding: 0.5rem 1rem;
+        border: 1px solid #444;
+        background: #333;
+        color: #f6f6f6;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.875rem;
+        transition: all 0.2s;
+        font-family: inherit;
+      }
+
+      .btn:hover {
+        background: #444;
+        border-color: #24c8db;
+      }
+
+      .btn-primary {
+        background: #24c8db;
+        border-color: #24c8db;
+        color: #000;
+      }
+
+      .btn-primary:hover {
+        background: #1aa3bb;
+      }
+
+      /* Status Bar */
+      .status-bar {
+        background: #222;
+        border-top: 1px solid #444;
+        padding: 0.5rem 1.5rem;
+        display: flex;
+        gap: 2rem;
+        font-size: 0.875rem;
+      }
+
+      .status-item {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .status-item .label {
+        color: #999;
+      }
+
+      /* Empty State */
+      .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #666;
+      }
+
+      .empty-state h3 {
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+        color: #999;
+      }
+
+      /* Loading Spinner */
+      .spinner {
+        width: 24px;
+        height: 24px;
+        border: 3px solid #444;
+        border-top-color: #24c8db;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin: 2rem auto;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <!-- Header -->
+      <div class="header">
+        <h1>Codebotbff Demo</h1>
+        <div>
+          <button class="btn btn-primary" onclick="createWorkspace()">
+            New Workspace
+          </button>
+          <button class="btn" onclick="refreshWorkspaces()">Refresh</button>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <!-- Sidebar -->
+        <div class="sidebar">
+          <div class="sidebar-section">
+            <h3>Workspaces</h3>
+            <ul class="workspace-list" id="workspace-list">
+              <li class="empty-state">
+                <h3>No Workspaces</h3>
+                <p>Create a new workspace to get started</p>
+              </li>
+            </ul>
+          </div>
+
+          <div class="sidebar-section">
+            <h3>Architecture Demo</h3>
+            <p style="font-size: 0.875rem; color: #999; line-height: 1.5">
+              This demo shows how Codebotbff would work as a Tauri app with
+              embedded Deno runtime. The real app would run as a native desktop
+              application.
+            </p>
+          </div>
+        </div>
+
+        <!-- Terminal Area -->
+        <div class="terminal-area">
+          <div class="terminal-tabs">
+            <div class="terminal-tab active">Terminal</div>
+            <div class="terminal-tab">Logs</div>
+            <div class="terminal-tab">Files</div>
+          </div>
+          <div class="terminal-content" id="terminal">
+            Welcome to Codebotbff Demo! ============================= This is a
+            web-based demonstration of how the Tauri + Embedded Deno app would
+            work. Key Features: - Runs TypeScript directly without bundling -
+            Uses BfDs components from the monorepo - Manages codebot containers
+            - Provides integrated terminal In the real app, this terminal would
+            be connected to the container's PTY. $ _
+          </div>
+        </div>
+      </div>
+
+      <!-- Status Bar -->
+      <div class="status-bar">
+        <div class="status-item">
+          <span class="label">Workspace:</span>
+          <span id="current-workspace">None</span>
+        </div>
+        <div class="status-item">
+          <span class="label">Status:</span>
+          <span id="current-status">Ready</span>
+        </div>
+        <div class="status-item">
+          <span class="label">Architecture:</span>
+          <span>Tauri + Embedded Deno</span>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Demo state
+      let workspaces = [];
+      let currentWorkspace = null;
+      const terminal = document.getElementById("terminal");
+
+      // Simulate creating a workspace
+      function createWorkspace() {
+        const names = [
+          "fuzzy-kitten",
+          "happy-dolphin",
+          "brave-eagle",
+          "swift-fox",
+        ];
+        const name = names[Math.floor(Math.random() * names.length)] +
+          "-" + Date.now() % 1000;
+
+        addTerminalOutput(`\n$ bft codebot --workspace ${name}`);
+        addTerminalOutput("Creating new workspace...");
+
+        setTimeout(() => {
+          workspaces.push({
+            name: name,
+            running: true,
+            created: new Date(),
+          });
+
+          addTerminalOutput(`✅ Workspace created: ${name}`);
+          addTerminalOutput("🚀 Starting container...");
+
+          setTimeout(() => {
+            addTerminalOutput("✅ Container started successfully!");
+            addTerminalOutput(`Connected to container: ${name}`);
+            addTerminalOutput("\n$ ");
+            renderWorkspaces();
+            selectWorkspace(name);
+          }, 1000);
+        }, 500);
+      }
+
+      // Render workspace list
+      function renderWorkspaces() {
+        const list = document.getElementById("workspace-list");
+
+        if (workspaces.length === 0) {
+          list.innerHTML = `
+                    <li class="empty-state">
+                        <h3>No Workspaces</h3>
+                        <p>Create a new workspace to get started</p>
+                    </li>
+                `;
+          return;
+        }
+
+        list.innerHTML = workspaces.map((ws) => `
+                <li class="workspace-item ${
+          currentWorkspace === ws.name ? "active" : ""
+        }" 
+                    onclick="selectWorkspace('${ws.name}')">
+                    <span>${ws.name}</span>
+                    <span class="workspace-status ${
+          ws.running ? "running" : ""
+        }">
+                        ${ws.running ? "Running" : "Stopped"}
+                    </span>
+                </li>
+            `).join("");
+      }
+
+      // Select a workspace
+      function selectWorkspace(name) {
+        currentWorkspace = name;
+        document.getElementById("current-workspace").textContent = name;
+        renderWorkspaces();
+
+        addTerminalOutput(`\n$ # Switched to workspace: ${name}`);
+      }
+
+      // Refresh workspaces
+      function refreshWorkspaces() {
+        addTerminalOutput("\n$ bft codebot list");
+        const spinner = document.createElement("div");
+        spinner.className = "spinner";
+        terminal.appendChild(spinner);
+
+        setTimeout(() => {
+          terminal.removeChild(spinner);
+          addTerminalOutput("Workspaces:");
+          workspaces.forEach((ws) => {
+            addTerminalOutput(
+              `  - ${ws.name} [${ws.running ? "Running" : "Stopped"}]`,
+            );
+          });
+          addTerminalOutput("\n$ ");
+        }, 500);
+      }
+
+      // Add output to terminal
+      function addTerminalOutput(text) {
+        const currentText = terminal.textContent;
+        const lines = currentText.split("\n");
+
+        // Remove cursor from last line
+        if (lines[lines.length - 1].endsWith("_")) {
+          lines[lines.length - 1] = lines[lines.length - 1].slice(
+            0,
+            -1,
+          );
+        }
+
+        // Add new text
+        terminal.textContent = lines.join("\n") + text;
+
+        // Add cursor if text ends with prompt
+        if (text.endsWith("$ ")) {
+          terminal.textContent += "_";
+        }
+
+        // Scroll to bottom
+        terminal.scrollTop = terminal.scrollHeight;
+      }
+
+      // Simulate terminal input
+      document.addEventListener("keypress", (e) => {
+        if (document.activeElement === document.body) {
+          if (e.key === "Enter") {
+            addTerminalOutput("\n$ ");
+          } else {
+            const currentText = terminal.textContent;
+            if (currentText.endsWith("_")) {
+              terminal.textContent = currentText.slice(0, -1) + e.key +
+                "_";
+            }
+          }
+        }
+      });
+
+      // Demo: Add some initial output
+      setTimeout(() => {
+        addTerminalOutput(
+          "\n\n💡 Tip: This demo simulates the Tauri app experience.",
+        );
+        addTerminalOutput("\n    In the real app, you would have:");
+        addTerminalOutput("\n    - Native window controls");
+        addTerminalOutput("\n    - Direct file system access");
+        addTerminalOutput("\n    - Real container management");
+        addTerminalOutput(
+          "\n    - Embedded Deno runtime executing TypeScript directly",
+        );
+        addTerminalOutput("\n\n$ ");
+      }, 1000);
+    </script>
+  </body>
+</html>
