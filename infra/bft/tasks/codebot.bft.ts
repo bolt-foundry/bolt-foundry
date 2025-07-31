@@ -170,10 +170,11 @@ async function codebot(args: Array<string>): Promise<number> {
     ui.output(`
 Usage: bft codebot [OPTIONS]
 
-Run Claude Code in an isolated container environment.
+Run Claude Code in an isolated container environment with Chrome/Puppeteer support.
 
 By default, starts Claude Code CLI and preserves the workspace for debugging.
 Automatically cleans up stopped containers to prevent disk space issues.
+Includes Google Chrome Stable with all dependencies for E2E testing.
 
 OPTIONS:
   --shell              Enter container shell for debugging
@@ -417,6 +418,15 @@ FIRST TIME SETUP:
     ui.output(`📁 Creating workspace: ${workspaceId}`);
   }
 
+  // Update Ghostty titlebar with workspace name as soon as we know it
+  try {
+    await Deno.stdout.write(
+      new TextEncoder().encode(`\x1b]0;codebot: ${workspaceId}\x07`),
+    );
+  } catch {
+    // Ignore errors if not running in a terminal that supports title updates
+  }
+
   // Create abort controller for cancelling operations
   const abortController = new AbortController();
 
@@ -489,7 +499,7 @@ FIRST TIME SETUP:
       ui.output("📂 Workspace copy complete");
     })();
 
-  // Container preparation (check if rebuild needed)
+  // Container preparation (check if we need to pull or build)
   const containerReadyPromise = (async () => {
     // Ensure container system is running
     try {
@@ -527,96 +537,132 @@ FIRST TIME SETUP:
       ui.output("✅ Container system started");
     }
 
+    const ghcrImage = "ghcr.io/bolt-foundry/bolt-foundry/codebot:latest";
     let needsRebuild = parsed["force-rebuild"];
+    let useLocalBuild = false;
     let rebuildReason = "";
 
     if (needsRebuild) {
       rebuildReason = "Force rebuild flag (--force-rebuild) was specified";
+      useLocalBuild = true;
     } else {
-      // Check if image exists
-      const inspectCmd = new Deno.Command("container", {
-        args: ["images", "inspect", "codebot"],
+      // First, try to pull from ghcr.io
+      ui.output("🌐 Checking for pre-built container image...");
+      const pullCmd = new Deno.Command("container", {
+        args: ["pull", ghcrImage],
+        stdout: "piped",
+        stderr: "piped",
       });
-      const inspectResult = await inspectCmd.output();
-      const inspectOutput = new TextDecoder().decode(inspectResult.stdout)
-        .trim();
+      const pullResult = await pullCmd.output();
 
-      if (!inspectResult.success || inspectOutput === "[]") {
-        needsRebuild = true;
-        rebuildReason = "Container image 'codebot' not found";
-        ui.output("📦 Container image not found - rebuild required");
+      if (pullResult.success) {
+        ui.output("✅ Successfully pulled pre-built container from ghcr.io");
+
+        // Tag it as 'codebot' for local use
+        const tagCmd = new Deno.Command("container", {
+          args: ["tag", ghcrImage, "codebot"],
+        });
+        const tagResult = await tagCmd.output();
+
+        if (!tagResult.success) {
+          ui.output("⚠️ Failed to tag remote image, will use local build");
+          useLocalBuild = true;
+        }
       } else {
-        // Check if flake files have changed since image was built
-        try {
-          const imageData = JSON.parse(inspectOutput);
-          // Get the creation time from the last build layer
-          const lastHistoryEntry = imageData[0]?.variants?.[0]?.config?.history
-            ?.slice(-1)[0];
-          const imageCreatedStr = lastHistoryEntry?.created;
+        // Pull failed, check if we have a local image
+        ui.output(
+          "⚠️ Could not pull from ghcr.io, checking for local image...",
+        );
 
-          if (imageCreatedStr) {
-            const imageCreated = new Date(imageCreatedStr);
-            ui.output(
-              `📅 Container image created: ${imageCreated.toISOString()}`,
-            );
+        const inspectCmd = new Deno.Command("container", {
+          args: ["images", "inspect", "codebot"],
+        });
+        const inspectResult = await inspectCmd.output();
+        const inspectOutput = new TextDecoder().decode(inspectResult.stdout)
+          .trim();
 
-            // Check modification times of flake files and Dockerfile
-            const flakeNixStat = await Deno.stat("flake.nix");
-            const flakeLockStat = await Deno.stat("flake.lock");
-            const dockerfileStat = await Deno.stat(
-              "infra/apps/codebot/Dockerfile",
-            );
-
-            const modifiedFiles = [];
-            if (flakeNixStat.mtime && flakeNixStat.mtime > imageCreated) {
-              modifiedFiles.push(
-                `flake.nix (${flakeNixStat.mtime.toISOString()})`,
-              );
-            }
-            if (flakeLockStat.mtime && flakeLockStat.mtime > imageCreated) {
-              modifiedFiles.push(
-                `flake.lock (${flakeLockStat.mtime.toISOString()})`,
-              );
-            }
-            if (dockerfileStat.mtime && dockerfileStat.mtime > imageCreated) {
-              modifiedFiles.push(
-                `Dockerfile (${dockerfileStat.mtime.toISOString()})`,
-              );
-            }
-
-            if (modifiedFiles.length > 0) {
-              needsRebuild = true;
-              rebuildReason = `Build files newer than container image: ${
-                modifiedFiles.join(", ")
-              }`;
-              ui.output(
-                `🔄 Files modified since image creation: ${
-                  modifiedFiles.join(", ")
-                }`,
-              );
-            } else {
-              ui.output("✅ All build files are older than container image");
-            }
-          } else {
-            needsRebuild = true;
-            rebuildReason =
-              "Could not determine image creation time from container metadata";
-            ui.output(
-              "⚠️ Could not determine image creation time - rebuild required",
-            );
-          }
-        } catch (error) {
+        if (!inspectResult.success || inspectOutput === "[]") {
           needsRebuild = true;
-          rebuildReason = `Failed to parse image metadata: ${
-            error instanceof Error ? error.message : String(error)
-          }`;
-          ui.output("⚠️ Failed to parse image info - rebuild required");
+          useLocalBuild = true;
+          rebuildReason = "No container image found (neither remote nor local)";
+          ui.output("📦 Container image not found - local build required");
+        } else {
+          // Check if local image is outdated
+          try {
+            const imageData = JSON.parse(inspectOutput);
+            const lastHistoryEntry = imageData[0]?.variants?.[0]?.config
+              ?.history
+              ?.slice(-1)[0];
+            const imageCreatedStr = lastHistoryEntry?.created;
+
+            if (imageCreatedStr) {
+              const imageCreated = new Date(imageCreatedStr);
+              ui.output(
+                `📅 Local container image created: ${imageCreated.toISOString()}`,
+              );
+
+              // Check modification times of flake files and Dockerfile
+              const flakeNixStat = await Deno.stat("flake.nix");
+              const flakeLockStat = await Deno.stat("flake.lock");
+              const dockerfileStat = await Deno.stat(
+                "infra/apps/codebot/Dockerfile",
+              );
+
+              const modifiedFiles = [];
+              if (flakeNixStat.mtime && flakeNixStat.mtime > imageCreated) {
+                modifiedFiles.push(
+                  `flake.nix (${flakeNixStat.mtime.toISOString()})`,
+                );
+              }
+              if (flakeLockStat.mtime && flakeLockStat.mtime > imageCreated) {
+                modifiedFiles.push(
+                  `flake.lock (${flakeLockStat.mtime.toISOString()})`,
+                );
+              }
+              if (dockerfileStat.mtime && dockerfileStat.mtime > imageCreated) {
+                modifiedFiles.push(
+                  `Dockerfile (${dockerfileStat.mtime.toISOString()})`,
+                );
+              }
+
+              if (modifiedFiles.length > 0) {
+                needsRebuild = true;
+                useLocalBuild = true;
+                rebuildReason =
+                  `Build files newer than local container image: ${
+                    modifiedFiles.join(", ")
+                  }`;
+                ui.output(
+                  `🔄 Files modified since image creation: ${
+                    modifiedFiles.join(", ")
+                  }`,
+                );
+              } else {
+                ui.output("✅ Local container image is up to date");
+              }
+            } else {
+              needsRebuild = true;
+              useLocalBuild = true;
+              rebuildReason =
+                "Could not determine image creation time from container metadata";
+              ui.output(
+                "⚠️ Could not determine image creation time - rebuild required",
+              );
+            }
+          } catch (error) {
+            needsRebuild = true;
+            useLocalBuild = true;
+            rebuildReason = `Failed to parse image metadata: ${
+              error instanceof Error ? error.message : String(error)
+            }`;
+            ui.output("⚠️ Failed to parse image info - rebuild required");
+          }
         }
       }
     }
 
-    if (needsRebuild) {
-      ui.output(`🔨 Rebuilding container image...`);
+    if (needsRebuild && useLocalBuild) {
+      ui.output(`🔨 Building container image locally...`);
       ui.output(`📝 Reason: ${rebuildReason}`);
       const buildCmd = new Deno.Command("container", {
         args: [
@@ -637,9 +683,9 @@ FIRST TIME SETUP:
         abortController.abort(); // Cancel workspace copy if still running
         throw new Error("Failed to rebuild container");
       }
-      ui.output("✅ Container rebuild complete");
-    } else {
-      ui.output("📦 Container image up to date");
+      ui.output("✅ Container build complete");
+    } else if (!needsRebuild) {
+      ui.output("📦 Container image ready");
     }
   })();
 
@@ -678,17 +724,6 @@ FIRST TIME SETUP:
             `🔄 Container '${workspaceId}' is already running - attaching to it...`,
           );
 
-          // Update Ghostty titlebar
-          try {
-            await Deno.stdout.write(
-              new TextEncoder().encode(
-                `\x1b]0;codebot (resumed): ${workspaceId}\x07`,
-              ),
-            );
-          } catch {
-            // Ignore errors
-          }
-
           // Attach to the running container
           const attachCmd = new Deno.Command("container", {
             args: ["attach", workspaceId],
@@ -716,15 +751,6 @@ FIRST TIME SETUP:
   }
 
   if (parsed.shell) {
-    // Update Ghostty titlebar with container name
-    try {
-      await Deno.stdout.write(
-        new TextEncoder().encode(`\x1b]0;codebot shell: ${workspaceId}\x07`),
-      );
-    } catch {
-      // Ignore errors if not running in a terminal that supports title updates
-    }
-
     const containerArgs = [
       "run",
       "--rm",
@@ -747,10 +773,20 @@ FIRST TIME SETUP:
       `${claudeDir}:/home/codebot/.claude`,
       "--volume",
       `${workspacePath}:/workspace`,
+      "--volume",
+      "/tmp:/dev/shm", // Use host /tmp as shared memory for Chrome
       "-e",
       `GITHUB_TOKEN=${githubToken}`,
       "-e",
       "BF_E2E_MODE=true",
+      "-e",
+      "PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable",
+      "-e",
+      "PUPPETEER_DISABLE_DEV_SHM_USAGE=true",
+      "-e",
+      "PUPPETEER_NO_SANDBOX=true", // Container already provides isolation
+      "-e",
+      "DISPLAY=:99", // Virtual display for headless Chrome
       "codebot",
     ];
 
@@ -774,15 +810,6 @@ FIRST TIME SETUP:
   }
 
   if (parsed.exec) {
-    // Update Ghostty titlebar with container name
-    try {
-      await Deno.stdout.write(
-        new TextEncoder().encode(`\x1b]0;codebot exec: ${workspaceId}\x07`),
-      );
-    } catch {
-      // Ignore errors if not running in a terminal that supports title updates
-    }
-
     const containerArgs = [
       "run",
       "--rm",
@@ -804,10 +831,20 @@ FIRST TIME SETUP:
       `${claudeDir}:/home/codebot/.claude`,
       "--volume",
       `${workspacePath}:/workspace`,
+      "--volume",
+      "/tmp:/dev/shm", // Use host /tmp as shared memory for Chrome
       "-e",
       `GITHUB_TOKEN=${githubToken}`,
       "-e",
       "BF_E2E_MODE=true",
+      "-e",
+      "PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable",
+      "-e",
+      "PUPPETEER_DISABLE_DEV_SHM_USAGE=true",
+      "-e",
+      "PUPPETEER_NO_SANDBOX=true", // Container already provides isolation
+      "-e",
+      "DISPLAY=:99", // Virtual display for headless Chrome
       "codebot",
       "-c",
       parsed.exec,
@@ -840,15 +877,6 @@ FIRST TIME SETUP:
     }`,
   );
 
-  // Update Ghostty titlebar with container name
-  try {
-    await Deno.stdout.write(
-      new TextEncoder().encode(`\x1b]0;codebot: ${workspaceId}\x07`),
-    );
-  } catch {
-    // Ignore errors if not running in a terminal that supports title updates
-  }
-
   // Check if this is first run (no credentials)
   try {
     await Deno.stat(`${claudeDir}/.credentials.json`);
@@ -880,10 +908,20 @@ FIRST TIME SETUP:
     `${claudeDir}:/home/codebot/.claude`,
     "--volume",
     `${workspacePath}:/workspace`,
+    "--volume",
+    "/tmp:/dev/shm", // Use host /tmp as shared memory for Chrome
     "-e",
     `GITHUB_TOKEN=${githubToken}`,
     "-e",
     "BF_E2E_MODE=true",
+    "-e",
+    "PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable",
+    "-e",
+    "PUPPETEER_DISABLE_DEV_SHM_USAGE=true",
+    "-e",
+    "PUPPETEER_NO_SANDBOX=true", // Container already provides isolation
+    "-e",
+    "DISPLAY=:99", // Virtual display for headless Chrome
     "codebot",
     "-c",
     "claude --dangerously-skip-permissions; exec /bin/bash",
