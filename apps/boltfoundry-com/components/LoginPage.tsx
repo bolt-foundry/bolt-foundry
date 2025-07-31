@@ -23,14 +23,11 @@ export const LoginPage = iso(`
     );
   }
 
-  // Check if we're in a codebot environment
-  const isCodebot = typeof window !== "undefined" &&
-    !globalThis.location.hostname.includes("localhost") &&
-    !globalThis.location.hostname.includes("127.0.0.1");
+  // Check if we're in development mode
+  const isDevelopment = appEnvironment.mode === "development";
 
   // Check if E2E mode is enabled from environment
-  // In codebot environments, always enable E2E mode
-  const isE2EMode = appEnvironment.BF_E2E_MODE === true || isCodebot;
+  const isE2EMode = appEnvironment.BF_E2E_MODE === true;
 
   // Debug logging removed to avoid console usage
 
@@ -42,7 +39,7 @@ export const LoginPage = iso(`
         <p>Sign in with your Google Workspace account to continue</p>
         <LoginWithGoogleButton />
 
-        {isCodebot && (
+        {isDevelopment && (
           <>
             <div style={{ margin: "30px 0", borderTop: "1px solid #e0e0e0" }}>
             </div>
