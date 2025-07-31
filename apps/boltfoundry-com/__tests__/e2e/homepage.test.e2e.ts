@@ -1,71 +1,117 @@
+#!/usr/bin/env -S bff e2e
+
 import { assert, assertEquals } from "@std/assert";
 import {
   navigateTo,
   teardownE2ETest,
 } from "@bfmono/infra/testing/e2e/setup.ts";
-import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { setupBoltFoundryComTest } from "../helpers.ts";
+import { takeScreenshot } from "./shared/video-helpers.ts";
+import { verifyAuthState } from "./shared/auth-helpers.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
-Deno.test("Homepage loads successfully", async () => {
+Deno.test("Homepage test", async (t) => {
   const context = await setupBoltFoundryComTest();
 
   try {
-    // Navigate to the home page
-    await navigateTo(context, "/");
+    await t.step("Homepage loads and displays correct content", async () => {
+      // Navigate to homepage
+      await navigateTo(context, "/");
+      await context.page.waitForNetworkIdle({ timeout: 5000 });
 
-    // Wait for content to load - longer timeout
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+      // Take screenshot
+      await takeScreenshot(context, "homepage-current-state");
 
-    // Basic assertions to verify the page loaded
-    const title = await context.page.title();
-    logger.info("Page title:", title);
+      // Check page title
+      const title = await context.page.title();
+      assertEquals(title, "Bolt Foundry");
 
-    // Verify we're on the right page
-    assertEquals(title, "Bolt Foundry");
+      // Check main heading is visible
+      const mainHeading = await context.page.evaluate(() => {
+        const h1 = document.querySelector("h1");
+        return h1?.textContent?.trim() || "";
+      });
+      assertEquals(
+        mainHeading,
+        "Understand what your LLM is really doing",
+      );
 
-    // Verify the page content is present
-    const pageContent = await context.page.evaluate(() =>
-      document.body.textContent
-    );
-    logger.info("Page content:", pageContent?.substring(0, 200) + "...");
-    assert(pageContent, "Page should have content");
+      // Check React hydration status
+      const reactStatus = await context.page.evaluate(() => {
+        const root = document.querySelector("#root");
+        return {
+          hasRoot: !!root,
+          hasContent: root ? root.innerHTML.length > 50 : false,
+        };
+      });
+      assertEquals(reactStatus.hasRoot, true, "Should have React root element");
+      assertEquals(
+        reactStatus.hasContent,
+        true,
+        "React root should have content",
+      );
 
-    // Debug: Check if React has hydrated
-    const reactHydrated = await context.page.evaluate(() => {
-      const root = document.querySelector("#root");
-      return root ? root.innerHTML.length > 50 : false;
+      // Use shared auth helper to check authentication state
+      const authState = await verifyAuthState(context);
+      logger.info(
+        `Homepage auth state: ${
+          authState.isAuthenticated ? "Authenticated" : "Not authenticated"
+        }`,
+      );
+
+      // Verify auth UI elements are present - check nav bar or any auth-related elements
+      const authUICheck = await context.page.evaluate(() => {
+        const bodyText = document.body.textContent || "";
+        const buttons = Array.from(document.querySelectorAll("button"));
+        const links = Array.from(document.querySelectorAll("a"));
+        return {
+          hasLoginButton: buttons.some((btn) =>
+            btn.textContent?.includes("Login")
+          ),
+          hasLoginLink: links.some((link) =>
+            link.textContent?.includes("Login")
+          ),
+          hasAuthText: bodyText.includes("Login") ||
+            bodyText.includes("Sign In"),
+          hasLogoutButton: buttons.some((btn) =>
+            btn.textContent?.includes("Logout")
+          ),
+        };
+      });
+
+      const hasAuthUI = authState.hasLogoutButton ||
+        authUICheck.hasLoginButton ||
+        authUICheck.hasLoginLink ||
+        authUICheck.hasAuthText;
+
+      logger.info(`Auth UI check: ${JSON.stringify(authUICheck)}`);
+      assertEquals(hasAuthUI, true, "Auth UI elements should be visible");
     });
-    logger.info("React hydrated:", reactHydrated);
 
-    // Debug: Check what resources failed to load
-    const failedRequests = await context.page.evaluate(() => {
-      const scripts = Array.from(document.querySelectorAll("script[src]"));
-      const links = Array.from(document.querySelectorAll("link[href]"));
-      return {
-        scripts: scripts.map((s) => s.getAttribute("src")),
-        links: links.map((l) => l.getAttribute("href")),
-        rootContent:
-          document.querySelector("#root")?.innerHTML?.substring(0, 100) ||
-          "empty",
-      };
+    await t.step("Verify page resources loaded correctly", async () => {
+      // Check what resources were loaded
+      const resources = await context.page.evaluate(() => {
+        const scripts = Array.from(document.querySelectorAll("script[src]"));
+        const links = Array.from(document.querySelectorAll("link[href]"));
+        return {
+          scriptCount: scripts.length,
+          cssCount: links.filter((l) =>
+            l.getAttribute("rel") === "stylesheet"
+          ).length,
+          hasRoot: !!document.querySelector("#root"),
+        };
+      });
+
+      assert(resources.scriptCount > 0, "Should have loaded JavaScript files");
+      assert(resources.cssCount > 0, "Should have loaded CSS files");
+      assert(resources.hasRoot, "Should have root element for React");
+
+      logger.info(
+        `Loaded ${resources.scriptCount} scripts and ${resources.cssCount} stylesheets`,
+      );
     });
-    logger.info("Resources:", failedRequests);
-
-    // Check if authentication section is present
-    const hasAuthSection = pageContent.includes("Authentication");
-    logger.info("Authentication section present:", hasAuthSection);
-
-    // Check if we can see authentication state
-    const hasAuthState = pageContent.includes("You are not logged in") ||
-      pageContent.includes("Welcome! You are logged in");
-    logger.info("Authentication state visible:", hasAuthState);
-
-    // Take a screenshot for comparison
-    await context.takeScreenshot("homepage-current-state");
-
-    logger.info("Homepage loaded successfully");
   } finally {
     await teardownE2ETest(context);
   }
