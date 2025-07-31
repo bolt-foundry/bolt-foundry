@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "@bfmono/apps/boltfoundry-com/contexts/RouterContext.tsx";
 import { BfDsList } from "../components/BfDsList.tsx";
 import { BfDsListItem } from "../components/BfDsListItem.tsx";
 import { BfDsButtonExample } from "../components/__examples__/BfDsButton.example.tsx";
@@ -198,8 +199,35 @@ const componentSections: Array<ComponentSection> = [
   },
 ];
 
-export function BfDsDemo() {
-  const [activeSection, setActiveSection] = useState<string>("button");
+interface BfDsDemoProps {
+  initialSection?: string;
+}
+
+export function BfDsDemo({ initialSection }: BfDsDemoProps = {}) {
+  const router = useRouter();
+
+  const [activeSection, setActiveSection] = useState<string>(() => {
+    if (initialSection) return initialSection;
+
+    // Parse /ui/componentId from current path
+    const match = router.currentPath.match(/^\/ui\/(.+)$/);
+    return match?.[1] || "button";
+  });
+
+  // Update section when URL changes (back/forward navigation)
+  useEffect(() => {
+    const match = router.currentPath.match(/^\/ui\/(.+)$/);
+    const sectionFromUrl = match?.[1] || "button";
+    if (sectionFromUrl !== activeSection) {
+      setActiveSection(sectionFromUrl);
+    }
+  }, [router.currentPath]);
+
+  // Handle section change with navigation
+  const handleSectionChange = (sectionId: string) => {
+    setActiveSection(sectionId);
+    router.navigate(`/ui/${sectionId}`);
+  };
 
   const categories = useMemo(() => {
     const categoryMap = new Map<string, Array<ComponentSection>>();
@@ -263,7 +291,7 @@ export function BfDsDemo() {
                 <BfDsListItem
                   key={section.id}
                   active={activeSection === section.id}
-                  onClick={() => setActiveSection(section.id)}
+                  onClick={() => handleSectionChange(section.id)}
                   className="demo-sidebar-item"
                 >
                   <div style={{ marginBottom: "4px" }}>{section.name}</div>

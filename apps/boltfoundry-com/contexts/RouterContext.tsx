@@ -28,11 +28,29 @@ export function matchRouteWithParams(
     };
   }
 
-  // Simple exact match for now
-  const match = rawPath === pathTemplate;
+  // Handle exact match
+  if (rawPath === pathTemplate) {
+    return {
+      match: true,
+      params: {},
+      queryParams,
+    };
+  }
+
+  // Handle wildcard patterns like "/ui/*"
+  if (pathTemplate.endsWith("/*")) {
+    const baseTemplate = pathTemplate.slice(0, -2); // Remove "/*"
+    if (rawPath.startsWith(baseTemplate + "/") || rawPath === baseTemplate) {
+      return {
+        match: true,
+        params: {},
+        queryParams,
+      };
+    }
+  }
 
   return {
-    match,
+    match: false,
     params: {},
     queryParams,
   };
