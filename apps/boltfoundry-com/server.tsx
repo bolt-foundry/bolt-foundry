@@ -255,6 +255,8 @@ const handler = async (request: Request): Promise<Response> => {
             mode={environment.mode}
             port={environment.port}
             currentPath={environment.currentPath}
+            GOOGLE_OAUTH_CLIENT_ID={environment.GOOGLE_OAUTH_CLIENT_ID}
+            BF_E2E_MODE={environment.BF_E2E_MODE}
           />
         </ServerRenderedPage>
       );

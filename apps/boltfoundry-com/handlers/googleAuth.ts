@@ -2,6 +2,7 @@ import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 import { getLogger } from "@bolt-foundry/logger";
 import { CurrentViewer } from "@bfmono/apps/bfDb/classes/CurrentViewer.ts";
 import { setLoginSuccessHeaders } from "@bfmono/apps/bfDb/graphql/utils/graphqlContextUtils.ts";
+import type { BfGid } from "@bfmono/lib/types.ts";
 
 const logger = getLogger(import.meta);
 
@@ -39,16 +40,18 @@ export async function handleGoogleAuthRequest(
         "🧪 Detected E2E test token in E2E mode, using mock authentication",
       );
 
-      // Set mock authentication cookies for testing
+      // Create mock authenticated viewer with valid-looking GIDs
+      const mockPersonGid = "person:test-user-e2e" as BfGid;
+      const mockOrgOid = "org:test-org-e2e" as BfGid;
+
+      logger.info("Setting mock auth headers for:", {
+        mockPersonGid,
+        mockOrgOid,
+      });
+
+      // Use the proper authentication cookie setter
       const headers = new Headers({ "Content-Type": "application/json" });
-      headers.append(
-        "Set-Cookie",
-        "bf_access=mock-access-token; HttpOnly; SameSite=Lax; Path=/; Max-Age=900",
-      );
-      headers.append(
-        "Set-Cookie",
-        "bf_refresh=mock-refresh-token; HttpOnly; SameSite=Lax; Path=/; Max-Age=2592000",
-      );
+      await setLoginSuccessHeaders(headers, mockPersonGid, mockOrgOid);
 
       return new Response(
         JSON.stringify({

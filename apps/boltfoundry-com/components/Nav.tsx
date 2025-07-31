@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { BfLogo } from "@bfmono/apps/cfDs/static/BfLogo.tsx";
 import { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
+import { useAuth } from "../contexts/AuthContext.tsx";
 
 type Props = {
   page?: string;
@@ -12,6 +13,7 @@ type Props = {
 export function Nav({ page, onSidebarToggle, sidebarOpen }: Props) {
   const [hoverLogo, setHoverLogo] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+  const { user, isAuthenticated, logout, isLoading } = useAuth();
 
   const NavButtons = () => {
     return (
@@ -77,12 +79,55 @@ export function Nav({ page, onSidebarToggle, sidebarOpen }: Props) {
           UI Demo
         </BfDsButton> */
         }
-        <BfDsButton
-          variant={page === "login" ? "secondary" : "outline-secondary"}
-          link="/login"
-        >
-          Login
-        </BfDsButton>
+        {isLoading
+          ? (
+            <BfDsButton variant="outline" disabled>
+              Loading...
+            </BfDsButton>
+          )
+          : isAuthenticated
+          ? (
+            <>
+              {user && (
+                <div className="flexRow alignItemsCenter gapSmall">
+                  {user.avatarUrl && (
+                    <img
+                      src={user.avatarUrl}
+                      alt={user.name}
+                      style={{
+                        width: 32,
+                        height: 32,
+                        borderRadius: "50%",
+                        border: "2px solid var(--bfds-border)",
+                      }}
+                    />
+                  )}
+                  <span
+                    style={{
+                      fontSize: "14px",
+                      color: "var(--bfds-text-secondary)",
+                    }}
+                  >
+                    {user.name}
+                  </span>
+                </div>
+              )}
+              <BfDsButton
+                variant="outline"
+                onClick={() => logout()}
+              >
+                Logout
+              </BfDsButton>
+            </>
+          )
+          : (
+            <BfDsButton
+              variant={page === "login" ? "secondary" : "outline-secondary"}
+              link="/login"
+            >
+              Login
+            </BfDsButton>
+          )}
       </>
     );
   };
