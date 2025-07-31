@@ -23,6 +23,7 @@ export type IsographRoute = BfIsographEntrypoint;
 export const appRoutes = new Map<string, RouteGuts>([
   ["/plinko", { Component: Plinko }],
   ["/ui", { Component: UIDemo }],
+  ["/ui/*", { Component: UIDemo }],
 ]);
 
 // Isograph-powered routes
