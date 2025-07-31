@@ -117,8 +117,8 @@ async function codebot(args: Array<string>): Promise<number> {
   }) as CodebotArgs;
 
   // Auto-calculate maximum resources if not specified
-  let autoMemory = "1g";
-  let autoCpus = "4";
+  let autoMemory = "4g";
+  let autoCpus = "8";
 
   if (!parsed.memory || !parsed.cpus) {
     try {
@@ -133,9 +133,9 @@ async function codebot(args: Array<string>): Promise<number> {
         const totalMemBytes = parseInt(
           new TextDecoder().decode(memResult.stdout).trim(),
         );
-        // Use 80% of total memory, leaving 20% for host system
+        // Use 100% of total memory
         const containerMemGb = Math.floor(
-          (totalMemBytes / 1024 / 1024 / 1024) * 0.8,
+          (totalMemBytes / 1024 / 1024 / 1024) * 1.0,
         );
         autoMemory = `${containerMemGb}g`;
       }
@@ -156,7 +156,7 @@ async function codebot(args: Array<string>): Promise<number> {
       }
 
       logger.info(
-        `Auto-detected system resources: ${autoMemory} RAM, ${autoCpus} CPUs`,
+        `Auto-detected system resources: ${autoMemory} RAM (100% of system), ${autoCpus} CPUs (all available)`,
       );
     } catch (error) {
       logger.warn(
@@ -183,7 +183,7 @@ OPTIONS:
   --resume             Show list of workspaces and choose one to resume
   --cleanup            Remove workspace after completion (default: keep)
   --force-rebuild      Force rebuild container image before starting
-  --memory SIZE        Container memory limit (e.g., 4g, 8g, 16g) (default: auto-detect 80% of system RAM)
+  --memory SIZE        Container memory limit (e.g., 4g, 8g, 16g) (default: auto-detect 100% of system RAM)
   --cpus COUNT         Number of CPUs (e.g., 2, 4, 8) (default: auto-detect all available CPUs)
   --help               Show this help message
 
