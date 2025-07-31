@@ -1,5 +1,3 @@
-// apps/boltFoundry/contexts/RouterContext.test.ts
-
 import { assertEquals } from "@std/assert";
 import {
   dynamicRoutes,

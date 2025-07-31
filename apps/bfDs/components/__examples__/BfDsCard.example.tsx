@@ -11,6 +11,33 @@ export function BfDsCardExample() {
       <h2>BfDsCard Component</h2>
 
       <div className="bfds-example__section">
+        <h3>Usage</h3>
+        <pre className="bfds-example__code">
+{`import { BfDsCard } from "@bfmono/apps/bfDs/components/BfDsCard.tsx";
+
+// Basic usage
+<BfDsCard>
+  <p>Card content</p>
+</BfDsCard>
+
+// All available props
+<BfDsCard
+  header={<h3>Card Title</h3>}   // ReactNode - header content
+  footer={<div>Footer</div>}     // ReactNode - footer content
+  variant="default"               // "default" | "elevated" | "outlined" | "flat"
+  size="medium"                   // "small" | "medium" | "large"
+  clickable={false}               // boolean - make card clickable
+  onClick={() => {}}              // () => void - click handler
+  selected={false}                // boolean - show selected state
+  disabled={false}                // boolean - disable interaction
+  className=""                    // string - additional CSS
+>
+  Card body content
+</BfDsCard>`}
+        </pre>
+      </div>
+
+      <div className="bfds-example__section">
         <h3>Basic Cards</h3>
         <div className="bfds-example__group">
           <BfDsCard>

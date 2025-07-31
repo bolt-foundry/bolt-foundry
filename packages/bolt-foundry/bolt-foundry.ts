@@ -1,9 +1,16 @@
 // deno-lint-ignore-file bolt-foundry/no-env-direct-access
 import type { OpenAI } from "@openai/openai";
 
-export { BfClient } from "./BfClient.ts";
+// Re-export everything from BfClient
+export {
+  BfClient,
+  type ChatCompletionCreateParamsWithMetadata,
+} from "./BfClient.ts";
 export * from "./deck.ts";
 export { readLocalDeck } from "./deck.ts";
+
+// Re-export types
+export type { BfMetadata, BfOptions } from "./types.ts";
 
 let logger = console;
 const enableLogging = false;

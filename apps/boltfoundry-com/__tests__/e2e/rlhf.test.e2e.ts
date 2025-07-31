@@ -11,8 +11,11 @@ Deno.test("RLHF page shows login when not authenticated", async () => {
   const context = await setupBoltFoundryComTest();
 
   try {
-    // Start video recording
-    const stopRecording = await context.startVideoRecording("rlhf-demo");
+    // Start annotated video recording
+    const { stop, showSubtitle } = await context
+      .startAnnotatedVideoRecording("rlhf-demo");
+
+    await showSubtitle("RLHF page authentication test");
 
     // Navigate to RLHF page
     await navigateTo(context, "/rlhf");
@@ -75,7 +78,7 @@ Deno.test("RLHF page shows login when not authenticated", async () => {
     await context.takeScreenshot("rlhf-page");
 
     // Stop video recording
-    await stopRecording();
+    await stop();
   } finally {
     await teardownE2ETest(context);
   }

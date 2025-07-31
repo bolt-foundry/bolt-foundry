@@ -14,21 +14,23 @@ Deno.test.ignore("Video conversion proof of concept - MP4", async () => {
   });
 
   try {
-    // Start video recording with MP4 conversion
-    const stopRecording = await context.startVideoRecording(
-      "conversion-poc-mp4",
-      {
-        outputFormat: "mp4",
-        quality: "medium",
-        framerate: 10,
-        deleteFrames: true,
-      },
-    );
+    // Start annotated video recording with MP4 conversion
+    const { stop, showSubtitle } = await context
+      .startAnnotatedVideoRecording(
+        "conversion-poc-mp4",
+        {
+          outputFormat: "mp4",
+          quality: "medium",
+          framerate: 10,
+          deleteFrames: true,
+        },
+      );
 
     // Navigate to a simple page
     await context.navigateTo("/");
 
-    // Wait for page to load
+    // Show initial subtitle
+    await showSubtitle("MP4 video conversion test");
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
     // Take a screenshot for comparison
@@ -37,11 +39,13 @@ Deno.test.ignore("Video conversion proof of concept - MP4", async () => {
     // Perform some smooth mouse movements for the video
     const links = await context.page.$$("a");
     if (links.length > 0) {
+      await showSubtitle("Testing mouse hover interactions");
       await smoothHover(context.page, "a");
       await new Promise((resolve) => setTimeout(resolve, 1000));
     }
 
     // Scroll the page smoothly
+    await showSubtitle("Scrolling demonstration");
     await context.page.evaluate(() => {
       globalThis.scrollTo({ top: 300, behavior: "smooth" });
     });
@@ -56,7 +60,7 @@ Deno.test.ignore("Video conversion proof of concept - MP4", async () => {
     assert(title.length > 0, "Page title should not be empty");
 
     // Stop video recording and convert to MP4
-    const videoResult = await stopRecording();
+    const videoResult = await stop();
 
     if (videoResult) {
       logger.info(`Video conversion completed successfully:`);
@@ -93,8 +97,8 @@ Deno.test.ignore("Video conversion proof of concept - WebM", async () => {
   });
 
   try {
-    // Start video recording with WebM conversion
-    const stopRecording = await context.startVideoRecording(
+    // Start annotated video recording with WebM conversion
+    const { stop, showSubtitle } = await context.startAnnotatedVideoRecording(
       "conversion-poc-webm",
       {
         outputFormat: "webm",
@@ -106,16 +110,18 @@ Deno.test.ignore("Video conversion proof of concept - WebM", async () => {
 
     // Navigate and perform actions
     await context.navigateTo("/");
+    await showSubtitle("WebM video conversion test");
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
     // Simple interaction
+    await showSubtitle("Testing page scroll");
     await context.page.evaluate(() => {
       globalThis.scrollTo({ top: 200, behavior: "smooth" });
     });
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     // Stop and convert to WebM
-    const videoResult = await stopRecording();
+    const videoResult = await stop();
 
     if (videoResult) {
       logger.info(

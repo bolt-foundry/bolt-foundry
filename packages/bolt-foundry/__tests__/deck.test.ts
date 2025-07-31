@@ -110,7 +110,7 @@ You are helpful.`;
   try {
     const deck = await readLocalDeck(deckPath);
 
-    const result = deck.render({}, {});
+    const result = deck.render(); // Test calling with no parameters
 
     // Should return messages array with system message
     assert(Array.isArray(result.messages));
@@ -142,7 +142,7 @@ Additional instructions.`;
     await Deno.writeTextFile(`${tempDir}/main.deck.md`, deckContent);
 
     const deck = await readLocalDeck(`${tempDir}/main.deck.md`);
-    const result = deck.render({}, {});
+    const result = deck.render();
 
     // Should replace the include with the file content
     const expectedContent = `# Assistant
@@ -177,7 +177,7 @@ End.`;
     await Deno.writeTextFile(`${tempDir}/main.deck.md`, deckContent);
 
     const deck = await readLocalDeck(`${tempDir}/main.deck.md`);
-    const result = deck.render({}, {});
+    const result = deck.render();
 
     const expectedContent = `# Main
 
@@ -212,7 +212,7 @@ Be helpful.`;
     await Deno.writeTextFile(`${tempDir}/main.deck.md`, deckContent);
 
     const deck = await readLocalDeck(`${tempDir}/main.deck.md`);
-    const result = deck.render({}, { context: { userName: "Alice" } });
+    const result = deck.render({ context: { userName: "Alice" } });
 
     // Should have system message + Q&A pair
     assertEquals(result.messages.length, 3);
@@ -256,12 +256,12 @@ You can help with weather.`;
     await Deno.writeTextFile(`${tempDir}/main.deck.md`, deckContent);
 
     const deck = await readLocalDeck(`${tempDir}/main.deck.md`);
-    const result = deck.render({}, {});
+    const result = deck.render();
 
     // Should extract tools and remove TOML reference
     assert(result.tools);
     assertEquals(result.tools.length, 1);
-    assertEquals(result.tools[0].name, "get_weather");
+    assertEquals(result.tools[0].function.name, "get_weather");
     assertEquals(
       result.messages[0].content,
       "# Weather Assistant\n\nYou can help with weather.",

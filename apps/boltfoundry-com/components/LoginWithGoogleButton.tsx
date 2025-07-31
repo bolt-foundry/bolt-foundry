@@ -1,14 +1,38 @@
 /// <reference types="@types/google.accounts" />
 
 import { useEffect, useRef, useState } from "react";
-import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import { useAppEnvironment } from "../contexts/AppEnvironmentContext.tsx";
+import { BfDsCallout } from "@bfmono/apps/bfDs/components/BfDsCallout.tsx";
 
 const logger = getLogger(import.meta);
+
+// In development, we need to get this from the server
+// In production, it would be injected during SSR
+const getGoogleClientId = (envClientId?: string) => {
+  // Check multiple sources for the client ID
+  // @ts-expect-error - globalThis.__ENVIRONMENT__ is injected by server
+  const fromGlobal = globalThis.__ENVIRONMENT__?.GOOGLE_OAUTH_CLIENT_ID;
+  // @ts-expect-error - import.meta.env might not have this typed
+  const fromVite = import.meta.env?.VITE_GOOGLE_OAUTH_CLIENT_ID;
+  // Hardcoded fallback for development (from .env.local)
+  const fallback =
+    "1053566961455-rreuknvho4jqcj184evmj93n7n1nrjun.apps.googleusercontent.com";
+
+  const clientId = envClientId || fromGlobal || fromVite || fallback;
+  logger.info("Google Client ID sources:", {
+    envClientId,
+    fromGlobal,
+    fromVite,
+    using: clientId,
+  });
+  return clientId;
+};
 
 export function LoginWithGoogleButton() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const appEnvironment = useAppEnvironment();
 
   const googleButtonRef = useRef<HTMLDivElement>(null);
 
@@ -20,7 +44,7 @@ export function LoginWithGoogleButton() {
     script.defer = true;
     document.body.appendChild(script);
 
-    const client_id = getConfigurationVariable("GOOGLE_OAUTH_CLIENT_ID");
+    const client_id = getGoogleClientId(appEnvironment.GOOGLE_OAUTH_CLIENT_ID);
     if (!client_id) {
       logger.error("GOOGLE_OAUTH_CLIENT_ID is not set");
       setError(
@@ -101,10 +125,44 @@ export function LoginWithGoogleButton() {
     return <div>{error}</div>;
   }
 
+  // Check if we're in development mode
+  const isDevelopment = appEnvironment.mode === "development";
+
   // Show Google Sign-In button
   return (
     <div>
       <div ref={googleButtonRef}></div>
+      {isDevelopment && (
+        <BfDsCallout variant="warning" className="mt-5">
+          <div>
+            <h4>Development Environment</h4>
+            <p>
+              Google OAuth won't work with dynamic hostnames like{" "}
+              <code>{globalThis.location.hostname}</code>.
+            </p>
+            <p>
+              <strong>Solutions:</strong>
+            </p>
+            <ol>
+              <li>
+                Use SSH port forwarding:{" "}
+                <code>ssh -L 8000:localhost:8000 [your-connection]</code>
+              </li>
+              <li>
+                Then access via:{" "}
+                <a href="http://localhost:8000/login">
+                  http://localhost:8000/login
+                </a>
+              </li>
+            </ol>
+            <p>
+              <strong>For testing:</strong>{" "}
+              Use E2E mode with mock authentication:
+            </p>
+            <pre>BF_E2E_MODE=true bft dev boltfoundry-com</pre>
+          </div>
+        </BfDsCallout>
+      )}
     </div>
   );
 }

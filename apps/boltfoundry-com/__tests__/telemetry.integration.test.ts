@@ -22,12 +22,8 @@ async function setupTestData() {
 
 // Mock telemetry data that would come from connectBoltFoundry
 const createMockTelemetryData = (overrides = {}) => ({
-  timestamp: new Date().toISOString(),
   duration: 1500,
   provider: "openai",
-  providerApiVersion: "v1",
-  sessionId: "test-session-123",
-  userId: "user-456",
   request: {
     url: "https://api.openai.com/v1/chat/completions",
     method: "POST",
@@ -64,9 +60,7 @@ const createMockTelemetryData = (overrides = {}) => ({
   },
   // Basic deck metadata for MVP (no hashing)
   bfMetadata: {
-    deckName: "customer-service",
-    deckContent:
-      "# Customer Service\n\nYou are a helpful customer service agent.",
+    deckId: "customer-service",
     contextVariables: { userId: "user-456", feature: "chat" },
   },
   ...overrides,
@@ -137,8 +131,7 @@ Deno.test("Telemetry endpoint - creates deck if not exists", async () => {
 
     const telemetryData = createMockTelemetryData({
       bfMetadata: {
-        deckName: "new-deck",
-        deckContent: "# New Deck\n\nThis is a new deck.",
+        deckId: "new-deck",
         contextVariables: { feature: "test" },
       },
     });
@@ -168,9 +161,7 @@ Deno.test("Telemetry endpoint - deduplicates decks by slug", async () => {
 
     const telemetryData = createMockTelemetryData({
       bfMetadata: {
-        deckName: "customer-service",
-        deckContent:
-          "# Customer Service\n\nYou are a helpful customer service agent.",
+        deckId: "customer-service",
         contextVariables: { feature: "chat" },
       },
     });

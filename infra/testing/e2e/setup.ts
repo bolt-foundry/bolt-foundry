@@ -10,14 +10,8 @@ import {
 import {
   startScreencastRecording,
   stopScreencastRecording,
-  stopScreencastRecordingFramesOnly,
   type VideoRecordingSession as _VideoRecordingSession,
 } from "../video-recording/recorder.ts";
-import {
-  startTimeBasedRecording,
-  stopTimeBasedRecordingWithVideo,
-  type TimeBasedRecordingSession as _TimeBasedRecordingSession,
-} from "../video-recording/time-based-recorder.ts";
 import type {
   VideoConversionOptions,
   VideoConversionResult,
@@ -107,18 +101,6 @@ export interface E2ETestContext {
     options?: { fullPage?: boolean; showAnnotations?: boolean },
   ) => Promise<string>;
   navigateTo: (path: string) => Promise<void>;
-  startVideoRecording: (
-    name: string,
-    options?: VideoConversionOptions,
-  ) => Promise<() => Promise<VideoConversionResult | null>>;
-  startVideoRecordingFramesOnly: (
-    name: string,
-  ) => Promise<() => Promise<string | null>>;
-  startTimeBasedVideoRecording: (
-    name: string,
-    targetFps?: number,
-    options?: VideoConversionOptions,
-  ) => Promise<() => Promise<VideoConversionResult | null>>;
   startAnnotatedVideoRecording: (
     name: string,
     options?: VideoConversionOptions,
@@ -253,6 +235,9 @@ export async function setupE2ETest(options: {
       args: [
         "--no-sandbox",
         "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage", // Critical for Docker - use /tmp instead of /dev/shm
+        "--disable-gpu", // Disable GPU hardware acceleration in containers
+        "--disable-software-rasterizer",
         "--window-size=1280,720",
       ],
       defaultViewport: { width: 1280, height: 720 },
@@ -382,169 +367,6 @@ export async function setupE2ETest(options: {
             error,
           );
         }
-      },
-      startVideoRecording: async (
-        name: string,
-        options?: VideoConversionOptions,
-      ): Promise<() => Promise<VideoConversionResult | null>> => {
-        const videosDir = getConfigurationVariable("BF_E2E_VIDEO_DIR") ||
-          join(Deno.cwd(), "tmp", "videos");
-
-        // Ensure videos directory exists
-        await ensureDir(videosDir);
-
-        // Inject cursor overlay for better video visibility
-        try {
-          await injectCursorOverlay(page);
-          logger.debug("Cursor overlay injected for video recording");
-        } catch (error) {
-          logger.warn("Failed to inject cursor overlay:", error);
-        }
-
-        const session = await startScreencastRecording(page, name, videosDir);
-
-        // Start throbber for entire recording session to keep screencast active
-        await addRecordingThrobber(page);
-
-        return async (): Promise<VideoConversionResult | null> => {
-          try {
-            // Stop throbber before stopping recording
-            await removeRecordingThrobber(page);
-
-            const videoResult = await stopScreencastRecording(
-              page,
-              session,
-              options,
-            );
-
-            // Clean up cursor overlay
-            try {
-              await removeCursorOverlay(page);
-            } catch (error) {
-              logger.debug("Failed to remove cursor overlay:", error);
-            }
-
-            logger.info(
-              `Video recording completed: ${videoResult.videoPath} (${videoResult.fileSize} bytes)`,
-            );
-            return videoResult;
-          } catch (error) {
-            logger.error(
-              `Failed to stop video recording: ${(error as Error).message}`,
-            );
-            return null;
-          }
-        };
-      },
-      startVideoRecordingFramesOnly: async (
-        name: string,
-      ): Promise<() => Promise<string | null>> => {
-        const videosDir = getConfigurationVariable("BF_E2E_VIDEO_DIR") ||
-          join(Deno.cwd(), "tmp", "videos");
-
-        // Ensure videos directory exists
-        await ensureDir(videosDir);
-
-        // Inject cursor overlay for better video visibility
-        try {
-          await injectCursorOverlay(page);
-          logger.debug(
-            "Cursor overlay injected for frames-only video recording",
-          );
-        } catch (error) {
-          logger.warn("Failed to inject cursor overlay:", error);
-        }
-
-        const session = await startScreencastRecording(page, name, videosDir);
-
-        return async (): Promise<string | null> => {
-          try {
-            const framesPath = await stopScreencastRecordingFramesOnly(
-              page,
-              session,
-            );
-
-            // Clean up cursor overlay
-            try {
-              await removeCursorOverlay(page);
-            } catch (error) {
-              logger.debug("Failed to remove cursor overlay:", error);
-            }
-
-            logger.info(`Video frames saved to: ${framesPath}`);
-            return framesPath;
-          } catch (error) {
-            logger.error(
-              `Failed to stop frames-only video recording: ${
-                (error as Error).message
-              }`,
-            );
-            return null;
-          }
-        };
-      },
-      startTimeBasedVideoRecording: async (
-        name: string,
-        targetFps = 20,
-        options?: VideoConversionOptions,
-      ): Promise<() => Promise<VideoConversionResult | null>> => {
-        const videosDir = getConfigurationVariable("BF_E2E_VIDEO_DIR") ||
-          join(Deno.cwd(), "tmp", "videos");
-
-        // Ensure videos directory exists
-        await ensureDir(videosDir);
-
-        // Inject cursor overlay for better video visibility
-        try {
-          const { injectCursorOverlayOnAllPages } = await import(
-            "../video-recording/cursor-overlay-page-injection.ts"
-          );
-          await injectCursorOverlayOnAllPages(page);
-          logger.debug(
-            "Page injection cursor overlay injected for time-based video recording",
-          );
-        } catch (error) {
-          logger.warn("Failed to inject cursor overlay:", error);
-        }
-
-        const session = await startTimeBasedRecording(
-          page,
-          name,
-          targetFps,
-          videosDir,
-        );
-
-        return async (): Promise<VideoConversionResult | null> => {
-          try {
-            const videoResult = await stopTimeBasedRecordingWithVideo(
-              page,
-              session,
-              options,
-            );
-
-            // Clean up cursor overlay
-            try {
-              const { removeCursorOverlay } = await import(
-                "../video-recording/cursor-overlay-page-injection.ts"
-              );
-              await removeCursorOverlay(page);
-            } catch (error) {
-              logger.debug("Failed to remove cursor overlay:", error);
-            }
-
-            logger.info(
-              `Time-based video recording completed: ${videoResult.videoPath} (${videoResult.fileSize} bytes)`,
-            );
-            return videoResult;
-          } catch (error) {
-            logger.error(
-              `Failed to convert time-based video recording: ${
-                (error as Error).message
-              }`,
-            );
-            return null;
-          }
-        };
       },
       startAnnotatedVideoRecording: async (
         name: string,

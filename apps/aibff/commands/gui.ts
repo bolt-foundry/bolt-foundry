@@ -134,8 +134,17 @@ Examples:
       serverArgs.push("--conversations-dir", conversationsDir);
     }
 
-    const serverCommand = new Deno.Command(guiServerPath, {
-      args: serverArgs,
+    const serverCommand = new Deno.Command("deno", {
+      args: [
+        "run",
+        "--allow-env",
+        "--allow-read",
+        "--allow-write",
+        "--allow-net",
+        "--watch",
+        guiServerPath,
+        ...serverArgs,
+      ],
       stdout: "inherit",
       stderr: "inherit",
     });

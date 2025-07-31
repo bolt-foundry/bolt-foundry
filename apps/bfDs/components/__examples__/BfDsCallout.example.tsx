@@ -48,6 +48,31 @@ export function BfDsCalloutExample() {
       <h2>BfDsCallout Examples</h2>
 
       <div className="bfds-example__section">
+        <h3>Usage</h3>
+        <pre className="bfds-example__code">
+{`import { BfDsCallout } from "@bfmono/apps/bfDs/components/BfDsCallout.tsx";
+
+// Basic usage
+<BfDsCallout variant="info">
+  Information message
+</BfDsCallout>
+
+// All available props
+<BfDsCallout
+  variant="info"          // "info" | "success" | "warning" | "error"
+  details="JSON data"     // string - expandable details section
+  defaultExpanded={false} // boolean - show details by default
+  visible={true}          // boolean - visibility control
+  onDismiss={() => {}}    // () => void - dismiss callback
+  autoDismiss={5000}      // number - auto-dismiss after ms (0 = no auto-dismiss)
+  className=""            // string - additional CSS classes
+>
+  Callout message content
+</BfDsCallout>`}
+        </pre>
+      </div>
+
+      <div className="bfds-example__section">
         <h3>Static Examples</h3>
         <div className="bfds-example__group">
           <BfDsCallout variant="info">

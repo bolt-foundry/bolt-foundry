@@ -163,11 +163,24 @@ Do not include any text before or after the JSON. Start with { and end with }.`,
 
       // Render the deck with work context using the new deck system
       const deck = await readLocalDeck(this.deckPath);
-      const result = deck.render({}, { context: contextWithInstructions });
+      // Pass context as a system message
+      const result = deck.render({}, {
+        messages: [
+          {
+            role: "system",
+            content: JSON.stringify(contextWithInstructions),
+          },
+        ],
+      });
 
       // Convert to the expected format
       const chatCompletionParams = {
-        messages: result.messages,
+        messages: result.messages.map((msg) => ({
+          role: msg.role,
+          content: typeof msg.content === "string"
+            ? msg.content
+            : JSON.stringify(msg.content),
+        })),
         model: "gpt-4o-mini", // Fast model for summarization
       };
 

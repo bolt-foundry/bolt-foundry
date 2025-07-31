@@ -66,8 +66,8 @@
     "jsr:@std/yaml@^1.0.5": "1.0.8",
     "jsr:@ts-morph/bootstrap@0.24": "0.24.0",
     "jsr:@ts-morph/common@0.24": "0.24.0",
-    "npm:@anthropic-ai/claude-code@*": "1.0.62",
-    "npm:@anthropic-ai/claude-code@^1.0.62": "1.0.62",
+    "npm:@anthropic-ai/claude-code@*": "1.0.64",
+    "npm:@anthropic-ai/claude-code@^1.0.64": "1.0.64",
     "npm:@babel/preset-react@^7.25.7": "7.27.1_@babel+core@7.28.0",
     "npm:@deno/vite-plugin@^1.0.4": "1.0.5_vite@6.3.5__picomatch@4.0.2_@types+node@22.15.15",
     "npm:@graphql-tools/schema@^10.0.6": "10.0.23_graphql@16.11.0",
@@ -111,6 +111,7 @@
     "npm:loglevel@^1.9.2": "1.9.2",
     "npm:marked@16": "16.0.0",
     "npm:matter-js@0.20": "0.20.0",
+    "npm:openai@*": "5.10.2_zod@3.25.76",
     "npm:pg@^8.16.3": "8.16.3",
     "npm:posthog-js@^1.256.2": "1.257.0",
     "npm:posthog-node@^5.1.1": "5.5.0",
@@ -384,8 +385,8 @@
         "@jridgewell/trace-mapping"
       ]
     },
-    "@anthropic-ai/claude-code@1.0.62": {
-      "integrity": "sha512-uWjIvjtOudC/knp7QMJhICdIcvEP8Nuz+0Rj3DeZc5eYyHgtiYTsb5mVTou2P7OTsCfwc3ajFdbFbtyq/LwYSw==",
+    "@anthropic-ai/claude-code@1.0.64": {
+      "integrity": "sha512-AI3Q/50+znj80gV1Aua4MOGLuOxS4G6m11CmYYyDCFuoVMzskG1aSI5fxAyGol3N5GI4Tuw0YPmANJdZ/MNvhQ==",
       "optionalDependencies": [
         "@img/sharp-darwin-arm64",
         "@img/sharp-darwin-x64",
@@ -2693,6 +2694,16 @@
         "wrappy"
       ]
     },
+    "openai@5.10.2_zod@3.25.76": {
+      "integrity": "sha512-n+vi74LzHtvlKcDPn9aApgELGiu5CwhaLG40zxLTlFQdoSJCLACORIPC2uVQ3JEYAbqapM+XyRKFy2Thej7bIw==",
+      "dependencies": [
+        "zod"
+      ],
+      "optionalPeers": [
+        "zod"
+      ],
+      "bin": true
+    },
     "pac-proxy-agent@7.2.0": {
       "integrity": "sha512-TEB8ESquiLMc0lV8vcd5Ql/JAKAoyzHFXaStwjkzpOpC5Yv+pIzLfHvjTSdf3vpa2bMiUQrg9i6276yn8666aA==",
       "dependencies": [
@@ -3402,7 +3413,7 @@
       "jsr:@std/streams@^1.0.10",
       "jsr:@std/testing@^1.0.9",
       "jsr:@std/toml@^1.0.4",
-      "npm:@anthropic-ai/claude-code@^1.0.62",
+      "npm:@anthropic-ai/claude-code@^1.0.64",
       "npm:@graphql-tools/schema@^10.0.6",
       "npm:@isograph/babel-plugin@~0.3.1",
       "npm:@isograph/react@~0.3.1",
