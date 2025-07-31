@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="/src/styles.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Codebot BFF</title>
+  </head>
+  <body>
+    <div id="app">
+      <header class="app-header">
+        <h1>Codebot BFF</h1>
+        <div class="header-controls">
+          <button id="new-workspace-btn" class="btn btn-primary">New Workspace</button>
+          <button id="resume-workspace-btn" class="btn">Resume Workspace</button>
+          <div class="status-indicator">
+            <span id="container-status" class="status-badge">No Container</span>
+          </div>
+        </div>
+      </header>
+      
+      <div class="main-content">
+        <div class="split-container">
+          <!-- Terminal Panel -->
+          <div class="panel terminal-panel">
+            <div class="panel-header">
+              <h2>Terminal</h2>
+              <div class="terminal-controls">
+                <button id="clear-terminal" class="btn btn-sm">Clear</button>
+                <button id="restart-container" class="btn btn-sm">Restart</button>
+              </div>
+            </div>
+            <div id="terminal-container" class="terminal-content"></div>
+          </div>
+          
+          <!-- File Viewer Panel -->
+          <div class="panel file-viewer-panel">
+            <div class="panel-header">
+              <h2>Workspace Files</h2>
+              <div class="file-controls">
+                <button id="refresh-files" class="btn btn-sm">Refresh</button>
+              </div>
+            </div>
+            <div id="file-tree" class="file-tree">
+              <div class="loading">Loading workspace...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Status Bar -->
+      <footer class="status-bar">
+        <div class="status-item">
+          <span class="label">Workspace:</span>
+          <span id="workspace-name">None</span>
+        </div>
+        <div class="status-item">
+          <span class="label">Memory:</span>
+          <span id="memory-usage">--</span>
+        </div>
+        <div class="status-item">
+          <span class="label">CPU:</span>
+          <span id="cpu-usage">--</span>
+        </div>
+      </footer>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

@@ -55,14 +55,28 @@
           pkgs.nettools
           pkgs.ripgrep
           pkgs.fd
+          # Rust and Tauri development
+          pkgs.rustc
+          pkgs.cargo
+          pkgs.rustfmt
+          pkgs.rust-analyzer
+          pkgs.pkg-config
+          pkgs.openssl
         ] ++ lib.optionals pkgs.stdenv.isDarwin [
           # Darwin-specific packages  
           # containerTool
           # unstable.container
+          pkgs.darwin.apple_sdk.frameworks.AppKit
+          pkgs.darwin.apple_sdk.frameworks.WebKit
         ] ++ lib.optionals (!pkgs.stdenv.isDarwin) [
           # Linux-only packages
           pkgs.chromium
           pkgs.iproute2
+          # Tauri dependencies for Linux
+          pkgs.webkitgtk
+          pkgs.gtk3
+          pkgs.libsoup
+          pkgs.librsvg
         ];
 
       ##################################################################

@@ -1,0 +1,24 @@
+{
+  "tasks": {
+    "dev": "deno run -A npm:vite",
+    "build": "deno run -A npm:vite build",
+    "preview": "deno run -A npm:vite preview",
+    "tauri": "deno run -A npm:@tauri-apps/cli@^2/tauri",
+    "tauri:dev": "deno task tauri dev",
+    "tauri:build": "deno task tauri build"
+  },
+  "imports": {
+    "@tauri-apps/api": "npm:@tauri-apps/api@^2",
+    "@tauri-apps/plugin-opener": "npm:@tauri-apps/plugin-opener@^2",
+    "@tauri-apps/plugin-shell": "npm:@tauri-apps/plugin-shell@^2",
+    "@tauri-apps/plugin-fs": "npm:@tauri-apps/plugin-fs@^2",
+    "xterm": "npm:xterm@^5.3.0",
+    "xterm-addon-fit": "npm:xterm-addon-fit@^0.8.0",
+    "xterm-addon-web-links": "npm:xterm-addon-web-links@^0.9.0"
+  },
+  "compilerOptions": {
+    "lib": ["deno.window", "dom", "dom.iterable"],
+    "jsx": "react-jsx",
+    "jsxImportSource": "react"
+  }
+}
