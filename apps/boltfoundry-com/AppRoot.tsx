@@ -43,6 +43,7 @@ export function AppRoot() {
     return (
       <BfIsographFragmentReader
         fragmentReference={fragmentReference}
+        additionalProps={{ parameters: params }}
       />
     );
   }

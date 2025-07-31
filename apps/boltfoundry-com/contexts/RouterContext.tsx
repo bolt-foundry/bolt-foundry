@@ -28,12 +28,41 @@ export function matchRouteWithParams(
     };
   }
 
-  // Simple exact match for now
-  const match = rawPath === pathTemplate;
+  // Handle parameterized routes
+  const templateParts = pathTemplate.split("/");
+  const pathParts = rawPath.split("/");
+
+  if (templateParts.length !== pathParts.length) {
+    return {
+      match: false,
+      params: {},
+      queryParams,
+    };
+  }
+
+  const params: Record<string, string> = {};
+
+  for (let i = 0; i < templateParts.length; i++) {
+    const templatePart = templateParts[i];
+    const pathPart = pathParts[i];
+
+    if (templatePart.startsWith(":")) {
+      // This is a parameter
+      const paramName = templatePart.slice(1);
+      params[paramName] = pathPart;
+    } else if (templatePart !== pathPart) {
+      // Not a match
+      return {
+        match: false,
+        params: {},
+        queryParams,
+      };
+    }
+  }
 
   return {
-    match,
-    params: {},
+    match: true,
+    params,
     queryParams,
   };
 }
