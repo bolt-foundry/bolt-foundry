@@ -4,6 +4,41 @@ import { type BfDsTabItem, BfDsTabs } from "../BfDsTabs.tsx";
 export function BfDsTabsExample() {
   const [controlledActiveTab, setControlledActiveTab] = useState("tab1");
 
+  const codeBlock = (
+    <div className="bfds-example__section">
+      <h3>Usage</h3>
+      <pre className="bfds-example__code">
+{`import { BfDsTabs, type BfDsTabItem } from "@bfmono/apps/bfDs/components/BfDsTabs.tsx";
+
+// Define tabs
+const tabs: BfDsTabItem[] = [
+  {
+    id: "tab1",
+    label: "Tab 1",
+    content: <div>Tab 1 content</div>,
+    icon: "autoframe",      // optional
+    disabled: false,        // optional
+    subtabs: [...]         // optional nested tabs
+  }
+];
+
+// Basic usage
+<BfDsTabs tabs={tabs} />
+
+// All available props
+<BfDsTabs
+  tabs={tabs}                     // Array<BfDsTabItem> (required)
+  activeTab="tab1"                // string - controlled active tab
+  defaultActiveTab="tab1"         // string - uncontrolled default
+  onTabChange={(id) => {}}        // (tabId: string) => void
+  className=""                    // string
+  variant="primary"               // "primary" | "secondary"
+  size="medium"                   // "small" | "medium" | "large"
+/>`}
+      </pre>
+    </div>
+  );
+
   const basicTabs: Array<BfDsTabItem> = [
     {
       id: "tab1",
@@ -163,6 +198,8 @@ DELETE /api/users/:id`}
   return (
     <div className="bfds-example">
       <h2>BfDsTabs Examples</h2>
+
+      {codeBlock}
 
       <div className="bfds-example__section">
         <h3>Basic Tabs</h3>

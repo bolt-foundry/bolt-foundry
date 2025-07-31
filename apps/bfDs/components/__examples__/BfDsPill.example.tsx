@@ -7,6 +7,26 @@ export function BfDsPillExample() {
       <h2>BfDsPill Examples</h2>
 
       <div className="bfds-example__section">
+        <h3>Usage</h3>
+        <pre className="bfds-example__code">
+{`import { BfDsPill } from "@bfmono/apps/bfDs/components/BfDsPill.tsx";
+
+// Basic usage
+<BfDsPill label="Status" text="Active" />
+
+// All available props
+<BfDsPill
+  label="Label"                   // string - label text
+  text="Content"                  // string | number - main content
+  icon="star"                     // BfDsIconName - icon to display
+  variant="secondary"             // "primary" | "secondary" | "success" | "error" | "warning" | "info"
+  action={<button>X</button>}     // ReactNode - action element
+  className=""                    // string - additional CSS
+/>`}
+        </pre>
+      </div>
+
+      <div className="bfds-example__section">
         <h3>Basic Pills</h3>
         <div className="bfds-example__group">
           <BfDsPill

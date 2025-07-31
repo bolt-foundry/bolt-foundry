@@ -29,6 +29,37 @@ export function BfDsModalExample() {
       <h2>BfDsModal Component</h2>
 
       <div className="bfds-example__section">
+        <h3>Usage</h3>
+        <pre className="bfds-example__code">
+{`import { BfDsModal } from "@bfmono/apps/bfDs/components/BfDsModal.tsx";
+
+// Basic usage
+<BfDsModal
+  isOpen={isOpen}
+  onClose={() => setIsOpen(false)}
+  title="Modal Title"
+>
+  <p>Modal content</p>
+</BfDsModal>
+
+// All available props
+<BfDsModal
+  isOpen={true}                   // boolean (required) - visibility
+  onClose={() => {}}              // () => void (required) - close handler
+  title="Modal Title"             // string - header title
+  footer={<div />}                // ReactNode - custom footer
+  size="medium"                   // "small" | "medium" | "large" | "fullscreen"
+  closeOnBackdropClick={true}     // boolean - close on backdrop click
+  closeOnEscape={true}            // boolean - close on ESC key
+  className=""                    // string - additional CSS
+  showCloseButton={true}          // boolean - show X button
+>
+  {/* Modal content */}
+</BfDsModal>`}
+        </pre>
+      </div>
+
+      <div className="bfds-example__section">
         <h3>Basic Modal</h3>
         <div className="bfds-example__group">
           <BfDsButton onClick={() => setBasicModalOpen(true)}>

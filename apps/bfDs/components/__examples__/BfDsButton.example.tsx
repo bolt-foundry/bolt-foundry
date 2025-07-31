@@ -9,6 +9,39 @@ export function BfDsButtonExample() {
       <h2>BfDsButton Examples</h2>
 
       <div className="bfds-example__section">
+        <h3>Usage</h3>
+        <pre className="bfds-example__code">
+{`import { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
+
+// Basic usage
+<BfDsButton onClick={() => console.log('clicked')}>
+  Click me
+</BfDsButton>
+
+// All available props (extends HTML button attributes)
+<BfDsButton
+  variant="primary"               // "primary" | "secondary" | "outline" | "outline-secondary" | "ghost" | "ghost-primary"
+  size="medium"                   // "small" | "medium" | "large"
+  disabled={false}                // boolean
+  onClick={(e) => {}}             // (e: MouseEvent) => void
+  className=""                    // string
+  icon="settings"                 // BfDsIconName or ReactNode
+  iconPosition="left"             // "left" | "right"
+  iconOnly={false}                // boolean - show only icon
+  overlay={false}                 // boolean - overlay styling
+  href="https://..."              // string - renders as <a> tag
+  target="_blank"                 // "_blank" | "_self" | "_parent" | "_top"
+  link="/path"                    // string - React Router link
+  spinner={false}                 // boolean - show spinner
+  type="button"                   // "button" | "submit" | "reset"
+  // ... other HTML button attributes
+>
+  Button text
+</BfDsButton>`}
+        </pre>
+      </div>
+
+      <div className="bfds-example__section">
         <h3>Variants</h3>
         <div className="bfds-example__group">
           <BfDsButton
