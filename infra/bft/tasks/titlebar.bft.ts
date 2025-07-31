@@ -1,8 +1,9 @@
-#!/usr/bin/env -S deno run -A
+#!/usr/bin/env -S bft run
 /**
  * Test the terminal titlebar functionality
  */
 
+import type { TaskDefinition } from "../bft.ts";
 import { parseArgs } from "@std/cli";
 import {
   clearTitlebar,
@@ -12,21 +13,23 @@ import {
   updateTitlebar,
 } from "@bfmono/packages/cli-ui/cli-ui.ts";
 
-const flags = parseArgs(Deno.args, {
-  boolean: ["help", "demo", "clear", "check"],
-  string: ["set"],
-  alias: { h: "help" },
-});
+async function titlebar(args: Array<string>): Promise<number> {
+  const flags = parseArgs(args, {
+    boolean: ["help", "demo", "clear", "check"],
+    string: ["set"],
+    alias: { h: "help" },
+  });
 
-// Support positional argument as shorthand for --set
-// BFT passes the command name as the first argument, so we need the second one
-const positionalTitle = flags._?.[1]?.toString() || flags._?.[0]?.toString();
-if (positionalTitle && positionalTitle !== "titlebar" && !flags.set && !flags.clear && !flags.demo && !flags.check) {
-  flags.set = positionalTitle;
-}
+  // Support positional argument as shorthand for --set
+  const positionalTitle = flags._?.[0]?.toString();
+  if (
+    positionalTitle && !flags.set && !flags.clear && !flags.demo && !flags.check
+  ) {
+    flags.set = positionalTitle;
+  }
 
-if (flags.help) {
-  ui.output(`
+  if (flags.help) {
+    ui.output(`
 Usage: bft titlebar [TITLE] [OPTIONS]
 
 Test terminal titlebar functionality from the cli-ui package.
@@ -48,107 +51,98 @@ EXAMPLES:
   bft titlebar --clear                # Clear the title
   bft titlebar --demo                 # Run the demo
 `);
-  Deno.exit(0);
-}
-
-// Check terminal support
-if (
-  flags.check || (!flags.demo && !flags.flash && !flags.set && !flags.clear)
-) {
-  const supported = supportsTitlebar();
-  ui.info(`Terminal titlebar support: ${supported ? "✅ YES" : "❌ NO"}`);
-
-  // Always show terminal details for debugging
-  ui.info("Terminal details:");
-  ui.info(`  TERM: ${Deno.env.get("TERM") || "(not set)"}`);
-  ui.info(`  TERM_PROGRAM: ${Deno.env.get("TERM_PROGRAM") || "(not set)"}`);
-  ui.info(`  isTerminal: ${Deno.stdout.isTerminal()}`);
-  
-  if (!supported) {
-    ui.info("");
-    ui.info("Your terminal doesn't appear to support titlebar updates.");
-    ui.info("Try running in a different terminal emulator like:");
-    ui.info("  - iTerm2, Terminal.app (macOS)");
-    ui.info("  - xterm, gnome-terminal, konsole (Linux)");
-    ui.info("  - Windows Terminal, ConEmu (Windows)");
-    ui.info("  - Alacritty, Kitty, WezTerm, Ghostty");
+    return 0;
   }
 
-  if (!flags.demo && !flags.flash && !flags.set && !flags.clear) {
-    Deno.exit(0);
-  }
-}
+  // Check terminal support
+  if (
+    flags.check || (!flags.demo && !flags.set && !flags.clear)
+  ) {
+    const supported = supportsTitlebar();
+    ui.info(`Terminal titlebar support: ${supported ? "✅ YES" : "❌ NO"}`);
 
-// Set title
-if (flags.set) {
-  ui.info(`Setting titlebar to: "${flags.set}"`);
-  await updateTitlebar(flags.set);
-  ui.info("Titlebar updated");
-  Deno.exit(0);
-}
+    // Always show terminal details for debugging
+    ui.info("Terminal details:");
+    ui.info(`  TERM: ${Deno.env.get("TERM") || "(not set)"}`);
+    ui.info(`  TERM_PROGRAM: ${Deno.env.get("TERM_PROGRAM") || "(not set)"}`);
+    ui.info(`  isTerminal: ${Deno.stdout.isTerminal()}`);
 
-// Clear title
-if (flags.clear) {
-  ui.info("Clearing titlebar...");
-  await clearTitlebar();
-  ui.info("Titlebar cleared");
-  Deno.exit(0);
-}
+    if (!supported) {
+      ui.info("");
+      ui.info("Your terminal doesn't appear to support titlebar updates.");
+      ui.info("Try running in a different terminal emulator like:");
+      ui.info("  - iTerm2, Terminal.app (macOS)");
+      ui.info("  - xterm, gnome-terminal, konsole (Linux)");
+      ui.info("  - Windows Terminal, ConEmu (Windows)");
+      ui.info("  - Alacritty, Kitty, WezTerm, Ghostty");
+    }
 
-// Run demo
-if (flags.demo) {
-  ui.info("🎭 Terminal Titlebar Demo");
-  ui.info("========================");
-
-  if (!supportsTitlebar()) {
-    ui.warn("Your terminal doesn't support titlebar updates!");
-    ui.info("The demo will run but you won't see the title changes.");
-    ui.output("");
+    if (!flags.demo && !flags.set && !flags.clear) {
+      return 0;
+    }
   }
 
-  async function sleep(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
+  // Set title
+  if (flags.set) {
+    ui.info(`Setting titlebar to: "${flags.set}"`);
+    await updateTitlebar(flags.set);
+    ui.info("Titlebar updated");
+    return 0;
   }
 
-  // Basic updates
-  ui.info("1️⃣  Basic title updates:");
+  // Clear title
+  if (flags.clear) {
+    ui.info("Clearing titlebar...");
+    await clearTitlebar();
+    ui.info("Titlebar cleared");
+    return 0;
+  }
 
-  ui.info("   Setting title to 'BFT Demo'...");
-  await updateTitlebar("BFT Demo");
-  await sleep(2000);
+  // Run demo
+  if (flags.demo) {
+    await runDemo();
+    return 0;
+  }
 
-  ui.info("   Changing to 'Processing Files...'");
-  await updateTitlebar("Processing Files...");
-  await sleep(2000);
+  return 0;
+}
 
-  ui.info("   Clearing title...");
-  await clearTitlebar();
-  await sleep(1000);
+// Demo function
+async function runDemo() {
+  ui.info("🎯 Terminal Titlebar Demo");
+  ui.info("Watch your terminal's title bar during this demo!");
+  ui.output("");
+
+  // Simple updates
+  ui.info("1️⃣  Simple updates:");
+  const updates = [
+    "Building...",
+    "Testing...",
+    "Deploying...",
+    "Complete! 🎉",
+  ];
+
+  for (const update of updates) {
+    await updateTitlebar(update);
+    ui.info(`   Setting: "${update}"`);
+    await sleep(1500);
+  }
 
   ui.output("");
 
-  // Prefixed updater
-  ui.info("2️⃣  Using a prefixed updater:");
-  const bft = createTitlebarUpdater("bft");
+  // Loading animation
+  ui.info("2️⃣  Loading animation:");
+  const spinner = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
+  const loadingUpdater = createTitlebarUpdater("Loading");
 
-  ui.info("   Starting build process...");
-  await bft.update("Initializing...");
-  await sleep(1500);
+  for (let i = 0; i < 20; i++) {
+    const frame = spinner[i % spinner.length];
+    await loadingUpdater.update(`Loading ${frame}`);
+    ui.info(`   ${frame} Loading...`);
+    await sleep(100);
+  }
 
-  await bft.update("Compiling TypeScript...");
-  await sleep(1500);
-
-  await bft.update("Running tests...");
-  await sleep(1500);
-
-  await bft.update("Building bundles...");
-  await sleep(1500);
-
-  await bft.update("✅ Build complete!");
-  await sleep(2000);
-
-  await bft.clear();
-
+  await loadingUpdater.clear();
   ui.output("");
 
   // Progress indicator
@@ -168,4 +162,23 @@ if (flags.demo) {
   ui.output("");
   ui.info("✨ Demo complete!");
   ui.info("The titlebar has been restored to its default state.");
+}
+
+// Utility function for demo delays
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+// Export the task definition for autodiscovery
+export const bftDefinition = {
+  description: "Test terminal titlebar functionality",
+  aiSafe: true,
+  fn: titlebar,
+} satisfies TaskDefinition;
+
+// When run directly as a script
+if (import.meta.main) {
+  // Skip "run" and script name from args
+  const scriptArgs = Deno.args.slice(2);
+  Deno.exit(await titlebar(scriptArgs));
 }
