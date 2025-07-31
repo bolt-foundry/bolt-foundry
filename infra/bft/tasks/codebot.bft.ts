@@ -434,14 +434,17 @@ FIRST TIME SETUP:
   const copyWorkspacePromise = reusingWorkspace
     ? Promise.resolve()
     : (async () => {
-      // Create the workspace directory first to avoid race conditions
-      await Deno.mkdir(workspacePath, { recursive: true });
+      // Create the workspace directory structure first to avoid race conditions
+      await Deno.mkdir(`${workspacePath}/@bfmono`, { recursive: true });
+      await Deno.mkdir(`${workspacePath}/@internalbf-docs`, {
+        recursive: true,
+      });
 
       // Copy Claude config files using CoW to workspace if they exist
       const homeDir = getConfigurationVariable("HOME");
 
       // Create tmp directory for Claude config
-      await Deno.mkdir(`${workspacePath}/tmp`, { recursive: true });
+      await Deno.mkdir(`${workspacePath}/@bfmono/tmp`, { recursive: true });
 
       // Copy .claude.json if it exists (for project history)
       const claudeJsonPath = `${homeDir}/.claude.json`;
@@ -451,11 +454,11 @@ FIRST TIME SETUP:
           args: [
             "--reflink=auto",
             claudeJsonPath,
-            `${workspacePath}/tmp/.claude.json`,
+            `${workspacePath}/@bfmono/tmp/.claude.json`,
           ],
         });
         await copyClaudeJson.output();
-        ui.output("📋 CoW copied .claude.json to workspace/tmp");
+        ui.output("📋 CoW copied .claude.json to @bfmono/tmp");
       } catch {
         // File doesn't exist, skip
       }
@@ -471,7 +474,12 @@ FIRST TIME SETUP:
         if (entry.name === ".bft" || entry.name === "tmp") continue;
 
         const copyCmd = new Deno.Command("cp", {
-          args: ["--reflink=auto", "-R", entry.name, `${workspacePath}/`],
+          args: [
+            "--reflink=auto",
+            "-R",
+            entry.name,
+            `${workspacePath}/@bfmono/`,
+          ],
         });
 
         copyPromises.push(copyCmd.output());
@@ -772,7 +780,9 @@ FIRST TIME SETUP:
       "--volume",
       `${claudeDir}:/home/codebot/.claude`,
       "--volume",
-      `${workspacePath}:/workspace`,
+      `${workspacePath}/@bfmono:/@bfmono`,
+      "--volume",
+      `${workspacePath}/@internalbf-docs:/@internalbf-docs`,
       "--volume",
       "/tmp:/dev/shm", // Use host /tmp as shared memory for Chrome
       "-e",
@@ -830,7 +840,9 @@ FIRST TIME SETUP:
       "--volume",
       `${claudeDir}:/home/codebot/.claude`,
       "--volume",
-      `${workspacePath}:/workspace`,
+      `${workspacePath}/@bfmono:/@bfmono`,
+      "--volume",
+      `${workspacePath}/@internalbf-docs:/@internalbf-docs`,
       "--volume",
       "/tmp:/dev/shm", // Use host /tmp as shared memory for Chrome
       "-e",
