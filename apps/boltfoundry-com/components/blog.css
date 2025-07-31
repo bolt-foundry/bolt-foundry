@@ -1,0 +1,64 @@
+/* Blog styles for boltfoundry-com */
+
+.blog-layout {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.blog-main {
+  padding: 1rem;
+}
+
+.blog-list h1 {
+  margin-bottom: 2rem;
+}
+
+.blog-posts {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.blog-post-preview {
+  background: var(--color-surface);
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.2s ease;
+}
+
+.blog-post-preview:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.blog-post-preview h2 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.blog-post-preview .metadata {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.blog-post-preview p {
+  margin: 1rem 0;
+  color: var(--color-text);
+}
+
+.blog-list-hero-image {
+  width: 300px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+@media (max-width: 768px) {
+  .blog-list-hero-image {
+    width: 100%;
+    height: auto;
+    max-height: 200px;
+  }
+}

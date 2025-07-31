@@ -8,5 +8,6 @@ import "../components/WaitlistSection.css";
 import "@bfmono/static/evalStyle.css";
 import "../components/plinko/plinko.css";
 import "@bfmono/static/blogStyle.css";
+import "../components/blog.css";
 
 // Add any future CSS imports here
