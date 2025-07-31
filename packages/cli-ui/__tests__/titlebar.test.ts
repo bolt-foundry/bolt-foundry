@@ -17,7 +17,7 @@ Deno.test("titlebar: updateTitlebar writes correct escape sequence", async () =>
     // Mock Deno.stdout.write
     Deno.stdout.write = (data: Uint8Array) => {
       capturedData = data;
-      return data.length;
+      return Promise.resolve(data.length);
     };
 
     await updateTitlebar("Test Title");
@@ -38,7 +38,7 @@ Deno.test("titlebar: clearTitlebar sends empty title", async () => {
   try {
     Deno.stdout.write = (data: Uint8Array) => {
       capturedData = data;
-      return data.length;
+      return Promise.resolve(data.length);
     };
 
     await clearTitlebar();
@@ -58,7 +58,7 @@ Deno.test("titlebar: createTitlebarUpdater adds prefix", async () => {
   try {
     Deno.stdout.write = (data: Uint8Array) => {
       capturedData = data;
-      return data.length;
+      return Promise.resolve(data.length);
     };
 
     const titlebar = createTitlebarUpdater("MyApp");

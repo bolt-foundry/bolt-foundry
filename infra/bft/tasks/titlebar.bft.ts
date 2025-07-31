@@ -65,7 +65,11 @@ EXAMPLES:
     // Always show terminal details for debugging
     ui.info("Terminal details:");
     ui.info(`  TERM: ${getConfigurationVariable("TERM") || "(not set)"}`);
-    ui.info(`  TERM_PROGRAM: ${getConfigurationVariable("TERM_PROGRAM") || "(not set)"}`);
+    ui.info(
+      `  TERM_PROGRAM: ${
+        getConfigurationVariable("TERM_PROGRAM") || "(not set)"
+      }`,
+    );
     ui.info(`  isTerminal: ${Deno.stdout.isTerminal()}`);
 
     if (!supported) {
