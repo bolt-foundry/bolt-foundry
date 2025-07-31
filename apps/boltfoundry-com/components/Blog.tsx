@@ -13,8 +13,6 @@ export const Blog = iso(`
     }
   }
 `)(function Blog({ data, parameters = {} }) {
-  const hasSlug = Boolean(parameters?.slug);
-
   // If data is not available, show loading
   if (!data) {
     return (
