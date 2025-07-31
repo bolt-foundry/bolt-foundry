@@ -8,15 +8,37 @@ function ToastDemoContent() {
   const { showToast, clearAllToasts } = useBfDsToast();
 
   return (
-    <div
-      style={{
-        padding: "20px",
-        display: "flex",
-        flexDirection: "column",
-        gap: "16px",
-      }}
-    >
+    <div className="bfds-example">
       <h2>BfDsToast Examples</h2>
+
+      <div className="bfds-example__section">
+        <h3>Usage</h3>
+        <pre className="bfds-example__code">
+{`import { BfDsToastProvider, useBfDsToast } from "@bfmono/apps/bfDs/components/BfDsToastProvider.tsx";
+
+// 1. Wrap your app with BfDsToastProvider
+<BfDsToastProvider>
+  <App />
+</BfDsToastProvider>
+
+// 2. Use the toast hook in any component
+const { showToast, clearAllToasts } = useBfDsToast();
+
+// Basic usage
+showToast("Success!");
+
+// With options
+showToast("Operation completed", {
+  variant: "success",      // "info" | "success" | "warning" | "error"
+  timeout: 5000,          // auto-dismiss after ms (0 = no auto-dismiss)
+  details: "JSON data",   // expandable details
+  onDismiss: () => {}     // callback when dismissed
+});
+
+// Clear all toasts
+clearAllToasts();`}
+        </pre>
+      </div>
 
       <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
         <BfDsButton
