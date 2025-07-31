@@ -6,15 +6,80 @@ RUN mkdir -p /etc/container-init && \
     echo "::1              localhost localhost.localdomain" >> /etc/container-init/hosts.template
 
 
-# Install dependencies for Nix installer and general development
+# Install all system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    # Base dependencies
     curl \
     ca-certificates \
     bash \
     git \
     sudo \
     xz-utils \
-    && rm -rf /var/lib/apt/lists/*
+    dumb-init \
+    wget \
+    gnupg \
+    # Development tools (moved from Nix)
+    unzip \
+    jq \
+    nodejs \
+    npm \
+    python3 \
+    python3-pip \
+    ffmpeg \
+    net-tools \
+    ripgrep \
+    fd-find \
+    # Chrome dependencies (we'll install Chrome separately)
+    fonts-liberation \
+    libasound2 \
+    libatk-bridge2.0-0 \
+    libatk1.0-0 \
+    libcairo2 \
+    libcups2 \
+    libdbus-1-3 \
+    libdrm2 \
+    libgbm1 \
+    libgtk-3-0 \
+    libnspr4 \
+    libnss3 \
+    libpango-1.0-0 \
+    libx11-6 \
+    libxcb1 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxext6 \
+    libxfixes3 \
+    libxkbcommon0 \
+    libxrandr2 \
+    libxss1 \
+    libxtst6 \
+    # International fonts
+    fonts-ipafont-gothic \
+    fonts-wqy-zenhei \
+    fonts-thai-tlwg \
+    fonts-khmeros \
+    fonts-kacst \
+    fonts-freefont-ttf \
+    fonts-noto-color-emoji \
+    fontconfig \
+    && rm -rf /var/lib/apt/lists/* \
+    && fc-cache -f -v
+
+# Install Chrome/Chromium based on architecture
+# Note: Google Chrome is only available for amd64, so we use Chromium on arm64
+RUN if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
+        wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
+        && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list \
+        && apt-get update \
+        && apt-get install -y google-chrome-stable \
+        && rm -rf /var/lib/apt/lists/* \
+        && ln -s /usr/bin/google-chrome-stable /usr/bin/chromium; \
+    else \
+        apt-get update \
+        && apt-get install -y chromium chromium-driver \
+        && rm -rf /var/lib/apt/lists/* \
+        && ln -s /usr/bin/chromium /usr/bin/google-chrome-stable; \
+    fi
 
 # Install Nix using Determinate Nix installer
 RUN curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux \
@@ -29,8 +94,18 @@ ENV PATH="${PATH}:/nix/var/nix/profiles/default/bin"
 COPY flake.nix flake.lock /workspace/
 WORKDIR /workspace
 
-# Install our environment
+# Install development tools from flake (includes gh, deno, sapling, etc.)
 RUN nix profile install .#codebot-env --accept-flake-config
+
+# Install Claude CLI globally
+RUN npm install -g @anthropic-ai/claude-code
+
+# Verify Chrome/Chromium installation
+RUN (google-chrome --version || chromium --version) || echo "WARNING: Chrome/Chromium may not be properly configured"
+
+# Copy Puppeteer test helper script
+COPY infra/apps/codebot/puppeteer-test-helper.sh /usr/local/bin/puppeteer-test
+RUN chmod +x /usr/local/bin/puppeteer-test
 
 # Create entrypoint script that ensures /etc/hosts exists (must be done as root)
 RUN printf '#!/bin/bash\n\
@@ -68,9 +143,18 @@ RUN echo "codebot ALL=(ALL) NOPASSWD: /bin/cp * /etc/hosts, /usr/bin/tee /etc/ho
 # Create non-root user (Debian uses useradd)
 RUN useradd -m -s /bin/bash codebot
 
+# Create temp directory for Chrome with proper permissions
+RUN mkdir -p /home/codebot/tmp && \
+    chown -R codebot:codebot /home/codebot/tmp
+
 # Switch to codebot user and set up .bashrc
 USER codebot
 WORKDIR /home/codebot
+
+# Set memory management environment variables
+ENV PUPPETEER_DISABLE_DEV_SHM_USAGE=true
+ENV TMPDIR=/home/codebot/tmp
+ENV CHROME_DEVEL_SANDBOX=/opt/google/chrome/chrome-sandbox
 
 # Create .bash_profile with initialization
 COPY <<EOF /home/codebot/.bash_profile
@@ -104,8 +188,14 @@ fi
 # Add Nix to PATH
 export PATH="/nix/var/nix/profiles/default/bin:\$PATH"
 
-# Set Puppeteer executable path for e2e tests
-export PUPPETEER_EXECUTABLE_PATH="/nix/var/nix/profiles/default/bin/chromium"
+# Set Puppeteer executable path for e2e tests (use Chrome/Chromium based on what's available)
+if [ -x "/usr/bin/google-chrome-stable" ]; then
+  export PUPPETEER_EXECUTABLE_PATH="/usr/bin/google-chrome-stable"
+elif [ -x "/usr/bin/chromium" ]; then
+  export PUPPETEER_EXECUTABLE_PATH="/usr/bin/chromium"
+fi
+export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+export PUPPETEER_DISABLE_DEV_SHM_USAGE=true
 
 # Source shared environment setup
 if [ -f "/workspace/infra/env-setup.sh" ]; then
@@ -113,4 +203,8 @@ if [ -f "/workspace/infra/env-setup.sh" ]; then
 fi
 EOF
 
-ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+# Health check to ensure Chrome/Chromium is available
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+  CMD (google-chrome --version || chromium --version) || exit 1
+
+ENTRYPOINT ["dumb-init", "--", "/usr/local/bin/docker-entrypoint.sh"]
