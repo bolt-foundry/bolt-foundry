@@ -1,5 +1,5 @@
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
-import { KNOWN_KEYS } from "@bfmono/packages/get-configuration-var/get-configuration-var.ts";
+import { KNOWN_KEYS } from "@bolt-foundry/get-configuration-var";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { register } from "@bfmono/infra/bff/bff.ts";
 

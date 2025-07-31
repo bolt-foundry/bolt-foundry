@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { BfLogo } from "@bfmono/apps/cfDs/static/BfLogo.tsx";
+import { BfDsLogo } from "@bfmono/apps/bfDs/components/BfDsLogo.tsx";
 import { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
 import { useAuth } from "../contexts/AuthContext.tsx";
 
@@ -156,7 +156,7 @@ export function Nav({ page, onSidebarToggle, sidebarOpen }: Props) {
             onMouseEnter={() => setHoverLogo(true)}
             onMouseLeave={() => setHoverLogo(false)}
           >
-            <BfLogo
+            <BfDsLogo
               boltColor={hoverLogo ? "var(--bfds-primary)" : "var(--bfds-text)"}
               foundryColor={hoverLogo
                 ? "var(--bfds-primary)"

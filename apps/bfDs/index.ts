@@ -124,3 +124,5 @@ export type {
   BfDsBadgeSize,
   BfDsBadgeVariant,
 } from "./components/BfDsBadge.tsx";
+
+export { BfDsLogo } from "./components/BfDsLogo.tsx";

@@ -1,7 +1,7 @@
 import {
   runShellCommand,
   type runShellCommandWithOutput as _runShellCommandWithOutput,
-} from "@bfmono/infra/bff/shellBase.ts";
+} from "@bfmono/infra/shell/runCommand.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import type { TaskDefinition } from "@bfmono/infra/bft/bft.ts";
 
@@ -47,14 +47,17 @@ export async function isoCommand(options: Array<string>): Promise<number> {
     logger.info("✅ All Isograph compilations completed successfully");
 
     // Generate routes after successful compilation
-    logger.info("Generating built routes...");
+    logger.info("Generating built routes for boltfoundry-com...");
     try {
-      const routesBuildPath =
-        new URL(import.meta.resolve("@bfmono/infra/appBuild/routesBuild.ts"))
-          .pathname;
+      const generateRoutesPath = new URL(
+        import.meta.resolve(
+          "@bfmono/apps/boltfoundry-com/bin/generateRoutes.ts",
+        ),
+      )
+        .pathname;
       const repoRoot = new URL(import.meta.resolve("@bfmono/")).pathname;
       const routesBuildResult = await runShellCommand(
-        ["deno", "run", "-A", routesBuildPath],
+        ["deno", "run", "-A", generateRoutesPath],
         repoRoot,
       );
 

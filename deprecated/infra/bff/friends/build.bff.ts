@@ -4,13 +4,13 @@ import { runShellCommand } from "@bfmono/infra/bff/shellBase.ts";
 import { register } from "@bfmono/infra/bff/bff.ts";
 import {
   getConfigurationVariable,
-} from "@bfmono/packages/get-configuration-var/get-configuration-var.ts";
+} from "@bfmono/deprecated/packages/get-configuration-var/get-configuration-var.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { DeploymentEnvs } from "@bfmono/infra/constants/deploymentEnvs.ts";
 import {
   PRIVATE_CONFIG_KEYS,
   PUBLIC_CONFIG_KEYS,
-} from "@bfmono/apps/boltFoundry/__generated__/configKeys.ts";
+} from "@bfmono/deprecated/apps/boltFoundry/__generated__/configKeys.ts";
 
 const logger = getLogger(import.meta);
 
@@ -110,23 +110,7 @@ if (getConfigurationVariable("BF_ENV") === DeploymentEnvs.DEVELOPMENT) {
   allowedBinaries.push("sl");
 }
 
-const denoCompilationCommand = [
-  "deno",
-  "compile",
-  "--no-check",
-  "--output=build/",
-  ...includableDirectories.map((dir) => `--include=${dir}`),
-  `--allow-net=${allowedNetworkDestionations.join(",")}`,
-  `--allow-env=${allowedEnvironmentVariables.entries().toArray().join(",")}`,
-  `--allow-read=${readableLocations.join(",")}`,
-  `--allow-write=${writableLocations.join(",")}`,
-  ...(
-    allowedBinaries.length > 0
-      ? [`--allow-run=${allowedBinaries.join(",")}`]
-      : []
-  ),
-  "apps/web/web.tsx",
-];
+// Deno compilation command removed - deprecated apps no longer built
 
 // Helper function to format memory usage in MB
 function formatMemoryUsage(memoryUsage: Deno.MemoryUsage): string {
@@ -440,16 +424,6 @@ export async function build(args: Array<string>): Promise<number> {
   logger.info("Generating barrel files");
   await sh("./apps/bfDb/bin/genBarrel.ts");
 
-  if (debug) logMemoryUsage("before routes build");
-  const routesBuildResult = await sh("./infra/appBuild/routesBuild.ts");
-  if (debug) logMemoryUsage("after routes build");
-
-  if (routesBuildResult !== 0) {
-    return routesBuildResult;
-  }
-
-  // Content build removed for v0.1 - using runtime markdown rendering instead
-
   if (debug) logMemoryUsage("before graphql types");
   const result = await runShellCommand(["bff", "genGqlTypes"]);
   if (debug) logMemoryUsage("after graphql types");
@@ -458,31 +432,6 @@ export async function build(args: Array<string>): Promise<number> {
   if (result && waitForFail) {
     return new Promise((_, reject) => {
       setTimeout(() => reject(new Error("Build failed")), 15000);
-    });
-  }
-
-  if (debug) logMemoryUsage("before isograph compiler");
-  const isographResult = await runShellCommand(
-    ["deno", "run", "-A", "npm:@isograph/compiler"],
-    "apps/boltFoundry",
-  );
-  if (debug) logMemoryUsage("after isograph compiler");
-
-  if (isographResult && waitForFail) {
-    return new Promise((_, reject) => {
-      setTimeout(() => reject(new Error("Build failed")), 15000);
-    });
-  }
-
-  if (debug) logMemoryUsage("before final compilation");
-  const denoCompile = runShellCommand(denoCompilationCommand);
-  const jsCompile = runShellCommand(["./infra/appBuild/appBuild.ts"]);
-  const [denoResult, jsResult] = await Promise.all([denoCompile, jsCompile]);
-  if (debug) logMemoryUsage("after final compilation");
-
-  if ((denoResult || jsResult) && waitForFail) {
-    return new Promise((_, reject) => {
-      setTimeout(() => reject(new Error("Build failed")), 10000);
     });
   }
 
@@ -495,7 +444,7 @@ export async function build(args: Array<string>): Promise<number> {
       stopContinuousMemoryLogging();
     }
   }
-  return denoResult || jsResult;
+  return result || 0;
 }
 
 register(

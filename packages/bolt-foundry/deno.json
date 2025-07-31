@@ -4,7 +4,8 @@
   "description": "Bolt Foundry is a library for building AI-powered applications.",
   "license": "MIT",
   "exports": {
-    "./bolt-foundry.ts": "./bolt-foundry.ts"
+    ".": "./bolt-foundry.ts",
+    "./deck": "./deck.ts"
   },
   "imports": {
   }

@@ -15,18 +15,18 @@ function createImportMapResolver(): esbuild.Plugin {
         return { path: absolutePath, external: false };
       });
 
-      build.onResolve({ filter: /^@iso$/ }, (_args) => {
+      build.onResolve({ filter: /^@iso-bfc$/ }, (_args) => {
         const absolutePath = new URL(
-          "../../../apps/boltFoundry/__generated__/__isograph/iso.ts",
+          "../../../apps/boltfoundry-com/__generated__/__isograph/iso.ts",
           import.meta.url,
         ).pathname;
         return { path: absolutePath, external: false };
       });
 
-      build.onResolve({ filter: /^@iso\// }, (args) => {
-        const relativePath = args.path.replace(/^@iso\//, "");
+      build.onResolve({ filter: /^@iso-bfc\// }, (args) => {
+        const relativePath = args.path.replace(/^@iso-bfc\//, "");
         const absolutePath = new URL(
-          `../../../apps/boltFoundry/__generated__/__isograph/${relativePath}`,
+          `../../../apps/boltfoundry-com/__generated__/__isograph/${relativePath}`,
           import.meta.url,
         ).pathname;
         return { path: absolutePath, external: false };
@@ -78,8 +78,8 @@ Deno.test({
   fn: async () => {
     // Test that @iso paths are resolved correctly by the plugin
     const testEntryContent = `
-import { iso } from "@iso";
-import entrypointBlog from "@iso/Query/EntrypointBlog/entrypoint.ts";
+import { iso } from "@iso-bfc";
+import entrypointBlog from "@iso-bfc/Query/EntrypointBlog/entrypoint.ts";
 
 iso(\`entrypoint Query.EntrypointBlog\`);
 export { entrypointBlog };

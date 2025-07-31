@@ -1,4 +1,4 @@
-import { getConfigurationVariable } from "../get-configuration-var/get-configuration-var.ts";
+import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 import { parseEnvFile } from "./utils.ts";
 
 // Cache for loaded environment variables

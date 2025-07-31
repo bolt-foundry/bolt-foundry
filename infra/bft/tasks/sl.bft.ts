@@ -1,7 +1,7 @@
 import {
   runShellCommand,
   runShellCommandWithOutput,
-} from "@bfmono/infra/bff/shellBase.ts";
+} from "@bfmono/infra/shell/runCommand.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import type { TaskDefinition } from "@bfmono/infra/bft/bft.ts";
 

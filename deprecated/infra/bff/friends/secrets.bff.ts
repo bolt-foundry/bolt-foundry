@@ -10,7 +10,7 @@ import {
 import {
   PRIVATE_CONFIG_KEYS,
   PUBLIC_CONFIG_KEYS,
-} from "@bfmono/apps/boltFoundry/__generated__/configKeys.ts";
+} from "@bfmono/deprecated/apps/boltFoundry/__generated__/configKeys.ts";
 import { dirname } from "@std/path";
 import { exists } from "@std/fs";
 

@@ -1,6 +1,6 @@
 #! /usr/bin/env -S bff
 
-import type { Handler } from "@bfmono/apps/web/web.tsx";
+import type { Handler } from "@bfmono/lib/types/Handler.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { BfError } from "@bfmono/lib/BfError.ts";
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";

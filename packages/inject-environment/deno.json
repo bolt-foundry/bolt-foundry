@@ -1,0 +1,5 @@
+{
+  "name": "@bolt-foundry/inject-environment",
+  "version": "1.0.0",
+  "exports": "./inject-environment.ts"
+}

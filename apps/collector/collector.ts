@@ -5,8 +5,8 @@ import {
   warmSecrets,
 } from "@bolt-foundry/get-configuration-var";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
-import type { Handler } from "@bfmono/apps/web/web.tsx";
-import { handleRequest } from "@bfmono/apps/web/handlers/mainHandler.ts";
+import type { Handler } from "@bfmono/lib/types/Handler.ts";
+import { handleRequest } from "./handleRequest.ts";
 import { PostHog } from "posthog-node";
 import { trackLlmEvent } from "@bfmono/apps/collector/llm-event-tracker.ts";
 

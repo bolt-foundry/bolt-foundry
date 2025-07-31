@@ -1,7 +1,7 @@
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
-import { runShellCommandWithOutput } from "@bfmono/infra/bff/shellBase.ts";
-import { loggerGithub } from "@bfmono/infra/bff/githubLogger.ts";
-import { refreshAllSecrets } from "@bfmono/packages/get-configuration-var/get-configuration-var.ts";
+import { runShellCommandWithOutput } from "@bfmono/infra/shell/runCommand.ts";
+import { loggerGithub } from "@bfmono/infra/shell/githubLogger.ts";
+import { refreshAllSecrets } from "@bolt-foundry/get-configuration-var";
 import type { TaskDefinition } from "@bfmono/infra/bft/bft.ts";
 import { testCommand } from "./test.bft.ts";
 import { formatCommand } from "./format.bft.ts";
@@ -49,9 +49,6 @@ async function runInstallStep(_useGithub: boolean): Promise<number> {
   logger.info("Caching dependencies via deno install");
   const { code } = await runShellCommandWithOutput(
     ["deno", "install"],
-    {},
-    true,
-    false,
   );
   return code;
 }

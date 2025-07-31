@@ -1,0 +1,5 @@
+{
+  "name": "@bolt-foundry/logger",
+  "version": "1.0.0",
+  "exports": "./logger.ts"
+}

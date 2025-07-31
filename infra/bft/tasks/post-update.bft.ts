@@ -1,4 +1,4 @@
-import { runShellCommand } from "@bfmono/infra/bff/shellBase.ts";
+import { runShellCommand } from "@bfmono/infra/shell/runCommand.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { ui } from "@bfmono/packages/cli-ui/cli-ui.ts";
 import type { TaskDefinition } from "@bfmono/infra/bft/bft.ts";
