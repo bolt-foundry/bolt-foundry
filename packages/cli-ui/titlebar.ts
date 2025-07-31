@@ -6,6 +6,7 @@
  */
 
 /** ANSI escape sequence to set terminal title */
+import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 const TITLE_START = "\x1b]0;";
 const TITLE_END = "\x07";
 
@@ -65,18 +66,18 @@ export function createTitlebarUpdater(prefix: string) {
  */
 export function supportsTitlebar(): boolean {
   // Check for FORCE_TITLEBAR environment variable
-  if (Deno.env.get("FORCE_TITLEBAR") === "1") {
+  if (getConfigurationVariable("FORCE_TITLEBAR") === "1") {
     return true;
   }
 
   // Check for NO_TITLEBAR environment variable
-  if (Deno.env.get("NO_TITLEBAR") === "1") {
+  if (getConfigurationVariable("NO_TITLEBAR") === "1") {
     return false;
   }
 
   // Check for known terminal types that support title updates
-  const term = Deno.env.get("TERM") || "";
-  const termProgram = Deno.env.get("TERM_PROGRAM") || "";
+  const term = getConfigurationVariable("TERM") || "";
+  const termProgram = getConfigurationVariable("TERM_PROGRAM") || "";
 
   // List of terminals known to support title updates
   const supportedTerms = [

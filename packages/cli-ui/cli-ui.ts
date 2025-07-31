@@ -29,24 +29,29 @@ export interface UIOutput {
 export const ui: UIOutput = {
   info: (message: string) => {
     // Write to stderr so it doesn't interfere with piped output
+    // deno-lint-ignore no-console
     console.error(message);
   },
 
   warn: (message: string) => {
+    // deno-lint-ignore no-console
     console.error(`Warning: ${message}`);
   },
 
   error: (message: string) => {
+    // deno-lint-ignore no-console
     console.error(`Error: ${message}`);
   },
 
   output: (message: string) => {
     // This goes to stdout for piping
+    // deno-lint-ignore no-console
     console.log(message);
   },
 
   debug: (message: string) => {
     if (getConfigurationVariable("DEBUG")) {
+      // deno-lint-ignore no-console
       console.error(`[DEBUG] ${message}`);
     }
   },
