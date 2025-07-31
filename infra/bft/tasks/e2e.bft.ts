@@ -364,7 +364,7 @@ export async function e2eCommand(options: Array<string>): Promise<number> {
           const buildResult = await runShellCommand(
             ["bft", "compile", "boltfoundry-com", "--quiet"],
             Deno.cwd(),
-            {},
+            { BF_E2E_MODE: "true" },
             true,
             true, // Always suppress output for cleaner logs
           );

@@ -11,7 +11,9 @@ export interface ClientRootProps {
 }
 
 export function ClientRoot({ environment }: ClientRootProps) {
-  return <App initialPath={environment.currentPath as string} />;
+  return (
+    <App {...environment} initialPath={environment.currentPath as string} />
+  );
 }
 
 export function rehydrate(environment: Record<string, unknown>) {

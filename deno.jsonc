@@ -147,6 +147,7 @@
         "bolt-foundry/ts-expect-error-description",
         "bolt-foundry/no-parent-directory-traversal",
         "bolt-foundry/no-cornercased-imports",
+        "bolt-foundry/use-smooth-ui",
         "no-slow-types",
         "no-console",
         "no-external-import",
