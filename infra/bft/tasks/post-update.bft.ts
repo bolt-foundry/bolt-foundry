@@ -166,5 +166,4 @@ async function runPostUpdateChecks(filePath: string): Promise<number> {
 export const bftDefinition = {
   description: "Run post-update checks (format and type check) on files",
   fn: postUpdateCommand,
-  aiSafe: true,
 } satisfies TaskDefinition;

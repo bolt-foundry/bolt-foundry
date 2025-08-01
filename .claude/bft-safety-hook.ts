@@ -29,7 +29,6 @@ async function loadBftTaskDefinitions(): Promise<Map<string, TaskDefinition>> {
   // Add built-in help task
   taskMap.set("help", {
     description: "Show available tasks",
-    aiSafe: true,
     fn: () => 0,
   });
 
@@ -71,7 +70,6 @@ async function loadBftTaskDefinitions(): Promise<Map<string, TaskDefinition>> {
           // Deck tasks are always AI-safe
           taskMap.set(taskName, {
             description: `Run ${taskName} deck`,
-            aiSafe: true,
             fn: () => 0,
           });
         }
@@ -155,19 +153,9 @@ async function isBftCommandSafe(
     return { exists: false, safe: false }; // Unknown command doesn't exist
   }
 
-  // Evaluate aiSafe property
-  let safe: boolean;
-  if (typeof taskDef.aiSafe === "boolean") {
-    safe = taskDef.aiSafe;
-  } else if (typeof taskDef.aiSafe === "function") {
-    try {
-      safe = taskDef.aiSafe(args);
-    } catch (_error) {
-      safe = false; // If evaluation fails, assume unsafe
-    }
-  } else {
-    safe = true; // Default is safe if aiSafe is undefined
-  }
+  // Since aiSafe property was removed, default to safe for existing tasks
+  // TODO: Implement new safety mechanism if needed
+  const safe = true;
 
   return { exists: true, safe };
 }

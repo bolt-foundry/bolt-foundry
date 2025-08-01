@@ -308,7 +308,6 @@ export async function land(): Promise<number> {
 export const bftDefinition = {
   description:
     "Pull code from sapling, install deps, compile with BFT, and create a git commit",
-  aiSafe: true,
   fn: async () => {
     return await land();
   },

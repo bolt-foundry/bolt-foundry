@@ -11,7 +11,6 @@ function echo(args: Array<string>): number {
 // Export the task definition for autodiscovery
 export const bftDefinition = {
   description: "Echo arguments to stdout",
-  aiSafe: true,
   fn: echo,
 } satisfies TaskDefinition;
 

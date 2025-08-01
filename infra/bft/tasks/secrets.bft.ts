@@ -10,10 +10,6 @@ const logger = getLogger(import.meta);
 
 export const bftDefinition = {
   description: "Manage secrets and environment variables",
-  aiSafe: (args: Array<string>) => {
-    const subcommand = args[0];
-    return ["list", "help"].includes(subcommand);
-  },
   fn: secretsTask,
 } satisfies TaskDefinition;
 

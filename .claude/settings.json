@@ -35,15 +35,6 @@
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bft safety"
-          }
-        ]
-      },
-      {
         "matcher": "Edit|MultiEdit|Write",
         "hooks": [
           {

@@ -296,7 +296,6 @@ ${command.content}
 // Export the task definition for autodiscovery
 export const bftDefinition = {
   description: "Generate Claude commands for all BFT tasks",
-  aiSafe: true,
   fn: claudify,
 } satisfies TaskDefinition;
 

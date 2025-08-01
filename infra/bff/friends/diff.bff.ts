@@ -37,5 +37,4 @@ register(
       description: "Show sl diff help and options.",
     },
   ],
-  true, // AI-safe - read-only operation
 );

@@ -273,54 +273,8 @@ export async function slCommand(options: Array<string>): Promise<number> {
   }
 }
 
-/**
- * Check if sl subcommand is AI-safe
- */
-function isSlCommandSafe(args: Array<string>): boolean {
-  if (args.length === 0) {
-    return true; // sl without args shows help
-  }
-
-  const subcommand = args[0];
-
-  // Commands that modify the repository state are not AI-safe
-  const unsafeCommands = [
-    "commit",
-    "amend",
-    "uncommit",
-    "split",
-    "add",
-    "remove",
-    "forget",
-    "revert",
-    "purge",
-    "shelve",
-    "unshelve",
-    "metaedit",
-    "rebase",
-    "graft",
-    "hide",
-    "unhide",
-    "fold",
-    "histedit",
-    "absorb",
-    "unamend",
-    "undo",
-    "redo",
-    "clone",
-    "init",
-    "pull",
-    "push",
-    "land",
-    "pr",
-  ];
-
-  return !unsafeCommands.includes(subcommand);
-}
-
 export const bftDefinition = {
   description:
     "Sapling proxy with enhanced commit and amend (smart validation)",
   fn: slCommand,
-  aiSafe: isSlCommandSafe,
 } satisfies TaskDefinition;
