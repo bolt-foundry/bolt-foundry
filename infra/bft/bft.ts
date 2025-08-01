@@ -4,7 +4,7 @@
  * This is a cleanroom implementation that uses export-based task discovery.
  */
 
-import { ui } from "@bfmono/packages/cli-ui/cli-ui.ts";
+import { ui } from "@bfmono/packages/tui/tui.ts";
 
 export interface TaskDefinition {
   description: string;
