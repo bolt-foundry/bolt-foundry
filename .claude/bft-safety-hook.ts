@@ -138,7 +138,7 @@ function parseBftCommand(
 async function isBftCommandSafe(
   command: string,
   subcommand?: string,
-  args: Array<string> = [],
+  _args: Array<string> = [],
 ): Promise<{ exists: boolean; safe: boolean }> {
   // Special handling for sl command
   if (command === "sl" && subcommand) {
