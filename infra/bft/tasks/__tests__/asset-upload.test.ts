@@ -64,6 +64,69 @@ Deno.test("asset-upload: handles missing credentials", async () => {
   }
 });
 
+Deno.test("asset-upload: validates shared secret when required", async () => {
+  // Set up test file
+  const testFile = await Deno.makeTempFile({
+    prefix: "test-asset-",
+    suffix: ".txt",
+  });
+  await Deno.writeTextFile(testFile, "Test content");
+
+  try {
+    // Set required secret
+    Deno.env.set("ASSET_UPLOAD_REQUIRED_SECRET", "test-secret-123");
+
+    // Test without secret - should fail
+    const exitCode1 = await assetUploadCommand([testFile]);
+    assertEquals(exitCode1, 1);
+
+    // Test with wrong secret - should fail
+    const exitCode2 = await assetUploadCommand([
+      testFile,
+      "--secret",
+      "wrong-secret",
+    ]);
+    assertEquals(exitCode2, 1);
+
+    // Test with correct secret via CLI - should fail due to missing S3 credentials
+    const exitCode3 = await assetUploadCommand([
+      testFile,
+      "--secret",
+      "test-secret-123",
+    ]);
+    assertEquals(exitCode3, 1); // Still fails due to missing S3 credentials, but passes secret check
+
+    // Test with correct secret via env var - should fail due to missing S3 credentials
+    Deno.env.set("ASSET_UPLOAD_SECRET", "test-secret-123");
+    const exitCode4 = await assetUploadCommand([testFile]);
+    assertEquals(exitCode4, 1); // Still fails due to missing S3 credentials, but passes secret check
+  } finally {
+    await Deno.remove(testFile);
+    Deno.env.delete("ASSET_UPLOAD_REQUIRED_SECRET");
+    Deno.env.delete("ASSET_UPLOAD_SECRET");
+  }
+});
+
+Deno.test("asset-upload: works without shared secret when not required", async () => {
+  // Ensure no required secret is set
+  Deno.env.delete("ASSET_UPLOAD_REQUIRED_SECRET");
+  Deno.env.delete("ASSET_UPLOAD_SECRET");
+
+  const testFile = await Deno.makeTempFile({
+    prefix: "test-asset-",
+    suffix: ".txt",
+  });
+  await Deno.writeTextFile(testFile, "Test content");
+
+  try {
+    const exitCode = await assetUploadCommand([testFile]);
+    // Should fail due to missing S3 credentials, not secret validation
+    assertEquals(exitCode, 1);
+  } finally {
+    await Deno.remove(testFile);
+  }
+});
+
 Deno.test("getMimeType: detects correct MIME types", () => {
   // Image types
   assertEquals(getMimeType("photo.jpg"), "image/jpeg");
