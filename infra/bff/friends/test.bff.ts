@@ -33,5 +33,4 @@ register(
   "Run project tests",
   testCommand,
   [],
-  true, // AI-safe
 );

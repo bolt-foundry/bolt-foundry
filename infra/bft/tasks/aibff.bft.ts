@@ -17,7 +17,6 @@ function aibff(args: Array<string>): number {
 // Export the task definition for autodiscovery
 export const bftDefinition = {
   description: "Forward to aibff command",
-  aiSafe: true,
   fn: aibff,
 } satisfies TaskDefinition;
 

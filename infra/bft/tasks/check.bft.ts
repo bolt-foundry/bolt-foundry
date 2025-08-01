@@ -26,5 +26,4 @@ export async function checkCommand(options: Array<string>): Promise<number> {
 export const bftDefinition = {
   description: "Run Deno type check",
   fn: checkCommand,
-  aiSafe: true,
 } satisfies TaskDefinition;
