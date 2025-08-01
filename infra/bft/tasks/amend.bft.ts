@@ -2,22 +2,19 @@
 
 import type { TaskDefinition } from "../bft.ts";
 import { ui } from "@bfmono/packages/cli-ui/cli-ui.ts";
-import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { parseArgs } from "@std/cli/parse-args";
-
-const logger = getLogger(import.meta);
 
 interface AmendArgs {
   message?: string;
   m?: string;
   help?: boolean;
   h?: boolean;
-  _: string[];
+  _: Array<string>;
 }
 
 async function runCommand(
   cmd: string,
-  args: string[],
+  args: Array<string>,
   options?: { cwd?: string; captureOutput?: boolean },
 ): Promise<{ success: boolean; output?: string; error?: string }> {
   const command = new Deno.Command(cmd, {
@@ -27,17 +24,16 @@ async function runCommand(
     stderr: options?.captureOutput ? "piped" : "inherit",
   });
 
-  const result = options?.captureOutput
-    ? await command.output()
-    : await command.spawn().status;
-
-  if (options?.captureOutput && "stdout" in result) {
+  if (options?.captureOutput) {
+    const result = await command.output();
     return {
       success: result.success,
       output: new TextDecoder().decode(result.stdout),
       error: new TextDecoder().decode(result.stderr),
     };
   }
+
+  const result = await command.spawn().status;
 
   return { success: "success" in result ? result.success : false };
 }
@@ -117,7 +113,7 @@ async function amendInSubmodule(
     { cwd: path, captureOutput: true },
   );
 
-  const hasStagedChanges = diffOutput !== "";
+  const _hasStagedChanges = diffOutput !== "";
 
   // Build amend command
   const amendArgs = ["commit", "--amend", "--no-edit"];
@@ -138,7 +134,7 @@ async function amendInSubmodule(
   return true;
 }
 
-async function amend(args: string[]): Promise<number> {
+async function amend(args: Array<string>): Promise<number> {
   const parsed = parseArgs(args, {
     string: ["message", "m"],
     boolean: ["help", "h"],
@@ -259,7 +255,8 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
 }
 
 export const bftDefinition = {
-  description: "Amend commits in both main repo and submodules",
+  description:
+    "Amend commits in both main repo and submodules. IMPORTANT: Before amending any commit, you MUST: 1) Use TodoWrite to create tasks for: 'Run bft check', 'Run bft lint', 'Run bft test', 'Run bft format', 'Execute bft amend'. 2) Use the Task tool with subagent_type: 'general-purpose' to run the first three tasks (check, lint, test) in PARALLEL - launch all three subagents at once. IMPORTANT: Each subagent MUST fix any problems they find (type errors, lint issues, test failures) before marking their task as complete. 3) After all three parallel tasks are completed and all issues are fixed, run 'bft format' to fix any formatting issues. 4) Only after format is complete and ALL todos are marked as completed, execute bft amend command.",
   aiSafe: false, // Modifies repository state
   fn: amend,
 } satisfies TaskDefinition;
