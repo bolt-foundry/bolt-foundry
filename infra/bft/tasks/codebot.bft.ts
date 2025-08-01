@@ -1011,7 +1011,7 @@ FIRST TIME SETUP:
   containerArgs.push(
     "codebot",
     "-c",
-    "claude --dangerously-skip-permissions; exec /bin/bash",
+    `echo '🚀 Starting boltfoundry-com app...'; echo '📡 Opening http://${workspaceId}.codebot.local:8000 in Chrome...'; bft dev boltfoundry-com --no-log & sleep 3 && google-chrome-stable --new-window 'http://${workspaceId}.codebot.local:8000' 2>/dev/null || chromium --new-window 'http://${workspaceId}.codebot.local:8000' 2>/dev/null; echo '🤖 Starting Claude Code...'; claude --dangerously-skip-permissions; exec /bin/bash`,
   );
 
   const child = new Deno.Command("container", {
