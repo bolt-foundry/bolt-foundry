@@ -327,7 +327,6 @@ function shouldExclude(
 // Export the task definition for autodiscovery
 export const bftDefinition = {
   description: "Compare workspace directories and find changed files",
-  aiSafe: true,
   fn: workspaceDiff,
 } satisfies TaskDefinition;
 

@@ -136,5 +136,4 @@ export async function testCommand(options: Array<string>): Promise<number> {
 export const bftDefinition = {
   description: "Run Deno tests",
   fn: testCommand,
-  aiSafe: true,
 } satisfies TaskDefinition;

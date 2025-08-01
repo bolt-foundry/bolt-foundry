@@ -78,5 +78,4 @@ export async function isoCommand(options: Array<string>): Promise<number> {
 export const bftDefinition = {
   description: "Run the isograph compiler to generate code from GraphQL",
   fn: isoCommand,
-  aiSafe: true,
 } satisfies TaskDefinition;

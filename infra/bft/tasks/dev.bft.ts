@@ -448,7 +448,6 @@ Examples:
 // Export the task definition for autodiscovery
 export const bftDefinition = {
   description: "Launch web applications in development mode",
-  aiSafe: true,
   fn: dev,
 } satisfies TaskDefinition;
 

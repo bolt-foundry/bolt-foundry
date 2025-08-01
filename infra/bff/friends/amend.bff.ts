@@ -105,5 +105,4 @@ register(
         "Show full output from pre-commit checks. By default, shows concise output.",
     },
   ],
-  false, // Not AI-safe - modifies commits
 );

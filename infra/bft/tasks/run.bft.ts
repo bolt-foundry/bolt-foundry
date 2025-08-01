@@ -26,6 +26,5 @@ async function run(args: Array<string>): Promise<number> {
 // Export the task definition for autodiscovery
 export const bftDefinition = {
   description: "Execute a .bft.ts file",
-  aiSafe: true,
   fn: run,
 } satisfies TaskDefinition;
