@@ -412,6 +412,64 @@ FIRST TIME SETUP:
     );
   }
 
+  // Ensure host bridge is running for container-to-host communication
+  try {
+    ui.output("🌉 Checking host bridge...");
+
+    // Check if host bridge is already running
+    const psBridgeCmd = new Deno.Command("pgrep", {
+      args: ["-f", "host-bridge.ts"],
+    });
+    const psBridgeResult = await psBridgeCmd.output();
+
+    if (!psBridgeResult.success) {
+      // Host bridge not running, start it
+      ui.output("🚀 Starting host bridge on port 8017...");
+
+      const hostBridgePath = "./infra/apps/codebot/host-bridge.ts";
+      const bridgeCmd = new Deno.Command("deno", {
+        args: [
+          "run",
+          "--allow-net",
+          "--allow-run",
+          "--allow-env",
+          hostBridgePath,
+        ],
+        stdout: "null",
+        stderr: "null",
+      });
+
+      // Start host bridge in background
+      const bridgeChild = bridgeCmd.spawn();
+
+      // Give it a moment to start and check if it's still running
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Verify host bridge started successfully
+      const verifyBridgeCmd = new Deno.Command("pgrep", {
+        args: ["-f", "host-bridge.ts"],
+      });
+      const verifyBridgeResult = await verifyBridgeCmd.output();
+
+      if (verifyBridgeResult.success) {
+        ui.output("✅ Host bridge started on port 8017");
+        bridgeChild.unref(); // Don't wait for it to finish
+      } else {
+        ui.output("⚠️ Host bridge may have failed to start");
+        // Don't fail the entire command, but warn user
+      }
+    } else {
+      ui.output("✅ Host bridge already running");
+    }
+  } catch (error) {
+    // Don't fail the entire command if host bridge fails
+    ui.output(
+      `⚠️ Host bridge check failed: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+    );
+  }
+
   // Check for .claude directory in user's home
   const homeDir = getConfigurationVariable("HOME");
   if (!homeDir) {
