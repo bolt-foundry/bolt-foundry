@@ -39,9 +39,11 @@ async function runCommand(
 }
 
 async function checkForSubmoduleChanges(): Promise<
-  Array<{ path: string; hasChanges: boolean }>
+  Array<{ path: string; hasChanges: boolean; vcs: "git" | "sapling" }>
 > {
-  const submodules: Array<{ path: string; hasChanges: boolean }> = [];
+  const submodules: Array<
+    { path: string; hasChanges: boolean; vcs: "git" | "sapling" }
+  > = [];
 
   // Check if .gitmodules exists
   try {
@@ -75,19 +77,50 @@ async function checkForSubmoduleChanges(): Promise<
       if (pathOutput) {
         const submodulePath = pathOutput.trim();
 
-        // Check if submodule has changes
-        const { success: statusSuccess, output: statusOutput } =
-          await runCommand(
-            "git",
-            ["status", "--porcelain"],
-            { cwd: submodulePath, captureOutput: true },
-          );
+        // Detect VCS type
+        let vcs: "git" | "sapling" = "git";
+        try {
+          await Deno.stat(`${submodulePath}/.sl`);
+          vcs = "sapling";
+        } catch {
+          try {
+            await Deno.stat(`${submodulePath}/.git`);
+            vcs = "git";
+          } catch {
+            // Skip if neither .git nor .sl exists
+            continue;
+          }
+        }
 
-        const hasChanges = Boolean(
-          statusSuccess && statusOutput &&
-            statusOutput.trim().length > 0,
-        );
-        submodules.push({ path: submodulePath, hasChanges });
+        // Check if submodule has changes
+        let hasChanges = false;
+        if (vcs === "sapling") {
+          const { success: statusSuccess, output: statusOutput } =
+            await runCommand(
+              "sl",
+              ["status", "--porcelain"],
+              { cwd: submodulePath, captureOutput: true },
+            );
+
+          hasChanges = Boolean(
+            statusSuccess && statusOutput &&
+              statusOutput.trim().length > 0,
+          );
+        } else {
+          const { success: statusSuccess, output: statusOutput } =
+            await runCommand(
+              "git",
+              ["status", "--porcelain"],
+              { cwd: submodulePath, captureOutput: true },
+            );
+
+          hasChanges = Boolean(
+            statusSuccess && statusOutput &&
+              statusOutput.trim().length > 0,
+          );
+        }
+
+        submodules.push({ path: submodulePath, hasChanges, vcs });
       }
     }
   }
@@ -98,31 +131,58 @@ async function checkForSubmoduleChanges(): Promise<
 async function commitSubmodule(
   path: string,
   message: string,
+  vcs: "git" | "sapling",
 ): Promise<boolean> {
-  ui.output(`\n📁 Committing changes in submodule: ${path}`);
+  ui.output(`\n📁 Committing changes in submodule: ${path} (${vcs})`);
 
-  // Add all changes in submodule
-  const { success: addSuccess } = await runCommand(
-    "git",
-    ["add", "-A"],
-    { cwd: path },
-  );
+  if (vcs === "sapling") {
+    // Add all changes in submodule
+    const { success: addSuccess } = await runCommand(
+      "sl",
+      ["add", "-A"],
+      { cwd: path },
+    );
 
-  if (!addSuccess) {
-    ui.error(`❌ Failed to add changes in ${path}`);
-    return false;
-  }
+    if (!addSuccess) {
+      ui.error(`❌ Failed to add changes in ${path}`);
+      return false;
+    }
 
-  // Commit in submodule
-  const { success: commitSuccess } = await runCommand(
-    "git",
-    ["commit", "-m", message],
-    { cwd: path },
-  );
+    // Commit in submodule
+    const { success: commitSuccess } = await runCommand(
+      "sl",
+      ["commit", "-m", message],
+      { cwd: path },
+    );
 
-  if (!commitSuccess) {
-    ui.error(`❌ Failed to commit in ${path}`);
-    return false;
+    if (!commitSuccess) {
+      ui.error(`❌ Failed to commit in ${path}`);
+      return false;
+    }
+  } else {
+    // Add all changes in submodule
+    const { success: addSuccess } = await runCommand(
+      "git",
+      ["add", "-A"],
+      { cwd: path },
+    );
+
+    if (!addSuccess) {
+      ui.error(`❌ Failed to add changes in ${path}`);
+      return false;
+    }
+
+    // Commit in submodule
+    const { success: commitSuccess } = await runCommand(
+      "git",
+      ["commit", "-m", message],
+      { cwd: path },
+    );
+
+    if (!commitSuccess) {
+      ui.error(`❌ Failed to commit in ${path}`);
+      return false;
+    }
   }
 
   ui.output(`✅ Committed changes in ${path}`);
@@ -153,12 +213,13 @@ EXAMPLES:
   bft commit -m "Fix bug" src/app.ts src/app.test.ts
 
 This command will:
-1. Check for changes in any git submodules
+1. Check for changes in any submodules (Git or Sapling)
 2. Commit submodule changes first (if any)
 3. Update submodule pointers in the main repo
 4. Create the main commit with your message
 
-Note: This uses 'sl' (Sapling) for the main repo and 'git' for submodules.
+Note: This uses 'sl' (Sapling) for the main repo and automatically detects
+whether submodules use Git or Sapling.
 `);
     return 0;
   }
@@ -187,7 +248,11 @@ Note: This uses 'sl' (Sapling) for the main repo and 'git' for submodules.
 
 Co-Authored-By: Claude <noreply@anthropic.com>`;
 
-      const success = await commitSubmodule(submodule.path, submoduleMessage);
+      const success = await commitSubmodule(
+        submodule.path,
+        submoduleMessage,
+        submodule.vcs,
+      );
       if (!success) {
         return 1;
       }
@@ -235,7 +300,8 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
       "\n📌 Note: Submodule changes were committed. Don't forget to push them:",
     );
     for (const submodule of submodulesWithChanges) {
-      ui.output(`  cd ${submodule.path} && git push`);
+      const pushCmd = submodule.vcs === "sapling" ? "sl push" : "git push";
+      ui.output(`  cd ${submodule.path} && ${pushCmd}`);
     }
   }
 
