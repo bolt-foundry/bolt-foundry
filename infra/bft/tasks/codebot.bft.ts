@@ -120,12 +120,12 @@ function buildContainerArgs(config: ContainerConfig): Array<string> {
     config.memory,
     "--cpus",
     config.cpus,
+    "--workdir",
+    "/@bfmono", // Set working directory to /@bfmono
     "--volume",
     `${config.claudeDir}:/home/codebot/.claude`,
     "--volume",
-    `${config.workspacePath}/@bfmono:/@bfmono`,
-    "--volume",
-    `${config.workspacePath}/@internalbf-docs:/@internalbf-docs`,
+    `${config.workspacePath}:/@bfmono`, // Mount workspace directly as /@bfmono
     "--volume",
     "/tmp:/dev/shm", // Use host /tmp as shared memory for Chrome
     "-e",
@@ -567,51 +567,14 @@ FIRST TIME SETUP:
   const copyWorkspacePromise = reusingWorkspace
     ? Promise.resolve()
     : (async () => {
-      // Pull internalbf-docs before copying
-      ui.output("📥 Pulling internalbf-docs repository...");
-      const slPullCmd = new Deno.Command("sl", {
-        args: ["pull"],
-        cwd: "../internalbf-docs",
-        stdout: "piped",
-        stderr: "piped",
-      });
-      const slPullResult = await slPullCmd.output();
-
-      if (!slPullResult.success) {
-        const errorText = new TextDecoder().decode(slPullResult.stderr);
-        ui.output(`⚠️ Failed to pull internalbf-docs: ${errorText}`);
-      } else {
-        ui.output("✅ Pulled internalbf-docs successfully");
-      }
-
-      // Go to remote/main with --clean
-      ui.output("🔄 Switching to remote/main --clean...");
-      const slGotoCmd = new Deno.Command("sl", {
-        args: ["goto", "remote/main", "--clean"],
-        cwd: "../internalbf-docs",
-        stdout: "piped",
-        stderr: "piped",
-      });
-      const slGotoResult = await slGotoCmd.output();
-
-      if (!slGotoResult.success) {
-        const errorText = new TextDecoder().decode(slGotoResult.stderr);
-        ui.output(`⚠️ Failed to switch to remote/main: ${errorText}`);
-      } else {
-        ui.output("✅ Switched to remote/main successfully");
-      }
-
-      // Create the workspace directory structure first to avoid race conditions
-      await Deno.mkdir(`${workspacePath}/@bfmono`, { recursive: true });
-      await Deno.mkdir(`${workspacePath}/@internalbf-docs`, {
-        recursive: true,
-      });
+      // Create the workspace directory first
+      await Deno.mkdir(workspacePath, { recursive: true });
 
       // Copy Claude config files using CoW to workspace if they exist
       const homeDir = getConfigurationVariable("HOME");
 
       // Create tmp directory for Claude config
-      await Deno.mkdir(`${workspacePath}/@bfmono/tmp`, { recursive: true });
+      await Deno.mkdir(`${workspacePath}/tmp`, { recursive: true });
 
       // Copy .claude.json if it exists (for project history)
       const claudeJsonPath = `${homeDir}/.claude.json`;
@@ -621,11 +584,11 @@ FIRST TIME SETUP:
           args: [
             "--reflink=auto",
             claudeJsonPath,
-            `${workspacePath}/@bfmono/tmp/.claude.json`,
+            `${workspacePath}/tmp/.claude.json`,
           ],
         });
         await copyClaudeJson.output();
-        ui.output("📋 CoW copied .claude.json to @bfmono/tmp");
+        ui.output("📋 CoW copied .claude.json to tmp/");
       } catch {
         // File doesn't exist, skip
       }
@@ -645,7 +608,7 @@ FIRST TIME SETUP:
             "--reflink=auto",
             "-R",
             entry.name,
-            `${workspacePath}/@bfmono/`,
+            `${workspacePath}/`,
           ],
         });
 
@@ -671,25 +634,70 @@ FIRST TIME SETUP:
         }
       }
 
-      // Copy internalbf-docs directory
-      ui.output("📋 Copying internalbf-docs with CoW...");
-      const copyInternalDocsCmd = new Deno.Command("cp", {
-        args: [
-          "--reflink=auto",
-          "-R",
-          "../internalbf-docs/.",
-          `${workspacePath}/@internalbf-docs/`,
-        ],
-      });
-      const copyInternalDocsResult = await copyInternalDocsCmd.output();
+      // Check if @internalbf-docs submodule is initialized
+      try {
+        const submoduleStat = await Deno.stat("memos/@internalbf-docs/.git");
+        if (submoduleStat.isDirectory) {
+          ui.output("📚 Found initialized @internalbf-docs submodule");
 
-      if (!copyInternalDocsResult.success) {
-        const errorText = new TextDecoder().decode(
-          copyInternalDocsResult.stderr,
+          // Pull latest changes in the submodule
+          ui.output("📥 Updating @internalbf-docs submodule...");
+          const gitPullCmd = new Deno.Command("git", {
+            args: ["submodule", "update", "--remote", "memos/@internalbf-docs"],
+            stdout: "piped",
+            stderr: "piped",
+          });
+          const gitPullResult = await gitPullCmd.output();
+
+          if (!gitPullResult.success) {
+            const errorText = new TextDecoder().decode(gitPullResult.stderr);
+            ui.output(`⚠️ Failed to update submodule: ${errorText}`);
+          } else {
+            ui.output("✅ Updated @internalbf-docs submodule");
+          }
+        }
+      } catch {
+        // Submodule not initialized
+        ui.output(
+          "📝 @internalbf-docs submodule not initialized (optional for OSS users)",
         );
-        ui.output(`⚠️ Failed to copy internalbf-docs: ${errorText}`);
-      } else {
-        ui.output("✅ Copied internalbf-docs successfully");
+
+        // Check if we have access to internalbf-docs outside the repo
+        try {
+          await Deno.stat("../internalbf-docs");
+          ui.output(
+            "📋 Found local internalbf-docs, copying to memos/@internalbf-docs...",
+          );
+
+          // Create memos directory if it doesn't exist
+          await Deno.mkdir(`${workspacePath}/memos/@internalbf-docs`, {
+            recursive: true,
+          });
+
+          // Copy internalbf-docs
+          const copyInternalDocsCmd = new Deno.Command("cp", {
+            args: [
+              "--reflink=auto",
+              "-R",
+              "../internalbf-docs/.",
+              `${workspacePath}/memos/@internalbf-docs/`,
+            ],
+          });
+          const copyInternalDocsResult = await copyInternalDocsCmd.output();
+
+          if (!copyInternalDocsResult.success) {
+            const errorText = new TextDecoder().decode(
+              copyInternalDocsResult.stderr,
+            );
+            ui.output(`⚠️ Failed to copy internalbf-docs: ${errorText}`);
+          } else {
+            ui.output("✅ Copied internalbf-docs successfully");
+          }
+        } catch {
+          ui.output(
+            "ℹ️ No local internalbf-docs found - workspace will not include internal docs",
+          );
+        }
       }
 
       ui.output("📂 Workspace copy complete");

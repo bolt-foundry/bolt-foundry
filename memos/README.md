@@ -50,7 +50,7 @@ Can be rougher/more technical than public docs.
 ### 3. Internal-Only / Confidential (`@internalbf-docs`)
 
 **Purpose**: Sensitive information that should not be in the public monorepo\
-**Location**: `/@internalbf-docs/` workspace (access controlled)\
+**Location**: `memos/@internalbf-docs/` (Git submodule, optional)\
 **Audience**: Bolt Foundry team only\
 **Organization**: PARA Method
 
@@ -128,3 +128,44 @@ Remember: When in doubt about where something belongs, ask yourself:
 - Does it contain names, numbers, or legal obligations? → `@internalbf-docs`
 - Is it vision, philosophy, or technical discussion? → `/memos`
 - Is it user-facing documentation? → `/docs`
+
+## Optional Submodules
+
+The `@internalbf-docs` directory is implemented as a Git submodule, making it
+optional for open-source contributors. This allows:
+
+- **OSS Contributors**: Work with the public codebase without needing access to
+  confidential docs
+- **Internal Team**: Access both public and private documentation seamlessly
+
+### For Internal Team Members
+
+If you have access to the internal docs repository, initialize the submodule:
+
+```bash
+git submodule update --init memos/@internalbf-docs
+```
+
+To update to the latest internal docs:
+
+```bash
+git submodule update --remote memos/@internalbf-docs
+```
+
+### For OSS Contributors
+
+The `memos/@internalbf-docs/` directory will be empty in your checkout. This is
+expected and won't affect your ability to contribute to the public codebase.
+
+### Committing with Submodules
+
+When using `bft commit`:
+
+- Changes in submodules are automatically detected
+- Submodule commits are created first
+- Parent repository submodule pointers are updated automatically
+
+When using `bft amend`:
+
+- Amendments in submodules are handled automatically
+- Submodule pointers are updated after amending
