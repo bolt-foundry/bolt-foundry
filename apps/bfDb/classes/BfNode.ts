@@ -18,7 +18,13 @@ import type {
   FieldSpec,
   RelationSpec,
 } from "@bfmono/apps/bfDb/builders/bfDb/types.ts";
+import {
+  generateRelationshipMethods,
+} from "@bfmono/apps/bfDb/builders/bfDb/relationshipMethods.ts";
 import { makeBfDbSpec } from "@bfmono/apps/bfDb/builders/bfDb/makeBfDbSpec.ts";
+import {
+  defineGqlNodeWithRelationships,
+} from "@bfmono/apps/bfDb/builders/bfDb/relationshipGraphQL.ts";
 
 const logger = getLogger(import.meta);
 
@@ -105,6 +111,31 @@ export abstract class BfNode<TProps extends PropsBase = {}>
     return makeBfDbSpec<F, R>(builder);
   }
 
+  /**
+   * Define a GraphQL node spec that automatically includes fields for relationships
+   * defined in bfNodeSpec. This is the recommended way to define GraphQL specs
+   * for nodes that have relationships.
+   *
+   * @example
+   * ```typescript
+   * class BfBook extends BfNode<{ title: string; isbn: string }> {
+   *   static override gqlSpec = this.defineGqlNodeWithRelations((gql) =>
+   *     gql.string("title").string("isbn")
+   *   );
+   *
+   *   static override bfNodeSpec = this.defineBfNode((f) =>
+   *     f.string("title").string("isbn").one("author", () => BfAuthor)
+   *   );
+   * }
+   * ```
+   */
+  static defineGqlNodeWithRelations(
+    builder: Parameters<typeof defineGqlNodeWithRelationships>[1],
+  ) {
+    // Use 'this' to get the current class
+    return defineGqlNodeWithRelationships(this as AnyBfNodeCtor, builder);
+  }
+
   static generateSortValue() {
     return Date.now();
   }
@@ -121,10 +152,10 @@ export abstract class BfNode<TProps extends PropsBase = {}>
     const now = new Date();
     const defaults: BfMetadata = {
       bfGid: bfGid,
-      bfOid: cv.orgBfOid,
+      bfOid: cv?.orgBfOid || ("" as BfGid),
       className: this.name,
       sortValue: this.generateSortValue(),
-      bfCid: cv.personBfGid,
+      bfCid: cv?.personBfGid || ("" as BfGid),
       createdAt: now,
       lastUpdated: now,
     };
@@ -349,6 +380,9 @@ export abstract class BfNode<TProps extends PropsBase = {}>
       metadata,
     );
     this.currentViewer = currentViewer;
+
+    // Generate relationship methods
+    generateRelationshipMethods(this);
   }
 
   get props(): TProps {
