@@ -679,8 +679,11 @@ FIRST TIME SETUP:
       const copyPromises = [];
 
       for await (const entry of Deno.readDir(".")) {
-        // Skip .bft and tmp directories entirely
-        if (entry.name === ".bft" || entry.name === "tmp") continue;
+        // Skip .bft, tmp, and .codebot-metadata directories entirely
+        if (
+          entry.name === ".bft" || entry.name === "tmp" ||
+          entry.name === ".codebot-metadata"
+        ) continue;
 
         const copyCmd = new Deno.Command("cp", {
           args: [
