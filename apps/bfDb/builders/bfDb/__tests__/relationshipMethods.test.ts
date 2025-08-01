@@ -9,7 +9,8 @@ import { makeLoggedInCv } from "@bfmono/apps/bfDb/utils/testUtils.ts";
 import { BfNode, type InferProps } from "@bfmono/apps/bfDb/classes/BfNode.ts";
 
 // Helper type for accessing dynamic relationship methods
-type WithRelationshipMethods<T> = T & Record<string, unknown>;
+// deno-lint-ignore no-explicit-any
+type WithRelationshipMethods<T> = T & Record<string, any>;
 
 // Test nodes with relationships defined in bfNodeSpec
 class TestAuthor extends BfNode<InferProps<typeof TestAuthor>> {
@@ -245,7 +246,7 @@ Deno.test("Generated relationship methods - multiple relationships", async () =>
     );
 
     // Create relationships using generated methods
-    await reviewWithMethods.createBook({
+    const _linkedBook = await reviewWithMethods.createBook({
       title: "Clean Architecture",
       isbn: "978-0-13-449416-6",
     });
