@@ -1,7 +1,7 @@
 import { assertEquals, assertStringIncludes } from "@std/assert";
 import { renderCommand } from "@bfmono/apps/aibff/commands/render.ts";
 import { join } from "@std/path";
-import { createCapturingUI, ui } from "@bfmono/packages/cli-ui/cli-ui.ts";
+import { createCapturingUI, ui } from "@bfmono/packages/tui/tui.ts";
 
 // Test removed - render command doesn't show help, just exits
 
