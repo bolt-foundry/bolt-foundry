@@ -61,7 +61,7 @@ interface WorkspaceInfo {
 async function getWorkspacesWithStatus(): Promise<Array<WorkspaceInfo>> {
   // Resolve workspace directory relative to @bfmono
   const bfmonoPath = dirname(
-    dirname(dirname(dirname(import.meta.resolve("@bfmono")))),
+    dirname(dirname(dirname(import.meta.resolve("@bfmono/")))),
   );
   const workspacesDir = join(dirname(bfmonoPath), "codebot-workspaces");
   const workspaces: Array<WorkspaceInfo> = [];
@@ -473,7 +473,7 @@ FIRST TIME SETUP:
     workspaceId = parsed.workspace;
     // Resolve workspace directory relative to @bfmono
     const bfmonoPath = dirname(
-      dirname(dirname(dirname(import.meta.resolve("@bfmono")))),
+      dirname(dirname(dirname(import.meta.resolve("@bfmono/")))),
     );
     const workspacesBaseDir = join(dirname(bfmonoPath), "codebot-workspaces");
     workspacePath = join(workspacesBaseDir, workspaceId);
@@ -487,7 +487,7 @@ FIRST TIME SETUP:
       ui.output("Available workspaces:");
       try {
         const bfmonoPath = dirname(
-          dirname(dirname(dirname(import.meta.resolve("@bfmono")))),
+          dirname(dirname(dirname(import.meta.resolve("@bfmono/")))),
         );
         const workspacesBaseDir = join(
           dirname(bfmonoPath),
@@ -510,7 +510,7 @@ FIRST TIME SETUP:
     workspaceId = await generateRandomName();
     // Resolve workspace directory relative to @bfmono
     const bfmonoPath = dirname(
-      dirname(dirname(dirname(import.meta.resolve("@bfmono")))),
+      dirname(dirname(dirname(import.meta.resolve("@bfmono/")))),
     );
     const workspacesBaseDir = join(dirname(bfmonoPath), "codebot-workspaces");
     workspacePath = join(workspacesBaseDir, workspaceId);
@@ -537,7 +537,7 @@ FIRST TIME SETUP:
         );
         workspaceId = `${await generateRandomName()}-${counter}`;
         const bfmonoPath = dirname(
-          dirname(dirname(dirname(import.meta.resolve("@bfmono")))),
+          dirname(dirname(dirname(import.meta.resolve("@bfmono/")))),
         );
         const workspacesBaseDir = join(
           dirname(bfmonoPath),
