@@ -73,19 +73,29 @@ Deno.test("titlebar: createTitlebarUpdater adds prefix", async () => {
 });
 
 Deno.test("titlebar: supportsTitlebar detects terminal support", () => {
-  const originalIsTerminal = Deno.stdout.isTerminal;
   const originalTerm = getConfigurationVariable("TERM");
   const originalTermProgram = getConfigurationVariable("TERM_PROGRAM");
+  const originalForceTitlebar = getConfigurationVariable("FORCE_TITLEBAR");
+  const originalNoTitlebar = getConfigurationVariable("NO_TITLEBAR");
 
   try {
-    // Test when not a terminal
-    // @ts-ignore - Mocking isTerminal
-    Deno.stdout.isTerminal = () => false;
+    // Clear all env vars first
+    Deno.env.delete("TERM");
+    Deno.env.delete("TERM_PROGRAM");
+    Deno.env.delete("FORCE_TITLEBAR");
+    Deno.env.delete("NO_TITLEBAR");
+
+    // Test with FORCE_TITLEBAR
+    Deno.env.set("FORCE_TITLEBAR", "1");
+    assertEquals(supportsTitlebar(), true);
+    Deno.env.delete("FORCE_TITLEBAR");
+
+    // Test with NO_TITLEBAR
+    Deno.env.set("NO_TITLEBAR", "1");
     assertEquals(supportsTitlebar(), false);
+    Deno.env.delete("NO_TITLEBAR");
 
     // Test with supported TERM
-    // @ts-ignore - Mocking isTerminal
-    Deno.stdout.isTerminal = () => true;
     Deno.env.set("TERM", "xterm-256color");
     assertEquals(supportsTitlebar(), true);
 
@@ -99,9 +109,6 @@ Deno.test("titlebar: supportsTitlebar detects terminal support", () => {
     Deno.env.set("TERM_PROGRAM", "unknown");
     assertEquals(supportsTitlebar(), false);
   } finally {
-    // @ts-ignore - Restoring isTerminal
-    Deno.stdout.isTerminal = originalIsTerminal;
-
     if (originalTerm) {
       Deno.env.set("TERM", originalTerm);
     } else {
@@ -112,6 +119,18 @@ Deno.test("titlebar: supportsTitlebar detects terminal support", () => {
       Deno.env.set("TERM_PROGRAM", originalTermProgram);
     } else {
       Deno.env.delete("TERM_PROGRAM");
+    }
+
+    if (originalForceTitlebar) {
+      Deno.env.set("FORCE_TITLEBAR", originalForceTitlebar);
+    } else {
+      Deno.env.delete("FORCE_TITLEBAR");
+    }
+
+    if (originalNoTitlebar) {
+      Deno.env.set("NO_TITLEBAR", originalNoTitlebar);
+    } else {
+      Deno.env.delete("NO_TITLEBAR");
     }
   }
 });
