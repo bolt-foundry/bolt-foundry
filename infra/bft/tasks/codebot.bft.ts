@@ -1007,7 +1007,39 @@ FIRST TIME SETUP:
     removeOnExit: true,
   });
 
-  // Add container image and command
+  // Start boltfoundry-com app on host before launching container
+  ui.output("🚀 Starting boltfoundry-com app...");
+  const appProcess = new Deno.Command("bft", {
+    args: ["dev", "boltfoundry-com", "--no-log"],
+    stdout: "null",
+    stderr: "null",
+  }).spawn();
+
+  // Wait a moment for the app to start, then open browser on host
+  setTimeout(async () => {
+    ui.output(
+      `📡 Opening http://${workspaceId}.codebot.local:8000 in Chrome...`,
+    );
+    try {
+      await new Deno.Command("google-chrome-stable", {
+        args: ["--new-window", `http://${workspaceId}.codebot.local:8000`],
+        stdout: "null",
+        stderr: "null",
+      }).spawn();
+    } catch {
+      try {
+        await new Deno.Command("chromium", {
+          args: ["--new-window", `http://${workspaceId}.codebot.local:8000`],
+          stdout: "null",
+          stderr: "null",
+        }).spawn();
+      } catch {
+        ui.output("⚠️  Could not open browser automatically");
+      }
+    }
+  }, 3000);
+
+  // Add container image and command (reverted to default)
   containerArgs.push(
     "codebot",
     "-c",
@@ -1022,6 +1054,14 @@ FIRST TIME SETUP:
   }).spawn();
 
   const { success } = await child.status;
+
+  // Cleanup app process
+  try {
+    appProcess.kill("SIGTERM");
+    ui.output("🛑 Stopped boltfoundry-com app");
+  } catch {
+    // Process may have already exited
+  }
 
   // Cleanup workspace only if --cleanup flag is provided
   if (parsed.cleanup) {
