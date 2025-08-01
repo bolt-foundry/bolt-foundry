@@ -511,38 +511,50 @@ FIRST TIME SETUP:
   const copyWorkspacePromise = reusingWorkspace
     ? Promise.resolve()
     : (async () => {
-      // Pull internalbf-docs before copying
-      ui.output("📥 Pulling internalbf-docs repository...");
-      const slPullCmd = new Deno.Command("sl", {
-        args: ["pull"],
-        cwd: "../internalbf-docs",
-        stdout: "piped",
-        stderr: "piped",
-      });
-      const slPullResult = await slPullCmd.output();
-
-      if (!slPullResult.success) {
-        const errorText = new TextDecoder().decode(slPullResult.stderr);
-        ui.output(`⚠️ Failed to pull internalbf-docs: ${errorText}`);
-      } else {
-        ui.output("✅ Pulled internalbf-docs successfully");
+      // Check if internalbf-docs directory exists
+      const internalDocsPath = "../internalbf-docs";
+      let internalDocsExists = false;
+      try {
+        const stat = await Deno.stat(internalDocsPath);
+        internalDocsExists = stat.isDirectory;
+      } catch {
+        ui.output("⚠️ internalbf-docs directory not found - skipping sync");
       }
 
-      // Go to remote/main with --clean
-      ui.output("🔄 Switching to remote/main --clean...");
-      const slGotoCmd = new Deno.Command("sl", {
-        args: ["goto", "remote/main", "--clean"],
-        cwd: "../internalbf-docs",
-        stdout: "piped",
-        stderr: "piped",
-      });
-      const slGotoResult = await slGotoCmd.output();
+      if (internalDocsExists) {
+        // Pull internalbf-docs before copying
+        ui.output("📥 Pulling internalbf-docs repository...");
+        const slPullCmd = new Deno.Command("sl", {
+          args: ["pull"],
+          cwd: internalDocsPath,
+          stdout: "piped",
+          stderr: "piped",
+        });
+        const slPullResult = await slPullCmd.output();
 
-      if (!slGotoResult.success) {
-        const errorText = new TextDecoder().decode(slGotoResult.stderr);
-        ui.output(`⚠️ Failed to switch to remote/main: ${errorText}`);
-      } else {
-        ui.output("✅ Switched to remote/main successfully");
+        if (!slPullResult.success) {
+          const errorText = new TextDecoder().decode(slPullResult.stderr);
+          ui.output(`⚠️ Failed to pull internalbf-docs: ${errorText}`);
+        } else {
+          ui.output("✅ Pulled internalbf-docs successfully");
+        }
+
+        // Go to remote/main with --clean
+        ui.output("🔄 Switching to remote/main --clean...");
+        const slGotoCmd = new Deno.Command("sl", {
+          args: ["goto", "remote/main", "--clean"],
+          cwd: internalDocsPath,
+          stdout: "piped",
+          stderr: "piped",
+        });
+        const slGotoResult = await slGotoCmd.output();
+
+        if (!slGotoResult.success) {
+          const errorText = new TextDecoder().decode(slGotoResult.stderr);
+          ui.output(`⚠️ Failed to switch to remote/main: ${errorText}`);
+        } else {
+          ui.output("✅ Switched to remote/main successfully");
+        }
       }
 
       // Create the workspace directory structure first to avoid race conditions

@@ -19,6 +19,7 @@ import type {
   RelationSpec,
 } from "@bfmono/apps/bfDb/builders/bfDb/types.ts";
 import { makeBfDbSpec } from "@bfmono/apps/bfDb/builders/bfDb/makeBfDbSpec.ts";
+import { generateRelationshipMethods } from "@bfmono/apps/bfDb/builders/bfDb/relationshipMethods.ts";
 
 const logger = getLogger(import.meta);
 
@@ -349,6 +350,9 @@ export abstract class BfNode<TProps extends PropsBase = {}>
       metadata,
     );
     this.currentViewer = currentViewer;
+
+    // Generate relationship methods based on bfNodeSpec relations
+    generateRelationshipMethods(this.constructor as AnyBfNodeCtor, this);
   }
 
   get props(): TProps {
