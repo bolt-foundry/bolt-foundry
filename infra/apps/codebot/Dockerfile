@@ -132,6 +132,18 @@ if ! grep -q "host.codebot.local" /etc/hosts 2>/dev/null; then\n\
     echo "192.168.64.1     host.codebot.local" | sudo -n tee -a /etc/hosts > /dev/null 2>&1\n\
 fi\n\
 \n\
+# Start container bridge in background if not running a specific command\n\
+if [ $# -eq 0 ] || [ "$1" = "-l" ]; then\n\
+    # Only start bridge for interactive sessions\n\
+    if [ -f "/@bfmono/infra/apps/codebot/container-bridge.ts" ]; then\n\
+        # Set WORKSPACE_ID from hostname\n\
+        export WORKSPACE_ID="${HOSTNAME}"\n\
+        # Start container bridge in background\n\
+        cd /@bfmono && deno run --allow-net --allow-run --allow-env --allow-read infra/apps/codebot/container-bridge.ts > /tmp/container-bridge.log 2>&1 &\n\
+        echo "Container bridge started in background (PID: $!)"\n\
+    fi\n\
+fi\n\
+\n\
 # Execute bash with login shell\n\
 exec /bin/bash -l "$@"\n' > /usr/local/bin/docker-entrypoint.sh && \
     chmod +x /usr/local/bin/docker-entrypoint.sh
