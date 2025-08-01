@@ -60,9 +60,7 @@ interface WorkspaceInfo {
 
 async function getWorkspacesWithStatus(): Promise<Array<WorkspaceInfo>> {
   // Resolve workspace directory relative to @bfmono
-  const bfmonoPath = dirname(
-    dirname(dirname(dirname(import.meta.resolve("@bfmono")))),
-  );
+  const bfmonoPath = new URL(import.meta.resolve("@bfmono/")).pathname;
   const workspacesDir = join(dirname(bfmonoPath), "codebot-workspaces");
   const workspaces: Array<WorkspaceInfo> = [];
 
@@ -472,9 +470,7 @@ FIRST TIME SETUP:
     // Use existing workspace
     workspaceId = parsed.workspace;
     // Resolve workspace directory relative to @bfmono
-    const bfmonoPath = dirname(
-      dirname(dirname(dirname(import.meta.resolve("@bfmono")))),
-    );
+    const bfmonoPath = new URL(import.meta.resolve("@bfmono/")).pathname;
     const workspacesBaseDir = join(dirname(bfmonoPath), "codebot-workspaces");
     workspacePath = join(workspacesBaseDir, workspaceId);
 
@@ -486,9 +482,7 @@ FIRST TIME SETUP:
       ui.error(`❌ Workspace '${workspaceId}' not found at ${workspacePath}`);
       ui.output("Available workspaces:");
       try {
-        const bfmonoPath = dirname(
-          dirname(dirname(dirname(import.meta.resolve("@bfmono")))),
-        );
+        const bfmonoPath = new URL(import.meta.resolve("@bfmono/")).pathname;
         const workspacesBaseDir = join(
           dirname(bfmonoPath),
           "codebot-workspaces",
@@ -509,9 +503,7 @@ FIRST TIME SETUP:
     // Create new workspace
     workspaceId = await generateRandomName();
     // Resolve workspace directory relative to @bfmono
-    const bfmonoPath = dirname(
-      dirname(dirname(dirname(import.meta.resolve("@bfmono")))),
-    );
+    const bfmonoPath = new URL(import.meta.resolve("@bfmono/")).pathname;
     const workspacesBaseDir = join(dirname(bfmonoPath), "codebot-workspaces");
     workspacePath = join(workspacesBaseDir, workspaceId);
 
@@ -536,9 +528,7 @@ FIRST TIME SETUP:
           `⚠️ Workspace ${workspaceId} already exists, trying ${workspaceId}-${counter}`,
         );
         workspaceId = `${await generateRandomName()}-${counter}`;
-        const bfmonoPath = dirname(
-          dirname(dirname(dirname(import.meta.resolve("@bfmono")))),
-        );
+        const bfmonoPath = new URL(import.meta.resolve("@bfmono/")).pathname;
         const workspacesBaseDir = join(
           dirname(bfmonoPath),
           "codebot-workspaces",
