@@ -592,7 +592,7 @@ FIRST TIME SETUP:
       const homeDir = getConfigurationVariable("HOME");
 
       // Create tmp directory for Claude config
-      await Deno.mkdir(`${workspacePath}/@bfmono/tmp`, { recursive: true });
+      await Deno.mkdir(`${workspacePath}/tmp`, { recursive: true });
 
       // Copy .claude.json if it exists (for project history)
       const claudeJsonPath = `${homeDir}/.claude.json`;
@@ -602,11 +602,11 @@ FIRST TIME SETUP:
           args: [
             "--reflink=auto",
             claudeJsonPath,
-            `${workspacePath}/@bfmono/tmp/.claude.json`,
+            `${workspacePath}/tmp/.claude.json`,
           ],
         });
         await copyClaudeJson.output();
-        ui.output("📋 CoW copied .claude.json to @bfmono/tmp");
+        ui.output("📋 CoW copied .claude.json to tmp");
       } catch {
         // File doesn't exist, skip
       }
