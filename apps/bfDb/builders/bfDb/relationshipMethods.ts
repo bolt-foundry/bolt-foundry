@@ -88,7 +88,7 @@ export function generateRelationshipMethods<T extends AnyBfNodeCtor>(
 
     // Generate find method
     (instance as Record<string, unknown>)[`find${methodBaseName}`] =
-      async function () {
+      async function (this: typeof instance) {
         // For "one" relationships, query for the single related node
         if (relation.cardinality === "one") {
           // Need to determine if this is an outgoing or incoming relationship
@@ -117,7 +117,7 @@ export function generateRelationshipMethods<T extends AnyBfNodeCtor>(
 
     // Generate create method
     (instance as Record<string, unknown>)[`create${methodBaseName}`] =
-      async function (props: Record<string, unknown>) {
+      async function (this: typeof instance, props: Record<string, unknown>) {
         const TargetClass = await relation.target();
         const role = relation.props?.role || "";
         return this.createTargetNode(TargetClass, props, { role });
@@ -126,6 +126,7 @@ export function generateRelationshipMethods<T extends AnyBfNodeCtor>(
     // Generate delete method
     (instance as Record<string, unknown>)[`delete${methodBaseName}`] =
       async function (
+        this: typeof instance,
         options?: { deleteNode?: boolean },
       ) {
         const related = await this[`find${methodBaseName}`]();
