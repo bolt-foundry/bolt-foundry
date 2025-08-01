@@ -586,7 +586,7 @@ FIRST TIME SETUP:
     ? Promise.resolve()
     : (async () => {
       // Create the workspace directory structure first to avoid race conditions
-      await Deno.mkdir(`${workspacePath}/@bfmono`, { recursive: true });
+      await Deno.mkdir(`${workspacePath}`, { recursive: true });
 
       // Copy Claude config files using CoW to workspace if they exist
       const homeDir = getConfigurationVariable("HOME");
@@ -626,7 +626,7 @@ FIRST TIME SETUP:
             "--reflink=auto",
             "-R",
             entry.name,
-            `${workspacePath}/@bfmono/`,
+            `${workspacePath}/`,
           ],
         });
 
