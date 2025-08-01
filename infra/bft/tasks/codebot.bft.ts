@@ -6,6 +6,7 @@ import { parseArgs } from "@std/cli/parse-args";
 import { ui } from "@bfmono/packages/cli-ui/cli-ui.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { promptSelect } from "@std/cli/unstable-prompt-select";
+import { dirname, join } from "@std/path";
 
 const logger = getLogger(import.meta);
 
@@ -58,7 +59,11 @@ interface WorkspaceInfo {
 }
 
 async function getWorkspacesWithStatus(): Promise<Array<WorkspaceInfo>> {
-  const workspacesDir = "/Users/randallb/code/codebot-workspaces";
+  // Resolve workspace directory relative to @bfmono
+  const bfmonoPath = dirname(
+    dirname(dirname(dirname(import.meta.resolve("@bfmono")))),
+  );
+  const workspacesDir = join(dirname(bfmonoPath), "codebot-workspaces");
   const workspaces: Array<WorkspaceInfo> = [];
 
   try {
@@ -466,7 +471,12 @@ FIRST TIME SETUP:
   if (parsed.workspace) {
     // Use existing workspace
     workspaceId = parsed.workspace;
-    workspacePath = `/Users/randallb/code/codebot-workspaces/${workspaceId}`;
+    // Resolve workspace directory relative to @bfmono
+    const bfmonoPath = dirname(
+      dirname(dirname(dirname(import.meta.resolve("@bfmono")))),
+    );
+    const workspacesBaseDir = join(dirname(bfmonoPath), "codebot-workspaces");
+    workspacePath = join(workspacesBaseDir, workspaceId);
 
     try {
       await Deno.stat(workspacePath);
@@ -476,8 +486,15 @@ FIRST TIME SETUP:
       ui.error(`❌ Workspace '${workspaceId}' not found at ${workspacePath}`);
       ui.output("Available workspaces:");
       try {
+        const bfmonoPath = dirname(
+          dirname(dirname(dirname(import.meta.resolve("@bfmono")))),
+        );
+        const workspacesBaseDir = join(
+          dirname(bfmonoPath),
+          "codebot-workspaces",
+        );
         for await (
-          const entry of Deno.readDir("/Users/randallb/code/codebot-workspaces")
+          const entry of Deno.readDir(workspacesBaseDir)
         ) {
           if (entry.isDirectory) {
             ui.output(`  - ${entry.name}`);
@@ -491,10 +508,15 @@ FIRST TIME SETUP:
   } else {
     // Create new workspace
     workspaceId = await generateRandomName();
-    workspacePath = `/Users/randallb/code/codebot-workspaces/${workspaceId}`;
+    // Resolve workspace directory relative to @bfmono
+    const bfmonoPath = dirname(
+      dirname(dirname(dirname(import.meta.resolve("@bfmono")))),
+    );
+    const workspacesBaseDir = join(dirname(bfmonoPath), "codebot-workspaces");
+    workspacePath = join(workspacesBaseDir, workspaceId);
 
     // Ensure codebot-workspaces directory exists
-    await Deno.mkdir("/Users/randallb/code/codebot-workspaces", {
+    await Deno.mkdir(workspacesBaseDir, {
       recursive: true,
     });
   }
@@ -514,8 +536,14 @@ FIRST TIME SETUP:
           `⚠️ Workspace ${workspaceId} already exists, trying ${workspaceId}-${counter}`,
         );
         workspaceId = `${await generateRandomName()}-${counter}`;
-        workspacePath =
-          `/Users/randallb/code/codebot-workspaces/${workspaceId}`;
+        const bfmonoPath = dirname(
+          dirname(dirname(dirname(import.meta.resolve("@bfmono")))),
+        );
+        const workspacesBaseDir = join(
+          dirname(bfmonoPath),
+          "codebot-workspaces",
+        );
+        workspacePath = join(workspacesBaseDir, workspaceId);
         counter++;
         if (counter > 10) {
           ui.error("❌ Unable to find unique workspace name after 10 attempts");
