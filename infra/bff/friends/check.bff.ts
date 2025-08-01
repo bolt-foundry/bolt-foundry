@@ -65,5 +65,4 @@ register(
   "Run type checking on the codebase using Deno check",
   checkCommand,
   [],
-  true, // AI-safe
 );

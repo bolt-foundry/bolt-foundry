@@ -19,17 +19,6 @@ Deno.test("bft: manually adding task to taskMap", () => {
   assertEquals(got?.description, "A test task");
 });
 
-Deno.test("bft: aiSafe flag is preserved in task definition", () => {
-  const testTask: TaskDefinition = {
-    description: "AI safe command",
-    fn: (_args: Array<string>) => 0,
-    aiSafe: true,
-  };
-  taskMap.set("aiTest", testTask);
-  const got = taskMap.get("aiTest");
-  assertEquals(got?.aiSafe, true);
-});
-
 Deno.test("bft: task execution returns exit code", () => {
   const expectedCode = 42;
   const testTask: TaskDefinition = {

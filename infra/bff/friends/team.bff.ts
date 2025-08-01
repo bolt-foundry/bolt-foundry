@@ -381,5 +381,4 @@ register(
       description: "Show detailed help and configuration information",
     },
   ],
-  true, // AI-safe - read-only GitHub analysis with controlled file output
 );

@@ -431,7 +431,6 @@ async function validateDeck(args: Array<string>): Promise<number> {
 // Export the task definition for autodiscovery
 export const bftDefinition = {
   description: "Work with AI deck files",
-  aiSafe: true,
   fn: deck,
 } satisfies TaskDefinition;
 
