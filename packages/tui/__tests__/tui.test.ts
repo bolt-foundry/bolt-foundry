@@ -8,9 +8,9 @@ import {
   createPrefixedUI,
   createSilentUI,
   ui,
-} from "../cli-ui.ts";
+} from "../tui.ts";
 
-Deno.test("cli-ui: capturing UI captures all message types", () => {
+Deno.test("tui: capturing UI captures all message types", () => {
   const captureUI = createCapturingUI();
 
   captureUI.info("info message");
@@ -42,7 +42,7 @@ Deno.test("cli-ui: capturing UI captures all message types", () => {
   });
 });
 
-Deno.test("cli-ui: prefixed UI adds prefix to all but output", () => {
+Deno.test("tui: prefixed UI adds prefix to all but output", () => {
   const captureUI = createCapturingUI();
 
   // Test actual prefixed UI
@@ -76,7 +76,7 @@ Deno.test("cli-ui: prefixed UI adds prefix to all but output", () => {
   }
 });
 
-Deno.test("cli-ui: silent UI produces no output", () => {
+Deno.test("tui: silent UI produces no output", () => {
   const silent = createSilentUI();
 
   // These should not throw and should do nothing
@@ -90,7 +90,7 @@ Deno.test("cli-ui: silent UI produces no output", () => {
   assertEquals(true, true);
 });
 
-Deno.test("cli-ui: debug messages only show with DEBUG env var", () => {
+Deno.test("tui: debug messages only show with DEBUG env var", () => {
   const originalEnv = getConfigurationVariable("DEBUG");
   const capturedOutput: Array<string> = [];
   const originalConsoleError = console.error;
