@@ -4,14 +4,14 @@
 
 Restructure the codebot container workspace to simplify the directory structure
 and improve the development workflow by consolidating everything under @bfmono
-with @internalbf-docs as an optional git submodule.
+with internalbf-docs as an optional git submodule.
 
 ## Current State (As of 2025-08-01)
 
 ### What's Been Done
 
-- ✅ @internalbf-docs exists at `/@bfmono/memos/@internalbf-docs/` in the
-  expected location
+- ✅ internalbf-docs exists at `/@bfmono/memos/internalbf-docs/` in the expected
+  location
 - ✅ Directory structure supports the proposed layout
 - ✅ Git submodule is set up and working
 
@@ -19,7 +19,7 @@ with @internalbf-docs as an optional git submodule.
 
 - ❌ Codebot still mounts two separate volumes:
   - `${workspacePath}/@bfmono` → `/@bfmono`
-  - `${workspacePath}/@internalbf-docs` → `/@internalbf-docs`
+  - `${workspacePath}/internalbf-docs` → `/internalbf-docs`
 - ❌ Working directory is not explicitly set
 - ❌ Still copies internalbf-docs separately instead of using git submodule
 - ❌ `.claude` file in @bfmono expects certain directory structure
@@ -37,14 +37,14 @@ Move to a single-root structure:
 /@bfmono/                       # Container working directory
 ├── .claude                     # Configuration file
 ├── memos/
-│   └── @internalbf-docs/      # Git submodule (optional)
+│   └── internalbf-docs/      # Git submodule (optional)
 └── ... (rest of @bfmono)
 ```
 
 ### 2. Git Submodule Setup ✅ COMPLETED
 
-- @internalbf-docs is already set up as a git submodule at
-  `memos/@internalbf-docs`
+- internalbf-docs is already set up as a git submodule at
+  `memos/internalbf-docs`
 - Submodule remains optional - OSS users get empty directory
 - Internal users with access can initialize: `git submodule update --init`
 
@@ -54,9 +54,9 @@ Update `infra/bft/tasks/codebot.bft.ts` to:
 
 - Mount only `${workspacePath}` → `/` (single root mount)
 - Set working directory to `/@bfmono`
-- Remove separate @internalbf-docs volume mount (lines 134-136)
-- Remove separate @internalbf-docs copying logic (lines 514-547, 619-637)
-- The submodule at `/@bfmono/memos/@internalbf-docs` will be accessible via the
+- Remove separate internalbf-docs volume mount (lines 134-136)
+- Remove separate internalbf-docs copying logic (lines 514-547, 619-637)
+- The submodule at `/@bfmono/memos/internalbf-docs` will be accessible via the
   single mount
 
 ### 4. Enhanced Commit Workflow
@@ -85,16 +85,16 @@ This is the main goal - simplify to a single mount point:
    ```typescript
    // Change from:
    "--volume", `${workspacePath}/@bfmono:/@bfmono`,
-   "--volume", `${workspacePath}/@internalbf-docs:/@internalbf-docs`,
+   "--volume", `${workspacePath}/internalbf-docs:/internalbf-docs`,
 
    // To:
    "--volume", `${workspacePath}:/`,
    "-w", "/@bfmono",  // Set working directory
    ```
 
-2. **Remove @internalbf-docs copying logic**:
-   - Delete lines that pull/copy @internalbf-docs separately
-   - The submodule at `/@bfmono/memos/@internalbf-docs` will be available
+2. **Remove internalbf-docs copying logic**:
+   - Delete lines that pull/copy internalbf-docs separately
+   - The submodule at `/@bfmono/memos/internalbf-docs` will be available
      automatically
 
 ### Priority 2: Enhanced Tooling

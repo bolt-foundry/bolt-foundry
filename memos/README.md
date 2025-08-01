@@ -47,10 +47,10 @@ succeed with our products.
 **Key Principle**: Working documents that help the team build better products.
 Can be rougher/more technical than public docs.
 
-### 3. Internal-Only / Confidential (`@internalbf-docs`)
+### 3. Internal-Only / Confidential (`internalbf-docs`)
 
 **Purpose**: Sensitive information that should not be in the public monorepo\
-**Location**: `/@internalbf-docs/` workspace (access controlled)\
+**Location**: `/internalbf-docs/` workspace (access controlled)\
 **Audience**: Bolt Foundry team only\
 **Organization**: PARA Method
 
@@ -89,7 +89,7 @@ legal obligations.
 - You're documenting company vision or philosophy
 - You're creating team processes or workflows
 
-### When to use `@internalbf-docs`:
+### When to use `internalbf-docs`:
 
 - The content contains real customer names or data
 - The information includes financial numbers
@@ -109,11 +109,11 @@ legal obligations.
 
 - All public docs should be reviewed before major releases
 - Memos can be updated by anyone on the team
-- `@internalbf-docs` requires appropriate access permissions
+- `internalbf-docs` requires appropriate access permissions
 
 ## PARA Method Structure
 
-Both `/memos` and `@internalbf-docs` follow the PARA method:
+Both `/memos` and `internalbf-docs` follow the PARA method:
 
 - **Projects**: Outcomes you're actively working toward (with deadlines)
 - **Areas**: Ongoing responsibilities to maintain (no end date)
@@ -125,6 +125,6 @@ documentation.
 
 Remember: When in doubt about where something belongs, ask yourself:
 
-- Does it contain names, numbers, or legal obligations? → `@internalbf-docs`
+- Does it contain names, numbers, or legal obligations? → `internalbf-docs`
 - Is it vision, philosophy, or technical discussion? → `/memos`
 - Is it user-facing documentation? → `/docs`
