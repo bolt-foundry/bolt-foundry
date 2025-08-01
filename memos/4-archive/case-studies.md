@@ -1,3 +1,0 @@
-## Case studies
-
-(Coming soon)
