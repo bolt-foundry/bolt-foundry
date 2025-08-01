@@ -120,14 +120,6 @@ function buildContainerArgs(config: ContainerConfig): Array<string> {
     config.memory,
     "--cpus",
     config.cpus,
-    "--dns",
-    "8.8.8.8",
-    "--dns",
-    "1.1.1.1",
-    "--dns-search",
-    "codebot.local",
-    "--dns-option",
-    "ndots:0",
     "--volume",
     `${config.claudeDir}:/home/codebot/.claude`,
     "--volume",
@@ -355,8 +347,67 @@ FIRST TIME SETUP:
     );
   }
 
-  // DNS will be configured directly in container using --dns options
-  ui.output("🌐 DNS will be configured using container platform DNS options");
+  // Ensure DNS server is running for *.codebot.local resolution
+  try {
+    ui.output("🌐 Checking DNS server for *.codebot.local...");
+
+    // Check if DNS server is already running
+    const psCmd = new Deno.Command("pgrep", {
+      args: ["-f", "dns-server.ts"],
+    });
+    const psResult = await psCmd.output();
+
+    if (!psResult.success) {
+      // DNS server not running, start it
+      ui.output("🚀 Starting DNS server for *.codebot.local resolution...");
+
+      const dnsServerPath = "./infra/apps/codebot/dns-server.ts";
+      const dnsCmd = new Deno.Command("deno", {
+        args: [
+          "run",
+          "--allow-net",
+          "--allow-run",
+          "--allow-env",
+          dnsServerPath,
+        ],
+        stdout: "null",
+        stderr: "null",
+      });
+
+      // Start DNS server in background
+      const dnsChild = dnsCmd.spawn();
+
+      // Give it a moment to start and check if it's still running
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Verify DNS server started successfully
+      const verifyCmd = new Deno.Command("pgrep", {
+        args: ["-f", "dns-server.ts"],
+      });
+      const verifyResult = await verifyCmd.output();
+
+      if (verifyResult.success) {
+        ui.output("✅ DNS server started for *.codebot.local domains");
+        ui.output("📝 To access *.codebot.local from your host:");
+        ui.output("   Add to /etc/resolver/codebot.local:");
+        ui.output("   nameserver 127.0.0.1");
+        ui.output("   port 15353");
+        dnsChild.unref(); // Don't wait for it to finish
+      } else {
+        ui.output("⚠️ DNS server may have failed to start");
+        // Don't fail the entire command, but warn user
+      }
+    } else {
+      ui.output("✅ DNS server already running");
+    }
+  } catch (error) {
+    // Don't fail the entire command if DNS server fails
+    ui.output(
+      `⚠️ DNS server check failed: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+    );
+  }
 
   // Check for .claude directory in user's home
   const homeDir = getConfigurationVariable("HOME");
@@ -487,6 +538,11 @@ FIRST TIME SETUP:
   } catch {
     // Ignore errors if not running in a terminal that supports title updates
   }
+
+  // Announce workspace URL
+  ui.output(
+    `📡 Workspace will be available at: http://${workspaceId}.codebot.local:8000`,
+  );
 
   // Open the workspace folder in Finder on macOS immediately after creating/selecting workspace
   if (!reusingWorkspace) {
