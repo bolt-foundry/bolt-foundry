@@ -246,7 +246,7 @@ Deno.test("Generated relationship methods - multiple relationships", async () =>
     );
 
     // Create relationships using generated methods
-    const _linkedBook = await reviewWithMethods.createBook({
+    await reviewWithMethods.createBook({
       title: "Clean Architecture",
       isbn: "978-0-13-449416-6",
     });
