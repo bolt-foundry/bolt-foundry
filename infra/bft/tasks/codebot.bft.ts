@@ -21,6 +21,7 @@ interface CodebotArgs {
   memory?: string;
   cpus?: string;
   resume?: boolean;
+  checkout?: string;
 }
 
 async function generateRandomName(): Promise<string> {
@@ -168,7 +169,7 @@ async function codebot(args: Array<string>): Promise<number> {
       "cleanup-containers",
       "resume",
     ],
-    string: ["exec", "workspace", "memory", "cpus"],
+    string: ["exec", "workspace", "memory", "cpus", "checkout"],
     alias: { h: "help" },
   }) as CodebotArgs;
 
@@ -235,6 +236,7 @@ Includes Google Chrome Stable with all dependencies for E2E testing.
 OPTIONS:
   --shell              Enter container shell for debugging
   --exec CMD           Execute command in container
+  --checkout BRANCH    Checkout branch with automatic shelve/unshelve of changes
   --workspace NAME     Reuse existing workspace or create new one with specific name
                        If a container is already running with this name, attach to it
   --resume             Show list of workspaces and choose one to resume
@@ -251,6 +253,7 @@ EXAMPLES:
   bft codebot --cleanup                 # Start and cleanup workspace when done
   bft codebot --shell                   # Open container shell for debugging
   bft codebot --exec "ls -la"           # Run command and exit
+  bft codebot --checkout remote/main    # Checkout branch with auto shelve/unshelve
   bft codebot --memory 8g --cpus 8      # Run with 8GB RAM and 8 CPUs
 
 FIRST TIME SETUP:
@@ -711,6 +714,53 @@ FIRST TIME SETUP:
       }
 
       ui.output("📂 Workspace copy complete");
+
+      // Store current branch before checkout
+      ui.output("📍 Storing current branch information...");
+      const whereAmICmd = new Deno.Command("sl", {
+        args: ["whereami"],
+        cwd: workspacePath,
+        stdout: "piped",
+        stderr: "piped",
+      });
+
+      const whereAmIResult = await whereAmICmd.output();
+      let originalCommit = "";
+      if (whereAmIResult.success) {
+        originalCommit = new TextDecoder().decode(whereAmIResult.stdout).trim();
+
+        // Write current commit to a file for later reference
+        const metadataPath = `${workspacePath}/.codebot-metadata`;
+        await Deno.mkdir(metadataPath, { recursive: true });
+        await Deno.writeTextFile(
+          `${metadataPath}/original-commit`,
+          originalCommit,
+        );
+        ui.output(`📝 Stored original commit: ${originalCommit}`);
+      }
+
+      // Checkout remote/main in the new workspace
+      ui.output("🔄 Checking out remote/main in workspace...");
+      const checkoutCmd = new Deno.Command("sl", {
+        args: ["goto", "remote/main"],
+        cwd: workspacePath,
+        stdout: "piped",
+        stderr: "piped",
+      });
+
+      const checkoutResult = await checkoutCmd.output();
+      if (!checkoutResult.success) {
+        const errorText = new TextDecoder().decode(checkoutResult.stderr);
+        ui.error(`⚠️ Failed to checkout remote/main: ${errorText}`);
+        // Don't fail the workspace creation, just warn
+      } else {
+        ui.output("✅ Checked out remote/main");
+        if (originalCommit) {
+          ui.output(
+            `💡 To return to original commit: sl goto ${originalCommit}`,
+          );
+        }
+      }
     })();
 
   // Container preparation (check if we need to pull or build)
@@ -995,6 +1045,33 @@ FIRST TIME SETUP:
     } else {
       ui.output(`📁 Workspace preserved at: ${workspacePath}`);
     }
+    return 0;
+  }
+
+  if (parsed.checkout) {
+    ui.output(`🔄 Running checkout in workspace: ${workspaceId}`);
+    ui.output(`📍 Target branch: ${parsed.checkout}`);
+
+    // Run checkout on the host in the workspace directory
+    // This avoids copy-on-write issues in the container
+    const checkoutCmd = new Deno.Command("bft", {
+      args: ["sl", "checkout", parsed.checkout],
+      cwd: workspacePath,
+      stdin: "inherit",
+      stdout: "inherit",
+      stderr: "inherit",
+    });
+
+    const checkoutChild = checkoutCmd.spawn();
+    const { success } = await checkoutChild.status;
+
+    if (!success) {
+      ui.error("❌ Checkout failed");
+      return 1;
+    }
+
+    ui.output("✅ Checkout completed successfully");
+    ui.output(`📁 Workspace preserved at: ${workspacePath}`);
     return 0;
   }
 
