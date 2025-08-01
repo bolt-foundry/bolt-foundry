@@ -340,5 +340,4 @@ export async function calculateHash(data: Uint8Array): Promise<string> {
 export const bftDefinition = {
   description: "Upload assets to CDN and return URLs",
   fn: assetUploadCommand,
-  aiSafe: true,
 } satisfies TaskDefinition;

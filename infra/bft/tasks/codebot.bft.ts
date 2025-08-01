@@ -1036,7 +1036,6 @@ FIRST TIME SETUP:
 // Export the task definition for autodiscovery
 export const bftDefinition = {
   description: "Run Claude Code in isolated container environment",
-  aiSafe: true,
   fn: codebot,
 } satisfies TaskDefinition;
 

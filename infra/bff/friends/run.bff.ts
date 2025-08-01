@@ -43,5 +43,4 @@ register(
   "Run a bff.ts file in any directory",
   runCommand,
   [],
-  true, // AI-safe
 );

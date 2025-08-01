@@ -206,7 +206,6 @@ Examples:
 // Export the task definition for autodiscovery
 export const bftDefinition = {
   description: "Compile applications to single binaries",
-  aiSafe: true,
   fn: compile,
 } satisfies TaskDefinition;
 

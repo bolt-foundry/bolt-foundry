@@ -20,7 +20,6 @@ register(
   "Format code using deno fmt",
   formatCommand,
   [],
-  true, // AI-safe
 );
 
 register(
@@ -28,5 +27,4 @@ register(
   "Alias for format command",
   formatCommand,
   [],
-  true, // AI-safe
 );

@@ -201,5 +201,4 @@ register(
       description: "Show full output from all checks.",
     },
   ],
-  true, // AI-safe - only runs other AI-safe commands
 );

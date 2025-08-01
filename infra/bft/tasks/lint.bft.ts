@@ -44,5 +44,4 @@ export async function lintCommand(options: Array<string>): Promise<number> {
 export const bftDefinition = {
   description: "Run Deno lint (auto-fix by default)",
   fn: lintCommand,
-  aiSafe: true,
 } satisfies TaskDefinition;

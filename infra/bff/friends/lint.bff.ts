@@ -56,5 +56,4 @@ register(
   "Run Deno lint on the codebase",
   lintCommand,
   [],
-  true, // AI-safe
 );

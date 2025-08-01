@@ -136,7 +136,6 @@ register(
     },
     { "--path=<path>": "Specific path to check (default: entire project)" },
   ],
-  true, // AI-safe
 );
 
 async function checkFileLinks(

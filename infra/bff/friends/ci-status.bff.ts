@@ -295,7 +295,6 @@ register(
   "Check GitHub CI status for current or specified commit. Use --details or -d to show failure details",
   ciStatus,
   [],
-  true, // AI-safe
 );
 
 export default ciStatus;
