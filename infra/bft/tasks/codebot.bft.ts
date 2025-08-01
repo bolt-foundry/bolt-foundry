@@ -6,6 +6,7 @@ import { parseArgs } from "@std/cli/parse-args";
 import { ui } from "@bfmono/packages/cli-ui/cli-ui.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { promptSelect } from "@std/cli/unstable-prompt-select";
+import { dirname, join } from "@std/path";
 
 const logger = getLogger(import.meta);
 
@@ -58,7 +59,9 @@ interface WorkspaceInfo {
 }
 
 async function getWorkspacesWithStatus(): Promise<Array<WorkspaceInfo>> {
-  const workspacesDir = "/Users/randallb/code/codebot-workspaces";
+  // Resolve workspace directory relative to @bfmono
+  const bfmonoPath = new URL(import.meta.resolve("@bfmono/")).pathname;
+  const workspacesDir = join(dirname(bfmonoPath), "codebot-workspaces");
   const workspaces: Array<WorkspaceInfo> = [];
 
   try {
@@ -120,20 +123,12 @@ function buildContainerArgs(config: ContainerConfig): Array<string> {
     config.memory,
     "--cpus",
     config.cpus,
-    "--dns",
-    "8.8.8.8",
-    "--dns",
-    "1.1.1.1",
-    "--dns-search",
-    "codebot.local",
-    "--dns-option",
-    "ndots:0",
     "--volume",
     `${config.claudeDir}:/home/codebot/.claude`,
     "--volume",
-    `${config.workspacePath}/@bfmono:/@bfmono`,
-    "--volume",
-    `${config.workspacePath}/@internalbf-docs:/@internalbf-docs`,
+    `${config.workspacePath}:/@bfmono`,
+    "-w",
+    "/@bfmono",
     "--volume",
     "/tmp:/dev/shm", // Use host /tmp as shared memory for Chrome
     "-e",
@@ -355,8 +350,67 @@ FIRST TIME SETUP:
     );
   }
 
-  // DNS will be configured directly in container using --dns options
-  ui.output("🌐 DNS will be configured using container platform DNS options");
+  // Ensure DNS server is running for *.codebot.local resolution
+  try {
+    ui.output("🌐 Checking DNS server for *.codebot.local...");
+
+    // Check if DNS server is already running
+    const psCmd = new Deno.Command("pgrep", {
+      args: ["-f", "dns-server.ts"],
+    });
+    const psResult = await psCmd.output();
+
+    if (!psResult.success) {
+      // DNS server not running, start it
+      ui.output("🚀 Starting DNS server for *.codebot.local resolution...");
+
+      const dnsServerPath = "./infra/apps/codebot/dns-server.ts";
+      const dnsCmd = new Deno.Command("deno", {
+        args: [
+          "run",
+          "--allow-net",
+          "--allow-run",
+          "--allow-env",
+          dnsServerPath,
+        ],
+        stdout: "null",
+        stderr: "null",
+      });
+
+      // Start DNS server in background
+      const dnsChild = dnsCmd.spawn();
+
+      // Give it a moment to start and check if it's still running
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Verify DNS server started successfully
+      const verifyCmd = new Deno.Command("pgrep", {
+        args: ["-f", "dns-server.ts"],
+      });
+      const verifyResult = await verifyCmd.output();
+
+      if (verifyResult.success) {
+        ui.output("✅ DNS server started for *.codebot.local domains");
+        ui.output("📝 To access *.codebot.local from your host:");
+        ui.output("   Add to /etc/resolver/codebot.local:");
+        ui.output("   nameserver 127.0.0.1");
+        ui.output("   port 15353");
+        dnsChild.unref(); // Don't wait for it to finish
+      } else {
+        ui.output("⚠️ DNS server may have failed to start");
+        // Don't fail the entire command, but warn user
+      }
+    } else {
+      ui.output("✅ DNS server already running");
+    }
+  } catch (error) {
+    // Don't fail the entire command if DNS server fails
+    ui.output(
+      `⚠️ DNS server check failed: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+    );
+  }
 
   // Check for .claude directory in user's home
   const homeDir = getConfigurationVariable("HOME");
@@ -415,7 +469,10 @@ FIRST TIME SETUP:
   if (parsed.workspace) {
     // Use existing workspace
     workspaceId = parsed.workspace;
-    workspacePath = `/Users/randallb/code/codebot-workspaces/${workspaceId}`;
+    // Resolve workspace directory relative to @bfmono
+    const bfmonoPath = new URL(import.meta.resolve("@bfmono/")).pathname;
+    const workspacesBaseDir = join(dirname(bfmonoPath), "codebot-workspaces");
+    workspacePath = join(workspacesBaseDir, workspaceId);
 
     try {
       await Deno.stat(workspacePath);
@@ -425,8 +482,13 @@ FIRST TIME SETUP:
       ui.error(`❌ Workspace '${workspaceId}' not found at ${workspacePath}`);
       ui.output("Available workspaces:");
       try {
+        const bfmonoPath = new URL(import.meta.resolve("@bfmono/")).pathname;
+        const workspacesBaseDir = join(
+          dirname(bfmonoPath),
+          "codebot-workspaces",
+        );
         for await (
-          const entry of Deno.readDir("/Users/randallb/code/codebot-workspaces")
+          const entry of Deno.readDir(workspacesBaseDir)
         ) {
           if (entry.isDirectory) {
             ui.output(`  - ${entry.name}`);
@@ -440,10 +502,13 @@ FIRST TIME SETUP:
   } else {
     // Create new workspace
     workspaceId = await generateRandomName();
-    workspacePath = `/Users/randallb/code/codebot-workspaces/${workspaceId}`;
+    // Resolve workspace directory relative to @bfmono
+    const bfmonoPath = new URL(import.meta.resolve("@bfmono/")).pathname;
+    const workspacesBaseDir = join(dirname(bfmonoPath), "codebot-workspaces");
+    workspacePath = join(workspacesBaseDir, workspaceId);
 
     // Ensure codebot-workspaces directory exists
-    await Deno.mkdir("/Users/randallb/code/codebot-workspaces", {
+    await Deno.mkdir(workspacesBaseDir, {
       recursive: true,
     });
   }
@@ -463,8 +528,12 @@ FIRST TIME SETUP:
           `⚠️ Workspace ${workspaceId} already exists, trying ${workspaceId}-${counter}`,
         );
         workspaceId = `${await generateRandomName()}-${counter}`;
-        workspacePath =
-          `/Users/randallb/code/codebot-workspaces/${workspaceId}`;
+        const bfmonoPath = new URL(import.meta.resolve("@bfmono/")).pathname;
+        const workspacesBaseDir = join(
+          dirname(bfmonoPath),
+          "codebot-workspaces",
+        );
+        workspacePath = join(workspacesBaseDir, workspaceId);
         counter++;
         if (counter > 10) {
           ui.error("❌ Unable to find unique workspace name after 10 attempts");
@@ -487,6 +556,11 @@ FIRST TIME SETUP:
   } catch {
     // Ignore errors if not running in a terminal that supports title updates
   }
+
+  // Announce workspace URL
+  ui.output(
+    `📡 Workspace will be available at: http://${workspaceId}.codebot.local:8000`,
+  );
 
   // Open the workspace folder in Finder on macOS immediately after creating/selecting workspace
   if (!reusingWorkspace) {
@@ -511,51 +585,14 @@ FIRST TIME SETUP:
   const copyWorkspacePromise = reusingWorkspace
     ? Promise.resolve()
     : (async () => {
-      // Pull internalbf-docs before copying
-      ui.output("📥 Pulling internalbf-docs repository...");
-      const slPullCmd = new Deno.Command("sl", {
-        args: ["pull"],
-        cwd: "../internalbf-docs",
-        stdout: "piped",
-        stderr: "piped",
-      });
-      const slPullResult = await slPullCmd.output();
-
-      if (!slPullResult.success) {
-        const errorText = new TextDecoder().decode(slPullResult.stderr);
-        ui.output(`⚠️ Failed to pull internalbf-docs: ${errorText}`);
-      } else {
-        ui.output("✅ Pulled internalbf-docs successfully");
-      }
-
-      // Go to remote/main with --clean
-      ui.output("🔄 Switching to remote/main --clean...");
-      const slGotoCmd = new Deno.Command("sl", {
-        args: ["goto", "remote/main", "--clean"],
-        cwd: "../internalbf-docs",
-        stdout: "piped",
-        stderr: "piped",
-      });
-      const slGotoResult = await slGotoCmd.output();
-
-      if (!slGotoResult.success) {
-        const errorText = new TextDecoder().decode(slGotoResult.stderr);
-        ui.output(`⚠️ Failed to switch to remote/main: ${errorText}`);
-      } else {
-        ui.output("✅ Switched to remote/main successfully");
-      }
-
       // Create the workspace directory structure first to avoid race conditions
-      await Deno.mkdir(`${workspacePath}/@bfmono`, { recursive: true });
-      await Deno.mkdir(`${workspacePath}/@internalbf-docs`, {
-        recursive: true,
-      });
+      await Deno.mkdir(`${workspacePath}`, { recursive: true });
 
       // Copy Claude config files using CoW to workspace if they exist
       const homeDir = getConfigurationVariable("HOME");
 
       // Create tmp directory for Claude config
-      await Deno.mkdir(`${workspacePath}/@bfmono/tmp`, { recursive: true });
+      await Deno.mkdir(`${workspacePath}/tmp`, { recursive: true });
 
       // Copy .claude.json if it exists (for project history)
       const claudeJsonPath = `${homeDir}/.claude.json`;
@@ -565,11 +602,11 @@ FIRST TIME SETUP:
           args: [
             "--reflink=auto",
             claudeJsonPath,
-            `${workspacePath}/@bfmono/tmp/.claude.json`,
+            `${workspacePath}/tmp/.claude.json`,
           ],
         });
         await copyClaudeJson.output();
-        ui.output("📋 CoW copied .claude.json to @bfmono/tmp");
+        ui.output("📋 CoW copied .claude.json to tmp");
       } catch {
         // File doesn't exist, skip
       }
@@ -589,7 +626,7 @@ FIRST TIME SETUP:
             "--reflink=auto",
             "-R",
             entry.name,
-            `${workspacePath}/@bfmono/`,
+            `${workspacePath}/`,
           ],
         });
 
@@ -613,27 +650,6 @@ FIRST TIME SETUP:
           abortController.abort(); // Cancel container build
           throw new Error(`💥 CRITICAL: Workspace copy failed - ${errorText}`);
         }
-      }
-
-      // Copy internalbf-docs directory
-      ui.output("📋 Copying internalbf-docs with CoW...");
-      const copyInternalDocsCmd = new Deno.Command("cp", {
-        args: [
-          "--reflink=auto",
-          "-R",
-          "../internalbf-docs/.",
-          `${workspacePath}/@internalbf-docs/`,
-        ],
-      });
-      const copyInternalDocsResult = await copyInternalDocsCmd.output();
-
-      if (!copyInternalDocsResult.success) {
-        const errorText = new TextDecoder().decode(
-          copyInternalDocsResult.stderr,
-        );
-        ui.output(`⚠️ Failed to copy internalbf-docs: ${errorText}`);
-      } else {
-        ui.output("✅ Copied internalbf-docs successfully");
       }
 
       ui.output("📂 Workspace copy complete");
@@ -939,6 +955,11 @@ FIRST TIME SETUP:
     // Add container image and command
     containerArgs.push("codebot", "-c", parsed.exec);
 
+    // Debug: log the full container command
+    ui.output(
+      `🔍 DEBUG: Container command: container ${containerArgs.join(" ")}`,
+    );
+
     const child = new Deno.Command("container", {
       args: containerArgs,
       stdin: "inherit",
@@ -990,7 +1011,7 @@ FIRST TIME SETUP:
   containerArgs.push(
     "codebot",
     "-c",
-    "claude --dangerously-skip-permissions; exec /bin/bash",
+    `echo '🚀 Starting boltfoundry-com app...'; echo '📡 Opening http://${workspaceId}.codebot.local:8000 in Chrome...'; bft dev boltfoundry-com --no-log & sleep 3 && google-chrome-stable --new-window 'http://${workspaceId}.codebot.local:8000' 2>/dev/null || chromium --new-window 'http://${workspaceId}.codebot.local:8000' 2>/dev/null; echo '🤖 Starting Claude Code...'; claude --dangerously-skip-permissions; exec /bin/bash`,
   );
 
   const child = new Deno.Command("container", {

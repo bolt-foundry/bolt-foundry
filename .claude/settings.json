@@ -7,6 +7,9 @@
   },
   "permissions": {
     "defaultMode": "bypassPermissions",
+    "additionalDirectories": [
+      "../@internalbf-docs"
+    ],
     "allow": [
       "Bash(ls:*)",
       "Bash(cat:*)",
