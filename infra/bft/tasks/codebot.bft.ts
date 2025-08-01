@@ -126,7 +126,7 @@ function buildContainerArgs(config: ContainerConfig): Array<string> {
     "--volume",
     `${config.claudeDir}:/home/codebot/.claude`,
     "--volume",
-    `${config.workspacePath}:/`,
+    `${config.workspacePath}:/@bfmono`,
     "-w",
     "/@bfmono",
     "--volume",
@@ -954,6 +954,11 @@ FIRST TIME SETUP:
 
     // Add container image and command
     containerArgs.push("codebot", "-c", parsed.exec);
+
+    // Debug: log the full container command
+    ui.output(
+      `🔍 DEBUG: Container command: container ${containerArgs.join(" ")}`,
+    );
 
     const child = new Deno.Command("container", {
       args: containerArgs,
