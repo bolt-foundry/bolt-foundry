@@ -490,7 +490,7 @@ const handler = async (request: Request): Promise<Response> => {
 };
 
 // Start the server
-const server = Deno.serve({ port }, handler);
+const server = Deno.serve({ port, hostname: "0.0.0.0" }, handler);
 
 logger.println(`BoltFoundry.com server running at http://localhost:${port}`);
 logger.println(`Mode: ${isDev ? "development" : "production"}`);

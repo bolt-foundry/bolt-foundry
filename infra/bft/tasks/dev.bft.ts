@@ -42,7 +42,7 @@ Examples:
 
   // Handle boltfoundry.com app in development mode
   const flags = parseArgs(devArgs, {
-    boolean: ["build", "no-open", "help", "no-log", "foreground"],
+    boolean: ["build", "no-open", "help", "no-log", "foreground", "stop"],
     string: ["port", "log-file"],
     default: {
       port: "8000",
@@ -56,6 +56,7 @@ Launch the Bolt Foundry landing page in development mode
 
 Options:
   --build            Build assets without starting server
+  --stop             Stop the running development server
   --port             Specify server port (default: 8000)
   --no-open          Don't auto-open browser on startup
   --log-file         Write logs to specified file instead of default tmp location
@@ -65,11 +66,50 @@ Options:
 
 Examples:
   bft dev boltfoundry-com                          # Run in background (logs to tmp/boltfoundry-com-dev.log)
+  bft dev boltfoundry-com --stop                   # Stop the running server
   bft dev boltfoundry-com --build                  # Build assets only
   bft dev boltfoundry-com --port 4000              # Run on port 4000
   bft dev boltfoundry-com --log-file dev.log       # Log to custom file
   bft dev boltfoundry-com --foreground             # Run in foreground
   bft dev boltfoundry-com --no-log --foreground    # Run in foreground with console output`);
+    return 0;
+  }
+
+  // Handle --stop flag
+  if (flags.stop) {
+    ui.output("Stopping boltfoundry-com development server...");
+
+    // Find and kill all related processes
+    const psCommand = new Deno.Command("sh", {
+      args: [
+        "-c",
+        "ps aux | grep -E '(bft dev boltfoundry-com|vite.*8080|server\\.tsx.*8000)' | grep -v grep | awk '{print $2}'",
+      ],
+      stdout: "piped",
+    });
+
+    const psResult = await psCommand.output();
+    const pids = new TextDecoder().decode(psResult.stdout).trim().split("\n")
+      .filter(Boolean);
+
+    if (pids.length === 0) {
+      ui.output("No running boltfoundry-com server found.");
+      return 0;
+    }
+
+    // Kill the processes
+    for (const pid of pids) {
+      try {
+        const killCommand = new Deno.Command("kill", {
+          args: [pid],
+        });
+        await killCommand.output();
+      } catch {
+        // Process might have already exited
+      }
+    }
+
+    ui.output(`Stopped ${pids.length} process(es).`);
     return 0;
   }
 
@@ -86,29 +126,60 @@ Examples:
   const runInBackground = !flags.foreground;
 
   if (runInBackground && !flags.build) {
-    // Run the entire command in background
+    // Run the entire command in background using nohup
     ui.output("Starting boltfoundry-com in background mode...");
 
-    const backgroundArgs = [
-      "run",
-      "-A",
-      new URL(import.meta.resolve("./dev.bft.ts")).pathname,
-      "boltfoundry-com",
-      "--foreground", // Force foreground in the spawned process
-      ...devArgs.filter((arg) => arg !== "--foreground"), // Remove any --foreground flags
-    ];
+    // Ensure tmp directory exists
+    await Deno.mkdir("tmp", { recursive: true });
 
-    const backgroundProcess = new Deno.Command("deno", {
-      args: backgroundArgs,
-      stdout: "null",
-      stderr: "null",
-      stdin: "null",
+    // Build the command to run
+    const bftPath = new URL(import.meta.resolve("../bin/bft.ts")).pathname;
+    const logPath = "tmp/boltfoundry-com-dev.log";
+
+    // Construct the full command with nohup
+    const backgroundCommand =
+      `nohup deno run -A ${bftPath} dev boltfoundry-com --foreground ${
+        devArgs.filter((arg) => arg !== "--foreground").join(" ")
+      } > ${logPath} 2>&1 &`;
+
+    // Use shell to execute the nohup command
+    const backgroundProcess = new Deno.Command("sh", {
+      args: ["-c", backgroundCommand],
     });
 
-    backgroundProcess.spawn();
+    const result = backgroundProcess.outputSync();
 
-    // Wait a moment for startup
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    if (!result.success) {
+      ui.error("Failed to start background process");
+      return 1;
+    }
+
+    // Wait for server to actually be ready by checking if it responds
+    ui.output("Waiting for server to start...");
+
+    let serverReady = false;
+    const maxRetries = 30; // 30 seconds max wait
+
+    for (let i = 0; i < maxRetries; i++) {
+      try {
+        const response = await fetch(`http://localhost:${port}`);
+        await response.body?.cancel();
+        if (response.ok || response.status === 404) { // 404 is ok, means server is responding
+          serverReady = true;
+          break;
+        }
+      } catch {
+        // Server not ready yet
+      }
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+
+    if (!serverReady) {
+      ui.error(
+        "Server failed to start. Check tmp/boltfoundry-com-dev.log for details.",
+      );
+      return 1;
+    }
 
     ui.output(`Background server started on http://localhost:${port}`);
     ui.output("Logs are being written to tmp/boltfoundry-com-dev.log");
