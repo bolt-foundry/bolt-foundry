@@ -28,5 +28,4 @@ export async function formatCommand(options: Array<string>): Promise<number> {
 export const bftDefinition = {
   description: "Format code using deno fmt",
   fn: formatCommand,
-  aiSafe: true,
 } satisfies TaskDefinition;

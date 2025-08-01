@@ -36,5 +36,4 @@ register(
       description: "Show sl log help and options.",
     },
   ],
-  true, // AI-safe - read-only operation
 );

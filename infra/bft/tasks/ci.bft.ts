@@ -120,5 +120,4 @@ export const bftDefinition = {
   description:
     "Run CI checks (lint, test, format). E.g. `bft ci -g` for GH annotations.",
   fn: ciCommand,
-  aiSafe: true,
 } satisfies TaskDefinition;

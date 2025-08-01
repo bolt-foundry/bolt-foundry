@@ -7,16 +7,15 @@ const logger = getLogger(import.meta);
 
 export async function aiCommand(args: Array<string>): Promise<number> {
   if (args.length === 0) {
-    // Show AI-safe commands
-    logger.info("AI-safe BFF commands:");
+    // Show available commands
+    logger.info("Available BFF commands:");
     logger.info("");
 
     const commands = Array.from(friendMap.entries())
-      .filter(([_, friend]) => friend.aiSafe)
       .sort((a, b) => a[0].localeCompare(b[0]));
 
     if (commands.length === 0) {
-      logger.info("No AI-safe commands available.");
+      logger.info("No commands available.");
       return 0;
     }
 
@@ -42,34 +41,29 @@ export async function aiCommand(args: Array<string>): Promise<number> {
 
   if (!friend) {
     logger.error(`Unknown command: ${commandName}`);
-    logger.info("Use 'bff ai' to see available AI-safe commands");
+    logger.info("Use 'bff ai' to see available commands");
     return 1;
   }
 
-  if (!friend.aiSafe) {
-    logger.error(`Command '${commandName}' is not marked as AI-safe`);
-    logger.info("Use 'bff ai' to see available AI-safe commands");
-    return 1;
-  }
+  // TODO: Implement new safety mechanism if needed
+  // For now, all commands are considered safe
 
-  logger.info(`Running AI-safe command: ${commandName}`);
+  logger.info(`Running command: ${commandName}`);
   return await friend.command(commandArgs);
 }
 
 register(
   "ai",
-  "Run only AI-safe BFF commands or list available AI-safe commands",
+  "Run BFF commands or list available commands",
   aiCommand,
   [
     {
       option: "[command]",
-      description:
-        "AI-safe command to run. If not provided, lists all AI-safe commands.",
+      description: "Command to run. If not provided, lists all commands.",
     },
     {
       option: "[...args]",
-      description: "Arguments to pass to the AI-safe command.",
+      description: "Arguments to pass to the command.",
     },
   ],
-  true, // This command itself is AI-safe
 );

@@ -256,8 +256,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
 
 export const bftDefinition = {
   description:
-    "Amend commits in both main repo and submodules. IMPORTANT: Before amending any commit, you MUST: 1) Use TodoWrite to create tasks for: 'Run bft check', 'Run bft lint', 'Run bft test', 'Run bft format', 'Execute bft amend'. 2) Use the Task tool with subagent_type: 'general-purpose' to run the first three tasks (check, lint, test) in PARALLEL - launch all three subagents at once. IMPORTANT: Each subagent MUST fix any problems they find (type errors, lint issues, test failures) before marking their task as complete. 3) After all three parallel tasks are completed and all issues are fixed, run 'bft format' to fix any formatting issues. 4) Only after format is complete and ALL todos are marked as completed, execute bft amend command.",
-  aiSafe: false, // Modifies repository state
+    "Amend commits in both main repo and submodules. IMPORTANT: Before amending any commit, you MUST: 1) Use TodoWrite to create tasks for: 'Run bft check', 'Run bft lint', 'Run bft test', 'Run bft format', 'Execute bft amend'. 2) Use the Task tool with subagent_type: 'general-purpose' to run the first three tasks (check, lint, test) in PARALLEL - launch all three subagents at once. IMPORTANT: Each subagent MUST fix any problems they find (type errors, lint issues, test failures) before marking their task as complete. 3) After all three parallel tasks are completed and all issues are fixed, run 'bft format' to fix any formatting issues. 4) Only after format is complete and ALL todos are marked as completed, execute bft amend command.", // Modifies repository state
   fn: amend,
 } satisfies TaskDefinition;
 

@@ -474,5 +474,4 @@ export const bftDefinition = {
   description:
     "Run end-to-end tests. Options: --show-browser, --verbose/-v, --build/-b, plus all deno test flags (--no-check, etc.)",
   fn: e2eCommand,
-  aiSafe: true,
 } satisfies TaskDefinition;

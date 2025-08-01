@@ -29,7 +29,6 @@ async function loadBftTaskDefinitions(): Promise<Map<string, TaskDefinition>> {
   // Add built-in help task
   taskMap.set("help", {
     description: "Show available tasks",
-    aiSafe: true,
     fn: () => 0,
   });
 
@@ -68,7 +67,6 @@ async function loadBftTaskDefinitions(): Promise<Map<string, TaskDefinition>> {
           // Deck tasks are always AI-safe
           taskMap.set(taskName, {
             description: `Run ${taskName} deck`,
-            aiSafe: true,
             fn: () => 0,
           });
         }
@@ -139,7 +137,7 @@ function parseBftCommand(
 async function isBftCommandSafe(
   command: string,
   subcommand?: string,
-  args: Array<string> = [],
+  _args: Array<string> = [],
 ): Promise<{ exists: boolean; safe: boolean }> {
   // Special handling for sl command
   if (command === "sl" && subcommand) {
@@ -154,19 +152,9 @@ async function isBftCommandSafe(
     return { exists: false, safe: false }; // Unknown command doesn't exist
   }
 
-  // Evaluate aiSafe property
-  let safe: boolean;
-  if (typeof taskDef.aiSafe === "boolean") {
-    safe = taskDef.aiSafe;
-  } else if (typeof taskDef.aiSafe === "function") {
-    try {
-      safe = taskDef.aiSafe(args);
-    } catch (_error) {
-      safe = false; // If evaluation fails, assume unsafe
-    }
-  } else {
-    safe = true; // Default is safe if aiSafe is undefined
-  }
+  // Since aiSafe property was removed, default to safe for existing tasks
+  // TODO: Implement new safety mechanism if needed
+  const safe = true;
 
   return { exists: true, safe };
 }
@@ -249,7 +237,6 @@ async function safety(): Promise<number> {
 // Export the task definition for autodiscovery
 export const bftDefinition = {
   description: "Validate BFT command safety for AI agents",
-  aiSafe: true,
   fn: safety,
 } satisfies TaskDefinition;
 

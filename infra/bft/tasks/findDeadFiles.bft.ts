@@ -446,5 +446,4 @@ function reportResults(
 export const bftDefinition = {
   description: "Find potentially dead/unused files in the codebase",
   fn: findDeadFilesCommand,
-  aiSafe: true,
 } satisfies TaskDefinition;

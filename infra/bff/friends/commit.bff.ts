@@ -278,5 +278,4 @@ register(
         "Optional files to commit. If not provided, commits all staged changes.",
     },
   ],
-  false, // Not AI-safe - creates commits
 );

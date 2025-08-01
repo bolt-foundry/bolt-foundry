@@ -212,7 +212,6 @@ function matchesPattern(filePath: string, pattern: string): boolean {
 // Export the task definition for autodiscovery
 export const bftDefinition = {
   description: "Block edits to generated files (Claude Code hook)",
-  aiSafe: true,
   fn: async (): Promise<number> => {
     await main();
     return 0;

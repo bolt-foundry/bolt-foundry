@@ -177,7 +177,6 @@ function sleep(ms: number): Promise<void> {
 // Export the task definition for autodiscovery
 export const bftDefinition = {
   description: "Test terminal titlebar functionality",
-  aiSafe: true,
   fn: titlebar,
 } satisfies TaskDefinition;
 

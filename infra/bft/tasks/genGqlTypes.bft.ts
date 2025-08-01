@@ -42,5 +42,4 @@ export async function genGqlTypesCommand(_: Array<string>): Promise<number> {
 export const bftDefinition = {
   description: "Generate GraphQL schema using Pothos",
   fn: genGqlTypesCommand,
-  aiSafe: true,
 } satisfies TaskDefinition;

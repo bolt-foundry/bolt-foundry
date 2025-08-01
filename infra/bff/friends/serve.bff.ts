@@ -47,5 +47,4 @@ register(
   "Run the built web server (default port: 9999, use --port to override)",
   serveCommand,
   [],
-  true, // AI-safe
 );

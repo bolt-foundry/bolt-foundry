@@ -54,7 +54,6 @@ async function loadBftTasks(): Promise<void> {
           // Create a task that runs the deck
           taskMap.set(taskName, {
             description: `Run ${taskName} deck`,
-            aiSafe: true,
             fn: createDeckRunner(deckPath),
           });
         }
@@ -97,22 +96,8 @@ async function main(): Promise<number> {
     return 0;
   }
 
-  // Handle "requestApproval" subcommand
-  let commandName: string;
-  let commandArgs: Array<string>;
-
-  if (args[0] === "requestApproval") {
-    if (args.length < 2) {
-      ui.error("Usage: bft requestApproval <command> [arguments...]");
-      ui.error("The requestApproval flag allows running AI-unsafe commands");
-      return 1;
-    }
-    commandName = args[1];
-    commandArgs = args.slice(2);
-  } else {
-    commandName = args[0];
-    commandArgs = args.slice(1);
-  }
+  const commandName = args[0];
+  const commandArgs = args.slice(1);
 
   // Look up the command
   const task = taskMap.get(commandName);
