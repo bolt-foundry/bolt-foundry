@@ -16,9 +16,12 @@ Upload assets to CDN and return URLs.
 Options:
   --help, -h     Show this help message
   --debug        List available buckets for debugging
+  --secret       Shared secret for authentication (can also use ASSET_UPLOAD_SECRET env var)
   
 Examples:
-  bft asset-upload image.jpg`);
+  bft asset-upload image.jpg
+  bft asset-upload --secret mysecret file.pdf
+  ASSET_UPLOAD_SECRET=mysecret bft asset-upload doc.txt`);
     return 0;
   }
 
@@ -43,15 +46,28 @@ Examples:
 
   const args = parseArgs(options, {
     boolean: ["verbose", "v"],
+    string: ["secret"],
     alias: { v: "verbose" },
     "--": true,
   });
 
   const verbose = args.verbose || args.v;
   const files = args._ as Array<string>;
+  const secret = args.secret || getConfigurationVariable("ASSET_UPLOAD_SECRET");
 
   if (files.length === 0) {
     ui.error("No files specified. Use --help for usage information.");
+    return 1;
+  }
+
+  // Validate shared secret if required
+  const requiredSecret = getConfigurationVariable(
+    "ASSET_UPLOAD_REQUIRED_SECRET",
+  );
+  if (requiredSecret && secret !== requiredSecret) {
+    ui.error(
+      "Invalid or missing shared secret. Use --secret option or set ASSET_UPLOAD_SECRET environment variable.",
+    );
     return 1;
   }
 

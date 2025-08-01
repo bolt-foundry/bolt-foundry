@@ -630,6 +630,17 @@ ASSET_STORAGE_BUCKET=bolt-foundry-assets
    - Web-based upload interface
    - Asset management dashboard
 
+### Authentication
+
+The asset upload command supports optional shared secret authentication:
+
+- Set `ASSET_UPLOAD_REQUIRED_SECRET` environment variable to require
+  authentication
+- Users can provide the secret via `--secret` flag or `ASSET_UPLOAD_SECRET`
+  environment variable
+- If no required secret is set, the command works without authentication
+  (default behavior)
+
 ### Usage Examples
 
 **Upload single file:**
@@ -658,6 +669,18 @@ bft asset-upload screenshot.png --verbose
 #   Uploading to S3...
 #   Upload complete
 # https://bltcdn.com/assets/a1b2c3d4/screenshot.png
+```
+
+**Upload with shared secret (when required):**
+
+```bash
+# Using CLI flag
+bft asset-upload document.pdf --secret my-secret-key
+# Output: https://bltcdn.com/assets/b2c3d4e5/document.pdf
+
+# Using environment variable
+ASSET_UPLOAD_SECRET=my-secret-key bft asset-upload report.txt
+# Output: https://bltcdn.com/assets/c3d4e5f6/report.txt
 ```
 
 **Upload E2E test artifacts:**
