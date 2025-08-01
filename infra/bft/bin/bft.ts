@@ -7,7 +7,7 @@
 
 import { taskMap } from "../bft.ts";
 import { join } from "@std/path";
-import { createPrefixedUI } from "@bfmono/packages/cli-ui/cli-ui.ts";
+import { createPrefixedUI } from "@bfmono/packages/tui/tui.ts";
 
 const ui = createPrefixedUI("bft");
 
