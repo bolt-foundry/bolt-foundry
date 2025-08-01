@@ -126,7 +126,9 @@ function buildContainerArgs(config: ContainerConfig): Array<string> {
     "--volume",
     `${config.claudeDir}:/home/codebot/.claude`,
     "--volume",
-    `${config.workspacePath}/@bfmono:/@bfmono`,
+    `${config.workspacePath}:/`,
+    "-w",
+    "/@bfmono",
     "--volume",
     "/tmp:/dev/shm", // Use host /tmp as shared memory for Chrome
     "-e",
