@@ -5,7 +5,7 @@ import { parse as parseTOML } from "@std/toml";
 import { extractToml as extractFrontmatter } from "@std/front-matter";
 import * as path from "@std/path";
 import { parse as parseFlags } from "@std/flags";
-import { ui } from "@bfmono/packages/cli-ui/cli-ui.ts";
+import { ui } from "@bfmono/packages/tui/tui.ts";
 import { readLocalDeck } from "@bfmono/packages/bolt-foundry/bolt-foundry.ts";
 
 interface ContextDefinition {
