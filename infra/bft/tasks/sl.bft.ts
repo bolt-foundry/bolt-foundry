@@ -4,7 +4,7 @@ import {
 } from "@bfmono/infra/bff/shellBase.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import type { TaskDefinition } from "@bfmono/infra/bft/bft.ts";
-import { ui } from "@bfmono/packages/cli-ui/cli-ui.ts";
+import { ui } from "@bfmono/packages/tui/tui.ts";
 import { parseArgs } from "@std/cli/parse-args";
 
 const logger = getLogger(import.meta);

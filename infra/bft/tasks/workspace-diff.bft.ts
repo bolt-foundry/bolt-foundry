@@ -2,7 +2,7 @@
 
 import type { TaskDefinition } from "../bft.ts";
 import { parseArgs } from "@std/cli/parse-args";
-import { ui } from "@bfmono/packages/cli-ui/cli-ui.ts";
+import { ui } from "@bfmono/packages/tui/tui.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);

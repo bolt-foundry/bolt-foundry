@@ -7,7 +7,7 @@
  * vendor dependencies, and other files that should not be manually modified.
  */
 
-import { ui } from "@bfmono/packages/cli-ui/cli-ui.ts";
+import { ui } from "@bfmono/packages/tui/tui.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
