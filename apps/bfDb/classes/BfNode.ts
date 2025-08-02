@@ -18,7 +18,11 @@ import type {
   FieldSpec,
   RelationSpec,
 } from "@bfmono/apps/bfDb/builders/bfDb/types.ts";
+import {
+  generateRelationshipMethods,
+} from "@bfmono/apps/bfDb/builders/bfDb/relationshipMethods.ts";
 import { makeBfDbSpec } from "@bfmono/apps/bfDb/builders/bfDb/makeBfDbSpec.ts";
+// Relationship GraphQL integration removed - use standard object() and connection() methods
 
 const logger = getLogger(import.meta);
 
@@ -121,10 +125,10 @@ export abstract class BfNode<TProps extends PropsBase = {}>
     const now = new Date();
     const defaults: BfMetadata = {
       bfGid: bfGid,
-      bfOid: cv.orgBfOid,
+      bfOid: cv?.orgBfOid || ("" as BfGid),
       className: this.name,
       sortValue: this.generateSortValue(),
-      bfCid: cv.personBfGid,
+      bfCid: cv?.personBfGid || ("" as BfGid),
       createdAt: now,
       lastUpdated: now,
     };
@@ -349,6 +353,9 @@ export abstract class BfNode<TProps extends PropsBase = {}>
       metadata,
     );
     this.currentViewer = currentViewer;
+
+    // Generate relationship methods
+    generateRelationshipMethods(this);
   }
 
   get props(): TProps {
