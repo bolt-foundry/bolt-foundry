@@ -110,13 +110,16 @@ await book.deleteAuthor(); // Deletes the edge AND the author node
 
 ### GraphQL Integration
 
-When using `defineGqlNodeWithRelations`, your GraphQL schema automatically
-includes fields for relationships:
+When using standard `object()` and `connection()` methods, your GraphQL schema
+can expose relationships:
 
 ```typescript
 class BfBook extends BfNode<{ title: string; isbn: string }> {
-  static override gqlSpec = this.defineGqlNodeWithRelations((gql) =>
-    gql.string("title").string("isbn")
+  static override gqlSpec = this.defineGqlNode((gql) =>
+    gql
+      .string("title")
+      .string("isbn")
+      .object("author", () => BfAuthor)
   );
 
   static override bfNodeSpec = this.defineBfNode((f) =>
@@ -125,8 +128,7 @@ class BfBook extends BfNode<{ title: string; isbn: string }> {
 }
 ```
 
-This automatically adds an `author` field to your GraphQL type that resolves the
-relationship.
+This adds an `author` field to your GraphQL type that resolves the relationship.
 
 ### Migration from createTargetNode
 

@@ -12,6 +12,7 @@ export type BfSampleCollectionMethod = "manual" | "telemetry";
  * This interface is designed to be JSON-serializable for database storage
  */
 export interface BfSampleCompletionData {
+  [key: string]: unknown;
   // OpenAI ChatCompletion fields
   id: string;
   object: string;
@@ -52,13 +53,7 @@ export interface BfSampleCompletionData {
  * evaluation purposes. Samples can be collected manually by users or automatically
  * via telemetry systems.
  */
-type BfSampleProps = {
-  completionData: BfSampleCompletionData;
-  collectionMethod: BfSampleCollectionMethod;
-  name?: string;
-};
-
-export class BfSample extends BfNode<BfSampleProps> {
+export class BfSample extends BfNode<InferProps<typeof BfSample>> {
   static override gqlSpec = this.defineGqlNode((gql) =>
     gql
       .json("completionData")
@@ -75,7 +70,15 @@ export class BfSample extends BfNode<BfSampleProps> {
         resolve: async (_src, args, ctx) => {
           const cv = ctx.getCurrentViewer();
           const deck = await BfDeck.findX(cv, args.deckId as BfGid);
-          const sample = await (deck as any).createSamples({
+          const sample = await (deck as BfDeck & {
+            createSamples: (
+              props: {
+                completionData: unknown;
+                collectionMethod: string;
+                name: string;
+              },
+            ) => Promise<BfSample>;
+          }).createSamples({
             completionData: JSON.parse(args.completionData),
             collectionMethod: (args.collectionMethod ||
               "manual") as BfSampleCollectionMethod,
@@ -91,12 +94,13 @@ export class BfSample extends BfNode<BfSampleProps> {
    * Database field specification for BfSample.
    * Defines the fields that are stored in the database.
    */
-  static override bfNodeSpec = this.defineBfNode((node) =>
-    node
-      .json("completionData") // Native JSON storage
-      .string("collectionMethod") // "manual" | "telemetry"
-      .string("name") // Optional human-readable name for the sample
-      .many("results", () =>
-        import("./BfGraderResult.ts").then((m) => m.BfGraderResult))
-  );
+  static override bfNodeSpec: ReturnType<typeof BfSample.defineBfNode> = this
+    .defineBfNode((node) =>
+      node
+        .json("completionData") // Native JSON storage
+        .string("collectionMethod") // "manual" | "telemetry"
+        .string("name") // Optional human-readable name for the sample
+        .many("results", () =>
+          import("./BfGraderResult.ts").then((m) => m.BfGraderResult))
+    );
 }

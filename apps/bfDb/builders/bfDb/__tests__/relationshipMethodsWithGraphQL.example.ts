@@ -36,6 +36,7 @@ class BfTag extends BfNode<{ name: string }> {
 /**
  * Example: BfBook with relationships exposed in GraphQL
  */
+// deno-lint-ignore no-unused-vars
 class BfBook extends BfNode<{ title: string; isbn: string }> {
   // GraphQL schema - public API
   static override gqlSpec = this.defineGqlNode((gql) =>
@@ -90,7 +91,7 @@ class BfBook extends BfNode<{ title: string; isbn: string }> {
       // Custom mutation that uses relationship methods
       .mutation("addReviewer", {
         args: (a) => a.nonNull.id("reviewerId"),
-        returns: () => BfBook,
+        returns: "BfBook",
         resolve: async (root, args, ctx) => {
           const book = root as BfBook & {
             addReviewer: (reviewer: BfReviewer) => Promise<void>;

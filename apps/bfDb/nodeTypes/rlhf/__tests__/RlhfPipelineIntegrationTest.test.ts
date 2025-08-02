@@ -1,4 +1,5 @@
 #! /usr/bin/env -S bft test
+// deno-lint-ignore-file bolt-foundry/no-direct-create-target-node no-explicit-any
 
 import { assertEquals, assertExists } from "@std/assert";
 import { BfOrganization } from "@bfmono/apps/bfDb/nodeTypes/BfOrganization.ts";
