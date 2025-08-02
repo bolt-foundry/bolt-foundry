@@ -22,6 +22,7 @@ import {
   generateRelationshipMethods,
 } from "@bfmono/apps/bfDb/builders/bfDb/relationshipMethods.ts";
 import { makeBfDbSpec } from "@bfmono/apps/bfDb/builders/bfDb/makeBfDbSpec.ts";
+// Relationship GraphQL integration removed - use standard object() and connection() methods
 
 const logger = getLogger(import.meta);
 
