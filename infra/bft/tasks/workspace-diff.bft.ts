@@ -9,46 +9,39 @@ const logger = getLogger(import.meta);
 
 interface WorkspaceDiffArgs {
   help?: boolean;
-  workspace?: string;
-  format?: "short" | "long";
-  "only-changed"?: boolean;
+  verbose?: boolean;
+  all?: boolean;
   "exclude-patterns"?: Array<string>;
+  _?: Array<string>; // positional args
 }
 
 async function workspaceDiff(args: Array<string>): Promise<number> {
   const parsed = parseArgs(args, {
-    boolean: ["help", "only-changed"],
-    string: ["workspace", "format", "exclude-patterns"],
-    alias: { h: "help", w: "workspace", f: "format" },
+    boolean: ["help", "verbose", "all"],
+    string: ["exclude-patterns"],
+    alias: { h: "help", v: "verbose", a: "all" },
     collect: ["exclude-patterns"],
-    default: {
-      format: "short",
-    },
+    default: {},
   }) as WorkspaceDiffArgs;
 
   if (parsed.help) {
     ui.output(`
-Usage: bft workspace-diff [OPTIONS] [WORKSPACE]
+Usage: bft workspace-diff [WORKSPACE]
 
-Compare workspace directories to find changed files between workspaces or against the current directory.
+Show which workspaces have changes. Without arguments, shows a summary of all workspaces.
 
 OPTIONS:
-  --workspace NAME, -w NAME    Compare against specific workspace (default: compare all workspaces)
-  --format FORMAT, -f FORMAT   Output format: short, long (default: short)
-  --only-changed              Show only files that have changed
-  --exclude-patterns PATTERN   Exclude files matching glob patterns (can be used multiple times)
-  --help, -h                   Show this help message
+  --verbose, -v               Show detailed file changes (not just summary)
+  --all, -a                   Include unchanged workspaces in summary
+  --exclude-patterns PATTERN  Exclude files matching glob patterns (can be used multiple times)
+  --help, -h                  Show this help message
 
 EXAMPLES:
-  bft workspace-diff                           # List all workspaces and their status
-  bft workspace-diff --workspace fuzzy-goat    # Compare current dir with fuzzy-goat workspace
-  bft workspace-diff --only-changed            # Show only changed files across all workspaces
-  bft workspace-diff --format long             # Show detailed diff information
-  bft workspace-diff --exclude-patterns "*.log" --exclude-patterns "node_modules/*"
-
-OUTPUT FORMAT:
-  short: Lists changed files with basic status (A=added, M=modified, D=deleted)
-  long:  Shows detailed diff statistics and modification times
+  bft workspace-diff                    # Summary of all workspaces with changes
+  bft workspace-diff --all              # Include unchanged workspaces
+  bft workspace-diff fuzzy-goat         # Show changes in specific workspace
+  bft workspace-diff fuzzy-goat -v      # Show detailed file changes
+  bft workspace-diff --exclude-patterns "*.log"
 `);
     return 0;
   }
@@ -88,10 +81,13 @@ OUTPUT FORMAT:
     return 0;
   }
 
+  // Get workspace name from positional args
+  const workspaceName = parsed._?.[0];
+
   // If specific workspace requested, compare only that one
-  if (parsed.workspace) {
-    if (!workspaces.includes(parsed.workspace)) {
-      ui.error(`❌ Workspace '${parsed.workspace}' not found`);
+  if (workspaceName) {
+    if (!workspaces.includes(workspaceName)) {
+      ui.error(`❌ Workspace '${workspaceName}' not found`);
       ui.output("Available workspaces:");
       for (const ws of workspaces.sort()) {
         ui.output(`  - ${ws}`);
@@ -100,11 +96,10 @@ OUTPUT FORMAT:
     }
 
     return await compareWorkspace(
-      parsed.workspace,
-      `${workspacesDir}/${parsed.workspace}`,
+      workspaceName,
+      `${workspacesDir}/${workspaceName}`,
       currentDir,
-      parsed.format || "short",
-      parsed["only-changed"] || false,
+      parsed.verbose || false,
       parsed["exclude-patterns"] || [],
     );
   }
@@ -113,215 +108,284 @@ OUTPUT FORMAT:
   ui.output(`🔍 Found ${workspaces.length} workspace(s):`);
   ui.output("");
 
-  const comparePromises = workspaces.sort().map(async (workspace) => {
+  // Create a function that returns comparison data without outputting
+  const getComparisonData = async (workspace: string) => {
     const workspacePath = `${workspacesDir}/${workspace}`;
-    const changes = await compareWorkspace(
+    return await compareWorkspaceData(
       workspace,
       workspacePath,
       currentDir,
-      parsed.format || "short",
-      parsed["only-changed"] || false,
       parsed["exclude-patterns"] || [],
     );
-    return { workspace, changes };
-  });
+  };
+
+  // Process all comparisons in parallel
+  const comparePromises = workspaces.sort().map((workspace) =>
+    getComparisonData(workspace)
+  );
 
   const results = await Promise.all(comparePromises);
 
-  let hasChanges = false;
-  for (const { changes } of results) {
-    if (changes > 0) {
-      hasChanges = true;
-    }
-    ui.output("");
+  // Always show summary for multiple workspaces
+  outputSummary(results, parsed.all || false);
+
+  return 0;
+}
+
+interface WorkspaceComparisonResult {
+  workspaceName: string;
+  workspacePath: string;
+  lastModified: string;
+  changes: Array<{ status: string; path: string; details?: string }>;
+  error?: string;
+}
+
+async function compareWorkspaceData(
+  workspaceName: string,
+  workspacePath: string,
+  _currentPath: string,
+  _excludePatterns: Array<string>,
+): Promise<WorkspaceComparisonResult> {
+  try {
+    // Get workspace info
+    const workspaceStat = await Deno.stat(workspacePath);
+    const lastModified = workspaceStat.mtime?.toISOString() || "unknown";
+
+    // Get file differences using Sapling (much faster)
+    const changes = await getSaplingChanges(workspacePath);
+
+    return {
+      workspaceName,
+      workspacePath,
+      lastModified,
+      changes,
+    };
+  } catch (error) {
+    return {
+      workspaceName,
+      workspacePath,
+      lastModified: "unknown",
+      changes: [],
+      error: error instanceof Error ? error.message : String(error),
+    };
+  }
+}
+
+function outputWorkspaceComparison(
+  result: WorkspaceComparisonResult,
+  verbose: boolean,
+): void {
+  if (result.error) {
+    ui.error(
+      `❌ Failed to compare workspace ${result.workspaceName}: ${result.error}`,
+    );
+    return;
   }
 
-  if (!hasChanges && parsed["only-changed"]) {
+  ui.output(`📁 ${result.workspaceName}`);
+
+  if (result.changes.length === 0) {
+    ui.output("   ✅ No changes detected");
+  } else if (verbose) {
+    for (const change of result.changes) {
+      ui.output(`   ${change.status} ${change.path}`);
+    }
+  } else {
+    const added = result.changes.filter((c) => c.status === "A").length;
+    const modified = result.changes.filter((c) => c.status === "M").length;
+    const deleted = result.changes.filter((c) => c.status === "D").length;
+    const parts: Array<string> = [];
+    if (added > 0) parts.push(`${added} added`);
+    if (modified > 0) parts.push(`${modified} modified`);
+    if (deleted > 0) parts.push(`${deleted} deleted`);
+    ui.output(`   ${parts.join(", ")} (${result.changes.length} total)`);
+  }
+}
+
+function outputSummary(
+  results: Array<WorkspaceComparisonResult>,
+  showUnchanged: boolean,
+): void {
+  const changedWorkspaces: Array<{
+    name: string;
+    added: number;
+    modified: number;
+    deleted: number;
+    total: number;
+  }> = [];
+  const unchangedWorkspaces: Array<string> = [];
+
+  // Categorize workspaces
+  for (const result of results) {
+    if (result.changes.length > 0) {
+      const added = result.changes.filter((c) => c.status === "A").length;
+      const modified = result.changes.filter((c) => c.status === "M").length;
+      const deleted = result.changes.filter((c) => c.status === "D").length;
+
+      changedWorkspaces.push({
+        name: result.workspaceName,
+        added,
+        modified,
+        deleted,
+        total: result.changes.length,
+      });
+    } else {
+      unchangedWorkspaces.push(result.workspaceName);
+    }
+  }
+
+  // Output changed workspaces
+  if (changedWorkspaces.length > 0) {
+    ui.output(`📊 Workspaces with changes (${changedWorkspaces.length}):`);
+    ui.output("");
+
+    for (const ws of changedWorkspaces) {
+      const parts: Array<string> = [];
+      if (ws.added > 0) parts.push(`${ws.added} added`);
+      if (ws.modified > 0) parts.push(`${ws.modified} modified`);
+      if (ws.deleted > 0) parts.push(`${ws.deleted} deleted`);
+
+      ui.output(`  📁 ${ws.name}: ${parts.join(", ")} (${ws.total} total)`);
+    }
+  } else {
     ui.output("✅ No changes found in any workspace");
   }
 
-  return 0;
+  // Output unchanged workspaces if requested
+  if (showUnchanged) {
+    ui.output("");
+    ui.output(`📂 Workspaces with no changes (${unchangedWorkspaces.length}):`);
+    for (const ws of unchangedWorkspaces) {
+      ui.output(`  - ${ws}`);
+    }
+  }
+
+  // Summary statistics
+  ui.output("");
+  ui.output(
+    `📈 Summary: ${changedWorkspaces.length} changed, ${unchangedWorkspaces.length} unchanged`,
+  );
 }
 
 async function compareWorkspace(
   workspaceName: string,
   workspacePath: string,
   currentPath: string,
-  format: string,
-  onlyChanged: boolean,
+  verbose: boolean,
   excludePatterns: Array<string>,
 ): Promise<number> {
-  try {
-    // Get workspace info
-    const workspaceStat = await Deno.stat(workspacePath);
-    const lastModified = workspaceStat.mtime?.toISOString() || "unknown";
+  const result = await compareWorkspaceData(
+    workspaceName,
+    workspacePath,
+    currentPath,
+    excludePatterns,
+  );
 
-    if (format === "long") {
-      ui.output(`📁 Workspace: ${workspaceName}`);
-      ui.output(`   Path: ${workspacePath}`);
-      ui.output(`   Last modified: ${lastModified}`);
-    } else {
-      ui.output(`📁 ${workspaceName} (${lastModified})`);
-    }
-
-    // Use file-based comparison (workspaces are unlikely to be git repos, but use CoW efficiently)
-    const changes = await fileDiffComparison(
-      workspaceName,
-      workspacePath,
-      currentPath,
-      format,
-      onlyChanged,
-      excludePatterns,
-    );
-
-    if (changes === 0 && !onlyChanged) {
-      ui.output("   ✅ No changes detected");
-    }
-
-    return changes;
-  } catch (error) {
-    ui.error(`❌ Failed to compare workspace ${workspaceName}: ${error}`);
-    return 0;
-  }
+  outputWorkspaceComparison(result, verbose);
+  return result.changes.length;
 }
 
-async function fileDiffComparison(
-  _workspaceName: string,
+// Note: We removed the file-by-file comparison functions since Sapling is much more efficient
+
+async function getSaplingChanges(
   workspacePath: string,
-  currentPath: string,
-  format: string,
-  _onlyChanged: boolean,
-  excludePatterns: Array<string>,
-): Promise<number> {
+): Promise<Array<{ status: string; path: string; details?: string }>> {
   const changes: Array<{ status: string; path: string; details?: string }> = [];
 
-  // Get all files from both directories
-  const currentFiles = await getAllFiles(currentPath, excludePatterns);
-  const workspaceFiles = await getAllFiles(workspacePath, excludePatterns);
+  // Find all Sapling repos in the workspace
+  const saplingRepos = await findSaplingRepos(workspacePath);
 
-  // Create sets for efficient comparison
-  const currentSet = new Set(currentFiles);
-  const workspaceSet = new Set(workspaceFiles);
+  for (const repoPath of saplingRepos) {
+    try {
+      // Run sl status in each repo
+      const cmd = new Deno.Command("sl", {
+        args: ["status"],
+        cwd: repoPath,
+        stdout: "piped",
+        stderr: "piped",
+      });
 
-  // Find added files (in workspace but not current)
-  for (const file of workspaceFiles) {
-    if (!currentSet.has(file)) {
-      changes.push({ status: "A", path: file });
-    }
-  }
+      const { stdout } = await cmd.output();
+      const output = new TextDecoder().decode(stdout);
 
-  // Find deleted files (in current but not workspace)
-  for (const file of currentFiles) {
-    if (!workspaceSet.has(file)) {
-      changes.push({ status: "D", path: file });
-    }
-  }
+      // Parse the output
+      const lines = output.trim().split("\n").filter((line) => line.length > 0);
 
-  // Find modified files (in both but different)
-  for (const file of currentFiles) {
-    if (workspaceSet.has(file)) {
-      const currentFilePath = `${currentPath}/${file}`;
-      const workspaceFilePath = `${workspacePath}/${file}`;
+      for (const line of lines) {
+        if (line.length < 2) continue;
 
-      try {
-        const currentStat = await Deno.stat(currentFilePath);
-        const workspaceStat = await Deno.stat(workspaceFilePath);
+        const status = line[0];
+        const filePath = line.substring(2).trim();
 
-        // Compare file sizes and modification times
-        if (
-          currentStat.size !== workspaceStat.size ||
-          (currentStat.mtime?.getTime() || 0) !==
-            (workspaceStat.mtime?.getTime() || 0)
-        ) {
-          const details = format === "long"
-            ? `(current: ${currentStat.size}b @ ${
-              currentStat.mtime?.toISOString() || "unknown"
-            }, workspace: ${workspaceStat.size}b @ ${
-              workspaceStat.mtime?.toISOString() || "unknown"
-            })`
-            : undefined;
+        // Calculate relative path from workspace root
+        const relativePath = repoPath === workspacePath
+          ? filePath
+          : `${repoPath.substring(workspacePath.length + 1)}/${filePath}`;
 
-          changes.push({ status: "M", path: file, details });
-        }
-      } catch {
-        // If we can't stat one of the files, consider it modified
-        changes.push({ status: "M", path: file });
+        let statusChar = status;
+        if (status === "M") statusChar = "M";
+        else if (status === "A") statusChar = "A";
+        else if (status === "R") statusChar = "D";
+        else if (status === "?") statusChar = "A";
+        else if (status === "!") statusChar = "D";
+
+        changes.push({
+          status: statusChar,
+          path: relativePath,
+        });
       }
+    } catch (error) {
+      logger.debug(`Failed to get Sapling status for ${repoPath}: ${error}`);
     }
   }
 
   // Sort changes by path for consistent output
   changes.sort((a, b) => a.path.localeCompare(b.path));
 
-  // Output changes
-  for (const change of changes) {
-    if (format === "long" && change.details) {
-      ui.output(`   ${change.status} ${change.path} ${change.details}`);
-    } else {
-      ui.output(`   ${change.status} ${change.path}`);
-    }
-  }
-
-  return changes.length;
+  return changes;
 }
 
-async function getAllFiles(
-  dirPath: string,
-  excludePatterns: Array<string>,
+async function findSaplingRepos(
+  basePath: string,
 ): Promise<Array<string>> {
-  const files: Array<string> = [];
+  const repos: Array<string> = [];
 
-  async function walkDir(currentPath: string, relativePath: string = "") {
+  async function walkDir(currentPath: string) {
     try {
       for await (const entry of Deno.readDir(currentPath)) {
-        const fullPath = `${currentPath}/${entry.name}`;
-        const relativeFilePath = relativePath
-          ? `${relativePath}/${entry.name}`
-          : entry.name;
-
-        // Skip excluded patterns
-        if (shouldExclude(relativeFilePath, excludePatterns)) {
-          continue;
-        }
-
         if (entry.isDirectory) {
-          // Skip common directories that shouldn't be compared
-          if (
-            entry.name === ".git" ||
-            entry.name === "node_modules" ||
-            entry.name === ".bft" ||
-            entry.name === "tmp"
-          ) {
-            continue;
+          const fullPath = `${currentPath}/${entry.name}`;
+
+          // Check if this directory has a .sl subdirectory
+          try {
+            const slPath = `${fullPath}/.sl`;
+            const slStat = await Deno.stat(slPath);
+            if (slStat.isDirectory) {
+              repos.push(fullPath);
+              // Still recurse to find nested repos
+            }
+          } catch {
+            // No .sl directory here
           }
-          await walkDir(fullPath, relativeFilePath);
-        } else if (entry.isFile) {
-          files.push(relativeFilePath);
+
+          // Skip certain directories
+          if (
+            entry.name !== "node_modules" &&
+            entry.name !== ".sl" &&
+            entry.name !== ".git" &&
+            !entry.name.startsWith(".")
+          ) {
+            await walkDir(fullPath);
+          }
         }
       }
     } catch (error) {
-      // Skip directories we can't read
-      logger.warn(`Cannot read directory ${currentPath}: ${error}`);
+      logger.debug(`Cannot read directory ${currentPath}: ${error}`);
     }
   }
 
-  await walkDir(dirPath);
-  return files.sort();
-}
-
-function shouldExclude(
-  filePath: string,
-  excludePatterns: Array<string>,
-): boolean {
-  for (const pattern of excludePatterns) {
-    // Simple glob matching - convert * to .* for regex
-    const regexPattern = pattern.replace(/\*/g, ".*");
-    const regex = new RegExp(`^${regexPattern}$`);
-    if (regex.test(filePath)) {
-      return true;
-    }
-  }
-  return false;
+  await walkDir(basePath);
+  return repos.sort();
 }
 
 // Export the task definition for autodiscovery
