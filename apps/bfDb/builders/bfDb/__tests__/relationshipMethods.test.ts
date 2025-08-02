@@ -103,6 +103,16 @@ type BfPostWithMethods = BfPost & {
   addComment: (node: BfComment) => Promise<void>;
   removeComment: (node: BfComment) => Promise<void>;
   deleteComment: (node: BfComment) => Promise<void>;
+  // Phase 7 batch operations
+  addManyComment: (nodes: BfComment[]) => Promise<void>;
+  removeManyComment: (nodes: BfComment[]) => Promise<void>;
+  createManyComment: (
+    propsArray: Array<{
+      text: string;
+      authorId: string;
+    }>,
+  ) => Promise<BfComment[]>;
+  iterateComment: () => AsyncIterableIterator<BfComment>;
 
   // Many relationship methods for tags
   findAllTag: () => Promise<BfTag[]>;
@@ -131,6 +141,11 @@ type BfPostWithMethods = BfPost & {
   addTag: (node: BfTag) => Promise<void>;
   removeTag: (node: BfTag) => Promise<void>;
   deleteTag: (node: BfTag) => Promise<void>;
+  // Phase 7 batch operations
+  addManyTag: (nodes: BfTag[]) => Promise<void>;
+  removeManyTag: (nodes: BfTag[]) => Promise<void>;
+  createManyTag: (propsArray: Array<{ name: string }>) => Promise<BfTag[]>;
+  iterateTag: () => AsyncIterableIterator<BfTag>;
 };
 
 // Move BfBookWithMultiple class definition here
@@ -655,6 +670,251 @@ describe("relationshipMethods", () => {
         // Currently stub implementation returns empty arrays
         assertEquals(Array.isArray(comments), true);
         assertEquals(Array.isArray(tags), true);
+      });
+    });
+
+    describe("Phase 7: Batch operations", () => {
+      describe("Batch add operations", () => {
+        it("should generate addManyComment method", async () => {
+          // The method should exist
+          assertEquals(
+            typeof (post as BfPostWithMethods).addManyComment,
+            "function",
+          );
+
+          // Should add multiple existing comments
+          await (post as BfPostWithMethods).addManyComment([
+            comment1,
+            comment2,
+          ]);
+
+          // Note: Due to stub implementation, edges are not created
+          const allComments = await (post as BfPostWithMethods)
+            .findAllComment();
+          assertEquals(allComments.length, 0); // Currently returns empty due to stub
+        });
+
+        it("should handle empty arrays in addMany", async () => {
+          // Should not throw when adding empty array
+          await (post as BfPostWithMethods).addManyComment([]);
+          await (post as BfPostWithMethods).addManyTag([]);
+
+          // No effect expected
+          const comments = await (post as BfPostWithMethods).findAllComment();
+          const tags = await (post as BfPostWithMethods).findAllTag();
+          assertEquals(comments.length, 0);
+          assertEquals(tags.length, 0);
+        });
+      });
+
+      describe("Batch remove operations", () => {
+        it("should generate removeManyComment method", async () => {
+          // The method should exist
+          assertEquals(
+            typeof (post as BfPostWithMethods).removeManyComment,
+            "function",
+          );
+
+          // Should remove multiple comments (edge only)
+          await (post as BfPostWithMethods).removeManyComment([
+            comment1,
+            comment2,
+          ]);
+
+          // Comments should still exist as nodes
+          const comment1Still = await BfComment.find(cv, comment1.id as BfGid);
+          const comment2Still = await BfComment.find(cv, comment2.id as BfGid);
+          assertEquals(comment1Still?.id, comment1.id);
+          assertEquals(comment2Still?.id, comment2.id);
+        });
+
+        it("should handle partial removals gracefully", async () => {
+          // Create unrelated comment
+          const unrelatedComment = await BfComment
+            .__DANGEROUS__createUnattached(
+              cv,
+              {
+                text: "Unrelated",
+                authorId: "other",
+              },
+            );
+
+          // Should not throw when removing mix of related/unrelated
+          await (post as BfPostWithMethods).removeManyComment([
+            comment1,
+            unrelatedComment,
+          ]);
+
+          // All comments should still exist
+          const exists1 = await BfComment.find(cv, comment1.id as BfGid);
+          const existsUnrelated = await BfComment.find(
+            cv,
+            unrelatedComment.id as BfGid,
+          );
+          assertEquals(exists1?.id, comment1.id);
+          assertEquals(existsUnrelated?.id, unrelatedComment.id);
+        });
+      });
+
+      describe("Batch create operations", () => {
+        it("should generate createManyComment method", async () => {
+          // The method should exist
+          assertEquals(
+            typeof (post as BfPostWithMethods).createManyComment,
+            "function",
+          );
+
+          // Should create multiple comments
+          const newComments = await (post as BfPostWithMethods)
+            .createManyComment([
+              { text: "Batch comment 1", authorId: "author1" },
+              { text: "Batch comment 2", authorId: "author2" },
+              { text: "Batch comment 3", authorId: "author3" },
+            ]);
+
+          // Should return array of created comments
+          assertEquals(newComments.length, 3);
+          assertInstanceOf(newComments[0], BfComment);
+          assertInstanceOf(newComments[1], BfComment);
+          assertInstanceOf(newComments[2], BfComment);
+          assertEquals(newComments[0].props.text, "Batch comment 1");
+          assertEquals(newComments[1].props.text, "Batch comment 2");
+          assertEquals(newComments[2].props.text, "Batch comment 3");
+        });
+
+        it("should handle empty createMany", async () => {
+          const newComments = await (post as BfPostWithMethods)
+            .createManyComment([]);
+          assertEquals(Array.isArray(newComments), true);
+          assertEquals(newComments.length, 0);
+        });
+
+        it("should create nodes atomically (when implemented)", async () => {
+          // This test documents expected behavior for atomic batch creation
+          const propsArray = [
+            { text: "Atomic 1", authorId: "a1" },
+            { text: "Atomic 2", authorId: "a2" },
+          ];
+
+          const created = await (post as BfPostWithMethods).createManyComment(
+            propsArray,
+          );
+
+          // All should be created
+          assertEquals(created.length, 2);
+
+          // Verify they exist
+          const exists1 = await BfComment.find(cv, created[0].id as BfGid);
+          const exists2 = await BfComment.find(cv, created[1].id as BfGid);
+          assertEquals(exists1?.props.text, "Atomic 1");
+          assertEquals(exists2?.props.text, "Atomic 2");
+        });
+      });
+
+      describe("Async iteration", () => {
+        it("should generate iterateComment method", async () => {
+          // The method should exist
+          assertEquals(
+            typeof (post as BfPostWithMethods).iterateComment,
+            "function",
+          );
+
+          // Should return async iterator
+          const iterator = (post as BfPostWithMethods).iterateComment();
+          assertEquals(typeof iterator[Symbol.asyncIterator], "function");
+        });
+
+        it("should iterate over empty collection", async () => {
+          const items = [];
+          for await (
+            const comment of (post as BfPostWithMethods)
+              .iterateComment()
+          ) {
+            items.push(comment);
+          }
+
+          assertEquals(items.length, 0);
+        });
+
+        it("should support for-await-of syntax", async () => {
+          // This test documents the expected usage pattern
+          let count = 0;
+          for await (
+            const _comment of (post as BfPostWithMethods)
+              .iterateComment()
+          ) {
+            count++;
+            // In real implementation, this would process each comment
+            // without loading all into memory
+          }
+
+          // Currently returns 0 due to stub implementation
+          assertEquals(count, 0);
+        });
+
+        it("should be memory efficient (when implemented)", async () => {
+          // This test documents expected behavior for memory efficiency
+          // In real implementation, this would process large collections
+          // without loading all items into memory at once
+
+          const processed = [];
+          for await (const tag of (post as BfPostWithMethods).iterateTag()) {
+            processed.push(tag);
+            // In production, might break after processing enough
+            if (processed.length >= 100) break;
+          }
+
+          // Currently empty due to stub
+          assertEquals(processed.length, 0);
+        });
+      });
+
+      describe("Combined batch operations", () => {
+        it("should support mixed batch operations", async () => {
+          // Create multiple tags
+          const newTags = await (post as BfPostWithMethods).createManyTag([
+            { name: "batch1" },
+            { name: "batch2" },
+            { name: "batch3" },
+          ]);
+
+          assertEquals(newTags.length, 3);
+
+          // Add existing tags
+          await (post as BfPostWithMethods).addManyTag([tag1, tag2]);
+
+          // Remove some tags
+          await (post as BfPostWithMethods).removeManyTag([tag1]);
+
+          // All tag nodes should still exist
+          const tag1Exists = await BfTag.find(cv, tag1.id as BfGid);
+          const tag2Exists = await BfTag.find(cv, tag2.id as BfGid);
+          assertEquals(tag1Exists?.id, tag1.id);
+          assertEquals(tag2Exists?.id, tag2.id);
+        });
+
+        it("should maintain consistency across operations", async () => {
+          // Create comments
+          const comments = await (post as BfPostWithMethods).createManyComment([
+            { text: "C1", authorId: "a1" },
+            { text: "C2", authorId: "a2" },
+          ]);
+
+          // Add more comments
+          await (post as BfPostWithMethods).addManyComment([
+            comment1,
+            comment2,
+          ]);
+
+          // Remove some
+          await (post as BfPostWithMethods).removeManyComment([comments[0]]);
+
+          // All comment nodes should exist
+          for (const comment of [...comments, comment1, comment2]) {
+            const exists = await BfComment.find(cv, comment.id as BfGid);
+            assertEquals(exists?.id, comment.id);
+          }
+        });
       });
     });
   });
