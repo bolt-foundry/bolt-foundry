@@ -81,21 +81,48 @@ RUN if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
         && ln -s /usr/bin/chromium /usr/bin/google-chrome-stable; \
     fi
 
-# Install Nix using Determinate Nix installer
-RUN curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux \
-    --extra-conf "sandbox = false" \
-    --init none \
-    --no-confirm
+# Install Nix with architecture-specific handling
+RUN set -ex && \
+    # Create required directories
+    mkdir -p /nix /etc/nix && \
+    # Configure Nix for container environment
+    echo "sandbox = false" > /etc/nix/nix.conf && \
+    echo "filter-syscalls = false" >> /etc/nix/nix.conf && \
+    echo "build-users-group =" >> /etc/nix/nix.conf && \
+    echo "experimental-features = nix-command flakes" >> /etc/nix/nix.conf && \
+    # Detect architecture and install accordingly
+    ARCH=$(dpkg --print-architecture) && \
+    echo "Installing Nix for architecture: $ARCH" && \
+    if [ "$ARCH" = "arm64" ] || [ "$ARCH" = "aarch64" ]; then \
+        # For ARM64, create nixbld group and use official installer
+        echo "Using official Nix installer for ARM64..." && \
+        groupadd -g 30000 nixbld && \
+        for i in $(seq 1 10); do useradd -c "Nix build user $i" -d /var/empty -g nixbld -G nixbld -M -N -r -s "$(which nologin)" nixbld$i; done && \
+        curl -L https://nixos.org/nix/install | NIX_INSTALLER_NO_MODIFY_PROFILE=1 sh -s -- \
+            --no-daemon && \
+        # Source Nix profile
+        . /root/.nix-profile/etc/profile.d/nix.sh; \
+    else \
+        # For AMD64, use Determinate Systems installer
+        echo "Using Determinate Systems installer for AMD64..." && \
+        curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix -o /tmp/install-nix.sh && \
+        chmod +x /tmp/install-nix.sh && \
+        /tmp/install-nix.sh install linux \
+            --extra-conf "sandbox = false" \
+            --init none \
+            --no-confirm && \
+        rm -f /tmp/install-nix.sh; \
+    fi
 
-# Set up PATH to include Nix
-ENV PATH="${PATH}:/nix/var/nix/profiles/default/bin"
+# Set up PATH to include Nix (handles both AMD64 and ARM64 paths)
+ENV PATH="${PATH}:/nix/var/nix/profiles/default/bin:/root/.nix-profile/bin"
 
 # Copy flake files for caching
 COPY flake.nix flake.lock /@bfmono/
 WORKDIR /@bfmono
 
 # Install development tools from flake (includes gh, deno, sapling, etc.)
-RUN nix profile install .#codebot-env --accept-flake-config
+RUN nix profile install .#codebot-env --accept-flake-config --print-build-logs
 
 # Install Claude CLI globally
 RUN npm install -g @anthropic-ai/claude-code
