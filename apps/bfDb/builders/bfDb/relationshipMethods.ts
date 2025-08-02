@@ -176,8 +176,12 @@ export type {
 };
 
 // Runtime method generation
-import type { BfNode } from "@bfmono/apps/bfDb/classes/BfNode.ts";
+import type {
+  BfEdgeMetadata,
+  BfNode,
+} from "@bfmono/apps/bfDb/classes/BfNode.ts";
 import { BfErrorNotFound } from "@bfmono/lib/BfError.ts";
+import type { BfGid } from "@bfmono/lib/types.ts";
 
 /**
  * Generates relationship methods on a BfNode instance based on its spec
@@ -220,23 +224,22 @@ function generateOneRelationshipMethods(
 
   // find{RelationName}() - Find the related node (returns null if not found)
   Object.defineProperty(node, `find${capitalizedName}`, {
-    value: function () {
-      // TODO: Implement findEdges method on BfNode
-      // const cv = (node as any).currentViewer;
-      // const edges = await node.findEdges(cv, {
-      //   direction: "out",
-      //   label: relationName,
-      // });
-      //
-      // if (edges.length === 0) {
-      //   return null;
-      // }
-      //
-      // const targetId = edges[0].targetId;
-      // return await targetClass.find(cv, targetId);
+    value: async function () {
+      const edges = await node.findEdges({
+        direction: "out",
+        label: relationName,
+      });
 
-      // Temporary stub implementation
-      return null;
+      if (edges.length === 0) {
+        return null;
+      }
+
+      const targetClass = await getTargetClass();
+      const targetId = (edges[0].metadata as BfEdgeMetadata).bfTid;
+      return await (targetClass as typeof BfNode).find(
+        (node as BfNode).currentViewer,
+        targetId,
+      );
     },
     writable: false,
     enumerable: false,
@@ -276,12 +279,11 @@ function generateOneRelationshipMethods(
         props,
       );
 
-      // TODO: Implement createEdge method on BfNode
-      // await node.createEdge(cv, {
-      //   targetId: newNode.id,
-      //   label: relationName,
-      //   props: {},
-      // });
+      await node.createEdge({
+        targetId: (newNode as BfNode).id as BfGid,
+        label: relationName,
+        props: {},
+      });
 
       return newNode;
     },
@@ -293,19 +295,15 @@ function generateOneRelationshipMethods(
   // unlink{RelationName}() - Remove the relationship (edge only)
   Object.defineProperty(node, `unlink${capitalizedName}`, {
     value: async function () {
-      // TODO: Implement findEdges method on BfNode
-      // const cv = (node as any).currentViewer;
-      // const edges = await node.findEdges(cv, {
-      //   direction: "out",
-      //   label: relationName,
-      // });
-      //
-      // for (const edge of edges) {
-      //   // BfEdge extends BfNode, so we can use the delete method
-      //   await (edge as BfNode).delete();
-      // }
+      const edges = await node.findEdges({
+        direction: "out",
+        label: relationName,
+      });
 
-      // Temporary stub implementation
+      for (const edge of edges) {
+        // BfEdge extends BfNode, so we can use the delete method
+        await edge.delete();
+      }
     },
     writable: false,
     enumerable: false,
@@ -352,13 +350,17 @@ function generateManyRelationshipMethods(
 
   // findAll{RelationName}() - Find all related nodes
   Object.defineProperty(node, `findAll${capitalizedName}`, {
-    value: function () {
-      // TODO: Implement using node.queryTargetInstances when available
-      // const cv = (node as any).currentViewer;
-      // return await node.queryTargetInstances(targetClass, {}, { role: relationName });
-
-      // Temporary stub implementation
-      return [];
+    value: async function () {
+      const targetClass = await getTargetClass();
+      return await node.queryTargetInstances(
+        targetClass as typeof BfNode,
+        {},
+        {},
+        undefined,
+        {
+          role: relationName,
+        },
+      );
     },
     writable: false,
     enumerable: false,
@@ -367,37 +369,46 @@ function generateManyRelationshipMethods(
 
   // query{RelationName}(args) - Query related nodes with filtering
   Object.defineProperty(node, `query${capitalizedName}`, {
-    value: function (_args: {
+    value: async function (args: {
       where?: Record<string, unknown>;
       orderBy?: Record<string, "asc" | "desc">;
       limit?: number;
       offset?: number;
     }) {
-      // TODO: Implement query logic
-      // const cv = (node as any).currentViewer;
-      // const results = await node.queryTargetInstances(
-      //   targetClass,
-      //   args.where || {},
-      //   { role: relationName }
-      // );
-      //
-      // // Apply ordering
-      // if (args.orderBy) {
-      //   // Sort logic
-      // }
-      //
-      // // Apply pagination
-      // if (args.offset) {
-      //   results = results.slice(args.offset);
-      // }
-      // if (args.limit) {
-      //   results = results.slice(0, args.limit);
-      // }
-      //
-      // return results;
+      const targetClass = await getTargetClass();
+      let results = await node.queryTargetInstances(
+        targetClass as typeof BfNode,
+        args.where || {},
+        {},
+        undefined,
+        { role: relationName },
+      );
 
-      // Temporary stub implementation
-      return [];
+      // Apply ordering
+      if (args.orderBy) {
+        const orderByEntries = Object.entries(args.orderBy);
+        results.sort((a, b) => {
+          for (const [field, direction] of orderByEntries) {
+            const aVal = (a as any).props[field];
+            const bVal = (b as any).props[field];
+            if (aVal !== bVal) {
+              const cmp = aVal < bVal ? -1 : 1;
+              return direction === "asc" ? cmp : -cmp;
+            }
+          }
+          return 0;
+        });
+      }
+
+      // Apply pagination
+      if (args.offset) {
+        results = results.slice(args.offset);
+      }
+      if (args.limit) {
+        results = results.slice(0, args.limit);
+      }
+
+      return results;
     },
     writable: false,
     enumerable: false,
@@ -406,32 +417,31 @@ function generateManyRelationshipMethods(
 
   // connectionFor{RelationName}(args) - GraphQL connection
   Object.defineProperty(node, `connectionFor${capitalizedName}`, {
-    value: function (_args: {
+    value: async function (args: {
       first?: number;
       after?: string;
       last?: number;
       before?: string;
       where?: Record<string, unknown>;
     }) {
-      // TODO: Implement connection logic using BfNode.connection
-      // const cv = (node as any).currentViewer;
-      // const allNodes = await node.queryTargetInstances(
-      //   targetClass,
-      //   args.where || {},
-      //   { role: relationName }
-      // );
-      //
-      // return targetClass.connection(allNodes, args);
+      const targetClass = await getTargetClass();
+      const allNodes = await node.queryTargetInstances(
+        targetClass as typeof BfNode,
+        args.where || {},
+        {},
+        undefined,
+        { role: relationName },
+      );
 
-      // Temporary stub implementation matching Connection type
+      const connection = (targetClass as typeof BfNode).connection(
+        allNodes,
+        args,
+      );
+
+      // Add totalCount to the connection
       return {
-        edges: [],
-        pageInfo: {
-          hasNextPage: false,
-          hasPreviousPage: false,
-          startCursor: null,
-          endCursor: null,
-        },
+        ...(connection as any),
+        totalCount: allNodes.length,
       };
     },
     writable: false,
@@ -454,12 +464,11 @@ function generateManyRelationshipMethods(
         props,
       );
 
-      // TODO: Create edge with role
-      // await node.createEdge(cv, {
-      //   targetId: newNode.id,
-      //   label: relationName,
-      //   props: {},
-      // });
+      await node.createEdge({
+        targetId: (newNode as BfNode).id as BfGid,
+        label: relationName,
+        props: {},
+      });
 
       return newNode;
     },
@@ -470,24 +479,20 @@ function generateManyRelationshipMethods(
 
   // add{RelationName}(node) - Link an existing node
   Object.defineProperty(node, `add${capitalizedName}`, {
-    value: async function (_targetNode: BfNode) {
-      // TODO: Check if edge already exists to prevent duplicates
-      // const cv = (node as any).currentViewer;
-      // const existingEdges = await node.findEdges(cv, {
-      //   direction: "out",
-      //   label: relationName,
-      //   targetId: targetNode.id,
-      // });
-      //
-      // if (existingEdges.length === 0) {
-      //   await node.createEdge(cv, {
-      //     targetId: targetNode.id,
-      //     label: relationName,
-      //     props: {},
-      //   });
-      // }
+    value: async function (targetNode: BfNode) {
+      const existingEdges = await node.findEdges({
+        direction: "out",
+        label: relationName,
+        targetId: targetNode.id as BfGid,
+      });
 
-      // Temporary stub implementation
+      if (existingEdges.length === 0) {
+        await node.createEdge({
+          targetId: targetNode.id as BfGid,
+          label: relationName,
+          props: {},
+        });
+      }
     },
     writable: false,
     enumerable: false,
@@ -496,20 +501,16 @@ function generateManyRelationshipMethods(
 
   // remove{RelationName}(node) - Remove from collection (edge only)
   Object.defineProperty(node, `remove${capitalizedName}`, {
-    value: async function (_targetNode: BfNode) {
-      // TODO: Find and delete edge
-      // const cv = (node as any).currentViewer;
-      // const edges = await node.findEdges(cv, {
-      //   direction: "out",
-      //   label: relationName,
-      //   targetId: targetNode.id,
-      // });
-      //
-      // for (const edge of edges) {
-      //   await edge.delete();
-      // }
+    value: async function (targetNode: BfNode) {
+      const edges = await node.findEdges({
+        direction: "out",
+        label: relationName,
+        targetId: targetNode.id as BfGid,
+      });
 
-      // Temporary stub implementation
+      for (const edge of edges) {
+        await edge.delete();
+      }
     },
     writable: false,
     enumerable: false,
@@ -536,19 +537,11 @@ function generateManyRelationshipMethods(
   // addMany{RelationName}(nodes) - Link multiple existing nodes
   Object.defineProperty(node, `addMany${capitalizedName}`, {
     value: async function (nodes: Array<BfNode>) {
-      // TODO: Implement batch edge creation for atomicity
-      // const cv = (node as any).currentViewer;
-      // await node.createEdges(cv, nodes.map(n => ({
-      //   targetId: n.id,
-      //   label: relationName,
-      //   props: {},
-      // })));
-
-      // Temporary implementation: call add for each node
-      for (const targetNode of nodes) {
-        await (node as BfNode & Record<string, (n: BfNode) => Promise<void>>)
-          [`add${capitalizedName}`](targetNode);
-      }
+      await node.createEdges(nodes.map((n) => ({
+        targetId: n.id as BfGid,
+        label: relationName,
+        props: {},
+      })));
     },
     writable: false,
     enumerable: false,
@@ -558,24 +551,16 @@ function generateManyRelationshipMethods(
   // removeMany{RelationName}(nodes) - Remove multiple nodes from collection
   Object.defineProperty(node, `removeMany${capitalizedName}`, {
     value: async function (nodes: Array<BfNode>) {
-      // TODO: Implement batch edge deletion for atomicity
-      // const cv = (node as any).currentViewer;
-      // const edgeIds = [];
-      // for (const targetNode of nodes) {
-      //   const edges = await node.findEdges(cv, {
-      //     direction: "out",
-      //     label: relationName,
-      //     targetId: targetNode.id,
-      //   });
-      //   edgeIds.push(...edges.map(e => e.id));
-      // }
-      // await node.deleteEdges(cv, edgeIds);
-
-      // Temporary implementation: call remove for each node
+      const edgeIds = [];
       for (const targetNode of nodes) {
-        await (node as BfNode & Record<string, (n: BfNode) => Promise<void>>)
-          [`remove${capitalizedName}`](targetNode);
+        const edges = await node.findEdges({
+          direction: "out",
+          label: relationName,
+          targetId: targetNode.id as BfGid,
+        });
+        edgeIds.push(...edges.map((e) => e.id as BfGid));
       }
+      await node.deleteEdges(edgeIds as BfGid[]);
     },
     writable: false,
     enumerable: false,
