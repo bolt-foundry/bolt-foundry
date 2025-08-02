@@ -12,12 +12,12 @@ on:
     inputs:
       debug_enabled:
         type: boolean
-        description: 'Enable debug mode with tmate session'
+        description: "Enable debug mode with tmate session"
         required: false
         default: false
       build_only:
         type: boolean
-        description: 'Build only, do not push to registry'
+        description: "Build only, do not push to registry"
         required: false
         default: false
 
