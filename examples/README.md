@@ -40,7 +40,7 @@ Each example demonstrates:
 ## Basic pattern
 
 ```typescript
-import { createDeck } from "@bolt-foundry/bolt-foundry";
+import { createDeck } from "@bolt-foundry/bfmono";
 
 const assistantDeck = createDeck("assistant", (b) =>
   b

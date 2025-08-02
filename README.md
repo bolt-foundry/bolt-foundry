@@ -96,7 +96,7 @@ See how our platform works with real customer success metrics:
 
 ```bash
 # Install our platform
-npm install @bolt-foundry/bolt-foundry
+npm install @bolt-foundry/bfmono
 
 # Run customer success calibration
 aibff calibrate your-customer-feedback-grader.deck.md

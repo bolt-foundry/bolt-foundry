@@ -111,8 +111,8 @@ async function handleWorkflowRun(
 ): Promise<Response> {
   const { workflow_run, repository } = payload;
 
-  // Only process events from bolt-foundry/bolt-foundry repository
-  if (repository.full_name !== "bolt-foundry/bolt-foundry") {
+  // Only process events from bolt-foundry/bfmono repository
+  if (repository.full_name !== "bolt-foundry/bfmono") {
     return new Response("Repository not monitored", { status: 200 });
   }
 
@@ -142,8 +142,8 @@ async function handlePullRequest(
 ): Promise<Response> {
   const { action, pull_request, repository } = payload;
 
-  // Only process events from bolt-foundry/bolt-foundry repository
-  if (repository.full_name !== "bolt-foundry/bolt-foundry") {
+  // Only process events from bolt-foundry/bfmono repository
+  if (repository.full_name !== "bolt-foundry/bfmono") {
     return new Response("Repository not monitored", { status: 200 });
   }
 
@@ -169,8 +169,8 @@ async function handlePullRequestReview(
 ): Promise<Response> {
   const { action, pull_request, requested_reviewer, repository } = payload;
 
-  // Only process events from bolt-foundry/bolt-foundry repository
-  if (repository.full_name !== "bolt-foundry/bolt-foundry") {
+  // Only process events from bolt-foundry/bfmono repository
+  if (repository.full_name !== "bolt-foundry/bfmono") {
     return new Response("Repository not monitored", { status: 200 });
   }
 
