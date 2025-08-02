@@ -260,7 +260,7 @@ Deno.test("Organization auto-creates demo RLHF content", async () => {
     await org.save();
 
     // Check if a deck was automatically created
-    const decks = await org.queryTargetInstances(BfDeck);
+    const decks = await (org as any).findAllDecks();
     assertEquals(decks.length, 1);
     assertEquals(decks[0].props.name, "Customer Support Response Evaluator");
   });

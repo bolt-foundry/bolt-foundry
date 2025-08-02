@@ -42,7 +42,7 @@ export class BfDeck extends BfNode<InferProps<typeof BfDeck>> {
             });
             await org.save();
           }
-          const deck = await org.createTargetNode(BfDeck, {
+          const deck = await (org as any).createDecks({
             name: args.name,
             content: args.content,
             description: args.description || "",
@@ -65,6 +65,8 @@ export class BfDeck extends BfNode<InferProps<typeof BfDeck>> {
       .string("content")
       .string("description")
       .string("slug")
+      .many("samples", () => import("./BfSample.ts").then((m) => m.BfSample))
+      .many("graders", () => import("./BfGrader.ts").then((m) => m.BfGrader))
   );
 
   /**
