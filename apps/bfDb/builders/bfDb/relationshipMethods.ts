@@ -4,8 +4,10 @@
 import type {
   AnyBfNodeCtor,
   InferProps,
+  PropsBase,
 } from "@bfmono/apps/bfDb/classes/BfNode.ts";
 import type { RelationSpec } from "@bfmono/apps/bfDb/builders/bfDb/types.ts";
+import type { BfGid } from "@bfmono/lib/types.ts";
 
 // Reuse UnionToIntersection from std library
 type UnionToIntersection<T> =
@@ -73,7 +75,7 @@ type ConnectionArgs = {
   after?: string;
   last?: number;
   before?: string;
-  where?: Record<string, unknown>; // Same as QueryArgs where clause
+  where?: Partial<PropsBase>; // Same as QueryArgs where clause
 };
 
 // Connection type for GraphQL-style pagination
@@ -377,7 +379,7 @@ function generateManyRelationshipMethods(
       const targetClass = await getTargetClass();
       let results = await node.queryTargetInstances(
         targetClass as typeof BfNode,
-        args.where || {},
+        args.where as Partial<PropsBase> || {},
         {},
         undefined,
         { role: relationName },
@@ -391,7 +393,7 @@ function generateManyRelationshipMethods(
             const aVal = (a as any).props[field];
             const bVal = (b as any).props[field];
             if (aVal !== bVal) {
-              const cmp = aVal < bVal ? -1 : 1;
+              const cmp = String(aVal).localeCompare(String(bVal));
               return direction === "asc" ? cmp : -cmp;
             }
           }
@@ -426,7 +428,7 @@ function generateManyRelationshipMethods(
       const targetClass = await getTargetClass();
       const allNodes = await node.queryTargetInstances(
         targetClass as typeof BfNode,
-        args.where || {},
+        args.where as Partial<PropsBase> || {},
         {},
         undefined,
         { role: relationName },
@@ -439,7 +441,7 @@ function generateManyRelationshipMethods(
 
       // Add totalCount to the connection
       return {
-        ...(connection as any),
+        ...connection,
         totalCount: allNodes.length,
       };
     },
@@ -559,7 +561,7 @@ function generateManyRelationshipMethods(
         });
         edgeIds.push(...edges.map((e) => e.id as BfGid));
       }
-      await node.deleteEdges(edgeIds as BfGid[]);
+      await node.deleteEdges(edgeIds as Array<BfGid>);
     },
     writable: false,
     enumerable: false,

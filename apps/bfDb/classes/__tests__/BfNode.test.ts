@@ -1,4 +1,5 @@
 #! /usr/bin/env -S bff test
+// deno-lint-ignore-file bolt-foundry/no-direct-create-target-node
 /**
  * BfNode – builder & InferProps smoke-tests
  *

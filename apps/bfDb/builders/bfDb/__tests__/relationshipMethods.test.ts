@@ -64,9 +64,9 @@ class BfPost extends BfNode<{ title: string; content: string }> {
 
 // Type aliases for cleaner test code
 type BfBookWithMethods = BfBook & {
-  findAuthor: () => Promise<unknown>;
-  findXAuthor: () => Promise<unknown>;
-  createAuthor: (props: { name: string; bio: string }) => Promise<unknown>;
+  findAuthor: () => Promise<BfAuthor | null>;
+  findXAuthor: () => Promise<BfAuthor>;
+  createAuthor: (props: { name: string; bio: string }) => Promise<BfAuthor>;
   unlinkAuthor: () => Promise<void>;
   deleteAuthor: () => Promise<void>;
 };
@@ -74,13 +74,13 @@ type BfBookWithMethods = BfBook & {
 // Type aliases for many relationships
 type BfPostWithMethods = BfPost & {
   // Many relationship methods for comments
-  findAllComment: () => Promise<BfComment[]>;
+  findAllComment: () => Promise<Array<BfComment>>;
   queryComment: (args: {
     where?: Partial<{ text: string; authorId: string }>;
     orderBy?: { text?: "asc" | "desc"; authorId?: "asc" | "desc" };
     limit?: number;
     offset?: number;
-  }) => Promise<BfComment[]>;
+  }) => Promise<Array<BfComment>>;
   connectionForComment: (args: {
     first?: number;
     after?: string;
@@ -104,24 +104,24 @@ type BfPostWithMethods = BfPost & {
   removeComment: (node: BfComment) => Promise<void>;
   deleteComment: (node: BfComment) => Promise<void>;
   // Phase 7 batch operations
-  addManyComment: (nodes: BfComment[]) => Promise<void>;
-  removeManyComment: (nodes: BfComment[]) => Promise<void>;
+  addManyComment: (nodes: Array<BfComment>) => Promise<void>;
+  removeManyComment: (nodes: Array<BfComment>) => Promise<void>;
   createManyComment: (
     propsArray: Array<{
       text: string;
       authorId: string;
     }>,
-  ) => Promise<BfComment[]>;
+  ) => Promise<Array<BfComment>>;
   iterateComment: () => AsyncIterableIterator<BfComment>;
 
   // Many relationship methods for tags
-  findAllTag: () => Promise<BfTag[]>;
+  findAllTag: () => Promise<Array<BfTag>>;
   queryTag: (args: {
     where?: Partial<{ name: string }>;
     orderBy?: { name?: "asc" | "desc" };
     limit?: number;
     offset?: number;
-  }) => Promise<BfTag[]>;
+  }) => Promise<Array<BfTag>>;
   connectionForTag: (args: {
     first?: number;
     after?: string;
@@ -142,9 +142,9 @@ type BfPostWithMethods = BfPost & {
   removeTag: (node: BfTag) => Promise<void>;
   deleteTag: (node: BfTag) => Promise<void>;
   // Phase 7 batch operations
-  addManyTag: (nodes: BfTag[]) => Promise<void>;
-  removeManyTag: (nodes: BfTag[]) => Promise<void>;
-  createManyTag: (propsArray: Array<{ name: string }>) => Promise<BfTag[]>;
+  addManyTag: (nodes: Array<BfTag>) => Promise<void>;
+  removeManyTag: (nodes: Array<BfTag>) => Promise<void>;
+  createManyTag: (propsArray: Array<{ name: string }>) => Promise<Array<BfTag>>;
   iterateTag: () => AsyncIterableIterator<BfTag>;
 };
 
@@ -235,10 +235,10 @@ describe("relationshipMethods", () => {
       assertEquals(newAuthor.props.name, "John Smith");
       assertEquals(newAuthor.props.bio, "Another author");
 
-      // Note: Due to stub implementation, edge creation is not implemented yet
-      // so the created author won't be findable through findAuthor until edges are implemented
+      // Verify the relationship was created
       const foundAuthor = await (book as BfBookWithMethods).findAuthor();
-      assertEquals(foundAuthor, null); // Currently returns null due to stub implementation
+      assertEquals(foundAuthor?.props.name, "John Smith");
+      assertEquals(foundAuthor?.props.bio, "Another author");
     });
 
     it("should generate unlinkAuthor method", async () => {
@@ -318,15 +318,14 @@ describe("relationshipMethods", () => {
       assertEquals(author.props.name, "Author Name");
       assertEquals(illustrator.props.name, "Illustrator Name");
 
-      // Note: Due to stub implementation, relationships are not persisted
-      // so the created persons won't be findable through find methods
+      // Verify the relationships were created correctly
       const foundAuthor = await (bookMulti as BfBookWithMultipleMethods)
         .findAuthor();
       const foundIllustrator = await (bookMulti as BfBookWithMultipleMethods)
         .findIllustrator();
 
-      assertEquals(foundAuthor, null); // Stub implementation returns null
-      assertEquals(foundIllustrator, null); // Stub implementation returns null
+      assertEquals(foundAuthor?.props.name, "Author Name");
+      assertEquals(foundIllustrator?.props.name, "Illustrator Name");
     });
   });
 
@@ -450,10 +449,11 @@ describe("relationshipMethods", () => {
         assertEquals(newComment.props.text, "New comment");
         assertEquals(newComment.props.authorId, "author3");
 
-        // Note: Due to stub implementation, edge creation is not implemented yet
-        // so the created comment won't be findable through findAllComment
+        // Verify the comment was created and linked
         const allComments = await (post as BfPostWithMethods).findAllComment();
-        assertEquals(allComments.length, 0); // Currently returns empty due to stub
+        assertEquals(allComments.length, 1);
+        assertEquals(allComments[0].props.text, "New comment");
+        assertEquals(allComments[0].props.authorId, "author3");
       });
 
       it("should handle empty results gracefully", async () => {
@@ -476,9 +476,10 @@ describe("relationshipMethods", () => {
         // Should add existing comment without creating new node
         await (post as BfPostWithMethods).addComment(comment1);
 
-        // Note: Due to stub implementation, edge creation is not implemented yet
+        // Verify the comment was linked
         const allComments = await (post as BfPostWithMethods).findAllComment();
-        assertEquals(allComments.length, 0); // Currently returns empty due to stub
+        assertEquals(allComments.length, 1);
+        assertEquals(allComments[0].id, comment1.id);
       });
 
       it("should not duplicate if already linked", async () => {
@@ -486,9 +487,10 @@ describe("relationshipMethods", () => {
         await (post as BfPostWithMethods).addComment(comment1);
         await (post as BfPostWithMethods).addComment(comment1);
 
-        // Note: Due to stub implementation, duplicate prevention is not implemented yet
+        // Verify duplicate prevention - should still only have one comment
         const allComments = await (post as BfPostWithMethods).findAllComment();
-        assertEquals(allComments.length, 0); // Currently returns empty due to stub
+        assertEquals(allComments.length, 1); // Should not duplicate
+        assertEquals(allComments[0].id, comment1.id);
       });
 
       it("should verify edge creation without node creation", async () => {
@@ -507,7 +509,7 @@ describe("relationshipMethods", () => {
     });
 
     describe("Remove from many relationship", () => {
-      it("should generate removeComment and deleteComment methods", async () => {
+      it("should generate removeComment and deleteComment methods", () => {
         // The methods should exist
         assertEquals(
           typeof (post as BfPostWithMethods).removeComment,
@@ -688,10 +690,13 @@ describe("relationshipMethods", () => {
             comment2,
           ]);
 
-          // Note: Due to stub implementation, edges are not created
+          // Verify the comments were linked in batch
           const allComments = await (post as BfPostWithMethods)
             .findAllComment();
-          assertEquals(allComments.length, 0); // Currently returns empty due to stub
+          assertEquals(allComments.length, 2); // Both comments should be linked
+          const commentIds = allComments.map((c) => c.id).sort();
+          const expectedIds = [comment1.id, comment2.id].sort();
+          assertEquals(commentIds, expectedIds);
         });
 
         it("should handle empty arrays in addMany", async () => {
@@ -812,7 +817,7 @@ describe("relationshipMethods", () => {
       });
 
       describe("Async iteration", () => {
-        it("should generate iterateComment method", async () => {
+        it("should generate iterateComment method", () => {
           // The method should exist
           assertEquals(
             typeof (post as BfPostWithMethods).iterateComment,

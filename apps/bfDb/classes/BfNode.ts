@@ -5,7 +5,7 @@ import { GraphQLInterface } from "@bfmono/apps/bfDb/graphql/decorators.ts";
 import type { BfGid } from "@bfmono/lib/types.ts";
 import type { GraphqlNode } from "@bfmono/apps/bfDb/graphql/helpers.ts";
 import type { CurrentViewer } from "@bfmono/apps/bfDb/classes/CurrentViewer.ts";
-import type { BfErrorNotImplemented } from "@bfmono/lib/BfError.ts";
+import type { BfErrorNotImplemented as _BfErrorNotImplemented } from "@bfmono/lib/BfError.ts";
 import { storage } from "@bfmono/apps/bfDb/storage/storage.ts";
 import type { DbItem } from "@bfmono/apps/bfDb/bfDb.ts";
 import type { JSONValue } from "@bfmono/apps/bfDb/bfDb.ts";
@@ -464,19 +464,20 @@ export abstract class BfNode<TProps extends PropsBase = {}>
     return this;
   }
 
-  protected async createTargetNode<TProps extends PropsBase>(
-    TargetNodeClass: typeof BfNode<TProps>,
-    props: TProps,
+  async createTargetNode<TTargetProps extends PropsBase>(
+    TargetNodeClass: typeof BfNode<TTargetProps>,
+    props: TTargetProps,
     options?: {
       role?: string;
       metadata?: Partial<BfMetadata>;
     },
   ): Promise<InstanceType<typeof TargetNodeClass>> {
-    const targetNode = await TargetNodeClass.__DANGEROUS__createUnattached(
-      this.cv,
-      props,
-      options?.metadata,
-    );
+    const targetNode = await (TargetNodeClass as any)
+      .__DANGEROUS__createUnattached(
+        this.cv,
+        props,
+        options?.metadata,
+      );
 
     await targetNode.save();
 
@@ -681,9 +682,10 @@ export abstract class BfNode<TProps extends PropsBase = {}>
       label?: string; // Filter by edge label (relationship name)
       targetId?: BfGid; // Filter by specific target node
     } = { direction: "out" },
-  ): Promise<Array<any>> {
+  ): Promise<Array<import("@bfmono/apps/bfDb/nodeTypes/BfEdge.ts").BfEdge>> {
     const { BfEdge } = await import("@bfmono/apps/bfDb/nodeTypes/BfEdge.ts");
-    const edges: Array<any> = [];
+    const edges: Array<import("@bfmono/apps/bfDb/nodeTypes/BfEdge.ts").BfEdge> =
+      [];
 
     // Query outgoing edges
     if (options.direction === "out" || options.direction === "both") {
@@ -741,7 +743,7 @@ export abstract class BfNode<TProps extends PropsBase = {}>
       label: string; // Relationship name
       props?: Record<string, JSONValue>;
     },
-  ): Promise<any> {
+  ): Promise<import("@bfmono/apps/bfDb/nodeTypes/BfEdge.ts").BfEdge> {
     const { BfEdge } = await import("@bfmono/apps/bfDb/nodeTypes/BfEdge.ts");
 
     // Find the target node to ensure it exists
@@ -773,10 +775,11 @@ export abstract class BfNode<TProps extends PropsBase = {}>
       label: string;
       props?: Record<string, JSONValue>;
     }>,
-  ): Promise<Array<any>> {
+  ): Promise<Array<import("@bfmono/apps/bfDb/nodeTypes/BfEdge.ts").BfEdge>> {
     // For now, implement as a loop, but this could be optimized
     // to use batch operations in the storage layer
-    const edges: Array<any> = [];
+    const edges: Array<import("@bfmono/apps/bfDb/nodeTypes/BfEdge.ts").BfEdge> =
+      [];
 
     for (const edgeProps of edgePropsArray) {
       const edge = await this.createEdge(edgeProps);
