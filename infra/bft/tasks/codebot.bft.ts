@@ -1065,13 +1065,26 @@ FIRST TIME SETUP:
       ui.output(`\n📁 Workspace: ${workspaceId}`);
       ui.output(`📍 Location: ${workspacePath}`);
 
-      const cleanup = await promptSelect(
-        "\nWhat would you like to do with this workspace?",
-        [
-          "🗂️  Keep workspace for later use",
-          "🧹 Delete workspace permanently",
-        ],
-      );
+      let cleanup: string | null = null;
+      try {
+        cleanup = await promptSelect(
+          "\nWhat would you like to do with this workspace?",
+          [
+            "🗂️  Keep workspace for later use",
+            "🧹 Delete workspace permanently",
+          ],
+        );
+      } catch (error) {
+        // Handle WouldBlock error or other terminal issues
+        if (error instanceof Error && error.message.includes("WouldBlock")) {
+          ui.output(
+            `\n⚠️  Interactive prompt unavailable. Keeping workspace by default.`,
+          );
+          cleanup = "🗂️  Keep workspace for later use";
+        } else {
+          throw error; // Re-throw if it's not the expected error
+        }
+      }
 
       if (cleanup === "🧹 Delete workspace permanently") {
         ui.output(`🧹 Cleaning up workspace: ${workspaceId}`);
@@ -1215,13 +1228,26 @@ FIRST TIME SETUP:
     ui.output(`\n📁 Workspace: ${workspaceId}`);
     ui.output(`📍 Location: ${workspacePath}`);
 
-    const cleanup = await promptSelect(
-      "\nWhat would you like to do with this workspace?",
-      [
-        "🗂️  Keep workspace for later use",
-        "🧹 Delete workspace permanently",
-      ],
-    );
+    let cleanup: string | null = null;
+    try {
+      cleanup = await promptSelect(
+        "\nWhat would you like to do with this workspace?",
+        [
+          "🗂️  Keep workspace for later use",
+          "🧹 Delete workspace permanently",
+        ],
+      );
+    } catch (error) {
+      // Handle WouldBlock error or other terminal issues
+      if (error instanceof Error && error.message.includes("WouldBlock")) {
+        ui.output(
+          `\n⚠️  Interactive prompt unavailable. Keeping workspace by default.`,
+        );
+        cleanup = "🗂️  Keep workspace for later use";
+      } else {
+        throw error; // Re-throw if it's not the expected error
+      }
+    }
 
     if (cleanup === "🧹 Delete workspace permanently") {
       ui.output(`🧹 Cleaning up workspace: ${workspaceId}`);
