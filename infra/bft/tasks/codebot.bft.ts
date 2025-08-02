@@ -510,20 +510,31 @@ FIRST TIME SETUP:
     );
   }
 
-  // Get GitHub token from host
+  // Get GitHub token - first try codebot-specific token, then fall back to gh CLI
   let githubToken = "";
-  try {
-    const ghTokenCmd = new Deno.Command("gh", {
-      args: ["auth", "token"],
-      stdout: "piped",
-      stderr: "null",
-    });
-    const ghTokenResult = await ghTokenCmd.output();
-    if (ghTokenResult.success) {
-      githubToken = new TextDecoder().decode(ghTokenResult.stdout).trim();
+
+  // First, check for codebot-specific GitHub token
+  const codebotToken = getConfigurationVariable("BF_CODEBOT_GITHUB_TOKEN");
+  if (codebotToken) {
+    githubToken = codebotToken;
+    ui.output("✅ Using codebot-specific GitHub token");
+  } else {
+    // Fall back to gh CLI token
+    try {
+      const ghTokenCmd = new Deno.Command("gh", {
+        args: ["auth", "token"],
+        stdout: "piped",
+        stderr: "null",
+      });
+      const ghTokenResult = await ghTokenCmd.output();
+      if (ghTokenResult.success) {
+        githubToken = new TextDecoder().decode(ghTokenResult.stdout).trim();
+        ui.output("✅ Using GitHub token from gh CLI");
+      }
+    } catch {
+      // gh command not available or failed, continue without token
+      ui.output("⚠️ No GitHub token found - some features may be limited");
     }
-  } catch {
-    // gh command not available or failed, continue without token
   }
 
   // Handle workspace selection
