@@ -37,3 +37,6 @@ generated-icon.png
 
 # BFT container workspaces
 tmp/codebot-workspaces/
+
+# Codebot metadata
+.codebot-metadata/
