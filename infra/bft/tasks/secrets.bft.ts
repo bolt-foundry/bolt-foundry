@@ -2,7 +2,7 @@
 
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 import type { TaskDefinition } from "../bft.ts";
-import { ui } from "@bfmono/packages/cli-ui/cli-ui.ts";
+import { ui } from "@bfmono/packages/tui/tui.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { formatEnvFile, parseEnvFile } from "@bfmono/packages/env/utils.ts";
 

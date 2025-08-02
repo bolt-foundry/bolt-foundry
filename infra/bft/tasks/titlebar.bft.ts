@@ -12,7 +12,7 @@ import {
   supportsTitlebar,
   ui,
   updateTitlebar,
-} from "@bfmono/packages/cli-ui/cli-ui.ts";
+} from "@bfmono/packages/tui/tui.ts";
 
 async function titlebar(args: Array<string>): Promise<number> {
   const flags = parseArgs(args, {
