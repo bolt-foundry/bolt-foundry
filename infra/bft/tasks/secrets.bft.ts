@@ -32,6 +32,12 @@ async function secretsTask(args: Array<string>): Promise<number> {
     ui.info(
       "  generate-types       - Generate TypeScript definitions from example files",
     );
+    ui.info(
+      "  set <key> <value>    - Set a secret in 1Password vault",
+    );
+    ui.info(
+      "  get <key>            - Get a secret from 1Password vault",
+    );
     return 1;
   }
 
@@ -45,6 +51,10 @@ async function secretsTask(args: Array<string>): Promise<number> {
       return await listAvailableSecrets();
     case "generate-types":
       return await generateTypes();
+    case "set":
+      return await setSecret(commandArgs);
+    case "get":
+      return await getSecret(commandArgs);
     default:
       ui.error(`Unknown command: ${subcommand}`);
       return 1;
@@ -405,6 +415,156 @@ async function generateTypes(): Promise<number> {
   } catch (error) {
     ui.warn(
       `⚠️  Failed to generate TypeScript definitions: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+    );
+    return 1;
+  }
+}
+
+async function setSecret(args: Array<string>): Promise<number> {
+  if (args.length < 2) {
+    ui.error("Usage: bft secrets set <key> <value>");
+    return 1;
+  }
+
+  const [key, value] = args;
+
+  // Get vault ID
+  let vaultId = getConfigurationVariable("BF_VAULT_ID");
+  if (!vaultId) {
+    const selectedVault = await selectVault();
+    if (!selectedVault) {
+      ui.error("No vault selected. Set BF_VAULT_ID or select interactively.");
+      return 1;
+    }
+    vaultId = selectedVault;
+  }
+
+  try {
+    // Check if item exists
+    const checkCmd = new Deno.Command("op", {
+      args: ["item", "get", key, "--vault", vaultId],
+      stdout: "piped",
+      stderr: "piped",
+    });
+
+    const checkResult = await checkCmd.output();
+
+    if (checkResult.code === 0) {
+      // Item exists, update it
+      const editCmd = new Deno.Command("op", {
+        args: ["item", "edit", key, `value=${value}`, "--vault", vaultId],
+        stdout: "piped",
+        stderr: "piped",
+      });
+
+      const editResult = await editCmd.output();
+
+      if (editResult.code === 0) {
+        ui.info(`✅ Updated secret ${key} in vault ${vaultId}`);
+        return 0;
+      } else {
+        const error = new TextDecoder().decode(editResult.stderr);
+        ui.error(`Failed to update secret: ${error}`);
+        return 1;
+      }
+    } else {
+      // Item doesn't exist, create it
+      const createCmd = new Deno.Command("op", {
+        args: [
+          "item",
+          "create",
+          "--category",
+          "Password",
+          "--title",
+          key,
+          `value=${value}`,
+          "--vault",
+          vaultId,
+        ],
+        stdout: "piped",
+        stderr: "piped",
+      });
+
+      const createResult = await createCmd.output();
+
+      if (createResult.code === 0) {
+        ui.info(`✅ Created secret ${key} in vault ${vaultId}`);
+
+        // Add to .env.server.example if it's a new key
+        const examplePath = ".env.server.example";
+        try {
+          const content = await Deno.readTextFile(examplePath);
+          if (!content.includes(`${key}=`)) {
+            const newContent = content.trimEnd() +
+              `\n${key}=your_${key.toLowerCase()}_here\n`;
+            await Deno.writeTextFile(examplePath, newContent);
+            ui.info(`Added ${key} to ${examplePath}`);
+          }
+        } catch (error) {
+          if (!(error instanceof Deno.errors.NotFound)) {
+            logger.warn(`Could not update ${examplePath}: ${error}`);
+          }
+        }
+
+        return 0;
+      } else {
+        const error = new TextDecoder().decode(createResult.stderr);
+        ui.error(`Failed to create secret: ${error}`);
+        return 1;
+      }
+    }
+  } catch (error) {
+    ui.error(
+      `Failed to set secret: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+    );
+    return 1;
+  }
+}
+
+async function getSecret(args: Array<string>): Promise<number> {
+  if (args.length < 1) {
+    ui.error("Usage: bft secrets get <key>");
+    return 1;
+  }
+
+  const [key] = args;
+
+  // Get vault ID
+  let vaultId = getConfigurationVariable("BF_VAULT_ID");
+  if (!vaultId) {
+    const selectedVault = await selectVault();
+    if (!selectedVault) {
+      ui.error("No vault selected. Set BF_VAULT_ID or select interactively.");
+      return 1;
+    }
+    vaultId = selectedVault;
+  }
+
+  try {
+    const cmd = new Deno.Command("op", {
+      args: ["read", `op://${vaultId}/${key}/value`],
+      stdout: "piped",
+      stderr: "piped",
+    });
+
+    const result = await cmd.output();
+
+    if (result.code === 0) {
+      const value = new TextDecoder().decode(result.stdout).trim();
+      console.log(value);
+      return 0;
+    } else {
+      const error = new TextDecoder().decode(result.stderr);
+      ui.error(`Failed to get secret: ${error}`);
+      return 1;
+    }
+  } catch (error) {
+    ui.error(
+      `Failed to get secret: ${
         error instanceof Error ? error.message : String(error)
       }`,
     );

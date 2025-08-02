@@ -201,9 +201,20 @@ if [ "\$CODEBOT_INITIALIZED" != "1" ]; then
   sl config --user ui.username "bft codebot <codebot@boltfoundry.com>"
   sl config --user isl.changedFilesDisplayType "tree"
   
-  # Configure GitHub authentication via GITHUB_TOKEN environment variable
-  if [ -n "\$GITHUB_TOKEN" ]; then
-    # Configure git to use the token for GitHub
+  # Get bf-codebot GitHub token from secrets
+  BF_CODEBOT_TOKEN=\$(bft secrets get BF_CODEBOT_GITHUB_TOKEN 2>/dev/null || echo "")
+  
+  # Configure GitHub authentication for bf-codebot
+  if [ -n "\$BF_CODEBOT_TOKEN" ]; then
+    # Configure git identity as bf-codebot
+    git config --global user.name "bf-codebot"
+    git config --global user.email "bf-codebot@users.noreply.github.com"
+    
+    # Configure git to use the bf-codebot token for GitHub
+    git config --global credential.helper '!f() { echo "username=bf-codebot"; echo "password=\$BF_CODEBOT_TOKEN"; }; f'
+    git config --global url."https://bf-codebot:\${BF_CODEBOT_TOKEN}@github.com/".insteadOf "https://github.com/"
+  elif [ -n "\$GITHUB_TOKEN" ]; then
+    # Fallback to existing GITHUB_TOKEN approach for backward compatibility
     git config --global credential.helper '!f() { echo "username=x-access-token"; echo "password=\$GITHUB_TOKEN"; }; f'
     git config --global url."https://x-access-token:\${GITHUB_TOKEN}@github.com/".insteadOf "https://github.com/"
   fi
