@@ -1,6 +1,6 @@
 #!/usr/bin/env -S deno run
 /**
- * Demo of titlebar utilities from @bolt-foundry/cli-ui
+ * Demo of titlebar utilities from @bolt-foundry/tui
  */
 
 import {
@@ -9,7 +9,7 @@ import {
   supportsTitlebar,
   ui,
   updateTitlebar,
-} from "../cli-ui.ts";
+} from "../tui.ts";
 
 async function demo() {
   ui.info("Terminal Titlebar Demo");

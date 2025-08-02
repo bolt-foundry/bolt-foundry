@@ -52,7 +52,10 @@ export async function clearTitlebar(): Promise<void> {
  * await titlebar.update("Loading...");  // Sets title to "MyApp: Loading..."
  * ```
  */
-export function createTitlebarUpdater(prefix: string) {
+export function createTitlebarUpdater(prefix: string): {
+  update: (suffix: string) => Promise<void>;
+  clear: () => Promise<void>;
+} {
   return {
     update: (suffix: string) => updateTitlebar(`${prefix}: ${suffix}`),
     clear: () => clearTitlebar(),

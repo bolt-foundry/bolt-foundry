@@ -1,5 +1,5 @@
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
-import { ui } from "@bfmono/packages/cli-ui/cli-ui.ts";
+import { ui } from "@bfmono/packages/tui/tui.ts";
 import type { TaskDefinition } from "@bfmono/infra/bft/bft.ts";
 import { parseArgs } from "@std/cli";
 import { basename } from "@std/path";
