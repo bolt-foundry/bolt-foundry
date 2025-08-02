@@ -10,14 +10,15 @@ export class BfGraderResult extends BfNode<InferProps<typeof BfGraderResult>> {
       .string("reasoningProcess")
   );
 
-  static override bfNodeSpec = this.defineBfNode((f) =>
-    f
-      .number("score")
-      .string("explanation")
-      .string("reasoningProcess")
-      .one("bfGrader", () => import("./BfGrader.ts").then((m) => m.BfGrader))
-      .one("bfSample", () => import("./BfSample.ts").then((m) => m.BfSample))
-  );
+  static override bfNodeSpec: ReturnType<typeof BfGraderResult.defineBfNode> =
+    this.defineBfNode((f) =>
+      f
+        .number("score")
+        .string("explanation")
+        .string("reasoningProcess")
+        .one("bfGrader", () => import("./BfGrader.ts").then((m) => m.BfGrader))
+        .one("bfSample", () => import("./BfSample.ts").then((m) => m.BfSample))
+    );
 
   constructor(
     cv: CurrentViewer,
@@ -25,7 +26,9 @@ export class BfGraderResult extends BfNode<InferProps<typeof BfGraderResult>> {
     metadata?: Partial<BfMetadata>,
   ) {
     // Validate score range (business logic)
-    if (props.score < -3 || props.score > 3) {
+    if (
+      typeof props.score === "number" && (props.score < -3 || props.score > 3)
+    ) {
       throw new Error("Score must be between -3 and 3");
     }
 

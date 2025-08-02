@@ -2,9 +2,9 @@
 
 import { assertEquals } from "@std/assert";
 import { BfOrganization } from "@bfmono/apps/bfDb/nodeTypes/BfOrganization.ts";
-import { BfDeck } from "../rlhf/BfDeck.ts";
-import { BfGrader } from "../rlhf/BfGrader.ts";
-import { BfSample } from "../rlhf/BfSample.ts";
+import type { BfDeck as _BfDeck } from "../rlhf/BfDeck.ts";
+import type { BfGrader as _BfGrader } from "../rlhf/BfGrader.ts";
+import type { BfSample as _BfSample } from "../rlhf/BfSample.ts";
 import { withIsolatedDb } from "@bfmono/apps/bfDb/bfDb.ts";
 import { makeLoggedInCv } from "@bfmono/apps/bfDb/utils/testUtils.ts";
 
@@ -63,9 +63,12 @@ Deno.test("BfOrganization - Organization isolation", async () => {
     });
     await org1.save();
 
-    const deck1 = await org1.createTargetNode(BfDeck, sharedProps.deck);
-    const grader1 = await deck1.createTargetNode(BfGrader, sharedProps.grader);
-    const sample1 = await deck1.createTargetNode(BfSample, sharedProps.sample);
+    // deno-lint-ignore no-explicit-any
+    const deck1 = await (org1 as any).createDecks(sharedProps.deck);
+    // deno-lint-ignore no-explicit-any
+    const grader1 = await (deck1 as any).createGraders(sharedProps.grader);
+    // deno-lint-ignore no-explicit-any
+    const sample1 = await (deck1 as any).createSamples(sharedProps.sample);
 
     // Create nodes in organization 2
     const org2 = await BfOrganization.__DANGEROUS__createUnattached(cv2, {
@@ -74,9 +77,12 @@ Deno.test("BfOrganization - Organization isolation", async () => {
     });
     await org2.save();
 
-    const deck2 = await org2.createTargetNode(BfDeck, sharedProps.deck);
-    const grader2 = await deck2.createTargetNode(BfGrader, sharedProps.grader);
-    const sample2 = await deck2.createTargetNode(BfSample, sharedProps.sample);
+    // deno-lint-ignore no-explicit-any
+    const deck2 = await (org2 as any).createDecks(sharedProps.deck);
+    // deno-lint-ignore no-explicit-any
+    const grader2 = await (deck2 as any).createGraders(sharedProps.grader);
+    // deno-lint-ignore no-explicit-any
+    const sample2 = await (deck2 as any).createSamples(sharedProps.sample);
 
     // Verify organizations are isolated
     assertEquals(deck1.metadata.bfOid !== deck2.metadata.bfOid, true);

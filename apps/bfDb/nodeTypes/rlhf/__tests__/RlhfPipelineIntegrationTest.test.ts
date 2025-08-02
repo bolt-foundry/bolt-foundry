@@ -1,4 +1,5 @@
 #! /usr/bin/env -S bft test
+// deno-lint-ignore-file bolt-foundry/no-direct-create-target-node no-explicit-any
 
 import { assertEquals, assertExists } from "@std/assert";
 import { BfOrganization } from "@bfmono/apps/bfDb/nodeTypes/BfOrganization.ts";
@@ -260,7 +261,7 @@ Deno.test("Organization auto-creates demo RLHF content", async () => {
     await org.save();
 
     // Check if a deck was automatically created
-    const decks = await org.queryTargetInstances(BfDeck);
+    const decks = await (org as any).findAllDecks();
     assertEquals(decks.length, 1);
     assertEquals(decks[0].props.name, "Customer Support Response Evaluator");
   });
