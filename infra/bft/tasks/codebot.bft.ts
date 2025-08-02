@@ -109,6 +109,7 @@ interface ContainerConfig {
   workspacePath: string;
   claudeDir: string;
   githubToken: string;
+  codebotToken: string;
   memory: string;
   cpus: string;
   interactive?: boolean;
@@ -134,6 +135,8 @@ function buildContainerArgs(config: ContainerConfig): Array<string> {
     "/tmp:/dev/shm", // Use host /tmp as shared memory for Chrome
     "-e",
     `GITHUB_TOKEN=${config.githubToken}`,
+    "-e",
+    `BF_CODEBOT_TOKEN=${config.codebotToken}`,
     "-e",
     "BF_E2E_MODE=true",
     "-e",
@@ -512,11 +515,14 @@ FIRST TIME SETUP:
 
   // Get GitHub token - first try codebot-specific token, then fall back to gh CLI
   let githubToken = "";
+  let codebotToken = ""; // BF_CODEBOT_TOKEN for container environment
 
   // First, check for codebot-specific GitHub token
-  const codebotToken = getConfigurationVariable("BF_CODEBOT_GITHUB_TOKEN");
-  if (codebotToken) {
-    githubToken = codebotToken;
+  const codebotGithubTokenFromConfig = getConfigurationVariable(
+    "BF_CODEBOT_GITHUB_TOKEN",
+  );
+  if (codebotGithubTokenFromConfig) {
+    githubToken = codebotGithubTokenFromConfig;
     ui.output("✅ Using codebot-specific GitHub token");
   } else {
     // Fall back to gh CLI token
@@ -535,6 +541,37 @@ FIRST TIME SETUP:
       // gh command not available or failed, continue without token
       ui.output("⚠️ No GitHub token found - some features may be limited");
     }
+  }
+
+  // Try to get BF_CODEBOT_GITHUB_TOKEN from environment or secrets
+  let codebotGithubToken = Deno.env.get("BF_CODEBOT_GITHUB_TOKEN") || "";
+  if (!codebotGithubToken) {
+    try {
+      const secretsCmd = new Deno.Command("bft", {
+        args: ["secrets", "get", "BF_CODEBOT_GITHUB_TOKEN"],
+        stdout: "piped",
+        stderr: "null",
+      });
+      const secretsResult = await secretsCmd.output();
+      if (secretsResult.success) {
+        codebotGithubToken = new TextDecoder().decode(secretsResult.stdout)
+          .trim();
+      }
+    } catch {
+      // secrets command failed, continue without codebot token
+    }
+  }
+
+  // Use the token from env/secrets if we didn't get one from config
+  if (!githubToken && codebotGithubToken) {
+    githubToken = codebotGithubToken;
+    ui.output("✅ Using BF_CODEBOT_GITHUB_TOKEN from environment/secrets");
+  }
+
+  // Get BF_CODEBOT_TOKEN if available
+  const bfCodebotToken = Deno.env.get("BF_CODEBOT_TOKEN");
+  if (bfCodebotToken) {
+    codebotToken = bfCodebotToken;
   }
 
   // Handle workspace selection
@@ -1038,6 +1075,7 @@ FIRST TIME SETUP:
       workspacePath,
       claudeDir,
       githubToken,
+      codebotToken,
       memory: parsed.memory || autoMemory,
       cpus: parsed.cpus || autoCpus,
       interactive: true,
@@ -1128,6 +1166,7 @@ FIRST TIME SETUP:
       workspacePath,
       claudeDir,
       githubToken,
+      codebotToken,
       memory: parsed.memory || autoMemory,
       cpus: parsed.cpus || autoCpus,
       interactive: false,
@@ -1184,6 +1223,7 @@ FIRST TIME SETUP:
     workspacePath,
     claudeDir,
     githubToken,
+    codebotToken,
     memory: parsed.memory || autoMemory,
     cpus: parsed.cpus || autoCpus,
     interactive: true,
