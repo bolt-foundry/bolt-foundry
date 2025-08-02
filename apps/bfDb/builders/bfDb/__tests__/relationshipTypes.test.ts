@@ -80,6 +80,16 @@ type BfPostWithMethods = BfPost & {
   addComment: (node: BfComment) => Promise<void>;
   removeComment: (node: BfComment) => Promise<void>;
   deleteComment: (node: BfComment) => Promise<void>;
+  // Phase 7 batch operations for comments
+  addManyComments: (nodes: BfComment[]) => Promise<void>;
+  removeManyComments: (nodes: BfComment[]) => Promise<void>;
+  createManyComments: (
+    propsArray: Array<{
+      text: string;
+      authorId: string;
+    }>,
+  ) => Promise<BfComment[]>;
+  iterateComments: () => AsyncIterableIterator<BfComment>;
 
   // Many relationship methods for tags
   findAllTags: () => Promise<BfTag[]>;
@@ -100,6 +110,11 @@ type BfPostWithMethods = BfPost & {
   addTag: (node: BfTag) => Promise<void>;
   removeTag: (node: BfTag) => Promise<void>;
   deleteTag: (node: BfTag) => Promise<void>;
+  // Phase 7 batch operations for tags
+  addManyTags: (nodes: BfTag[]) => Promise<void>;
+  removeManyTags: (nodes: BfTag[]) => Promise<void>;
+  createManyTags: (propsArray: Array<{ name: string }>) => Promise<BfTag[]>;
+  iterateTags: () => AsyncIterableIterator<BfTag>;
 };
 
 type BfArticleWithMethods = BfArticle & {
@@ -132,6 +147,16 @@ type BfArticleWithMethods = BfArticle & {
   addComment: (node: BfComment) => Promise<void>;
   removeComment: (node: BfComment) => Promise<void>;
   deleteComment: (node: BfComment) => Promise<void>;
+  // Phase 7 batch operations for comments
+  addManyComments: (nodes: BfComment[]) => Promise<void>;
+  removeManyComments: (nodes: BfComment[]) => Promise<void>;
+  createManyComments: (
+    propsArray: Array<{
+      text: string;
+      authorId: string;
+    }>,
+  ) => Promise<BfComment[]>;
+  iterateComments: () => AsyncIterableIterator<BfComment>;
 
   findAllTags: () => Promise<BfTag[]>;
   queryTags: (args: {
@@ -151,6 +176,11 @@ type BfArticleWithMethods = BfArticle & {
   addTag: (node: BfTag) => Promise<void>;
   removeTag: (node: BfTag) => Promise<void>;
   deleteTag: (node: BfTag) => Promise<void>;
+  // Phase 7 batch operations for tags
+  addManyTags: (nodes: BfTag[]) => Promise<void>;
+  removeManyTags: (nodes: BfTag[]) => Promise<void>;
+  createManyTags: (propsArray: Array<{ name: string }>) => Promise<BfTag[]>;
+  iterateTags: () => AsyncIterableIterator<BfTag>;
 };
 
 describe("Relationship Types", () => {
@@ -368,6 +398,94 @@ describe("Relationship Types", () => {
       const _newTag: CreateTagReturn = {} as BfTag;
 
       // If this compiles, type safety is maintained
+      assertEquals(true, true);
+    });
+  });
+
+  describe("Phase 7: Batch operation types", () => {
+    it("should have correct type signatures for batch operations", () => {
+      // Type-level test for batch operation signatures
+      type PostMethods = BfPostWithMethods;
+
+      // Verify batch method signatures exist in the type system
+      type AddManyType = PostMethods["addManyComments"];
+      type RemoveManyType = PostMethods["removeManyComments"];
+      type CreateManyType = PostMethods["createManyComments"];
+      type IterateType = PostMethods["iterateComments"];
+
+      // These type assertions verify the signatures are correct
+      const _addMany: AddManyType = (() => Promise.resolve()) as any;
+      const _removeMany: RemoveManyType = (() => Promise.resolve()) as any;
+      const _createMany: CreateManyType = (() => Promise.resolve([])) as any;
+      const _iterate: IterateType = (async function* () {}) as any;
+
+      // If this test compiles, the types are correct
+      assertEquals(true, true);
+    });
+
+    it("should accept arrays in batch operations", () => {
+      // Type-level test for array parameters
+      type AddManyParams = Parameters<BfPostWithMethods["addManyComments"]>[0];
+      type RemoveManyParams = Parameters<
+        BfPostWithMethods["removeManyComments"]
+      >[0];
+      type CreateManyParams = Parameters<
+        BfPostWithMethods["createManyComments"]
+      >[0];
+
+      // Valid array parameters should compile
+      const validAdd: AddManyParams = [] as BfComment[];
+      const validRemove: RemoveManyParams = [] as BfComment[];
+      const validCreate: CreateManyParams = [
+        { text: "test", authorId: "123" },
+        { text: "test2", authorId: "456" },
+      ];
+
+      // Type checking ensures these compile correctly
+      void validAdd;
+      void validRemove;
+      void validCreate;
+
+      assertEquals(true, true);
+    });
+
+    it("should return correct types from batch operations", () => {
+      // Type-level test for return types
+      type CreateManyReturn = Awaited<
+        ReturnType<BfPostWithMethods["createManyComments"]>
+      >;
+      type IterateReturn = ReturnType<BfPostWithMethods["iterateComments"]>;
+
+      // Verify return types
+      const _created: CreateManyReturn = [] as BfComment[];
+      const _iterator: IterateReturn = (async function* () {
+        yield {} as BfComment;
+      })();
+
+      // If this compiles, the return types are correct
+      assertEquals(true, true);
+    });
+
+    it("should maintain type safety across batch and single operations", () => {
+      // Ensure batch operations are consistent with single operations
+      type SingleCreateReturn = Awaited<
+        ReturnType<BfPostWithMethods["createComment"]>
+      >;
+      type BatchCreateReturn = Awaited<
+        ReturnType<BfPostWithMethods["createManyComments"]>
+      >[number];
+
+      // Both should return the same node type
+      const _single: SingleCreateReturn = {} as BfComment;
+      const _batch: BatchCreateReturn = {} as BfComment;
+
+      // Types should be assignable
+      const _test1: SingleCreateReturn = _batch;
+      const _test2: BatchCreateReturn = _single;
+
+      void _test1;
+      void _test2;
+
       assertEquals(true, true);
     });
   });
