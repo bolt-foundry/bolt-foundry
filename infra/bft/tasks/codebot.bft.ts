@@ -1046,7 +1046,36 @@ FIRST TIME SETUP:
       ui.output(`🧹 Cleaning up workspace: ${workspaceId}`);
       await Deno.remove(workspacePath, { recursive: true });
     } else {
-      ui.output(`📁 Workspace preserved at: ${workspacePath}`);
+      // Ask user if they want to clean up the workspace
+      ui.output(`\n📁 Workspace: ${workspaceId}`);
+      ui.output(`📍 Location: ${workspacePath}`);
+
+      const cleanup = await promptSelect(
+        "\nWhat would you like to do with this workspace?",
+        [
+          "🗂️  Keep workspace for later use",
+          "🧹 Delete workspace permanently",
+        ],
+      );
+
+      if (cleanup === "🧹 Delete workspace permanently") {
+        ui.output(`🧹 Cleaning up workspace: ${workspaceId}`);
+        try {
+          await Deno.remove(workspacePath, { recursive: true });
+          ui.output(`✅ Workspace deleted successfully`);
+        } catch (error) {
+          ui.error(
+            `❌ Failed to delete workspace: ${
+              error instanceof Error ? error.message : String(error)
+            }`,
+          );
+        }
+      } else {
+        ui.output(`📁 Workspace preserved at: ${workspacePath}`);
+        ui.output(
+          `💡 Resume later with: bft codebot --workspace ${workspaceId}`,
+        );
+      }
     }
     return 0;
   }
@@ -1112,6 +1141,7 @@ FIRST TIME SETUP:
       ui.output(`🧹 Cleaning up workspace: ${workspaceId}`);
       await Deno.remove(workspacePath, { recursive: true });
     } else {
+      // For exec mode, don't prompt - just preserve
       ui.output(`📁 Workspace preserved at: ${workspacePath}`);
     }
     return success ? 0 : 1;
@@ -1166,7 +1196,34 @@ FIRST TIME SETUP:
     ui.output(`🧹 Cleaning up workspace: ${workspaceId}`);
     await Deno.remove(workspacePath, { recursive: true });
   } else {
-    ui.output(`📁 Workspace preserved at: ${workspacePath}`);
+    // Ask user if they want to clean up the workspace
+    ui.output(`\n📁 Workspace: ${workspaceId}`);
+    ui.output(`📍 Location: ${workspacePath}`);
+
+    const cleanup = await promptSelect(
+      "\nWhat would you like to do with this workspace?",
+      [
+        "🗂️  Keep workspace for later use",
+        "🧹 Delete workspace permanently",
+      ],
+    );
+
+    if (cleanup === "🧹 Delete workspace permanently") {
+      ui.output(`🧹 Cleaning up workspace: ${workspaceId}`);
+      try {
+        await Deno.remove(workspacePath, { recursive: true });
+        ui.output(`✅ Workspace deleted successfully`);
+      } catch (error) {
+        ui.error(
+          `❌ Failed to delete workspace: ${
+            error instanceof Error ? error.message : String(error)
+          }`,
+        );
+      }
+    } else {
+      ui.output(`📁 Workspace preserved at: ${workspacePath}`);
+      ui.output(`💡 Resume later with: bft codebot --workspace ${workspaceId}`);
+    }
   }
   return success ? 0 : 1;
 }
