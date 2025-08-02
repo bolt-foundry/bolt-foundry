@@ -1,7 +1,7 @@
 #!/usr/bin/env -S bft run
 
 import type { TaskDefinition } from "../bft.ts";
-import { ui } from "@bfmono/packages/cli-ui/cli-ui.ts";
+import { ui } from "@bfmono/packages/tui/tui.ts";
 
 function echo(args: Array<string>): number {
   ui.output(args.join(" "));

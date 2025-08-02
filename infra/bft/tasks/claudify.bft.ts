@@ -1,7 +1,7 @@
 #!/usr/bin/env -S bft run
 
 import type { TaskDefinition } from "../bft.ts";
-import { ui } from "@bfmono/packages/cli-ui/cli-ui.ts";
+import { ui } from "@bfmono/packages/tui/tui.ts";
 import { join } from "@std/path";
 import { ensureDir } from "@std/fs";
 import { parse as parseTOML } from "@std/toml";

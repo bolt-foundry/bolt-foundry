@@ -1,4 +1,4 @@
-# CLI UI
+# TUI (Terminal UI)
 
 Consistent UI output utilities for Bolt Foundry command-line tools.
 
@@ -12,7 +12,7 @@ CLI tools need to separate:
 ## Usage
 
 ```typescript
-import { ui } from "@bfmono/packages/cli-ui/cli-ui.ts";
+import { ui } from "@bfmono/packages/tui/tui.ts";
 
 // UI messages go to stderr
 ui.info("Processing files...");
@@ -66,7 +66,7 @@ import {
   createTitlebarUpdater,
   supportsTitlebar,
   updateTitlebar,
-} from "@bfmono/packages/cli-ui/cli-ui.ts";
+} from "@bfmono/packages/tui/tui.ts";
 
 // Check if terminal supports titlebar updates
 if (supportsTitlebar()) {

@@ -3,7 +3,7 @@
 import type { TaskDefinition } from "../bft.ts";
 import { parse as parseTOML } from "@std/toml";
 import * as path from "@std/path";
-import { ui } from "@bfmono/packages/cli-ui/cli-ui.ts";
+import { ui } from "@bfmono/packages/tui/tui.ts";
 
 interface OpenAIMessage {
   role: "system" | "assistant" | "user";

@@ -1,7 +1,7 @@
 #!/usr/bin/env -S bft run
 
 import type { TaskDefinition } from "../bft.ts";
-import { ui } from "@bfmono/packages/cli-ui/cli-ui.ts";
+import { ui } from "@bfmono/packages/tui/tui.ts";
 
 async function run(args: Array<string>): Promise<number> {
   if (args.length === 0) {

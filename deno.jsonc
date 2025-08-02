@@ -8,6 +8,7 @@
     "@bolt-foundry/bolt-foundry/": "./packages/bolt-foundry/",
     "@bolt-foundry/logger": "./packages/logger/logger.ts",
     "@bolt-foundry/get-configuration-var": "./packages/get-configuration-var/get-configuration-var.ts",
+    "@bolt-foundry/tui": "./packages/tui/tui.ts",
 
     "@b-fuze/deno-dom": "jsr:@b-fuze/deno-dom@^0.1.49",
     "@deno/cache-dir": "jsr:@deno/cache-dir@^0.22.3",
@@ -176,7 +177,8 @@
     "apps/boltfoundry-com",
     "packages/bolt-foundry",
     "packages/logger",
-    "packages/get-configuration-var"
+    "packages/get-configuration-var",
+    "packages/tui"
   ],
   "vendor": true
 }

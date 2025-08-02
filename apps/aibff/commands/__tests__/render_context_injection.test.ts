@@ -1,6 +1,6 @@
 import { assertEquals, assertThrows } from "@std/assert";
 import { extractContextFromMarkdown, renderDeck } from "../render.ts";
-import { createCapturingUI, ui } from "@bfmono/packages/cli-ui/cli-ui.ts";
+import { createCapturingUI, ui } from "@bfmono/packages/tui/tui.ts";
 
 // Helper function to create a temporary deck file
 async function createTempDeckFile(content: string): Promise<string> {
