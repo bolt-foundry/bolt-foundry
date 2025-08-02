@@ -83,7 +83,7 @@ improvement through customer feedback using RLHF workflows.
   - `logger/` - Logging utilities
   - `get-configuration-var/` - Configuration management
   - `aibff/` - AI feedback package
-  - `cli-ui/` - CLI user interface utilities
+  - `tui/` - Terminal user interface utilities
   - Additional packages exist in various stages of development
 - `infra/` - Build tools and infrastructure
   - `bft/` - Bolt Foundry Task runner implementation
