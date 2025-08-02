@@ -36,6 +36,28 @@ export function startHostBridge() {
         });
       }
 
+      if (url.pathname === "/open" && req.method === "POST") {
+        const { path } = await req.json();
+        logger.debug(`Opening path: ${path}`);
+
+        // Open file or URL on host
+        const cmd = Deno.build.os === "darwin" ? "open" : "xdg-open";
+        logger.debug(`Opening: ${path}`);
+        const result = await new Deno.Command(cmd, { args: [path] })
+          .output();
+        if (!result.success) {
+          logger.error(
+            `Failed to open: ${new TextDecoder().decode(result.stderr)}`,
+          );
+          return Response.json({
+            success: false,
+            error: new TextDecoder().decode(result.stderr),
+          });
+        }
+
+        return Response.json({ success: true });
+      }
+
       // Add more endpoints as needed
       return new Response("Not Found", { status: 404 });
     },
