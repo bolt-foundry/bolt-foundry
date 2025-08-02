@@ -12,6 +12,7 @@ export class BfOrganization extends BfNode<InferProps<typeof BfOrganization>> {
     node
       .string("name")
       .string("domain")
+      .many("decks", () => BfDeck)
   );
 
   /**
@@ -29,6 +30,6 @@ export class BfOrganization extends BfNode<InferProps<typeof BfOrganization>> {
       import.meta.resolve("./rlhf/demo-decks/customer-support-demo.deck.md"),
     ).pathname;
     const deckProps = await BfDeck.readPropsFromFile(deckPath);
-    await this.createTargetNode(BfDeck, deckProps);
+    await (this as any).createDecks(deckProps);
   }
 }
