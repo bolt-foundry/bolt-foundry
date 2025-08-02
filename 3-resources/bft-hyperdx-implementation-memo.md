@@ -12,6 +12,7 @@ enable command-line access to HyperDX logs and metrics for production debugging.
 ## Motivation
 
 - Enable quick production debugging without leaving the terminal
+- Enable Claude Code to debug production code using HyperDX
 - Integrate observability into existing BFT workflow
 - Provide scriptable access to logs and metrics
 - Faster than web UI for specific queries and automated analysis
@@ -39,7 +40,7 @@ enable command-line access to HyperDX logs and metrics for production debugging.
 HYPERDX_API_KEY=<api-key>
 HYPERDX_API_URL=https://api.hyperdx.io  // Optional, for self-hosted
 
-// Using existing config pattern
+// TODO: Verify if getConfigurationVar is the current pattern
 import { getConfigurationVar } from "@bfmono/packages/get-configuration-var/mod.ts";
 ```
 
@@ -232,10 +233,8 @@ Since this is not time-sensitive:
 
 ## Open Questions
 
-1. Should we cache API credentials securely?
-2. Do we need offline mode with cached results?
-3. Should we support saving common queries as aliases?
-4. Integration with existing logging package?
+1. Should we support saving common queries as aliases?
+2. Integration with existing logging package?
 
 ## Next Steps
 
