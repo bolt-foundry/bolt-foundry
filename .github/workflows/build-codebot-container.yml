@@ -22,7 +22,7 @@ on:
         default: false
       platform:
         type: choice
-        description: "Platform to build for"
+        description: "Platform to build for (select specific platform or both)"
         required: false
         default: "linux/amd64"
         options:
