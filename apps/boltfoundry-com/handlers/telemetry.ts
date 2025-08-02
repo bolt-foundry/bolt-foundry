@@ -1,6 +1,6 @@
 import { CurrentViewer } from "@bfmono/apps/bfDb/classes/CurrentViewer.ts";
 import { BfDeck } from "@bfmono/apps/bfDb/nodeTypes/rlhf/BfDeck.ts";
-import { BfSample } from "@bfmono/apps/bfDb/nodeTypes/rlhf/BfSample.ts";
+import type { BfSample } from "@bfmono/apps/bfDb/nodeTypes/rlhf/BfSample.ts";
 import { BfOrganization } from "@bfmono/apps/bfDb/nodeTypes/BfOrganization.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { generateDeckSlug } from "@bfmono/apps/bfDb/utils/slugUtils.ts";
@@ -136,12 +136,21 @@ export async function handleTelemetryRequest(
       // Create new deck
       // Note: SDK's lazy deck creation should have already created this deck
       // This is a fallback for decks that might not have been created yet
-      deck = await org.createTargetNode(BfDeck, {
+      deck = await (org as BfOrganization & {
+        createDecks: (
+          props: {
+            name: string;
+            content: string;
+            description: string;
+            slug: string;
+          },
+        ) => Promise<BfDeck>;
+      }).createDecks({
         name: deckId,
         content: "",
         description: `Auto-created from telemetry for ${deckId}`,
         slug,
-      }) as BfDeck;
+      });
       logger.info(`Created new deck: ${deckId} (slug: ${slug})`);
     }
 
@@ -156,7 +165,15 @@ export async function handleTelemetryRequest(
       attributes,
     };
 
-    const sample = await deck.createTargetNode(BfSample, {
+    const sample = await (deck as BfDeck & {
+      createSamples: (
+        props: {
+          name: string;
+          completionData: string;
+          collectionMethod: string;
+        },
+      ) => Promise<BfSample>;
+    }).createSamples({
       name: `Telemetry Sample ${Date.now()}`,
       completionData: JSON.stringify(completionData),
       collectionMethod: "telemetry",

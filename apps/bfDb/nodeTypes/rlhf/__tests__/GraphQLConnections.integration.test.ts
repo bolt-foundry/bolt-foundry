@@ -6,6 +6,7 @@
  * including both successful queries and error handling for pagination attempts.
  */
 
+// deno-lint-ignore-file bolt-foundry/no-direct-create-target-node
 import { assertEquals, assertExists } from "@std/assert";
 import { withIsolatedDb } from "@bfmono/apps/bfDb/bfDb.ts";
 import { makeLoggedInCv } from "@bfmono/apps/bfDb/utils/testUtils.ts";

@@ -1,4 +1,5 @@
 #! /usr/bin/env -S bft test
+// deno-lint-ignore-file bolt-foundry/no-direct-create-target-node
 
 import { assertEquals, assertExists } from "@std/assert";
 import { withIsolatedDb } from "@bfmono/apps/bfDb/bfDb.ts";
