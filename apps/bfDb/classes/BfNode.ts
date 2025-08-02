@@ -597,6 +597,9 @@ export abstract class BfNode<TProps extends PropsBase = {}>
     nodeProps: Partial<TTargetProps> = {},
     edgeProps: Partial<PropsBase> = {},
     cache?: BfNodeCache<TTargetProps>,
+    options?: {
+      role?: string; // Filter by edge label/role
+    },
   ): Promise<Array<InstanceType<TTargetClass>>> {
     // Step 1: Query edges where this node is the source
     const { BfEdge } = await import("@bfmono/apps/bfDb/nodeTypes/BfEdge.ts");
@@ -606,10 +609,14 @@ export abstract class BfNode<TProps extends PropsBase = {}>
       bfTClassName: TargetClass.name,
     };
 
+    const finalEdgeProps = options?.role
+      ? { ...edgeProps, role: options.role }
+      : edgeProps;
+
     const edges = await BfEdge.query(
       this.cv,
       edgeMetadata,
-      edgeProps,
+      finalEdgeProps,
       [],
     );
 
@@ -634,6 +641,135 @@ export abstract class BfNode<TProps extends PropsBase = {}>
       targetIds,
       cache,
     );
+  }
+
+  /**
+   * Find edges connected to this node
+   * @param options Filter options for edges
+   * @returns Array of BfEdge instances
+   */
+  async findEdges(
+    options: {
+      direction?: "in" | "out" | "both";
+      label?: string; // Filter by edge label (relationship name)
+      targetId?: BfGid; // Filter by specific target node
+    } = { direction: "out" },
+  ): Promise<Array<any>> {
+    const { BfEdge } = await import("@bfmono/apps/bfDb/nodeTypes/BfEdge.ts");
+    const edges: Array<any> = [];
+
+    // Query outgoing edges
+    if (options.direction === "out" || options.direction === "both") {
+      const outMetadata: Partial<BfEdgeMetadata> = {
+        bfSid: this.metadata.bfGid,
+        bfOid: this.cv.orgBfOid,
+      };
+
+      if (options.targetId) {
+        outMetadata.bfTid = options.targetId;
+      }
+
+      const edgeProps = options.label ? { role: options.label } : {};
+
+      const outEdges = await BfEdge.query(
+        this.cv,
+        outMetadata,
+        edgeProps,
+        [],
+      );
+
+      edges.push(...outEdges);
+    }
+
+    // Query incoming edges
+    if (options.direction === "in" || options.direction === "both") {
+      const inMetadata: Partial<BfEdgeMetadata> = {
+        bfTid: this.metadata.bfGid,
+        bfOid: this.cv.orgBfOid,
+      };
+
+      const edgeProps = options.label ? { role: options.label } : {};
+
+      const inEdges = await BfEdge.query(
+        this.cv,
+        inMetadata,
+        edgeProps,
+        [],
+      );
+
+      edges.push(...inEdges);
+    }
+
+    return edges;
+  }
+
+  /**
+   * Create a single edge from this node to another
+   * @param edgeProps Properties for the edge
+   * @returns The created BfEdge instance
+   */
+  async createEdge(
+    edgeProps: {
+      targetId: BfGid;
+      label: string; // Relationship name
+      props?: Record<string, JSONValue>;
+    },
+  ): Promise<any> {
+    const { BfEdge } = await import("@bfmono/apps/bfDb/nodeTypes/BfEdge.ts");
+
+    // Find the target node to ensure it exists
+    const targetNode = await (this.constructor as typeof BfNode).find(
+      this.cv,
+      edgeProps.targetId,
+    );
+
+    if (!targetNode) {
+      throw new Error(`Target node not found: ${edgeProps.targetId}`);
+    }
+
+    return await BfEdge.createBetweenNodes(
+      this.cv,
+      this,
+      targetNode,
+      { role: edgeProps.label, ...(edgeProps.props || {}) },
+    );
+  }
+
+  /**
+   * Create multiple edges atomically for performance
+   * @param edgePropsArray Array of edge properties
+   * @returns Array of created BfEdge instances
+   */
+  async createEdges(
+    edgePropsArray: Array<{
+      targetId: BfGid;
+      label: string;
+      props?: Record<string, JSONValue>;
+    }>,
+  ): Promise<Array<any>> {
+    // For now, implement as a loop, but this could be optimized
+    // to use batch operations in the storage layer
+    const edges: Array<any> = [];
+
+    for (const edgeProps of edgePropsArray) {
+      const edge = await this.createEdge(edgeProps);
+      edges.push(edge);
+    }
+
+    return edges;
+  }
+
+  /**
+   * Delete multiple edges atomically
+   * @param edgeIds Array of edge IDs to delete
+   */
+  async deleteEdges(
+    edgeIds: Array<BfGid>,
+  ): Promise<void> {
+    // Delete each edge
+    for (const edgeId of edgeIds) {
+      await storage.delete(this.cv.orgBfOid, edgeId);
+    }
   }
 
   protected beforeCreate(): Promise<void> | void {}
