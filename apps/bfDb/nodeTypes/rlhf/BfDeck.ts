@@ -1,4 +1,7 @@
-import { BfNode, type InferProps } from "@bfmono/apps/bfDb/classes/BfNode.ts";
+import {
+  BfNode,
+  type InferProps as _InferProps,
+} from "@bfmono/apps/bfDb/classes/BfNode.ts";
 import { BfOrganization } from "@bfmono/apps/bfDb/nodeTypes/BfOrganization.ts";
 import { readLocalDeck } from "@bolt-foundry/bolt-foundry";
 
@@ -14,7 +17,7 @@ import { readLocalDeck } from "@bolt-foundry/bolt-foundry";
  * - BfGrader: The evaluators that use this deck
  * - BfSample: The samples/examples that are evaluated using this deck
  */
-export class BfDeck extends BfNode<InferProps<typeof BfDeck>> {
+export class BfDeck extends BfNode<_InferProps<typeof BfDeck>> {
   static override gqlSpec = this.defineGqlNode((gql) =>
     gql
       .string("name")
@@ -42,7 +45,16 @@ export class BfDeck extends BfNode<InferProps<typeof BfDeck>> {
             });
             await org.save();
           }
-          const deck = await (org as any).createDecks({
+          const deck = await (org as BfOrganization & {
+            createDecks: (
+              props: {
+                name: string;
+                content: string;
+                description: string;
+                slug: string;
+              },
+            ) => Promise<BfDeck>;
+          }).createDecks({
             name: args.name,
             content: args.content,
             description: args.description || "",

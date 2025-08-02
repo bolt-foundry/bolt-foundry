@@ -1,3 +1,4 @@
+// deno-lint-ignore-file no-explicit-any no-unused-vars
 import { describe, it } from "@std/testing/bdd";
 import { assertEquals } from "@std/assert";
 import { BfNode } from "@bfmono/apps/bfDb/classes/BfNode.ts";
@@ -59,13 +60,13 @@ class BfArticle extends BfNode<{ title: string; body: string }> {
 // Type aliases for testing
 type BfPostWithMethods = BfPost & {
   // Many relationship methods for comments
-  findAllComments: () => Promise<BfComment[]>;
+  findAllComments: () => Promise<Array<BfComment>>;
   queryComments: (args: {
     where?: Partial<{ text: string; authorId: string }>;
     orderBy?: { text?: "asc" | "desc"; authorId?: "asc" | "desc" };
     limit?: number;
     offset?: number;
-  }) => Promise<BfComment[]>;
+  }) => Promise<Array<BfComment>>;
   connectionForComments: (args: {
     first?: number;
     after?: string;
@@ -81,24 +82,24 @@ type BfPostWithMethods = BfPost & {
   removeComment: (node: BfComment) => Promise<void>;
   deleteComment: (node: BfComment) => Promise<void>;
   // Phase 7 batch operations for comments
-  addManyComments: (nodes: BfComment[]) => Promise<void>;
-  removeManyComments: (nodes: BfComment[]) => Promise<void>;
+  addManyComments: (nodes: Array<BfComment>) => Promise<void>;
+  removeManyComments: (nodes: Array<BfComment>) => Promise<void>;
   createManyComments: (
     propsArray: Array<{
       text: string;
       authorId: string;
     }>,
-  ) => Promise<BfComment[]>;
+  ) => Promise<Array<BfComment>>;
   iterateComments: () => AsyncIterableIterator<BfComment>;
 
   // Many relationship methods for tags
-  findAllTags: () => Promise<BfTag[]>;
+  findAllTags: () => Promise<Array<BfTag>>;
   queryTags: (args: {
     where?: Partial<{ name: string }>;
     orderBy?: { name?: "asc" | "desc" };
     limit?: number;
     offset?: number;
-  }) => Promise<BfTag[]>;
+  }) => Promise<Array<BfTag>>;
   connectionForTags: (args: {
     first?: number;
     after?: string;
@@ -111,9 +112,11 @@ type BfPostWithMethods = BfPost & {
   removeTag: (node: BfTag) => Promise<void>;
   deleteTag: (node: BfTag) => Promise<void>;
   // Phase 7 batch operations for tags
-  addManyTags: (nodes: BfTag[]) => Promise<void>;
-  removeManyTags: (nodes: BfTag[]) => Promise<void>;
-  createManyTags: (propsArray: Array<{ name: string }>) => Promise<BfTag[]>;
+  addManyTags: (nodes: Array<BfTag>) => Promise<void>;
+  removeManyTags: (nodes: Array<BfTag>) => Promise<void>;
+  createManyTags: (
+    propsArray: Array<{ name: string }>,
+  ) => Promise<Array<BfTag>>;
   iterateTags: () => AsyncIterableIterator<BfTag>;
 };
 
@@ -126,13 +129,13 @@ type BfArticleWithMethods = BfArticle & {
   deleteAuthor: () => Promise<void>;
 
   // Many relationship methods (same as BfPost)
-  findAllComments: () => Promise<BfComment[]>;
+  findAllComments: () => Promise<Array<BfComment>>;
   queryComments: (args: {
     where?: Partial<{ text: string; authorId: string }>;
     orderBy?: { text?: "asc" | "desc"; authorId?: "asc" | "desc" };
     limit?: number;
     offset?: number;
-  }) => Promise<BfComment[]>;
+  }) => Promise<Array<BfComment>>;
   connectionForComments: (args: {
     first?: number;
     after?: string;
@@ -148,23 +151,23 @@ type BfArticleWithMethods = BfArticle & {
   removeComment: (node: BfComment) => Promise<void>;
   deleteComment: (node: BfComment) => Promise<void>;
   // Phase 7 batch operations for comments
-  addManyComments: (nodes: BfComment[]) => Promise<void>;
-  removeManyComments: (nodes: BfComment[]) => Promise<void>;
+  addManyComments: (nodes: Array<BfComment>) => Promise<void>;
+  removeManyComments: (nodes: Array<BfComment>) => Promise<void>;
   createManyComments: (
     propsArray: Array<{
       text: string;
       authorId: string;
     }>,
-  ) => Promise<BfComment[]>;
+  ) => Promise<Array<BfComment>>;
   iterateComments: () => AsyncIterableIterator<BfComment>;
 
-  findAllTags: () => Promise<BfTag[]>;
+  findAllTags: () => Promise<Array<BfTag>>;
   queryTags: (args: {
     where?: Partial<{ name: string }>;
     orderBy?: { name?: "asc" | "desc" };
     limit?: number;
     offset?: number;
-  }) => Promise<BfTag[]>;
+  }) => Promise<Array<BfTag>>;
   connectionForTags: (args: {
     first?: number;
     after?: string;
@@ -177,9 +180,11 @@ type BfArticleWithMethods = BfArticle & {
   removeTag: (node: BfTag) => Promise<void>;
   deleteTag: (node: BfTag) => Promise<void>;
   // Phase 7 batch operations for tags
-  addManyTags: (nodes: BfTag[]) => Promise<void>;
-  removeManyTags: (nodes: BfTag[]) => Promise<void>;
-  createManyTags: (propsArray: Array<{ name: string }>) => Promise<BfTag[]>;
+  addManyTags: (nodes: Array<BfTag>) => Promise<void>;
+  removeManyTags: (nodes: Array<BfTag>) => Promise<void>;
+  createManyTags: (
+    propsArray: Array<{ name: string }>,
+  ) => Promise<Array<BfTag>>;
   iterateTags: () => AsyncIterableIterator<BfTag>;
 };
 
@@ -226,8 +231,8 @@ describe("Relationship Types", () => {
       type CreateReturn = ReturnType<BfPostWithMethods["createComment"]>;
 
       // These type assertions verify the return types
-      const _comments: FindAllReturn = Promise.resolve([] as BfComment[]);
-      const _queried: QueryReturn = Promise.resolve([] as BfComment[]);
+      const _comments: FindAllReturn = Promise.resolve([] as Array<BfComment>);
+      const _queried: QueryReturn = Promise.resolve([] as Array<BfComment>);
       const _connection: ConnectionReturn = Promise.resolve(
         {} as Connection<BfComment>,
       );
@@ -391,8 +396,8 @@ describe("Relationship Types", () => {
       // Verify the types are correct
       const _author: FindAuthorReturn = null as BfAuthor | null;
       const _authorX: FindXAuthorReturn = {} as BfAuthor;
-      const _comments: FindAllCommentsReturn = [] as BfComment[];
-      const _tags: FindAllTagsReturn = [] as BfTag[];
+      const _comments: FindAllCommentsReturn = [] as Array<BfComment>;
+      const _tags: FindAllTagsReturn = [] as Array<BfTag>;
       const _newAuthor: CreateAuthorReturn = {} as BfAuthor;
       const _newComment: CreateCommentReturn = {} as BfComment;
       const _newTag: CreateTagReturn = {} as BfTag;
@@ -434,8 +439,8 @@ describe("Relationship Types", () => {
       >[0];
 
       // Valid array parameters should compile
-      const validAdd: AddManyParams = [] as BfComment[];
-      const validRemove: RemoveManyParams = [] as BfComment[];
+      const validAdd: AddManyParams = [] as Array<BfComment>;
+      const validRemove: RemoveManyParams = [] as Array<BfComment>;
       const validCreate: CreateManyParams = [
         { text: "test", authorId: "123" },
         { text: "test2", authorId: "456" },
@@ -457,7 +462,7 @@ describe("Relationship Types", () => {
       type IterateReturn = ReturnType<BfPostWithMethods["iterateComments"]>;
 
       // Verify return types
-      const _created: CreateManyReturn = [] as BfComment[];
+      const _created: CreateManyReturn = [] as Array<BfComment>;
       const _iterator: IterateReturn = (async function* () {
         yield {} as BfComment;
       })();
@@ -510,7 +515,7 @@ describe("Relationship Types", () => {
       type TestNodeMethods = TestNode & {
         // The types should be inferred from the relationship definitions
         findSingle: () => Promise<BfComment | null>;
-        findAllMultiple: () => Promise<BfTag[]>;
+        findAllMultiple: () => Promise<Array<BfTag>>;
         createSingle: (props: {
           text: string;
           authorId: string;
@@ -526,13 +531,13 @@ describe("Relationship Types", () => {
 
       // Verify the inferred types match expected types
       const _findSingle: ActualFindSingle =
-        (() => Promise.resolve(null as BfComment | null)) as any;
+        (() => Promise.resolve(null as BfComment | null)) as ActualFindSingle;
       const _findMultiple: ActualFindMultiple =
-        (() => Promise.resolve([] as BfTag[])) as any;
+        (() => Promise.resolve([] as Array<BfTag>)) as ActualFindMultiple;
       const _createSingle: ActualCreateSingle =
-        (() => Promise.resolve({} as BfComment)) as any;
+        (() => Promise.resolve({} as BfComment)) as ActualCreateSingle;
       const _createMultiple: ActualCreateMultiple =
-        (() => Promise.resolve({} as BfTag)) as any;
+        (() => Promise.resolve({} as BfTag)) as ActualCreateMultiple;
 
       // If this compiles, type inference is working
       assertEquals(true, true);
