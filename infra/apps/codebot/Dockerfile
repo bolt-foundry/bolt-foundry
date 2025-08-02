@@ -201,8 +201,7 @@ if [ "\$CODEBOT_INITIALIZED" != "1" ]; then
   sl config --user ui.username "bft codebot <codebot@boltfoundry.com>"
   sl config --user isl.changedFilesDisplayType "tree"
   
-  # Get bf-codebot GitHub token from secrets
-  BF_CODEBOT_TOKEN=\$(bft secrets get BF_CODEBOT_GITHUB_TOKEN 2>/dev/null || echo "")
+  # BF_CODEBOT_TOKEN should be passed via environment variable from host
   
   # Configure GitHub authentication for bf-codebot
   if [ -n "\$BF_CODEBOT_TOKEN" ]; then
