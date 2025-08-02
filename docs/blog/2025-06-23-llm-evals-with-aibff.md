@@ -66,9 +66,9 @@ a CSV of ~80 stories and asked Claude to create synthetic samples for the
 missing values.
 
 With our
-[`truth.deck.toml`](https://github.com/bolt-foundry/bolt-foundry/blob/main/apps/aibff/decks/fastpitch/sources.deck.toml)
+[`truth.deck.toml`](https://github.com/bolt-foundry/bfmono/blob/main/apps/aibff/decks/fastpitch/sources.deck.toml)
 and
-[`syntheticSamples.deck.toml`](https://github.com/bolt-foundry/bolt-foundry/blob/main/apps/aibff/decks/fastpitch/syntheticSamples.deck.toml)
+[`syntheticSamples.deck.toml`](https://github.com/bolt-foundry/bfmono/blob/main/apps/aibff/decks/fastpitch/syntheticSamples.deck.toml)
 files in place, we were ready to create the Grader.
 
 To get a baseline grader for the **story selection** dimension, we simply
@@ -100,9 +100,9 @@ to `results.html` and asked it to look for inconsistencies between the Grader
 and Ground Truth samples, and to update the Grader accordingly.
 
 In this case, we created a
-[Grader-v2](https://github.com/bolt-foundry/bolt-foundry/blob/main/apps/aibff/decks/fastpitch/sports-relevance-grader-v2.deck.md)
+[Grader-v2](https://github.com/bolt-foundry/bfmono/blob/main/apps/aibff/decks/fastpitch/sports-relevance-grader-v2.deck.md)
 to measure changes against a baseline. After
-[a few (dozen) iterations](https://github.com/bolt-foundry/bolt-foundry/tree/main/static/examples/fastpitch-results)
+[a few (dozen) iterations](https://github.com/bolt-foundry/bfmono/tree/main/static/examples/fastpitch-results)
 and refinement, we ended up with a Grader that agreed with the Ground Truth
 scores 100% of the time using both GPT-4o and GPT-4.1.
 

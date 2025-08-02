@@ -32,7 +32,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          repository: bolt-foundry/bolt-foundry
+          repository: bolt-foundry/bfmono
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
           ssh-strict: true

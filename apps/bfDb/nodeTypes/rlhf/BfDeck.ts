@@ -1,6 +1,6 @@
 import { BfNode, type InferProps } from "@bfmono/apps/bfDb/classes/BfNode.ts";
 import { BfOrganization } from "@bfmono/apps/bfDb/nodeTypes/BfOrganization.ts";
-import { readLocalDeck } from "@bolt-foundry/bolt-foundry";
+import { readLocalDeck } from "@bolt-foundry/bfmono";
 
 /**
  * BfDeck represents a deck of cards/prompts used for RLHF evaluation.
