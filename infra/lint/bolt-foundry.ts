@@ -530,6 +530,24 @@ const plugin: any = {
         };
       },
     },
+
+    /* ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
+    /*  10. Prevent direct use of createTargetNode - use generated methods    */
+    /* ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
+    "no-direct-create-target-node": {
+      create(context: any) {
+        return {
+          // Match calls to createTargetNode
+          'CallExpression[callee.property.name="createTargetNode"]'(node: any) {
+            context.report({
+              node,
+              message:
+                "Use generated relationship methods instead of createTargetNode. For example, use createAuthor() instead of createTargetNode(BfAuthor, ...).",
+            });
+          },
+        };
+      },
+    },
   },
 };
 
