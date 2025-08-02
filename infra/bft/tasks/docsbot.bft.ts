@@ -153,7 +153,7 @@ function buildContainerArgs(config: ContainerConfig): Array<string> {
     "-e",
     "DISPLAY=:99", // Virtual display for headless Chrome
     "-e",
-    "CODEBOT_CONTAINER=true", // Identify we're in a codebot container
+    "DOCSBOT_CONTAINER=true", // Identify we're in a docsbot container
     "-e",
     "TERM=xterm-256color", // Enable proper color support in terminal
   ];
@@ -260,10 +260,10 @@ OPTIONS:
 
 EXAMPLES:
   bft codebot                           # Start Claude Code CLI (new workspace)
-  bft codebot --workspace fuzzy-goat    # Resume running container or reuse workspace
+  bft docsbot --workspace fuzzy-goat    # Resume running container or reuse workspace
   bft codebot --resume                  # Choose from existing workspaces
   bft codebot --cleanup                 # Start and cleanup workspace when done
-  bft codebot --shell                   # Open container shell for debugging
+  bft docsbot --shell                   # Open container shell for debugging
   bft codebot --exec "ls -la"           # Run command and exit
   bft codebot --checkout remote/main    # Checkout branch with auto shelve/unshelve
   bft codebot --memory 8g --cpus 8      # Run with 8GB RAM and 8 CPUs
@@ -1030,7 +1030,7 @@ FIRST TIME SETUP:
     });
 
     // Add container image
-    containerArgs.push("codebot");
+    containerArgs.push("docsbot");
 
     const child = new Deno.Command("container", {
       args: containerArgs,
@@ -1091,7 +1091,7 @@ FIRST TIME SETUP:
     });
 
     // Add container image and command
-    containerArgs.push("codebot", "-c", parsed.exec);
+    containerArgs.push("docsbot", "-c", parsed.exec);
 
     // Debug: log the full container command
     ui.output(
@@ -1173,7 +1173,7 @@ FIRST TIME SETUP:
 
 // Export the task definition for autodiscovery
 export const bftDefinition = {
-  description: "Run Claude Code in isolated container environment",
+  description: "Run Claude Code in isolated container for documentation work",
   fn: codebot,
 } satisfies TaskDefinition;
 
