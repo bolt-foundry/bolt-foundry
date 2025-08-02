@@ -2,7 +2,13 @@ import { BfNode, type InferProps } from "@bfmono/apps/bfDb/classes/BfNode.ts";
 import type { BfMetadata } from "@bfmono/apps/bfDb/classes/BfNode.ts";
 import type { CurrentViewer } from "@bfmono/apps/bfDb/classes/CurrentViewer.ts";
 
-export class BfGraderResult extends BfNode<InferProps<typeof BfGraderResult>> {
+type BfGraderResultProps = {
+  score: number;
+  explanation: string;
+  reasoningProcess: string;
+};
+
+export class BfGraderResult extends BfNode<BfGraderResultProps> {
   static override gqlSpec = this.defineGqlNode((gql) =>
     gql
       .int("score")
@@ -21,11 +27,13 @@ export class BfGraderResult extends BfNode<InferProps<typeof BfGraderResult>> {
 
   constructor(
     cv: CurrentViewer,
-    props: InferProps<typeof BfGraderResult>,
+    props: BfGraderResultProps,
     metadata?: Partial<BfMetadata>,
   ) {
     // Validate score range (business logic)
-    if (props.score < -3 || props.score > 3) {
+    if (
+      typeof props.score === "number" && (props.score < -3 || props.score > 3)
+    ) {
       throw new Error("Score must be between -3 and 3");
     }
 
