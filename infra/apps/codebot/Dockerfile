@@ -88,10 +88,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Nix using Determinate Nix installer
-# Note: Disable filter-syscalls for ARM64 builds to avoid seccomp issues in QEMU
 RUN curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux \
     --extra-conf "sandbox = false" \
-    --extra-conf "filter-syscalls = false" \
     --extra-conf "experimental-features = nix-command flakes" \
     --init none \
     --no-confirm
