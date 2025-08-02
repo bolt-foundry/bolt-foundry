@@ -5,7 +5,7 @@ import { GraphQLInterface } from "@bfmono/apps/bfDb/graphql/decorators.ts";
 import type { BfGid } from "@bfmono/lib/types.ts";
 import type { GraphqlNode } from "@bfmono/apps/bfDb/graphql/helpers.ts";
 import type { CurrentViewer } from "@bfmono/apps/bfDb/classes/CurrentViewer.ts";
-import { BfErrorNotImplemented } from "@bfmono/lib/BfError.ts";
+import type { BfErrorNotImplemented } from "@bfmono/lib/BfError.ts";
 import { storage } from "@bfmono/apps/bfDb/storage/storage.ts";
 import type { DbItem } from "@bfmono/apps/bfDb/bfDb.ts";
 import type { JSONValue } from "@bfmono/apps/bfDb/bfDb.ts";
@@ -18,7 +18,11 @@ import type {
   FieldSpec,
   RelationSpec,
 } from "@bfmono/apps/bfDb/builders/bfDb/types.ts";
+import {
+  generateRelationshipMethods,
+} from "@bfmono/apps/bfDb/builders/bfDb/relationshipMethods.ts";
 import { makeBfDbSpec } from "@bfmono/apps/bfDb/builders/bfDb/makeBfDbSpec.ts";
+// Relationship GraphQL integration removed - use standard object() and connection() methods
 
 const logger = getLogger(import.meta);
 
@@ -121,10 +125,10 @@ export abstract class BfNode<TProps extends PropsBase = {}>
     const now = new Date();
     const defaults: BfMetadata = {
       bfGid: bfGid,
-      bfOid: cv.orgBfOid,
+      bfOid: cv?.orgBfOid || ("" as BfGid),
       className: this.name,
       sortValue: this.generateSortValue(),
-      bfCid: cv.personBfGid,
+      bfCid: cv?.personBfGid || ("" as BfGid),
       createdAt: now,
       lastUpdated: now,
     };
@@ -349,6 +353,9 @@ export abstract class BfNode<TProps extends PropsBase = {}>
       metadata,
     );
     this.currentViewer = currentViewer;
+
+    // Generate relationship methods
+    generateRelationshipMethods(this);
   }
 
   get props(): TProps {
@@ -413,8 +420,10 @@ export abstract class BfNode<TProps extends PropsBase = {}>
     return this;
   }
 
-  delete(): Promise<boolean> {
-    throw new BfErrorNotImplemented();
+  async delete(): Promise<boolean> {
+    logger.debug(`Deleting ${this}`);
+    await storage.delete(this.cv.orgBfOid, this.metadata.bfGid);
+    return true;
   }
 
   async load(): Promise<this> {
@@ -428,7 +437,7 @@ export abstract class BfNode<TProps extends PropsBase = {}>
     return this;
   }
 
-  async createTargetNode<TProps extends PropsBase>(
+  protected async createTargetNode<TProps extends PropsBase>(
     TargetNodeClass: typeof BfNode<TProps>,
     props: TProps,
     options?: {
@@ -588,6 +597,9 @@ export abstract class BfNode<TProps extends PropsBase = {}>
     nodeProps: Partial<TTargetProps> = {},
     edgeProps: Partial<PropsBase> = {},
     cache?: BfNodeCache<TTargetProps>,
+    options?: {
+      role?: string; // Filter by edge label/role
+    },
   ): Promise<Array<InstanceType<TTargetClass>>> {
     // Step 1: Query edges where this node is the source
     const { BfEdge } = await import("@bfmono/apps/bfDb/nodeTypes/BfEdge.ts");
@@ -597,10 +609,14 @@ export abstract class BfNode<TProps extends PropsBase = {}>
       bfTClassName: TargetClass.name,
     };
 
+    const finalEdgeProps = options?.role
+      ? { ...edgeProps, role: options.role }
+      : edgeProps;
+
     const edges = await BfEdge.query(
       this.cv,
       edgeMetadata,
-      edgeProps,
+      finalEdgeProps,
       [],
     );
 
@@ -625,6 +641,135 @@ export abstract class BfNode<TProps extends PropsBase = {}>
       targetIds,
       cache,
     );
+  }
+
+  /**
+   * Find edges connected to this node
+   * @param options Filter options for edges
+   * @returns Array of BfEdge instances
+   */
+  async findEdges(
+    options: {
+      direction?: "in" | "out" | "both";
+      label?: string; // Filter by edge label (relationship name)
+      targetId?: BfGid; // Filter by specific target node
+    } = { direction: "out" },
+  ): Promise<Array<any>> {
+    const { BfEdge } = await import("@bfmono/apps/bfDb/nodeTypes/BfEdge.ts");
+    const edges: Array<any> = [];
+
+    // Query outgoing edges
+    if (options.direction === "out" || options.direction === "both") {
+      const outMetadata: Partial<BfEdgeMetadata> = {
+        bfSid: this.metadata.bfGid,
+        bfOid: this.cv.orgBfOid,
+      };
+
+      if (options.targetId) {
+        outMetadata.bfTid = options.targetId;
+      }
+
+      const edgeProps = options.label ? { role: options.label } : {};
+
+      const outEdges = await BfEdge.query(
+        this.cv,
+        outMetadata,
+        edgeProps,
+        [],
+      );
+
+      edges.push(...outEdges);
+    }
+
+    // Query incoming edges
+    if (options.direction === "in" || options.direction === "both") {
+      const inMetadata: Partial<BfEdgeMetadata> = {
+        bfTid: this.metadata.bfGid,
+        bfOid: this.cv.orgBfOid,
+      };
+
+      const edgeProps = options.label ? { role: options.label } : {};
+
+      const inEdges = await BfEdge.query(
+        this.cv,
+        inMetadata,
+        edgeProps,
+        [],
+      );
+
+      edges.push(...inEdges);
+    }
+
+    return edges;
+  }
+
+  /**
+   * Create a single edge from this node to another
+   * @param edgeProps Properties for the edge
+   * @returns The created BfEdge instance
+   */
+  async createEdge(
+    edgeProps: {
+      targetId: BfGid;
+      label: string; // Relationship name
+      props?: Record<string, JSONValue>;
+    },
+  ): Promise<any> {
+    const { BfEdge } = await import("@bfmono/apps/bfDb/nodeTypes/BfEdge.ts");
+
+    // Find the target node to ensure it exists
+    const targetNode = await (this.constructor as typeof BfNode).find(
+      this.cv,
+      edgeProps.targetId,
+    );
+
+    if (!targetNode) {
+      throw new Error(`Target node not found: ${edgeProps.targetId}`);
+    }
+
+    return await BfEdge.createBetweenNodes(
+      this.cv,
+      this,
+      targetNode,
+      { role: edgeProps.label, ...(edgeProps.props || {}) },
+    );
+  }
+
+  /**
+   * Create multiple edges atomically for performance
+   * @param edgePropsArray Array of edge properties
+   * @returns Array of created BfEdge instances
+   */
+  async createEdges(
+    edgePropsArray: Array<{
+      targetId: BfGid;
+      label: string;
+      props?: Record<string, JSONValue>;
+    }>,
+  ): Promise<Array<any>> {
+    // For now, implement as a loop, but this could be optimized
+    // to use batch operations in the storage layer
+    const edges: Array<any> = [];
+
+    for (const edgeProps of edgePropsArray) {
+      const edge = await this.createEdge(edgeProps);
+      edges.push(edge);
+    }
+
+    return edges;
+  }
+
+  /**
+   * Delete multiple edges atomically
+   * @param edgeIds Array of edge IDs to delete
+   */
+  async deleteEdges(
+    edgeIds: Array<BfGid>,
+  ): Promise<void> {
+    // Delete each edge
+    for (const edgeId of edgeIds) {
+      await storage.delete(this.cv.orgBfOid, edgeId);
+    }
   }
 
   protected beforeCreate(): Promise<void> | void {}

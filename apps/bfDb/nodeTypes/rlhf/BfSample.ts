@@ -52,7 +52,13 @@ export interface BfSampleCompletionData {
  * evaluation purposes. Samples can be collected manually by users or automatically
  * via telemetry systems.
  */
-export class BfSample extends BfNode<InferProps<typeof BfSample>> {
+type BfSampleProps = {
+  completionData: BfSampleCompletionData;
+  collectionMethod: BfSampleCollectionMethod;
+  name?: string;
+};
+
+export class BfSample extends BfNode<BfSampleProps> {
   static override gqlSpec = this.defineGqlNode((gql) =>
     gql
       .json("completionData")
@@ -69,7 +75,7 @@ export class BfSample extends BfNode<InferProps<typeof BfSample>> {
         resolve: async (_src, args, ctx) => {
           const cv = ctx.getCurrentViewer();
           const deck = await BfDeck.findX(cv, args.deckId as BfGid);
-          const sample = await deck.createTargetNode(BfSample, {
+          const sample = await (deck as any).createSamples({
             completionData: JSON.parse(args.completionData),
             collectionMethod: (args.collectionMethod ||
               "manual") as BfSampleCollectionMethod,
@@ -90,5 +96,7 @@ export class BfSample extends BfNode<InferProps<typeof BfSample>> {
       .json("completionData") // Native JSON storage
       .string("collectionMethod") // "manual" | "telemetry"
       .string("name") // Optional human-readable name for the sample
+      .many("results", () =>
+        import("./BfGraderResult.ts").then((m) => m.BfGraderResult))
   );
 }
