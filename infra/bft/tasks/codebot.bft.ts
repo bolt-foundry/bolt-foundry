@@ -144,6 +144,8 @@ function buildContainerArgs(config: ContainerConfig): Array<string> {
     "PUPPETEER_NO_SANDBOX=true", // Container already provides isolation
     "-e",
     "DISPLAY=:99", // Virtual display for headless Chrome
+    "-e",
+    "TERM=xterm-256color", // Enable proper color support in terminal
   ];
 
   if (config.removeOnExit) {
