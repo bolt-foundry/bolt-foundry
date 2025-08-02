@@ -2,9 +2,9 @@
 
 import { assertEquals } from "@std/assert";
 import { BfOrganization } from "@bfmono/apps/bfDb/nodeTypes/BfOrganization.ts";
-import type { BfDeck } from "../rlhf/BfDeck.ts";
-import type { BfGrader } from "../rlhf/BfGrader.ts";
-import type { BfSample } from "../rlhf/BfSample.ts";
+import type { BfDeck as _BfDeck } from "../rlhf/BfDeck.ts";
+import type { BfGrader as _BfGrader } from "../rlhf/BfGrader.ts";
+import type { BfSample as _BfSample } from "../rlhf/BfSample.ts";
 import { withIsolatedDb } from "@bfmono/apps/bfDb/bfDb.ts";
 import { makeLoggedInCv } from "@bfmono/apps/bfDb/utils/testUtils.ts";
 
@@ -63,8 +63,11 @@ Deno.test("BfOrganization - Organization isolation", async () => {
     });
     await org1.save();
 
+    // deno-lint-ignore no-explicit-any
     const deck1 = await (org1 as any).createDecks(sharedProps.deck);
+    // deno-lint-ignore no-explicit-any
     const grader1 = await (deck1 as any).createGraders(sharedProps.grader);
+    // deno-lint-ignore no-explicit-any
     const sample1 = await (deck1 as any).createSamples(sharedProps.sample);
 
     // Create nodes in organization 2
@@ -74,8 +77,11 @@ Deno.test("BfOrganization - Organization isolation", async () => {
     });
     await org2.save();
 
+    // deno-lint-ignore no-explicit-any
     const deck2 = await (org2 as any).createDecks(sharedProps.deck);
+    // deno-lint-ignore no-explicit-any
     const grader2 = await (deck2 as any).createGraders(sharedProps.grader);
+    // deno-lint-ignore no-explicit-any
     const sample2 = await (deck2 as any).createSamples(sharedProps.sample);
 
     // Verify organizations are isolated
