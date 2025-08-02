@@ -30,6 +30,15 @@ export class BfOrganization extends BfNode<InferProps<typeof BfOrganization>> {
       import.meta.resolve("./rlhf/demo-decks/customer-support-demo.deck.md"),
     ).pathname;
     const deckProps = await BfDeck.readPropsFromFile(deckPath);
-    await (this as any).createDecks(deckProps);
+    await (this as BfOrganization & {
+      createDecks: (
+        props: {
+          name: string;
+          content: string;
+          description: string;
+          slug: string;
+        },
+      ) => Promise<BfDeck>;
+    }).createDecks(deckProps);
   }
 }

@@ -1,4 +1,7 @@
-import { BfNode, type InferProps } from "@bfmono/apps/bfDb/classes/BfNode.ts";
+import {
+  BfNode,
+  type InferProps as _InferProps,
+} from "@bfmono/apps/bfDb/classes/BfNode.ts";
 import type { BfMetadata } from "@bfmono/apps/bfDb/classes/BfNode.ts";
 import type { CurrentViewer } from "@bfmono/apps/bfDb/classes/CurrentViewer.ts";
 
@@ -16,14 +19,15 @@ export class BfGraderResult extends BfNode<BfGraderResultProps> {
       .string("reasoningProcess")
   );
 
-  static override bfNodeSpec = this.defineBfNode((f) =>
-    f
-      .number("score")
-      .string("explanation")
-      .string("reasoningProcess")
-      .one("bfGrader", () => import("./BfGrader.ts").then((m) => m.BfGrader))
-      .one("bfSample", () => import("./BfSample.ts").then((m) => m.BfSample))
-  );
+  static override bfNodeSpec: ReturnType<typeof BfGraderResult.defineBfNode> =
+    this.defineBfNode((f) =>
+      f
+        .number("score")
+        .string("explanation")
+        .string("reasoningProcess")
+        .one("bfGrader", () => import("./BfGrader.ts").then((m) => m.BfGrader))
+        .one("bfSample", () => import("./BfSample.ts").then((m) => m.BfSample))
+    );
 
   constructor(
     cv: CurrentViewer,
