@@ -305,6 +305,11 @@ The implementation is broken down into 8 phases:
 8. **[Phase 8: Many Relationship Migration](./phase-8-many-relationship-migration.md)** -
    Migrate existing patterns
 
+### Infrastructure Completion
+
+9. **[Phase 9: Edge Methods Implementation](./phase-9-edge-methods-implementation.md)** -
+   Implement missing BfNode edge methods to enable full functionality
+
 ## Important Implementation Notes
 
 ### Transaction Context (cv) Parameter
