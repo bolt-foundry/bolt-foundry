@@ -81,11 +81,28 @@ RUN if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
         && ln -s /usr/bin/chromium /usr/bin/google-chrome-stable; \
     fi
 
-# Install Nix using Determinate Nix installer
-RUN curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux \
-    --extra-conf "sandbox = false" \
-    --init none \
-    --no-confirm
+# Install Nix using Determinate Nix installer with better error handling
+RUN set -ex && \
+    # Create required directories
+    mkdir -p /nix /etc/nix && \
+    # Download the installer first to debug potential issues
+    curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix -o /tmp/install-nix.sh && \
+    # Make it executable
+    chmod +x /tmp/install-nix.sh && \
+    # Show first few lines for debugging
+    head -n 20 /tmp/install-nix.sh && \
+    # Run the installer with error handling
+    /tmp/install-nix.sh install linux \
+        --extra-conf "sandbox = false" \
+        --init none \
+        --no-confirm || \
+    { echo "Nix installation failed. Trying alternative approach..."; \
+      # Alternative: Try the official Nix installer
+      curl -L https://nixos.org/nix/install | sh -s -- --daemon --yes || \
+      { echo "Both Nix installers failed. Exiting."; exit 1; }; \
+    } && \
+    # Clean up
+    rm -f /tmp/install-nix.sh
 
 # Set up PATH to include Nix
 ENV PATH="${PATH}:/nix/var/nix/profiles/default/bin"
