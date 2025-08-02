@@ -81,14 +81,24 @@ RUN if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
         && ln -s /usr/bin/chromium /usr/bin/google-chrome-stable; \
     fi
 
+# Install dependencies required by Nix installer
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libssl-dev \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/*
+
 # Install Nix using Determinate Nix installer
 RUN curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux \
     --extra-conf "sandbox = false" \
+    --extra-conf "experimental-features = nix-command flakes" \
     --init none \
     --no-confirm
 
 # Set up PATH to include Nix
 ENV PATH="${PATH}:/nix/var/nix/profiles/default/bin"
+
+# Verify Nix installation
+RUN /nix/var/nix/profiles/default/bin/nix --version || (echo "Nix installation verification failed" && exit 1)
 
 # Copy flake files for caching
 COPY flake.nix flake.lock /@bfmono/
