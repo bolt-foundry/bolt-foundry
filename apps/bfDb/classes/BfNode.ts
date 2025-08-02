@@ -22,6 +22,9 @@ import {
   generateRelationshipMethods,
 } from "@bfmono/apps/bfDb/builders/bfDb/relationshipMethods.ts";
 import { makeBfDbSpec } from "@bfmono/apps/bfDb/builders/bfDb/makeBfDbSpec.ts";
+import {
+  defineGqlNodeWithRelationships,
+} from "@bfmono/apps/bfDb/builders/bfDb/relationshipGraphQL.ts";
 
 const logger = getLogger(import.meta);
 
@@ -106,6 +109,31 @@ export abstract class BfNode<TProps extends PropsBase = {}>
     ) => FieldBuilder<F, R>,
   ): { fields: F; relations: R } {
     return makeBfDbSpec<F, R>(builder);
+  }
+
+  /**
+   * Define a GraphQL node spec that automatically includes fields for relationships
+   * defined in bfNodeSpec. This is the recommended way to define GraphQL specs
+   * for nodes that have relationships.
+   *
+   * @example
+   * ```typescript
+   * class BfBook extends BfNode<{ title: string; isbn: string }> {
+   *   static override gqlSpec = this.defineGqlNodeWithRelations((gql) =>
+   *     gql.string("title").string("isbn")
+   *   );
+   *
+   *   static override bfNodeSpec = this.defineBfNode((f) =>
+   *     f.string("title").string("isbn").one("author", () => BfAuthor)
+   *   );
+   * }
+   * ```
+   */
+  static defineGqlNodeWithRelations(
+    builder: Parameters<typeof defineGqlNodeWithRelationships>[1],
+  ) {
+    // Use 'this' to get the current class
+    return defineGqlNodeWithRelationships(this as AnyBfNodeCtor, builder);
   }
 
   static generateSortValue() {
