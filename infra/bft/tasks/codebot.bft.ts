@@ -144,6 +144,8 @@ function buildContainerArgs(config: ContainerConfig): Array<string> {
     "PUPPETEER_NO_SANDBOX=true", // Container already provides isolation
     "-e",
     "DISPLAY=:99", // Virtual display for headless Chrome
+    "-e",
+    "CODEBOT_CONTAINER=true", // Identify we're in a codebot container
   ];
 
   if (config.removeOnExit) {
