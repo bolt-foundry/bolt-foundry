@@ -127,6 +127,28 @@ type ManyRelationshipMethods<T extends AnyBfNodeCtor> = UnionToIntersection<
             node: InstanceType<RelationTarget<T, P>>,
           ) => Promise<void>;
         }
+        // Batch operations for Phase 7
+        & {
+          [P in K as `addMany${Capitalize<P>}`]: (
+            nodes: Array<InstanceType<RelationTarget<T, P>>>,
+          ) => Promise<void>;
+        }
+        & {
+          [P in K as `removeMany${Capitalize<P>}`]: (
+            nodes: Array<InstanceType<RelationTarget<T, P>>>,
+          ) => Promise<void>;
+        }
+        & {
+          [P in K as `createMany${Capitalize<P>}`]: (
+            propsArray: Array<InferProps<RelationTarget<T, P>>>,
+          ) => Promise<Array<InstanceType<RelationTarget<T, P>>>>;
+        }
+        // Async iteration for Phase 7
+        & {
+          [P in K as `iterate${Capitalize<P>}`]: () => AsyncIterableIterator<
+            InstanceType<RelationTarget<T, P>>
+          >;
+        }
       : never;
   }[RelationNames<T>]
 >;
@@ -491,6 +513,124 @@ function generateManyRelationshipMethods(
 
       // Then delete the node
       await targetNode.delete();
+    },
+    writable: false,
+    enumerable: false,
+    configurable: true,
+  });
+
+  // Phase 7: Batch operations
+
+  // addMany{RelationName}(nodes) - Link multiple existing nodes
+  Object.defineProperty(node, `addMany${capitalizedName}`, {
+    value: async function (nodes: Array<BfNode>) {
+      // TODO: Implement batch edge creation for atomicity
+      // const cv = (node as any).currentViewer;
+      // await node.createEdges(cv, nodes.map(n => ({
+      //   targetId: n.id,
+      //   label: relationName,
+      //   props: {},
+      // })));
+
+      // Temporary implementation: call add for each node
+      for (const targetNode of nodes) {
+        await (node as BfNode & Record<string, (n: BfNode) => Promise<void>>)
+          [`add${capitalizedName}`](targetNode);
+      }
+    },
+    writable: false,
+    enumerable: false,
+    configurable: true,
+  });
+
+  // removeMany{RelationName}(nodes) - Remove multiple nodes from collection
+  Object.defineProperty(node, `removeMany${capitalizedName}`, {
+    value: async function (nodes: Array<BfNode>) {
+      // TODO: Implement batch edge deletion for atomicity
+      // const cv = (node as any).currentViewer;
+      // const edgeIds = [];
+      // for (const targetNode of nodes) {
+      //   const edges = await node.findEdges(cv, {
+      //     direction: "out",
+      //     label: relationName,
+      //     targetId: targetNode.id,
+      //   });
+      //   edgeIds.push(...edges.map(e => e.id));
+      // }
+      // await node.deleteEdges(cv, edgeIds);
+
+      // Temporary implementation: call remove for each node
+      for (const targetNode of nodes) {
+        await (node as BfNode & Record<string, (n: BfNode) => Promise<void>>)
+          [`remove${capitalizedName}`](targetNode);
+      }
+    },
+    writable: false,
+    enumerable: false,
+    configurable: true,
+  });
+
+  // createMany{RelationName}(propsArray) - Create multiple nodes and link them
+  Object.defineProperty(node, `createMany${capitalizedName}`, {
+    value: async function (propsArray: Array<Record<string, unknown>>) {
+      // TODO: Implement batch creation for atomicity
+      // const cv = (node as any).currentViewer;
+      // const newNodes = await targetClass.createMany(cv, propsArray);
+      // await node.createEdges(cv, newNodes.map(n => ({
+      //   targetId: n.id,
+      //   label: relationName,
+      //   props: {},
+      // })));
+      // return newNodes;
+
+      // Temporary implementation: call create for each set of props
+      const createdNodes = [];
+      for (const props of propsArray) {
+        const newNode = await (node as
+          & BfNode
+          & Record<string, (p: Record<string, unknown>) => Promise<BfNode>>)
+          [`create${capitalizedName}`](props);
+        createdNodes.push(newNode);
+      }
+      return createdNodes;
+    },
+    writable: false,
+    enumerable: false,
+    configurable: true,
+  });
+
+  // iterate{RelationName}() - Async iterator for memory-efficient processing
+  Object.defineProperty(node, `iterate${capitalizedName}`, {
+    value: async function* () {
+      // TODO: Implement cursor-based iteration when available
+      // const cv = (node as any).currentViewer;
+      // let cursor = null;
+      // const batchSize = 100;
+      //
+      // while (true) {
+      //   const batch = await node.queryTargetInstances(
+      //     targetClass,
+      //     {},
+      //     { role: relationName, cursor, limit: batchSize }
+      //   );
+      //
+      //   if (batch.length === 0) break;
+      //
+      //   for (const item of batch) {
+      //     yield item;
+      //   }
+      //
+      //   if (batch.length < batchSize) break;
+      //   cursor = batch[batch.length - 1].id;
+      // }
+
+      // Temporary implementation: yield all items from findAll
+      const allItems =
+        await (node as BfNode & Record<string, () => Promise<Array<unknown>>>)
+          [`findAll${capitalizedName}`]();
+      for (const item of allItems) {
+        yield item;
+      }
     },
     writable: false,
     enumerable: false,
