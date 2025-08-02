@@ -11,3 +11,10 @@ export class BfErrorNotImplemented extends BfError {
     this.name = "BfErrorNotImplemented";
   }
 }
+
+export class NotFoundError extends BfError {
+  constructor(message: string) {
+    super(message);
+    this.name = "NotFoundError";
+  }
+}
