@@ -6,7 +6,6 @@ export class BfOrganization extends BfNode<InferProps<typeof BfOrganization>> {
     node
       .string("name")
       .string("domain")
-    // Removing the members relationship for now to focus on 1:1
   );
   static override bfNodeSpec = this.defineBfNode((node) =>
     node
@@ -30,6 +29,8 @@ export class BfOrganization extends BfNode<InferProps<typeof BfOrganization>> {
       import.meta.resolve("./rlhf/demo-decks/customer-support-demo.deck.md"),
     ).pathname;
     const deckProps = await BfDeck.readPropsFromFile(deckPath);
+
+    // Create the deck using the relationship method
     await (this as any).createDecks(deckProps);
   }
 }
