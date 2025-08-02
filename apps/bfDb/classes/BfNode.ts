@@ -5,7 +5,7 @@ import { GraphQLInterface } from "@bfmono/apps/bfDb/graphql/decorators.ts";
 import type { BfGid } from "@bfmono/lib/types.ts";
 import type { GraphqlNode } from "@bfmono/apps/bfDb/graphql/helpers.ts";
 import type { CurrentViewer } from "@bfmono/apps/bfDb/classes/CurrentViewer.ts";
-import { BfErrorNotImplemented } from "@bfmono/lib/BfError.ts";
+import type { BfErrorNotImplemented } from "@bfmono/lib/BfError.ts";
 import { storage } from "@bfmono/apps/bfDb/storage/storage.ts";
 import type { DbItem } from "@bfmono/apps/bfDb/bfDb.ts";
 import type { JSONValue } from "@bfmono/apps/bfDb/bfDb.ts";
@@ -420,8 +420,10 @@ export abstract class BfNode<TProps extends PropsBase = {}>
     return this;
   }
 
-  delete(): Promise<boolean> {
-    throw new BfErrorNotImplemented();
+  async delete(): Promise<boolean> {
+    logger.debug(`Deleting ${this}`);
+    await storage.delete(this.cv.orgBfOid, this.metadata.bfGid);
+    return true;
   }
 
   async load(): Promise<this> {
@@ -435,7 +437,7 @@ export abstract class BfNode<TProps extends PropsBase = {}>
     return this;
   }
 
-  async createTargetNode<TProps extends PropsBase>(
+  protected async createTargetNode<TProps extends PropsBase>(
     TargetNodeClass: typeof BfNode<TProps>,
     props: TProps,
     options?: {
