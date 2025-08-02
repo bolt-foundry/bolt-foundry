@@ -146,6 +146,8 @@ function buildContainerArgs(config: ContainerConfig): Array<string> {
     "DISPLAY=:99", // Virtual display for headless Chrome
     "-e",
     "CODEBOT_CONTAINER=true", // Identify we're in a codebot container
+    "-e",
+    "TERM=xterm-256color", // Enable proper color support in terminal
   ];
 
   if (config.removeOnExit) {
