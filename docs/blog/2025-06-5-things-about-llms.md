@@ -117,7 +117,7 @@ This structure is how we make prompt engineering more science than art.
 Most teams are trying to measure systems built from unmeasurable parts. But with
 prompts structured as cards and specs, every component becomes hashable and
 referenceable. We built a
-[library](https://www.npmjs.com/package/@bolt-foundry/bolt-foundry) to help
+[library](https://www.npmjs.com/package/@bolt-foundry/bfmono) to help
 folks structure their prompts correctly.
 
 Building evals from scratch is extremely hard, but this structure lays the

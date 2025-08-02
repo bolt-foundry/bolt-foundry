@@ -16,16 +16,16 @@ This SDK is in early development. Currently provides:
 
 ```bash
 # For Deno projects (recommended)
-import { BfClient } from "@bolt-foundry/bolt-foundry";
+import { BfClient } from "@bolt-foundry/bfmono";
 
 # For npm projects
-npm install @bolt-foundry/bolt-foundry
+npm install @bolt-foundry/bfmono
 ```
 
 ## Quick Start
 
 ```typescript
-import { BfClient } from "@bolt-foundry/bolt-foundry";
+import { BfClient } from "@bolt-foundry/bfmono";
 import OpenAI from "openai";
 
 // 1. Create a Bolt Foundry client
@@ -185,7 +185,7 @@ const reviewer = bf.createDeck("code-reviewer")
 ## Getting Help
 
 - 📚 [Documentation](../../docs/guides/)
-- 💬 [Issues](https://github.com/bolt-foundry/bolt-foundry/issues)
+- 💬 [Issues](https://github.com/bolt-foundry/bfmono/issues)
 
 ## License
 
