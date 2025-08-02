@@ -555,7 +555,7 @@ async function getSecret(args: Array<string>): Promise<number> {
 
     if (result.code === 0) {
       const value = new TextDecoder().decode(result.stdout).trim();
-      console.log(value);
+      ui.info(value);
       return 0;
     } else {
       const error = new TextDecoder().decode(result.stderr);
