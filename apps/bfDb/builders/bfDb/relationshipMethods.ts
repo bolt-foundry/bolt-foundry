@@ -211,7 +211,12 @@ function generateOneRelationshipMethods(
   relationSpec: RelationSpec,
 ): void {
   const capitalizedName = capitalize(relationName);
-  const targetClass = relationSpec.target();
+
+  // Handle both sync and async target resolution
+  const getTargetClass = async () => {
+    const targetResult = relationSpec.target();
+    return await Promise.resolve(targetResult);
+  };
 
   // find{RelationName}() - Find the related node (returns null if not found)
   Object.defineProperty(node, `find${capitalizedName}`, {
@@ -260,6 +265,7 @@ function generateOneRelationshipMethods(
   Object.defineProperty(node, `create${capitalizedName}`, {
     value: async function (props: Record<string, unknown>) {
       const cv = (node as BfNode & { currentViewer?: unknown }).currentViewer;
+      const targetClass = await getTargetClass();
       const newNode = await (targetClass as AnyBfNodeCtor & {
         __DANGEROUS__createUnattached: (
           cv: unknown,
@@ -337,7 +343,12 @@ function generateManyRelationshipMethods(
   relationSpec: RelationSpec,
 ): void {
   const capitalizedName = capitalize(relationName);
-  const targetClass = relationSpec.target();
+
+  // Handle both sync and async target resolution
+  const getTargetClass = async () => {
+    const targetResult = relationSpec.target();
+    return await Promise.resolve(targetResult);
+  };
 
   // findAll{RelationName}() - Find all related nodes
   Object.defineProperty(node, `findAll${capitalizedName}`, {
@@ -432,6 +443,7 @@ function generateManyRelationshipMethods(
   Object.defineProperty(node, `create${capitalizedName}`, {
     value: async function (props: Record<string, unknown>) {
       const cv = (node as BfNode & { currentViewer?: unknown }).currentViewer;
+      const targetClass = await getTargetClass();
       const newNode = await (targetClass as AnyBfNodeCtor & {
         __DANGEROUS__createUnattached: (
           cv: unknown,
